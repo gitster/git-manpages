@@ -23,7 +23,7 @@ git-checkout \- Checkout and switch to a branch.
 .SH "SYNOPSIS"
 
 
-git\-checkout [\-f] [\-b <new_branch>] [<branch>] [<paths>...]
+git\-checkout [\-f] [\-b <new_branch>] [\-m] [<branch>] [<paths>...]
 
 .SH "DESCRIPTION"
 
@@ -44,6 +44,12 @@ Force an re\-read of everything\&.
 Create a new branch and start it at <branch>\&.
 
 .TP
+\-m
+If you have local modifications to a file that is different between the current branch and the branch you are switching to, the command refuses to switch branches, to preserve your modifications in context\&. With this option, a three\-way merge between the current branch, your working tree contents, and the new branch is done, and you will be on the new branch\&.
+
+When a merge conflict happens, the index entries for conflicting paths are left unmerged, and you need to resolve the conflicts and mark the resolved paths with git update\-index\&.
+
+.TP
 <new_branch>
 Name for the new branch\&.
 
@@ -51,10 +57,12 @@ Name for the new branch\&.
 <branch>
 Branch to checkout; may be any object ID that resolves to a commit\&. Defaults to HEAD\&.
 
-.SH "EXAMPLE"
+.SH "EXAMPLES"
 
-
+.TP 3
+1.
 The following sequence checks out the master branch, reverts the Makefile to two revisions back, deletes hello\&.c by mistake, and gets it back from the index\&.
+
 
 .IP
 $ git checkout master 
@@ -64,12 +72,42 @@ $ git checkout hello\&.c
 
  switch branch
  take out a file out of other commit
- or "git checkout \-\- hello\&.c", as in the next example\&.
-
-If you have an unfortunate branch that is named hello\&.c, the last step above would be confused as an instruction to switch to that branch\&. You should instead write:
+ or "git checkout \-\- hello\&.c", as in the next example\&.If you have an unfortunate branch that is named hello\&.c, the last step above would be confused as an instruction to switch to that branch\&. You should instead write:
 
 .IP
-$ git checkout \-\- hello\&.c
+$ git checkout \-\- hello\&.c.TP
+2.
+After working in a wrong branch, switching to the correct branch you would want to is done with:
+
+
+.IP
+$ git checkout mytopicHowever, your "wrong" branch and correct "mytopic" branch may differ in files that you have locally modified, in which case, the above checkout would fail like this:
+
+
+.IP
+$ git checkout mytopic
+fatal: Entry 'frotz' not uptodate\&. Cannot merge\&.You can give the \-m flag to the command, which would try a three\-way merge:
+
+
+.IP
+$ git checkout \-m mytopic
+Auto\-merging frotzAfter this three\-way merge, the local modifications are _not_ registered in your index file, so git diff would show you what changes you made since the tip of the new branch\&.
+.TP
+3.
+When a merge conflict happens during switching branches with the \-m option, you would see something like this:
+
+
+.IP
+$ git checkout \-m mytopic
+Auto\-merging frotz
+merge: warning: conflicts during merge
+ERROR: Merge conflict in frotz
+fatal: merge program failedAt this point, git diff shows the changes cleanly merged as in the previous example, as well as the changes in the conflicted files\&. Edit and resolve the conflict and mark it resolved with git update\-index as usual:
+
+.IP
+$ edit frotz
+$ git update\-index frotz.LP
+
 .SH "AUTHOR"
 
 
