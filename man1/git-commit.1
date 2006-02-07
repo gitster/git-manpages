@@ -23,14 +23,14 @@ git-commit \- Record your changes
 .SH "SYNOPSIS"
 
 .nf
-git\-commit [\-a] [\-s] [\-v] [(\-c | \-C) <commit> | \-F <file> | \-m <msg>]
-           [\-e] [\-\-] <file>...
+\fIgit\-commit\fR [\-a] [\-i] [\-s] [\-v] [(\-c | \-C) <commit> | \-F <file> | \-m <msg>]
+           [\-e] [\-\-author <author>] [\-\-] <file>...
 .fi
 
 .SH "DESCRIPTION"
 
 
-Updates the index file for given paths, or all modified files if \-a is specified, and makes a commit object\&. The command VISUAL and EDITOR environment variables to edit the commit log message\&.
+Updates the index file for given paths, or all modified files if \fI\-a\fR is specified, and makes a commit object\&. The command VISUAL and EDITOR environment variables to edit the commit log message\&.
 
 
 This command can run commit\-msg, pre\-commit, and post\-commit hooks\&. See hooks: \fIhooks.html\fR for more information\&.
@@ -43,11 +43,15 @@ Update all paths in the index file\&. This flag notices files that have been mod
 
 .TP
 \-c or \-C <commit>
-Take existing commit object, and reuse the log message and the authorship information (including the timestamp) when creating the commit\&. With \-C, the editor is not invoked; with \-c the user can further edit the commit message\&.
+Take existing commit object, and reuse the log message and the authorship information (including the timestamp) when creating the commit\&. With \fI\-C\fR, the editor is not invoked; with \fI\-c\fR the user can further edit the commit message\&.
 
 .TP
 \-F <file>
-Take the commit message from the given file\&. Use \- to read the message from the standard input\&.
+Take the commit message from the given file\&. Use \fI\-\fR to read the message from the standard input\&.
+
+.TP
+\-\-author <author>
+Override the author name used in the commit\&. Use A U Thor <author@example\&.com> format\&.
 
 .TP
 \-m <msg>
@@ -59,7 +63,7 @@ Add Signed\-off\-by line at the end of the commit message\&.
 
 .TP
 \-v|\-\-verify
-Look for suspicious lines the commit introduces, and abort committing if there is one\&. The definition of suspicious lines is currently the lines that has trailing whitespaces, and the lines whose indentation has a SP character immediately followed by a TAB character\&. This is the default\&.
+Look for suspicious lines the commit introduces, and abort committing if there is one\&. The definition of \fIsuspicious lines\fR is currently the lines that has trailing whitespaces, and the lines whose indentation has a SP character immediately followed by a TAB character\&. This is the default\&.
 
 .TP
 \-n|\-\-no\-verify
@@ -70,15 +74,52 @@ The opposite of \-\-verify\&.
 The message taken from file with \-F, command line with \-m, and from file with \-C are usually used as the commit log message unmodified\&. This option lets you further edit the message taken from these sources\&.
 
 .TP
+\-i|\-\-include
+Instead of committing only the files specified on the command line, update them in the index file and then commit the whole index\&. This is the traditional behaviour\&.
+
+.TP
 --
 Do not interpret any more arguments as options\&.
 
 .TP
 <file>...
-Update specified paths in the index file before committing\&.
+Commit only the files specified on the command line\&. This format cannot be used during a merge, nor when the index and the latest commit does not match on the specified paths to avoid confusion\&.
 
 
 If you make a commit and then found a mistake immediately after that, you can recover from it with \fBgit\-reset\fR(1)\&.
+
+.SH "DISCUSSION"
+
+
+git commit without _any_ parameter commits the tree structure recorded by the current index file\&. This is a whole\-tree commit even the command is invoked from a subdirectory\&.
+
+
+git commit \-\-include paths... is equivalent to
+
+.nf
+git update\-index \-\-remove paths\&.\&.\&.
+git commit
+.fi
+
+
+That is, update the specified paths to the index and then commit the whole tree\&.
+
+
+git commit paths... largely bypasses the index file and commits only the changes made to the specified paths\&. It has however several safety valves to prevent confusion\&.
+
+.TP 3
+1.
+It refuses to run during a merge (i\&.e\&. when $GIT_DIR/MERGE_HEAD exists), and reminds trained git users that the traditional semantics now needs \-i flag\&.
+.TP
+2.
+It refuses to run if named paths... are different in HEAD and the index (ditto about reminding)\&. Added paths are OK\&. This is because an earlier git diff (not git diff HEAD) would have shown the differences since the last git update\-index paths... to the user, and an inexperienced user may mistakenly think that the changes between the index and the HEAD (i\&.e\&. earlier changes made before the last git update\-index paths... was done) are not being committed\&.
+.TP
+3.
+It reads HEAD commit into a temporary index file, updates the specified paths... and makes a commit\&. At the same time, the real index file is also updated with the same paths...\&.
+.LP
+
+
+git commit \-\-all updates the index file with _all_ changes to the working tree, and makes a whole\-tree commit, regardless of which subdirectory the command is invoked in\&.
 
 .SH "AUTHOR"
 

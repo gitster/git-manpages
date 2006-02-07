@@ -23,7 +23,7 @@ git-push \- Update remote refs along with associated objects.
 .SH "SYNOPSIS"
 
 
-git\-push [\-\-all] [\-\-tags] [\-\-force] <repository> <refspec>...
+\fIgit\-push\fR [\-\-all] [\-\-tags] [\-\-force] <repository> <refspec>...
 
 .SH "DESCRIPTION"
 
@@ -31,18 +31,54 @@ git\-push [\-\-all] [\-\-tags] [\-\-force] <repository> <refspec>...
 Updates remote refs using local refs, while sending objects necessary to complete the given refs\&.
 
 
-You can make "interesting" things to happen on the repository every time you push into it, by setting up hooks there\&. See documentation for \fBgit\-receive\-pack\fR(1)\&.
+You can make interesting things happen to a repository every time you push into it, by setting up \fIhooks\fR there\&. See documentation for \fBgit\-receive\-pack\fR(1)\&.
 
 .SH "OPTIONS"
 
 .TP
 <repository>
-The "remote" repository that is the source of a fetch or pull operation, or the destination of a push operation\&. One of the following notations can be used to name the remote repository:
+The "remote" repository that is destination of a push operation\&. See the section GIT URLS below\&.
 
+.TP
+<refspec>
+The canonical format of a <refspec> parameter is +?<src>:<dst>; that is, an optional plus +, followed by the source ref, followed by a colon :, followed by the destination ref\&.
+
+The <src> side can be an arbitrary "SHA1 expression" that can be used as an argument to git\-cat\-file \-t\&. E\&.g\&. master~4 (push four parents before the current master head)\&.
+
+The local ref that matches <src> is used to fast forward the remote ref that matches <dst>\&. If the optional plus + is used, the remote ref is updated even if it does not result in a fast forward update\&.
+
+Some short\-cut notations are also supported\&.
+
+.RS
+.TP 3
+\(bu
+ tag <tag> means the same as refs/tags/<tag>:refs/tags/<tag>\&.
+.TP
+\(bu
+A parameter <ref> without a colon is equivalent to <ref>:<ref>, hence updates <ref> in the destination from <ref> in the source\&.
+.LP
+.RE
+.IP
+
+.TP
+\-\-all
+Instead of naming each ref to push, specifies that all refs be pushed\&.
+
+.TP
+\-\-tags
+All refs under $GIT_DIR/refs/tags are pushed, in addition to refspecs explicitly listed on the command line\&.
+
+.TP
+\-f, \-\-force
+Usually, the command refuses to update a remote ref that is not a descendent of the local ref used to overwrite it\&. This flag disables the check\&. This can cause the remote repository to lose commits; use it with care\&.
+
+.SH "GIT URLS"
+
+
+One of the following notations can be used to name the remote repository:
 
 .IP
 
-.RS
 .TP 3
 \(bu
 rsync://host\&.xz/path/to/repo\&.git/
@@ -68,14 +104,12 @@ ssh://host\&.xz/~user/path/to/repo\&.git/
 \(bu
 ssh://host\&.xz/~/path/to/repo\&.git
 .LP
-.RE
-.IP
+
+
 SSH Is the default transport protocol and also supports an scp\-like syntax\&. Both syntaxes support username expansion, as does the native git protocol\&. The following three are identical to the last three above, respectively:
 
-
 .IP
 
-.RS
 .TP 3
 \(bu
 host\&.xz:/path/to/repo\&.git/
@@ -86,96 +120,46 @@ host\&.xz:~user/path/to/repo\&.git/
 \(bu
 host\&.xz:path/to/repo\&.git
 .LP
-.RE
-.IP
+
+
 To sync with a local directory, use:
 
-
 .IP
 
-.RS
 .TP 3
 \(bu
 /path/to/repo\&.git/
 .LP
-.RE
-.IP
-In addition to the above, as a short\-hand, the name of a file in $GIT_DIR/remotes directory can be given; the named file should be in the following format:
 
+.SH "REMOTES"
+
+
+In addition to the above, as a short\-hand, the name of a file in $GIT_DIR/remotes directory can be given; the named file should be in the following format:
 
 .nf
 URL: one of the above URL format
 Push: <refspec>
 Pull: <refspec>
 .fi
-When such a short\-hand is specified in place of <repository> without <refspec> parameters on the command line, <refspec> specified on Push: lines or Pull: lines are used for git\-push and git\-fetch/git\-pull, respectively\&. Multiple Push: and and Pull: lines may be specified for additional branch mappings\&.
+
+
+Then such a short\-hand is specified in place of <repository> without <refspec> parameters on the command line, <refspec> specified on Push: lines or Pull: lines are used for git\-push and git\-fetch/git\-pull, respectively\&. Multiple Push: and and Pull: lines may be specified for additional branch mappings\&.
+
 
 The name of a file in $GIT_DIR/branches directory can be specified as an older notation short\-hand; the named file should contain a single line, a URL in one of the above formats, optionally followed by a hash # and the name of remote head (URL fragment notation)\&. $GIT_DIR/branches/<remote> file that stores a <url> without the fragment is equivalent to have this in the corresponding file in the $GIT_DIR/remotes/ directory\&.
-
 
 .nf
 URL: <url>
 Pull: refs/heads/master:<remote>
 .fi
+
+
 while having <url>#<head> is equivalent to
 
 .nf
 URL: <url>
 Pull: refs/heads/<head>:<remote>
 .fi
-
-.TP
-<refspec>
-The canonical format of a <refspec> parameter is +?<src>:<dst>; that is, an optional plus +, followed by the source ref, followed by a colon :, followed by the destination ref\&.
-
-When used in git\-push, the <src> side can be an arbitrary "SHA1 expression" that can be used as an argument to git\-cat\-file \-t\&. E\&.g\&. master~4 (push four parents before the current master head)\&.
-
-For git\-push, the local ref that matches <src> is used to fast forward the remote ref that matches <dst>\&. If the optional plus + is used, the remote ref is updated even if it does not result in a fast forward update\&.
-
-For git\-fetch and git\-pull, the remote ref that matches <src> is fetched, and if <dst> is not empty string, the local ref that matches it is fast forwarded using <src>\&. Again, if the optional plus + is used, the local ref is updated even if it does not result in a fast forward update\&.
-
-
-.RS
-.Sh "Note"
-If the remote branch from which you want to pull is modified in non\-linear ways such as being rewound and rebased frequently, then a pull will attempt a merge with an older version of itself, likely conflict, and fail\&. It is under these conditions that you would want to use the + sign to indicate non\-fast\-forward updates will be needed\&. There is currently no easy way to determine or declare that a branch will be made available in a repository with this behavior; the pulling user simply must know this is the expected usage pattern for a branch\&.
-
-.RE
-
-.RS
-.Sh "Note"
-You never do your own development on branches that appear on the right hand side of a <refspec> colon on Pull: lines; they are to be updated by git\-fetch\&. If you intend to do development derived from a remote branch B, have a Pull: line to track it (i\&.e\&. Pull: B:remote\-B), and have a separate branch my\-B to do your development on top of it\&. The latter is created by git branch my\-B remote\-B (or its equivalent git checkout \-b my\-B remote\-B)\&. Run git fetch to keep track of the progress of the remote side, and when you see something new on the remote branch, merge it into your development branch with git pull \&. remote\-B, while you are on my\-B branch\&. The common Pull: master:origin mapping of a remote master branch to a local origin branch, which is then merged to a local development branch, again typically named master, is made when you run git clone for you to follow this pattern\&.
-
-.RE
-
-.RS
-.Sh "Note"
-There is a difference between listing multiple <refspec> directly on git\-pull command line and having multiple Pull: <refspec> lines for a <repository> and running git\-pull command without any explicit <refspec> parameters\&. <refspec> listed explicitly on the command line are always merged into the current branch after fetching\&. In other words, if you list more than one remote refs, you would be making an Octopus\&. While git\-pull run without any explicit <refspec> parameter takes default <refspec>s from Pull: lines, it merges only the first <refspec> found into the current branch, after fetching all the remote refs\&. This is because making an Octopus from remote refs is rarely done, while keeping track of multiple remote heads in one\-go by fetching more than one is often useful\&.
-
-.RE
-Some short\-cut notations are also supported\&.
-
-.RS
-.TP 3
-\(bu
- tag <tag> means the same as refs/tags/<tag>:refs/tags/<tag>; used with pull or fetch, it requests fetching everything up to the given tag\&.
-.TP
-\(bu
-A parameter <ref> without a colon is equivalent to <ref>: when pulling/fetching, and <ref>:<ref> when pushing\&. That is, do not store it locally if fetching, and update the same name if pushing\&.
-.LP
-.RE
-.IP
-
-.TP
-\-\-all
-Instead of naming each ref to push, specifies all refs to be pushed\&.
-
-.TP
-\-\-tags
-All refs under $GIT_DIR/refs/tags are pushed, in addition to refspecs explicitly listed on the command line\&.
-
-.TP
-\-f, \-\-force
-Usually, the command refuses to update a remote ref that is not a descendent of the local ref used to overwrite it\&. This flag disables the check\&. This can cause the remote repository to lose commits; use it with care\&.
 
 .SH "AUTHOR"
 
