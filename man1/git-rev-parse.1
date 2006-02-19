@@ -23,12 +23,12 @@ git-rev-parse \- Pick out and massage parameters.
 .SH "SYNOPSIS"
 
 
-git\-rev\-parse [ \-\-option ] <args>...
+\fIgit\-rev\-parse\fR [ \-\-option ] <args>...
 
 .SH "DESCRIPTION"
 
 
-Many git Porcelainish commands take mixture of flags (i\&.e\&. parameters that begin with a dash \-) and parameters meant for underlying git\-rev\-list command they use internally and flags and parameters for other commands they use as the downstream of git\-rev\-list\&. This command is used to distinguish between them\&.
+Many git Porcelainish commands take mixture of flags (i\&.e\&. parameters that begin with a dash \fI\-\fR) and parameters meant for underlying git\-rev\-list command they use internally and flags and parameters for other commands they use as the downstream of git\-rev\-list\&. This command is used to distinguish between them\&.
 
 .SH "OPTIONS"
 
@@ -62,11 +62,11 @@ Usually the output is made one line per flag and parameter\&. This option makes 
 
 .TP
 \-\-not
-When showing object names, prefix them with ^ and strip ^ prefix from the object names that already have one\&.
+When showing object names, prefix them with \fI^\fR and strip \fI^\fR prefix from the object names that already have one\&.
 
 .TP
 \-\-symbolic
-Usually the object names are output in SHA1 form (with possible ^ prefix); this option makes them output in a form as close to the original input as possible\&.
+Usually the object names are output in SHA1 form (with possible \fI^\fR prefix); this option makes them output in a form as close to the original input as possible\&.
 
 .TP
 \-\-all
@@ -79,6 +79,14 @@ When the command is invoked from a subdirectory, show the path of the current di
 .TP
 \-\-show\-cdup
 When the command is invoked from a subdirectory, show the path of the top\-level directory relative to the current directory (typically a sequence of "\&.\&./", or an empty string)\&.
+
+.TP
+\-\-git\-dir
+Show $GIT_DIR if defined else show the path to the \&.git directory\&.
+
+.TP
+\-\-short, short=number
+Instead of outputting the full SHA1 values of object names try to abbriviate them to a shorter unique name\&. When no length is specified 7 is used\&. The minimum length is 4\&.
 
 .TP
 \-\-since=datestring, \-\-after=datestring
@@ -95,30 +103,30 @@ Flags and parameters to be parsed\&.
 .SH "SPECIFYING REVISIONS"
 
 
-A revision parameter typically, but not necessarily, names a commit object\&. They use what is called an extended SHA1 syntax\&.
+A revision parameter typically, but not necessarily, names a commit object\&. They use what is called an \fIextended SHA1\fR syntax\&.
 
 .TP 3
 \(bu
 The full SHA1 object name (40\-byte hexadecimal string), or a substring of such that is unique within the repository\&. E\&.g\&. dae86e1950b1277e545cee180551750029cfe735 and dae86e both name the same commit object if there are no other object in your repository whose object name starts with dae86e\&.
 .TP
 \(bu
-A symbolic ref name\&. E\&.g\&. master typically means the commit object referenced by $GIT_DIR/refs/heads/master\&. If you happen to have both heads/master and tags/master, you can explicitly say heads/master to tell git which one you mean\&.
+A symbolic ref name\&. E\&.g\&. \fImaster\fR typically means the commit object referenced by $GIT_DIR/refs/heads/master\&. If you happen to have both heads/master and tags/master, you can explicitly say \fIheads/master\fR to tell git which one you mean\&.
 .TP
 \(bu
-A suffix ^ to a revision parameter means the first parent of that commit object\&. ^<n> means the <n>th parent (i\&.e\&. rev^ is equivalent to rev^1)\&. As a special rule, rev^0 means the commit itself and is used when rev is the object name of a tag object that refers to a commit object\&.
+A suffix \fI^\fR to a revision parameter means the first parent of that commit object\&. \fI^<n>\fR means the <n>th parent (i\&.e\&. \fIrev^\fR is equivalent to \fIrev^1\fR)\&. As a special rule, \fIrev^0\fR means the commit itself and is used when \fIrev\fR is the object name of a tag object that refers to a commit object\&.
 .TP
 \(bu
-A suffix ~<n> to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parent\&. I\&.e\&. rev~3 is equivalent to rev^^^ which is equivalent to rev^1^1^1\&.
+A suffix \fI~<n>\fR to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parent\&. I\&.e\&. rev~3 is equivalent to rev^^^ which is equivalent to rev^1^1^1\&.
 .TP
 \(bu
-A suffix ^ followed by an object type name enclosed in brace pair (e\&.g\&. v0\&.99\&.8^{commit}) means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf)\&. rev^0 introduced earlier is a short\-hand for rev^{commit}\&.
+A suffix \fI^\fR followed by an object type name enclosed in brace pair (e\&.g\&. v0\&.99\&.8^{commit}) means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf)\&. rev^0 introduced earlier is a short\-hand for rev^{commit}\&.
 .TP
 \(bu
-A suffix ^ followed by an empty brace pair (e\&.g\&. v0\&.99\&.8^{}) means the object could be a tag, and dereference the tag recursively until a non\-tag object is found\&.
+A suffix \fI^\fR followed by an empty brace pair (e\&.g\&. v0\&.99\&.8^{}) means the object could be a tag, and dereference the tag recursively until a non\-tag object is found\&.
 .LP
 
 
-git\-rev\-parse also accepts a prefix ^ to revision parameter, which is passed to git\-rev\-list\&. Two revision parameters concatenated with \&.\&. is a short\-hand for writing a range between them\&. I\&.e\&. r1\&.\&.r2 is equivalent to saying ^r1 r2
+\fIgit\-rev\-parse\fR also accepts a prefix \fI^\fR to revision parameter, which is passed to \fIgit\-rev\-list\fR\&. Two revision parameters concatenated with \fI\&.\&.\fR is a short\-hand for writing a range between them\&. I\&.e\&. \fIr1\&.\&.r2\fR is equivalent to saying \fI^r1 r2\fR
 
 
 Here is an illustration, by Jon Loeliger\&. Both node B and C are a commit parents of commit node A\&. Parent commits are ordered left\-to\-right\&.
