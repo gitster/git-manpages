@@ -22,8 +22,11 @@
 git-pack-objects \- Create a packed archive of objects.
 .SH "SYNOPSIS"
 
-
-git\-pack\-objects [\-\-non\-empty] [\-\-local] [\-\-incremental] [\-\-window=N] [\-\-depth=N] {\-\-stdout | base\-name} < object\-list
+.nf
+\fIgit\-pack\-objects\fR [\-q] [\-\-no\-reuse\-delta] [\-\-non\-empty]
+        [\-\-local] [\-\-incremental] [\-\-window=N] [\-\-depth=N]
+        {\-\-stdout | base\-name} < object\-list
+.fi
 
 .SH "DESCRIPTION"
 
@@ -34,10 +37,13 @@ Reads list of objects from the standard input, and writes a packed archive with 
 A packed archive is an efficient way to transfer set of objects between two repositories, and also is an archival format which is efficient to access\&. The packed archive format (\&.pack) is designed to be unpackable without having anything else, but for random access, accompanied with the pack index file (\&.idx)\&.
 
 
-git\-unpack\-objects command can read the packed archive and expand the objects contained in the pack into "one\-file one\-object" format; this is typically done by the smart\-pull commands when a pack is created on\-the\-fly for efficient network transport by their peers\&.
+\fIgit\-unpack\-objects\fR command can read the packed archive and expand the objects contained in the pack into "one\-file one\-object" format; this is typically done by the smart\-pull commands when a pack is created on\-the\-fly for efficient network transport by their peers\&.
 
 
 Placing both in the pack/ subdirectory of $GIT_OBJECT_DIRECTORY (or any of the directories on $GIT_ALTERNATE_OBJECT_DIRECTORIES) enables git to read from such an archive\&.
+
+
+In a packed archive, an object is either stored as a compressed whole, or as a difference from some other object\&. The latter is often called a delta\&.
 
 .SH "OPTIONS"
 
@@ -64,6 +70,14 @@ This flag is similar to \-\-incremental; instead of ignoring all packed objects,
 .TP
 \-\-non\-empty
 Only create a packed archive if it would contain at least one object\&.
+
+.TP
+\-q
+This flag makes the command not to report its progress on the standard error stream\&.
+
+.TP
+\-\-no\-reuse\-delta
+When creating a packed archive in a repository that has existing packs, the command reuses existing deltas\&. This sometimes results in a slightly suboptimal pack\&. This flag tells the command not to reuse existing deltas but compute them from scratch\&.
 
 .SH "AUTHOR"
 

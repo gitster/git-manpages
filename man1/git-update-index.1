@@ -22,13 +22,24 @@
 git-update-index \- Modifies the index or directory cache
 .SH "SYNOPSIS"
 
-
-git\-update\-index [\-\-add] [\-\-remove | \-\-force\-remove] [\-\-replace] [\-\-refresh [\-q] [\-\-unmerged] [\-\-ignore\-missing]] [\-\-cacheinfo <mode> <object> <file>]* [\-\-chmod=(+|\-)x] [\-\-info\-only] [\-\-index\-info] [\-z] [\-\-stdin] [\-\-verbose] [\-\-] [<file>]*
+.nf
+\fIgit\-update\-index\fR
+             [\-\-add] [\-\-remove | \-\-force\-remove] [\-\-replace]
+             [\-\-refresh [\-q] [\-\-unmerged] [\-\-ignore\-missing]]
+             [\-\-cacheinfo <mode> <object> <file>]*
+             [\-\-chmod=(+|\-)x]
+             [\-\-assume\-unchanged | \-\-no\-assume\-unchanged]
+             [\-\-really\-refresh]
+             [\-\-info\-only] [\-\-index\-info]
+             [\-z] [\-\-stdin]
+             [\-\-verbose]
+             [\-\-] [<file>]*
+.fi
 
 .SH "DESCRIPTION"
 
 
-Modifies the index or directory cache\&. Each file mentioned is updated into the index and any unmerged or needs updating state is cleared\&.
+Modifies the index or directory cache\&. Each file mentioned is updated into the index and any \fIunmerged\fR or \fIneeds updating\fR state is cleared\&.
 
 
 The way "git\-update\-index" handles files it is told about can be modified using the various options:
@@ -72,6 +83,10 @@ Read index information from stdin\&.
 Set the execute permissions on the updated files\&.
 
 .TP
+\-\-assume\-unchanged, \-\-no\-assume\-unchanged
+When these flags are specified, the object name recorded for the paths are not updated\&. Instead, these options sets and unsets the "assume unchanged" bit for the paths\&. When the "assume unchanged" bit is on, git stops checking the working tree files for possible modifications, so you need to manually unset the bit to tell git when you change the working tree file\&. This is sometimes helpful when working with a big project on a filesystem that has very slow lstat(2) system call (e\&.g\&. cifs)\&.
+
+.TP
 \-\-info\-only
 Do not create objects in the object database for all <file> arguments that follow this flag; just insert their object IDs into the index\&.
 
@@ -101,12 +116,12 @@ Do not interpret any more arguments as options\&.
 
 .TP
 <file>
-Files to act on\&. Note that files beginning with \&. are discarded\&. This includes \&./file and dir/\&./file\&. If you don't want this, then use cleaner names\&. The same applies to directories ending / and paths with // 
+Files to act on\&. Note that files beginning with \fI\&.\fR are discarded\&. This includes \&./file and dir/\&./file\&. If you don't want this, then use cleaner names\&. The same applies to directories ending \fI/\fR and paths with \fI//\fR 
 
 .SH "USING --REFRESH"
 
 
-\-\-refresh does not calculate a new sha1 file or bring the index up\-to\-date for mode/content changes\&. But what it does do is to "re\-match" the stat information of a file with the index, so that you can refresh the index for a file that hasn't been changed but where the stat entry is out of date\&.
+\fI\-\-refresh\fR does not calculate a new sha1 file or bring the index up\-to\-date for mode/content changes\&. But what it \fIdoes\fR do is to "re\-match" the stat information of a file with the index, so that you can refresh the index for a file that hasn't been changed but where the stat entry is out of date\&.
 
 
 For example, you'd want to do this after doing a "git\-read\-tree", to link up the stat index details with the proper files\&.
@@ -114,7 +129,7 @@ For example, you'd want to do this after doing a "git\-read\-tree", to link up t
 .SH "USING --CACHEINFO OR --INFO-ONLY"
 
 
-\-\-cacheinfo is used to register a file that is not in the current working directory\&. This is useful for minimum\-checkout merging\&.
+\fI\-\-cacheinfo\fR is used to register a file that is not in the current working directory\&. This is useful for minimum\-checkout merging\&.
 
 
 To pretend you have a file with mode and sha1 at path, say:
@@ -122,10 +137,10 @@ To pretend you have a file with mode and sha1 at path, say:
 .IP
 $ git\-update\-index \-\-cacheinfo mode sha1 path
 
-\-\-info\-only is used to register files without placing them in the object database\&. This is useful for status\-only repositories\&.
+\fI\-\-info\-only\fR is used to register files without placing them in the object database\&. This is useful for status\-only repositories\&.
 
 
-Both \-\-cacheinfo and \-\-info\-only behave similarly: the index is updated but the object database isn't\&. \-\-cacheinfo is useful when the object is in the database but the file isn't available locally\&. \-\-info\-only is useful when the file is available, but you do not wish to update the object database\&.
+Both \fI\-\-cacheinfo\fR and \fI\-\-info\-only\fR behave similarly: the index is updated but the object database isn't\&. \fI\-\-cacheinfo\fR is useful when the object is in the database but the file isn't available locally\&. \fI\-\-info\-only\fR is useful when the file is available, but you do not wish to update the object database\&.
 
 .SH "USING --INDEX-INFO"
 
@@ -173,6 +188,17 @@ The first line of the input feeds 0 as the mode to remove the path; the SHA1 doe
 $ git ls\-files \-s
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 1       frotz
 100755 8a1218a1024a212bb3db30becd860315f9f3ac52 2       frotz
+.SH "USING "ASSUME UNCHANGED" BIT"
+
+
+Many operations in git depend on your filesystem to have an efficient lstat(2) implementation, so that st_mtime information for working tree files can be cheaply checked to see if the file contents have changed from the version recorded in the index file\&. Unfortunately, some filesystems have inefficient lstat(2)\&. If your filesystem is one of them, you can set "assume unchanged" bit to paths you have not changed to cause git not to do this check\&. Note that setting this bit on a path does not mean git will check the contents of the file to see if it has changed -- it makes git to omit any checking and assume it has \fInot\fR changed\&. When you make changes to working tree files, you have to explicitly tell git about it by dropping "assume unchanged" bit, either before or after you modify them\&.
+
+
+In order to set "assume unchanged" bit, use \-\-assume\-unchanged option\&. To unset, use \-\-no\-assume\-unchanged\&.
+
+
+The command looks at core\&.ignorestat configuration variable\&. When this is true, paths updated with git\-update\-index paths... and paths updated with other git commands that update both index and working tree (e\&.g\&. git\-apply \-\-index, git\-checkout\-index \-u, and git\-read\-tree \-u) are automatically marked as "assume unchanged"\&. Note that "assume unchanged" bit is \fInot\fR set if git\-update\-index \-\-refresh finds the working tree file matches the index (use git\-update\-index \-\-really\-refresh if you want to mark them as "assume unchanged")\&.
+
 .SH "EXAMPLES"
 
 
@@ -180,10 +206,41 @@ To update and refresh only the files already checked out:
 
 .IP
 $ git\-checkout\-index \-n \-f \-a && git\-update\-index \-\-ignore\-missing \-\-refresh
+
+On an inefficient filesystem with core\&.ignorestat set:
+
+.IP
+$ git update\-index \-\-really\-refresh 
+$ git update\-index \-\-no\-assume\-unchanged foo\&.c 
+$ git diff \-\-name\-only 
+$ edit foo\&.c
+$ git diff \-\-name\-only 
+M foo\&.c
+$ git update\-index foo\&.c 
+$ git diff \-\-name\-only 
+$ edit foo\&.c
+$ git diff \-\-name\-only 
+$ git update\-index \-\-no\-assume\-unchanged foo\&.c 
+$ git diff \-\-name\-only 
+M foo\&.c
+
+ forces lstat(2) to set "assume unchanged" bits for paths
+    that match index\&.
+ mark the path to be edited\&.
+ this does lstat(2) and finds index matches the path\&.
+ this does lstat(2) and finds index does not match the path\&.
+ registering the new version to index sets "assume unchanged" bit\&.
+ and it is assumed unchanged\&.
+(16) even after you edit it\&.
+(17) you can tell about the change after the fact\&.
+(18) now it checks with lstat(2) and finds it has been changed\&.
 .SH "CONFIGURATION"
 
 
-The command honors core\&.filemode configuration variable\&. If your repository is on an filesystem whose executable bits are unreliable, this should be set to false (see \fBgit\-repo\-config\fR(1))\&. This causes the command to ignore differences in file modes recorded in the index and the file mode on the filesystem if they differ only on executable bit\&. On such an unfortunate filesystem, you may need to use git\-update\-index \-\-chmod=\&.
+The command honors core\&.filemode configuration variable\&. If your repository is on an filesystem whose executable bits are unreliable, this should be set to \fIfalse\fR (see \fBgit\-repo\-config\fR(1))\&. This causes the command to ignore differences in file modes recorded in the index and the file mode on the filesystem if they differ only on executable bit\&. On such an unfortunate filesystem, you may need to use git\-update\-index \-\-chmod=\&.
+
+
+The command looks at core\&.ignorestat configuration variable\&. See \fIUsing "assume unchanged" bit\fR section above\&.
 
 .SH "SEE ALSO"
 
