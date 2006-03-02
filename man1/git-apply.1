@@ -23,8 +23,9 @@ git-apply \- Apply patch on a git index file and a work tree
 .SH "SYNOPSIS"
 
 .nf
-git\-apply [\-\-stat] [\-\-numstat] [\-\-summary] [\-\-check] [\-\-index] [\-\-apply]
+\fIgit\-apply\fR [\-\-stat] [\-\-numstat] [\-\-summary] [\-\-check] [\-\-index] [\-\-apply]
           [\-\-no\-add] [\-\-index\-info] [\-\-allow\-binary\-replacement] [\-z] [\-pNUM]
+          [\-\-whitespace=<nowarn|warn|error|error\-all|strip>]
           [<patch>...]
 .fi
 
@@ -37,7 +38,7 @@ Reads supplied diff output and applies it on a git index file and a work tree\&.
 
 .TP
 <patch>...
-The files to read patch from\&. \- can be used to read from the standard input\&.
+The files to read patch from\&. \fI\-\fR can be used to read from the standard input\&.
 
 .TP
 \-\-stat
@@ -61,7 +62,7 @@ When \-\-check is in effect, or when applying the patch (which is the default wh
 
 .TP
 \-\-index\-info
-Newer git\-diff output has embedded index information for each blob to help identify the original version that the patch applies to\&. When this flag is given, and if the original version of the blob is available locally, outputs information about them to the standard output\&.
+Newer git\-diff output has embedded \fIindex information\fR for each blob to help identify the original version that the patch applies to\&. When this flag is given, and if the original version of the blob is available locally, outputs information about them to the standard output\&.
 
 .TP
 \-z
@@ -73,7 +74,7 @@ Remove <n> leading slashes from traditional diff paths\&. The default is 1\&.
 
 .TP
 \-\-apply
-If you use any of the options marked &#8220;Turns off "apply"&#8221; above, git\-apply reads and outputs the information you asked without actually applying the patch\&. Give this flag after those flags to also apply the patch\&.
+If you use any of the options marked “Turns off "apply"” above, git\-apply reads and outputs the information you asked without actually applying the patch\&. Give this flag after those flags to also apply the patch\&.
 
 .TP
 \-\-no\-add
@@ -82,6 +83,36 @@ When applying a patch, ignore additions made by the patch\&. This can be used to
 .TP
 \-\-allow\-binary\-replacement
 When applying a patch, which is a git\-enhanced patch that was prepared to record the pre\- and post\-image object name in full, and the path being patched exactly matches the object the patch applies to (i\&.e\&. "index" line's pre\-image object name is what is in the working tree), and the post\-image object is available in the object database, use the post\-image object as the patch result\&. This allows binary files to be patched in a very limited way\&.
+
+.TP
+\-\-whitespace=<option>
+When applying a patch, detect a new or modified line that ends with trailing whitespaces (this includes a line that solely consists of whitespaces)\&. By default, the command outputs warning messages and applies the patch\&. When git\-apply is used for statistics and not applying a patch, it defaults to nowarn\&. You can use different <option> to control this behaviour:
+
+.RS
+.TP 3
+\(bu
+ nowarn turns off the trailing whitespace warning\&.
+.TP
+\(bu
+ warn outputs warnings for a few such errors, but applies the patch (default)\&.
+.TP
+\(bu
+ error outputs warnings for a few such errors, and refuses to apply the patch\&.
+.TP
+\(bu
+ error\-all is similar to error but shows all errors\&.
+.TP
+\(bu
+ strip outputs warnings for a few such errors, strips out the trailing whitespaces and applies the patch\&.
+.LP
+.RE
+.IP
+
+.SH "CONFIGURATION"
+
+.TP
+apply\&.whitespace
+When no \-\-whitespace flag is given from the command line, this configuration item is used as the default\&.
 
 .SH "AUTHOR"
 

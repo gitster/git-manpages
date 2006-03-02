@@ -23,12 +23,12 @@ git-read-tree \- Reads tree information into the index
 .SH "SYNOPSIS"
 
 
-git\-read\-tree (<tree\-ish> | [[\-m | \-\-reset] [\-u | \-i]] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
+\fIgit\-read\-tree\fR (<tree\-ish> | [[\-m [\-\-aggressive]| \-\-reset] [\-u | \-i]] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
 
 .SH "DESCRIPTION"
 
 
-Reads the tree information given by <tree\-ish> into the index, but does not actually update any of the files it "caches"\&. (see: \fBgit\-checkout\-index\fR(1))
+Reads the tree information given by <tree\-ish> into the index, but does not actually \fIupdate\fR any of the files it "caches"\&. (see: \fBgit\-checkout\-index\fR(1))
 
 
 Optionally, it can merge a tree into the index, perform a fast\-forward (i\&.e\&. 2\-way) merge, or a 3\-way merge, with the \-m flag\&. When used with \-m, the \-u flag causes it to also update the files in the work tree with the result of the merge\&.
@@ -53,6 +53,24 @@ After a successful merge, update the files in the work tree with the result of t
 .TP
 \-i
 Usually a merge requires the index file as well as the files in the working tree are up to date with the current head commit, in order not to lose local changes\&. This flag disables the check with the working tree and is meant to be used when creating a merge of trees that are not directly related to the current working tree status into a temporary index file\&.
+
+.TP
+\-\-aggressive
+Usually a three\-way merge by git\-read\-tree resolves the merge for really trivial cases and leaves other cases unresolved in the index, so that Porcelains can implement different merge policies\&. This flag makes the command to resolve a few more cases internally:
+
+.RS
+.TP 3
+\(bu
+when one side removes a path and the other side leaves the path unmodified\&. The resolution is to remove that path\&.
+.TP
+\(bu
+when both sides remove a path\&. The resolution is to remove that path\&.
+.TP
+\(bu
+when both sides adds a path identically\&. The resolution is to add that path\&.
+.LP
+.RE
+.IP
 
 .TP
 <tree\-ish#>
@@ -244,7 +262,7 @@ what you would commit is a pure merge between $JC and $LT without your work\-in\
 However, if you have local changes in the working tree that would be overwritten by this merge,git\-read\-tree will refuse to run to prevent your changes from being lost\&.
 
 
-In other words, there is no need to worry about what exists only in the working tree\&. When you have local changes in a part of the project that is not involved in the merge, your changes do not interfere with the merge, and are kept intact\&. When they do interfere, the merge does not even start (git\-read\-tree complains loudly and fails without modifying anything)\&. In such a case, you can simply continue doing what you were in the middle of doing, and when your working tree is ready (i\&.e\&. you have finished your work\-in\-progress), attempt the merge again\&.
+In other words, there is no need to worry about what exists only in the working tree\&. When you have local changes in a part of the project that is not involved in the merge, your changes do not interfere with the merge, and are kept intact\&. When they \fIdo\fR interfere, the merge does not even start (git\-read\-tree complains loudly and fails without modifying anything)\&. In such a case, you can simply continue doing what you were in the middle of doing, and when your working tree is ready (i\&.e\&. you have finished your work\-in\-progress), attempt the merge again\&.
 
 .SH "SEE ALSO"
 

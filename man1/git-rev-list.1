@@ -23,7 +23,7 @@ git-rev-list \- Lists commit objects in reverse chronological order
 .SH "SYNOPSIS"
 
 .nf
-git\-rev\-list [ \-\-max\-count=number ]
+\fIgit\-rev\-list\fR [ \-\-max\-count=number ]
              [ \-\-max\-age=timestamp ]
              [ \-\-min\-age=timestamp ]
              [ \-\-sparse ]
@@ -32,7 +32,7 @@ git\-rev\-list [ \-\-max\-count=number ]
              [ \-\-all ]
              [ [ \-\-merge\-order [ \-\-show\-breaks ] ] | [ \-\-topo\-order ] ]
              [ \-\-parents ]
-             [ \-\-objects [ \-\-unpacked ] ]
+             [ [\-\-objects | \-\-objects\-edge] [ \-\-unpacked ] ]
              [ \-\-pretty | \-\-header ]
              [ \-\-bisect ]
              <commit>... [ \-\- <paths>... ]
@@ -44,7 +44,7 @@ git\-rev\-list [ \-\-max\-count=number ]
 Lists commit objects in reverse chronological order starting at the given commit(s), taking ancestry relationship into account\&. This is useful to produce human\-readable log output\&.
 
 
-Commits which are stated with a preceding ^ cause listing to stop at that point\&. Their parents are implied\&. "git\-rev\-list foo bar ^baz" thus means "list all the commits which are included in foo and bar, but not in baz"\&.
+Commits which are stated with a preceding \fI^\fR cause listing to stop at that point\&. Their parents are implied\&. "git\-rev\-list foo bar ^baz" thus means "list all the commits which are included in \fIfoo\fR and \fIbar\fR, but not in \fIbaz\fR"\&.
 
 
 A special notation <commit1>\&.\&.<commit2> can be used as a short\-hand for ^<commit1> <commit2>\&.
@@ -61,7 +61,11 @@ Print the contents of the commit in raw\-format; each record is separated with a
 
 .TP
 \-\-objects
-Print the object IDs of any object referenced by the listed commits\&. git\-rev\-list \-\-objects foo ^bar thus means "send me all object IDs which I need to download if I have the commit object bar, but not foo"\&.
+Print the object IDs of any object referenced by the listed commits\&. \fIgit\-rev\-list \-\-objects foo ^bar\fR thus means "send me all object IDs which I need to download if I have the commit object \fIbar\fR, but not \fIfoo\fR"\&.
+
+.TP
+\-\-objects\-edge
+Similar to \-\-objects, but also print the IDs of excluded commits refixed with a \- character\&. This is used by git\-pack\-objects to build \fIthin\fR pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic\&.
 
 .TP
 \-\-unpacked
@@ -69,7 +73,7 @@ Only useful with \-\-objects; print the object IDs that are not in packs\&.
 
 .TP
 \-\-bisect
-Limit output to the one commit object which is roughly halfway between the included and excluded commits\&. Thus, if git\-rev\-list \-\-bisect foo bar baz outputs midpoint, the output of git\-rev\-list foo ^midpoint and git\-rev\-list midpoint bar baz would be of roughly the same length\&. Finding the change which introduces a regression is thus reduced to a binary search: repeatedly generate and test new 'midpoint's until the commit chain is of length one\&.
+Limit output to the one commit object which is roughly halfway between the included and excluded commits\&. Thus, if \fIgit\-rev\-list \-\-bisect foo bar baz\fR outputs \fImidpoint\fR, the output of \fIgit\-rev\-list foo ^midpoint\fR and \fIgit\-rev\-list midpoint bar baz\fR would be of roughly the same length\&. Finding the change which introduces a regression is thus reduced to a binary search: repeatedly generate and test new 'midpoint's until the commit chain is of length one\&.
 
 .TP
 \-\-max\-count
@@ -136,7 +140,7 @@ Commits marked with (^) are not parents of the immediately preceding commit\&. T
 Written by Linus Torvalds <torvalds@osdl\&.org>
 
 
-Original \-\-merge\-order logic by Jon Seymour <jon\&.seymour@gmail\&.com>
+Original \fI\-\-merge\-order\fR logic by Jon Seymour <jon\&.seymour@gmail\&.com>
 
 .SH "DOCUMENTATION"
 
