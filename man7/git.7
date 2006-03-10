@@ -34,15 +34,15 @@ git \- the stupid content tracker
 
 .TP
 \-\-version
-prints the git suite version that the \fIgit\fR program came from\&.
+Prints the git suite version that the \fIgit\fR program came from\&.
 
 .TP
 \-\-help
-prints the synopsis and a list of available commands\&. If a git command is named this option will bring up the man\-page for that command\&.
+Prints the synopsis and a list of the most commonly used commands\&. If a git command is named this option will bring up the man\-page for that command\&. If the option \fI\-\-all\fR or \fI\-a\fR is given then all available commands are printed\&.
 
 .TP
 \-\-exec\-path
-path to wherever your core git programs are installed\&. This can also be controlled by setting the GIT_EXEC_PATH environment variable\&. If no path is given \fIgit\fR will print the current setting and then exit\&.
+Path to wherever your core git programs are installed\&. This can also be controlled by setting the GIT_EXEC_PATH environment variable\&. If no path is given \fIgit\fR will print the current setting and then exit\&.
 
 .SH "NOT LEARNING CORE GIT COMMANDS"
 
@@ -523,7 +523,7 @@ The gitk repository browser\&.
 
 Starting from 0\&.99\&.9 (actually mid 0\&.99\&.8\&.GIT), \&.git/config file is used to hold per\-repository configuration options\&. It is a simple text file modelled after \&.ini format familiar to some people\&. Here is an example:
 
-.IP
+.nf
 #
 # A '#' or ';' character indicates a comment\&.
 #
@@ -537,6 +537,8 @@ Starting from 0\&.99\&.9 (actually mid 0\&.99\&.8\&.GIT), \&.git/config file is 
 [user]
         name = "Junio C Hamano"
         email = "junkio@twinsun\&.com"
+
+.fi
 
 
 Various commands read from the configuration file and adjust their operation accordingly\&.
@@ -906,7 +908,7 @@ git\-commit\-tree will return the name of the object that represents that commit
 
 Here is an ASCII art by Jon Loeliger that illustrates how various pieces fit together\&.
 
-.IP
+.nf
 
                      commit\-tree
                       commit obj
@@ -939,6 +941,8 @@ Here is an ASCII art by Jon Loeliger that illustrates how various pieces fit tog
                     |  Working  |
                     | Directory |
                     +\-\-\-\-\-\-\-\-\-\-\-+
+
+.fi
 
 .SS "6) Examining the data"
 
@@ -1018,23 +1022,27 @@ Sadly, many merges aren't trivial\&. If there are files that have been added\&.m
 
 You can examine such index state with git\-ls\-files \-\-unmerged command\&. An example:
 
-.IP
+.nf
 $ git\-read\-tree \-m $orig HEAD $target
 $ git\-ls\-files \-\-unmerged
 100644 263414f423d0e4d70dae8fe53fa34614ff3e2860 1       hello\&.c
 100644 06fa6a24256dc7e560efa5687fa84b51f0263c3a 2       hello\&.c
 100644 cc44c73eb783565da5831b4d820c962954019b69 3       hello\&.c
+.fi
+
 
 Each line of the git\-ls\-files \-\-unmerged output begins with the blob mode bits, blob SHA1, \fIstage number\fR, and the filename\&. The \fIstage number\fR is git's way to say which tree it came from: stage 1 corresponds to $orig tree, stage 2 HEAD tree, and stage3 $target tree\&.
 
 
 Earlier we said that trivial merges are done inside git\-read\-tree \-m\&. For example, if the file did not change from $orig to HEAD nor $target, or if the file changed from $orig to HEAD and $orig to $target the same way, obviously the final outcome is what is in HEAD\&. What the above example shows is that file hello\&.c was changed from $orig to HEAD and $orig to $target in a different way\&. You could resolve this by running your favorite 3\-way merge program, e\&.g\&. diff3 or merge, on the blob objects from these three stages yourself, like this:
 
-.IP
+.nf
 $ git\-cat\-file blob 263414f\&.\&.\&. >hello\&.c~1
 $ git\-cat\-file blob 06fa6a2\&.\&.\&. >hello\&.c~2
 $ git\-cat\-file blob cc44c73\&.\&.\&. >hello\&.c~3
 $ merge hello\&.c~2 hello\&.c~1 hello\&.c~3
+.fi
+
 
 This would leave the merge result in hello\&.c~2 file, along with conflict markers if there are conflicts\&. After verifying the merge result makes sense, you can tell git what the final merge result for this file is by:
 
