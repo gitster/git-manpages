@@ -23,8 +23,8 @@ git-fsck-objects \- Verifies the connectivity and validity of the objects in the
 .SH "SYNOPSIS"
 
 .nf
-git\-fsck\-objects [\-\-tags] [\-\-root] [\-\-unreachable] [\-\-cache]
-                 [\-\-standalone | \-\-full] [\-\-strict] [<object>*]
+\fIgit\-fsck\-objects\fR [\-\-tags] [\-\-root] [\-\-unreachable] [\-\-cache]
+                 [\-\-full] [\-\-strict] [<object>*]
 .fi
 
 .SH "DESCRIPTION"
@@ -57,19 +57,15 @@ Report tags\&.
 Consider any object recorded in the index also as a head node for an unreachability trace\&.
 
 .TP
-\-\-standalone
-Limit checks to the contents of GIT_OBJECT_DIRECTORY ($GIT_DIR/objects), making sure that it is consistent and complete without referring to objects found in alternate object pools listed in GIT_ALTERNATE_OBJECT_DIRECTORIES, nor packed git archives found in $GIT_DIR/objects/pack; cannot be used with \-\-full\&.
-
-.TP
 \-\-full
-Check not just objects in GIT_OBJECT_DIRECTORY ($GIT_DIR/objects), but also the ones found in alternate object pools listed in GIT_ALTERNATE_OBJECT_DIRECTORIES, and in packed git archives found in $GIT_DIR/objects/pack and corresponding pack subdirectories in alternate object pools; cannot be used with \-\-standalone\&.
+Check not just objects in GIT_OBJECT_DIRECTORY ($GIT_DIR/objects), but also the ones found in alternate object pools listed in GIT_ALTERNATE_OBJECT_DIRECTORIES or $GIT_DIR/objects/info/alternates, and in packed git archives found in $GIT_DIR/objects/pack and corresponding pack subdirectories in alternate object pools\&.
 
 .TP
 \-\-strict
 Enable more strict checking, namely to catch a file mode recorded with g+w bit set, which was created by older versions of git\&. Existing repositories, including the Linux kernel, git itself, and sparse repository have old objects that triggers this check, but it is recommended to check new projects with this flag\&.
 
 
-It tests SHA1 and general object sanity, and it does full tracking of the resulting reachability and everything else\&. It prints out any corruption it finds (missing or bad objects), and if you use the \-\-unreachable flag it will also print out objects that exist but that aren't readable from any of the specified head nodes\&.
+It tests SHA1 and general object sanity, and it does full tracking of the resulting reachability and everything else\&. It prints out any corruption it finds (missing or bad objects), and if you use the \fI\-\-unreachable\fR flag it will also print out objects that exist but that aren't readable from any of the specified head nodes\&.
 
 
 So for example
@@ -94,7 +90,7 @@ expect dangling commits \- potential heads \- due to lack of head information
 You haven't specified any nodes as heads so it won't be possible to differentiate between un\-parented commits and root nodes\&.
 
 .TP
-missing sha1 directory <dir>
+missing sha1 directory \fI<dir>\fR
 The directory holding the sha1 objects is missing\&.
 
 .TP
@@ -107,7 +103,7 @@ The <type> object <object>, is referred to but isn't present in the database\&.
 
 .TP
 dangling <type> <object>
-The <type> object <object>, is present in the database but never directly used\&. A dangling commit could be a root node\&.
+The <type> object <object>, is present in the database but never \fIdirectly\fR used\&. A dangling commit could be a root node\&.
 
 .TP
 warning: git\-fsck\-objects: tree <tree> has full pathnames in it
