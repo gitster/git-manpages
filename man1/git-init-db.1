@@ -23,13 +23,13 @@ git-init-db \- Creates an empty git repository
 .SH "SYNOPSIS"
 
 
-git\-init\-db [\-\-template=<template_directory>] [\-\-shared]
+\fIgit\-init\-db\fR [\-\-template=<template_directory>] [\-\-shared]
 
 .SH "OPTIONS"
 
 .TP
 \-\-template=<template_directory>
-Provide the directory in from which templates will be used\&.
+Provide the directory from which templates will be used\&. The default template directory is /usr/share/git\-core/templates\&.
 
 .TP
 \-\-shared
@@ -38,7 +38,10 @@ Specify that the git repository is to be shared amongst several users\&.
 .SH "DESCRIPTION"
 
 
-This simply creates an empty git repository \- basically a \&.git directory and \&.git/object/??/, \&.git/refs/heads and \&.git/refs/tags directories, and links \&.git/HEAD symbolically to \&.git/refs/heads/master\&.
+This command creates an empty git repository \- basically a \&.git directory with subdirectories for objects, refs/heads, refs/tags, and templated files\&. An initial HEAD file that references the HEAD of the master branch is also created\&.
+
+
+If \-\-template=<template_directory> is specified, <template_directory> is used as the source of the template files rather than the default\&. The template files include some directory structure, some suggested "exclude patterns", and copies of non\-executing "hook" files\&. The suggested patterns and hook files are all modifiable and extensible\&.
 
 
 If the $GIT_DIR environment variable is set then it specifies a path to use instead of \&./\&.git for the base of the repository\&.
@@ -47,7 +50,7 @@ If the $GIT_DIR environment variable is set then it specifies a path to use inst
 If the object storage directory is specified via the $GIT_OBJECT_DIRECTORY environment variable then the sha1 directories are created underneath \- otherwise the default $GIT_DIR/objects directory is used\&.
 
 
-A shared repository allows users belonging to the same group to push into that repository\&. When specifying \-\-shared the config variable "core\&.sharedRepository" is set to true so that directories under $GIT_DIR are made group writable (and g+sx, since the git group may be not the primary group of all users)\&.
+A shared repository allows users belonging to the same group to push into that repository\&. When specifying \-\-shared the config variable "core\&.sharedRepository" is set to \fItrue\fR so that directories under $GIT_DIR are made group writable (and g+sx, since the git group may be not the primary group of all users)\&.
 
 
 Running git\-init\-db in an existing repository is safe\&. It will not overwrite things that are already there\&. The primary reason for rerunning git\-init\-db is to pick up newly added templates\&.
@@ -57,13 +60,15 @@ Running git\-init\-db in an existing repository is safe\&. It will not overwrite
 .TP
 Start a new git repository for an existing code base
 
-.IP
+.nf
 $ cd /path/to/my/codebase
 $ git\-init\-db 
 $ git\-add \&. 
 
  prepare /path/to/my/codebase/\&.git directory
  add all existing file to the index
+.fi
+
 .SH "AUTHOR"
 
 
