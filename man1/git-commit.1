@@ -24,7 +24,8 @@ git-commit \- Record your changes
 
 .nf
 \fIgit\-commit\fR [\-a] [\-s] [\-v] [(\-c | \-C) <commit> | \-F <file> | \-m <msg>]
-           [\-e] [\-\-author <author>] [\-\-] [[\-i | \-o ]<file>...]
+           [\-\-no\-verify] [\-\-amend] [\-e] [\-\-author <author>]
+           [\-\-] [[\-i | \-o ]<file>...]
 .fi
 
 .SH "DESCRIPTION"
@@ -75,6 +76,20 @@ The opposite of \-\-verify\&.
 .TP
 \-e|\-\-edit
 The message taken from file with \-F, command line with \-m, and from file with \-C are usually used as the commit log message unmodified\&. This option lets you further edit the message taken from these sources\&.
+
+.TP
+\-\-amend
+Used to amend the tip of the current branch\&. Prepare the tree object you would want to replace the latest commit as usual (this includes the usual \-i/\-o and explicit paths), and the commit log editor is seeded with the commit message from the tip of the current branch\&. The commit you create replaces the current tip -- if it was a merge, it will have the parents of the current tip as parents -- so the current top commit is discarded\&.
+
+It is a rough equivalent for:
+
+
+.nf
+        $ git reset \-\-soft HEAD^
+        $ \&.\&.\&. do something else to come up with the right tree \&.\&.\&.
+        $ git commit \-c ORIG_HEAD
+.fi
+but can be used to amend a merge commit\&.
 
 .TP
 \-i|\-\-include
