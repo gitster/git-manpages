@@ -116,11 +116,11 @@ Given a \&.git/config like this:
 
 .nf
 ; Proxy settings
-[proxy]
-        command="ssh" for "ssh://kernel\&.org/"
-        command="proxy\-command" for kernel\&.org
-        command="myprotocol\-command" for "my://"
-        command=default\-proxy ; for all the rest
+[core]
+        gitproxy="ssh" for "ssh://kernel\&.org/"
+        gitproxy="proxy\-command" for kernel\&.org
+        gitproxy="myprotocol\-command" for "my://"
+        gitproxy=default\-proxy ; for all the rest
 .fi
 
 
@@ -134,7 +134,7 @@ you can set the filemode to true with
 The hypothetic proxy command entries actually have a postfix to discern to what URL they apply\&. Here is how to change the entry for kernel\&.org to "ssh"\&.
 
 .nf
-% git repo\-config proxy\&.command '"ssh" for kernel\&.org' 'for kernel\&.org$'
+% git repo\-config core\&.gitproxy '"ssh" for kernel\&.org' 'for kernel\&.org$'
 .fi
 
 
@@ -148,7 +148,7 @@ To delete the entry for renames, do
 .fi
 
 
-If you want to delete an entry for a multivar (like proxy\&.command above), you have to provide a regex matching the value of exactly one line\&.
+If you want to delete an entry for a multivar (like core\&.gitproxy above), you have to provide a regex matching the value of exactly one line\&.
 
 
 To query the value for a given key, do
@@ -168,28 +168,28 @@ or
 or, to query a multivar:
 
 .nf
-% git repo\-config \-\-get proxy\&.command "for kernel\&.org$"
+% git repo\-config \-\-get core\&.gitproxy "for kernel\&.org$"
 .fi
 
 
 If you want to know all the values for a multivar, do:
 
 .nf
-% git repo\-config \-\-get\-all proxy\&.command
+% git repo\-config \-\-get\-all core\&.gitproxy
 .fi
 
 
-If you like to live dangerous, you can replace \fIall\fR proxy\&.commands by a new one with
+If you like to live dangerous, you can replace \fIall\fR core\&.gitproxy by a new one with
 
 .nf
-% git repo\-config \-\-replace\-all proxy\&.command ssh
+% git repo\-config \-\-replace\-all core\&.gitproxy ssh
 .fi
 
 
 However, if you really only want to replace the line for the default proxy, i\&.e\&. the one without a "for ..." postfix, do something like this:
 
 .nf
-% git repo\-config proxy\&.command ssh '! for '
+% git repo\-config core\&.gitproxy ssh '! for '
 .fi
 
 
@@ -199,6 +199,157 @@ To actually match only values with an exclamation mark, you have to
 % git repo\-config section\&.key value '[!]'
 .fi
 
+.SH "CONFIGURATION FILE"
+
+
+The git configuration file contains a number of variables that affect the git commands behaviour\&. They can be used by both the git plumbing and the porcelains\&. The variables are divided to sections, where in the fully qualified variable name the variable itself is the last dot\-separated segment and the section name is everything before the last dot\&. The variable names are case\-insensitive and only alphanumeric characters are allowed\&. Some variables may appear multiple times\&.
+
+
+The syntax is fairly flexible and permissive; whitespaces are mostly ignored\&. The \fI#\fR and \fI;\fR characters begin commends to the end of line, blank lines are ignored, lines containing strings enclosed in square brackets start sections and all the other lines are recognized as setting variables, in the form \fIname = value\fR\&. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true"\&. String values may be entirely or partially enclosed in double quotes; some variables may require special value format\&.
+
+.SS "Example"
+
+.nf
+# Core variables
+[core]
+        ; Don't trust file modes
+        filemode = false
+.fi
+
+.nf
+# Our diff algorithm
+[diff]
+        external = "/usr/local/bin/gnu\-diff \-u"
+        renames = true
+.fi
+
+.SS "Variables"
+
+
+Note that this list is non\-comprehensive and not necessarily complete\&. For command\-specific variables, you will find more detailed description in the appropriate manual page\&. You will find description of non\-core porcelain configuration variables in the respective porcelain documentation\&.
+
+.TP
+core\&.fileMode
+If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT\&. See \fBgit\-update\-index\fR(1)\&. True by default\&.
+
+.TP
+core\&.gitProxy
+A "proxy command" to execute (as \fIcommand host port\fR) instead of establishing direct connection to the remote server when using the git protocol for fetching\&. If the variable value is in the "COMMAND for DOMAIN" format, the command is applied only on hostnames ending with the specified domain string\&. This variable may be set multiple times and is matched in the given order; the first match wins\&.
+
+.nf
+Can be overriden by the 'GIT_PROXY_COMMAND' environment variable
+(which always applies universally, without the special "for"
+handling)\&.
+.fi
+
+.TP
+core\&.ignoreStat
+The working copy files are assumed to stay unchanged until you mark them otherwise manually \- Git will not detect the file changes by lstat() calls\&. This is useful on systems where those are very slow, such as Microsoft Windows\&. See \fBgit\-update\-index\fR(1)\&. False by default\&.
+
+.TP
+core\&.onlyUseSymrefs
+Always use the "symref" format instead of symbolic links for HEAD and other symbolic reference files\&. True by default\&.
+
+.TP
+core\&.repositoryFormatVersion
+Internal variable identifying the repository format and layout version\&.
+
+.TP
+core\&.sharedRepository
+If true, the repository is made shareable between several users in a group (making sure all the files and objects are group\-writable)\&. See \fBgit\-init\-db\fR(1)\&. False by default\&.
+
+.TP
+core\&.warnAmbiguousRefs
+If true, git will warn you if the ref name you passed it is ambiguous and might match multiple refs in the \&.git/refs/ tree\&. True by default\&.
+
+.TP
+apply\&.whitespace
+Tells git\-apply how to handle whitespaces, in the same way as the \fI\-\-whitespace\fR option\&. See \fBgit\-apply\fR(1)\&.
+
+.TP
+diff\&.renameLimit
+The number of files to consider when performing the copy/rename detection; equivalent to the git diff option \fI\-l\fR\&.
+
+.TP
+format\&.headers
+Additional email headers to include in a patch to be submitted by mail\&. See \fBgit\-format\-patch\fR(1)\&.
+
+.TP
+gitcvs\&.enabled
+Whether the cvs pserver interface is enabled for this repository\&. See \fBgit\-cvsserver\fR(1)\&.
+
+.TP
+gitcvs\&.logfile
+Path to a log file where the cvs pserver interface well... logs various stuff\&. See \fBgit\-cvsserver\fR(1)\&.
+
+.TP
+http\&.sslVerify
+Whether to verify the SSL certificate when fetching or pushing over HTTPS\&. Can be overriden by the \fIGIT_SSL_NO_VERIFY\fR environment variable\&.
+
+.TP
+http\&.sslCert
+File containing the SSL certificate when fetching or pushing over HTTPS\&. Can be overriden by the \fIGIT_SSL_CERT\fR environment variable\&.
+
+.TP
+http\&.sslKey
+File containing the SSL private key when fetching or pushing over HTTPS\&. Can be overriden by the \fIGIT_SSL_KEY\fR environment variable\&.
+
+.TP
+http\&.sslCAInfo
+File containing the certificates to verify the peer with when fetching or pushing over HTTPS\&. Can be overriden by the \fIGIT_SSL_CAINFO\fR environment variable\&.
+
+.TP
+http\&.sslCAPath
+Path containing files with the CA certificates to verify the peer with when fetching or pushing over HTTPS\&. Can be overriden by the \fIGIT_SSL_CAPATH\fR environment variable\&.
+
+.TP
+http\&.maxRequests
+How many HTTP requests to launch in parallel\&. Can be overriden by the \fIGIT_HTTP_MAX_REQUESTS\fR environment variable\&. Default is 5\&.
+
+.TP
+http\&.lowSpeedLimit, http\&.lowSpeedTime
+If the HTTP transfer speed is less than \fIhttp\&.lowSpeedLimit\fR for longer than \fIhttp\&.lowSpeedTime\fR seconds, the transfer is aborted\&. Can be overriden by the \fIGIT_HTTP_LOW_SPEED_LIMIT\fR and \fIGIT_HTTP_LOW_SPEED_TIME\fR environment variables\&.
+
+.TP
+i18n\&.commitEncoding
+Character encoding the commit messages are stored in; git itself does not care per se, but this information is necessary e\&.g\&. when importing commits from emails or in the gitk graphical history browser (and possibly at other places in the future or in other porcelains)\&. See e\&.g\&. \fBgit\-mailinfo\fR(1)\&. Defaults to \fIutf\-8\fR\&.
+
+.TP
+merge\&.summary
+Whether to include summaries of merged commits in newly created merge commit messages\&. False by default\&.
+
+.TP
+pull\&.octopus
+The default merge strategy to use when pulling multiple branches at once\&.
+
+.TP
+pull\&.twohead
+The default merge strategy to use when pulling a single branch\&.
+
+.TP
+show\&.difftree
+The default \fBgit\-diff\-tree\fR(1) arguments to be used for \fBgit\-show\fR(1)\&.
+
+.TP
+showbranch\&.default
+The default set of branches for \fBgit\-show\-branch\fR(1)\&. See \fBgit\-show\-branch\fR(1)\&.
+
+.TP
+user\&.email
+Your email address to be recorded in any newly created commits\&. Can be overriden by the \fIGIT_AUTHOR_EMAIL\fR and \fIGIT_COMMITTER_EMAIL\fR environment variables\&. See \fBgit\-commit\-tree\fR(1)\&.
+
+.TP
+user\&.name
+Your full name to be recorded in any newly created commits\&. Can be overriden by the \fIGIT_AUTHOR_NAME\fR and \fIGIT_COMMITTER_NAME\fR environment variables\&. See \fBgit\-commit\-tree\fR(1)\&.
+
+.TP
+whatchanged\&.difftree
+The default \fBgit\-diff\-tree\fR(1) arguments to be used for \fBgit\-whatchanged\fR(1)\&.
+
+.TP
+imap
+The configuration variables in the \fIimap\fR section are described in \fBgit\-imap\-send\fR(1)\&.
+
 .SH "AUTHOR"
 
 
@@ -207,7 +358,7 @@ Written by Johannes Schindelin <Johannes\&.Schindelin@gmx\&.de>
 .SH "DOCUMENTATION"
 
 
-Documentation by Johannes Schindelin\&.
+Documentation by Johannes Schindelin, Petr Baudis and the git\-list <git@vger\&.kernel\&.org>\&.
 
 .SH "GIT"
 
