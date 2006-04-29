@@ -134,8 +134,10 @@ For example, you'd want to do this after doing a "git\-read\-tree", to link up t
 
 To pretend you have a file with mode and sha1 at path, say:
 
-.IP
+.nf
 $ git\-update\-index \-\-cacheinfo mode sha1 path
+.fi
+
 
 \fI\-\-info\-only\fR is used to register files without placing them in the object database\&. This is useful for status\-only repositories\&.
 
@@ -170,24 +172,30 @@ To place a higher stage entry to the index, the path should first be removed by 
 
 For example, starting with this index:
 
-.IP
+.nf
 $ git ls\-files \-s
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 0       frotz
+.fi
+
 
 you can feed the following input to \-\-index\-info:
 
-.IP
+.nf
 $ git update\-index \-\-index\-info
 0 0000000000000000000000000000000000000000      frotz
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 1       frotz
 100755 8a1218a1024a212bb3db30becd860315f9f3ac52 2       frotz
+.fi
+
 
 The first line of the input feeds 0 as the mode to remove the path; the SHA1 does not matter as long as it is well formatted\&. Then the second and third line feeds stage 1 and stage 2 entries for that path\&. After the above, we would end up with this:
 
-.IP
+.nf
 $ git ls\-files \-s
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 1       frotz
 100755 8a1218a1024a212bb3db30becd860315f9f3ac52 2       frotz
+.fi
+
 .SH "USING "ASSUME UNCHANGED" BIT"
 
 
@@ -204,36 +212,49 @@ The command looks at core\&.ignorestat configuration variable\&. When this is tr
 
 To update and refresh only the files already checked out:
 
-.IP
+.nf
 $ git\-checkout\-index \-n \-f \-a && git\-update\-index \-\-ignore\-missing \-\-refresh
+.fi
 
-On an inefficient filesystem with core\&.ignorestat set:
+.TP
+On an inefficient filesystem with core\&.ignorestat set
 
-.IP
-$ git update\-index \-\-really\-refresh 
-$ git update\-index \-\-no\-assume\-unchanged foo\&.c 
-$ git diff \-\-name\-only 
+.nf
+$ git update\-index \-\-really\-refresh              \fB(1)\fR
+$ git update\-index \-\-no\-assume\-unchanged foo\&.c   \fB(2)\fR
+$ git diff \-\-name\-only                           \fB(3)\fR
 $ edit foo\&.c
-$ git diff \-\-name\-only 
+$ git diff \-\-name\-only                           \fB(4)\fR
 M foo\&.c
-$ git update\-index foo\&.c 
-$ git diff \-\-name\-only 
+$ git update\-index foo\&.c                         \fB(5)\fR
+$ git diff \-\-name\-only                           \fB(6)\fR
 $ edit foo\&.c
-$ git diff \-\-name\-only 
-$ git update\-index \-\-no\-assume\-unchanged foo\&.c 
-$ git diff \-\-name\-only 
+$ git diff \-\-name\-only                           \fB(7)\fR
+$ git update\-index \-\-no\-assume\-unchanged foo\&.c   \fB(8)\fR
+$ git diff \-\-name\-only                           \fB(9)\fR
 M foo\&.c
+.fi
+.sp
+\fB1. \fRforces lstat(2) to set "assume unchanged" bits for paths that match index\&.
+.br
+\fB2. \fRmark the path to be edited\&.
+.br
+\fB3. \fRthis does lstat(2) and finds index matches the path\&.
+.br
+\fB4. \fRthis does lstat(2) and finds index does \fInot\fR match the path\&.
+.br
+\fB5. \fRregistering the new version to index sets "assume unchanged" bit\&.
+.br
+\fB6. \fRand it is assumed unchanged\&.
+.br
+\fB7. \fReven after you edit it\&.
+.br
+\fB8. \fRyou can tell about the change after the fact\&.
+.br
+\fB9. \fRnow it checks with lstat(2) and finds it has been changed\&.
+.br
 
- forces lstat(2) to set "assume unchanged" bits for paths
-    that match index\&.
- mark the path to be edited\&.
- this does lstat(2) and finds index matches the path\&.
- this does lstat(2) and finds index does not match the path\&.
- registering the new version to index sets "assume unchanged" bit\&.
- and it is assumed unchanged\&.
-(16) even after you edit it\&.
-(17) you can tell about the change after the fact\&.
-(18) now it checks with lstat(2) and finds it has been changed\&.
+
 .SH "CONFIGURATION"
 
 
