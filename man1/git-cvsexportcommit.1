@@ -23,7 +23,7 @@ git-cvsexportcommit \- Export a commit to a CVS checkout
 .SH "SYNOPSIS"
 
 
-git\-cvsexportcommmit [\-h] [\-v] [\-c] [\-p] [PARENTCOMMIT] COMMITID
+\fIgit\-cvsexportcommmit\fR [\-h] [\-v] [\-c] [\-p] [\-f] [\-m msgprefix] [PARENTCOMMIT] COMMITID
 
 .SH "DESCRIPTION"
 
@@ -53,6 +53,14 @@ Commit automatically if the patch applied cleanly\&. It will not commit if any h
 Be pedantic (paranoid) when applying patches\&. Invokes patch with \-\-fuzz=0
 
 .TP
+\-f
+Force the merge even if the files are not up to date\&.
+
+.TP
+\-m
+Prepend the commit message with the provided prefix\&. Useful for patch series and the like\&.
+
+.TP
 \-v
 Verbose\&.
 
@@ -61,18 +69,22 @@ Verbose\&.
 .TP
 Merge one patch into CVS
 
-.IP
+.nf
 $ export GIT_DIR=~/project/\&.git
 $ cd ~/project_cvs_checkout
 $ git\-cvsexportcommit \-v <commit\-sha1>
 $ cvs commit \-F \&.mgs <files>
+.fi
+
 .TP
 Merge pending patches into CVS automatically -- only if you really know what you are doing
 
-.IP
+.nf
 $ export GIT_DIR=~/project/\&.git
 $ cd ~/project_cvs_checkout
 $ git\-cherry cvshead myhead | sed \-n 's/^+ //p' | xargs \-l1 git\-cvsexportcommit \-c \-p \-v
+.fi
+
 .SH "AUTHOR"
 
 
