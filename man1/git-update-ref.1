@@ -23,7 +23,7 @@ git-update-ref \- update the object name stored in a ref safely
 .SH "SYNOPSIS"
 
 
-\fIgit\-update\-ref\fR <ref> <newvalue> [<oldvalue>]
+\fIgit\-update\-ref\fR [\-m <reason>] <ref> <newvalue> [<oldvalue>]
 
 .SH "DESCRIPTION"
 
@@ -55,6 +55,31 @@ echo "$head" > "$GIT_DIR/HEAD"
 
 
 both from a symlink following standpoint \fIand\fR an error checking standpoint\&. The "refs/" rule for symlinks means that symlinks that point to "outside" the tree are safe: they'll be followed for reading but not for writing (so we'll never write through a ref symlink to some other tree, if you have copied a whole archive by creating a symlink tree)\&.
+
+.SH "LOGGING UPDATES"
+
+
+If config parameter "core\&.logAllRefUpdates" is true or the file "$GIT_DIR/logs/<ref>" exists then git\-update\-ref will append a line to the log file "$GIT_DIR/logs/<ref>" (dereferencing all symbolic refs before creating the log name) describing the change in ref value\&. Log lines are formatted as:
+
+.TP 3
+1.
+oldsha1 SP newsha1 SP committer LF
+
+Where "oldsha1" is the 40 character hexadecimal value previously stored in <ref>, "newsha1" is the 40 character hexadecimal value of <newvalue> and "committer" is the committer's name, email address and date in the standard GIT committer ident format\&.
+.LP
+
+
+Optionally with \-m:
+
+.TP 3
+1.
+oldsha1 SP newsha1 SP committer TAB message LF
+
+Where all fields are as described above and "message" is the value supplied to the \-m option\&.
+.LP
+
+
+An update will fail (without changing <ref>) if the current user is unable to create a new log file, append to the existing log file or does not have committer information available\&.
 
 .SH "AUTHOR"
 

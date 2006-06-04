@@ -176,8 +176,10 @@ However, when you do git\-read\-tree with three trees, the "stage" starts out at
 
 This means that you can do
 
-.IP
+.nf
 $ git\-read\-tree \-m <tree1> <tree2> <tree3>
+.fi
+
 
 and you will end up with an index with all of the <tree1> entries in "stage1", all of the <tree2> entries in "stage2" and all of the <tree3> entries in "stage3"\&. When performing a merge of another branch into the current branch, we use the common ancestor tree as <tree1>, the current branch head as <tree2>, and the other branch head as <tree3>\&.
 
@@ -199,7 +201,7 @@ stage 1 and stage 3 are the same and stage 2 is different take stage 2 (we did s
 The git\-write\-tree command refuses to write a nonsensical tree, and it will complain about unmerged entries if it sees a single entry that is not stage 0\&.
 
 
-Ok, this all sounds like a collection of totally nonsensical rules, but it's actually exactly what you want in order to do a fast merge\&. The different stages represent the "result tree" (stage 0, aka "merged"), the original tree (stage 1, aka "orig"), and the two trees you are trying to merge (stage 2 and 3 respectively)\&.
+OK, this all sounds like a collection of totally nonsensical rules, but it's actually exactly what you want in order to do a fast merge\&. The different stages represent the "result tree" (stage 0, aka "merged"), the original tree (stage 1, aka "orig"), and the two trees you are trying to merge (stage 2 and 3 respectively)\&.
 
 
 The order of stages 1, 2 and 3 (hence the order of three <tree\-ish> command line arguments) are significant when you start a 3\-way merge with an index file that is already populated\&. Here is an outline of how the algorithm works:
@@ -212,7 +214,7 @@ if a file exists in identical format in all three trees, it will automatically c
 a file that has _any_ difference what\-so\-ever in the three trees will stay as separate entries in the index\&. It's up to "porcelain policy" to determine how to remove the non\-0 stages, and insert a merged version\&.
 .TP
 \(bu
-the index file saves and restores with all this information, so you can merge things incrementally, but as long as it has entries in stages 1/2/3 (ie "unmerged entries") you can't write the result\&. So now the merge algorithm ends up being really simple:
+the index file saves and restores with all this information, so you can merge things incrementally, but as long as it has entries in stages 1/2/3 (i\&.e\&., "unmerged entries") you can't write the result\&. So now the merge algorithm ends up being really simple:
 
 .RS
 .TP 3
@@ -238,23 +240,29 @@ When you start a 3\-way merge with an index file that is already populated, it i
 
 This is done to prevent you from losing your work\-in\-progress changes, and mixing your random changes in an unrelated merge commit\&. To illustrate, suppose you start from what has been commited last to your repository:
 
-.IP
+.nf
 $ JC=`git\-rev\-parse \-\-verify "HEAD^0"`
 $ git\-checkout\-index \-f \-u \-a $JC
+.fi
+
 
 You do random edits, without running git\-update\-index\&. And then you notice that the tip of your "upstream" tree has advanced since you pulled from him:
 
-.IP
+.nf
 $ git\-fetch git://\&.\&.\&.\&. linus
 $ LT=`cat \&.git/FETCH_HEAD`
+.fi
+
 
 Your work tree is still based on your HEAD ($JC), but you have some edits since\&. Three\-way merge makes sure that you have not added or modified index entries since $JC, and if you haven't, then does the right thing\&. So with the following sequence:
 
-.IP
+.nf
 $ git\-read\-tree \-m \-u `git\-merge\-base $JC $LT` $JC $LT
 $ git\-merge\-index git\-merge\-one\-file \-a
 $ echo "Merge with Linus" | \\
   git\-commit\-tree `git\-write\-tree` \-p $JC \-p $LT
+.fi
+
 
 what you would commit is a pure merge between $JC and $LT without your work\-in\-progress changes, and your work tree would be updated to the result of the merge\&.
 
