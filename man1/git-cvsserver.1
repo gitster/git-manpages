@@ -52,56 +52,43 @@ CVS clients cannot tag, branch or perform GIT merges\&.
 1.
 If you are going to offer anonymous CVS access via pserver, add a line in /etc/inetd\&.conf like
 
-.nf
-cvspserver stream tcp nowait nobody git\-cvsserver pserver
-.fi
 
 .nf
-Note: In some cases, you need to pass the 'pserver' argument twice for
-git\-cvsserver to see it\&. So the line would look like
+   cvspserver stream tcp nowait nobody git\-cvsserver pserver
+
 .fi
+Note: In some cases, you need to pass the \fIpserver\fR argument twice for git\-cvsserver to see it\&. So the line would look like
+
 
 .nf
-cvspserver stream tcp nowait nobody git\-cvsserver pserver pserver
-.fi
+   cvspserver stream tcp nowait nobody git\-cvsserver pserver pserver
 
-.nf
-No special setup is needed for SSH access, other than having GIT tools
-in the PATH\&. If you have clients that do not accept the CVS_SERVER
-env variable, you can rename git\-cvsserver to cvs\&.
 .fi
+No special setup is needed for SSH access, other than having GIT tools in the PATH\&. If you have clients that do not accept the CVS_SERVER env variable, you can rename git\-cvsserver to cvs\&.
 .TP
 2.
 For each repo that you want accessible from CVS you need to edit config in the repo and add the following section\&.
 
-.nf
-[gitcvs]
-     enabled=1
-     # optional for debugging
-     logfile=/path/to/logfile
-.fi
 
 .nf
-Note: you need to ensure each user that is going to invoke git\-cvsserver has
-write access to the log file and to the git repository\&. When offering anon
-access via pserver, this means that the nobody user should have write access
-to at least the sqlite database at the root of the repository\&.
+   [gitcvs]
+        enabled=1
+        # optional for debugging
+        logfile=/path/to/logfile
+
 .fi
+Note: you need to ensure each user that is going to invoke git\-cvsserver has write access to the log file and to the git repository\&. When offering anon access via pserver, this means that the nobody user should have write access to at least the sqlite database at the root of the repository\&.
 .TP
 3.
 On the client machine you need to set the following variables\&. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo\&. For example:
 
-.nf
 For SSH access, CVS_SERVER should be set to git\-cvsserver
-.fi
 
-.nf
 Example:
-.fi
 
 .nf
-export CVSROOT=:ext:user@server:/var/git/project\&.git
-export CVS_SERVER=git\-cvsserver
+     export CVSROOT=:ext:user@server:/var/git/project\&.git
+     export CVS_SERVER=git\-cvsserver
 .fi
 .TP
 4.
@@ -111,7 +98,7 @@ For SSH clients that will make commits, make sure their \&.bashrc file sets the 
 Clients should now be able to check out the project\&. Use the CVS \fImodule\fR name to indicate what GIT \fIhead\fR you want to check out\&. Example:
 
 .nf
-cvs co \-d project\-master master
+     cvs co \-d project\-master master
 .fi
 .LP
 
