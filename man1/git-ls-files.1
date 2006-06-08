@@ -219,7 +219,7 @@ An exclude pattern is of the following format:
 an optional prefix \fI!\fR which means that the fate this pattern specifies is "include", not the usual "exclude"; the remainder of the pattern string is interpreted according to the following rules\&.
 .TP
 \(bu
-if it does not contain a slash \fI/\fR, it is a shell glob pattern and used to match against the filename without leading directories (i\&.e\&. the same way as the current implementation)\&.
+if it does not contain a slash \fI/\fR, it is a shell glob pattern and used to match against the filename without leading directories\&.
 .TP
 \(bu
 otherwise, it is a shell glob pattern, suitable for consumption by fnmatch(3) with FNM_PATHNAME flag\&. I\&.e\&. a slash in the pattern must match a slash in the pathname\&. "Documentation/*\&.html" matches "Documentation/git\&.html" but not "ppc/ppc\&.html"\&. As a natural exception, "/*\&.c" matches "cat\-file\&.c" but not "mozilla\-sha1/sha1\&.c"\&.
@@ -242,6 +242,20 @@ An example:
         \-\-exclude\-from=\&.git/ignore \\
         \-\-exclude\-per\-directory=\&.gitignore
 .fi
+
+
+Another example:
+
+.nf
+    $ cat \&.gitignore
+    vmlinux*
+    $ ls arch/foo/kernel/vm*
+    arch/foo/kernel/vmlinux\&.lds\&.S
+    $ echo '!/vmlinux*' >arch/foo/kernel/\&.gitignore
+.fi
+
+
+The second \&.gitignore keeps arch/foo/kernel/vmlinux\&.lds\&.S file from getting ignored\&.
 
 .SH "SEE ALSO"
 
