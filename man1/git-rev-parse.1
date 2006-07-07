@@ -141,18 +141,14 @@ A suffix \fI^\fR followed by an empty brace pair (e\&.g\&. v0\&.99\&.8^{}) means
 .LP
 
 
-\fIgit\-rev\-parse\fR also accepts a prefix \fI^\fR to revision parameter, which is passed to \fIgit\-rev\-list\fR\&. Two revision parameters concatenated with \fI\&.\&.\fR is a short\-hand for writing a range between them\&. I\&.e\&. \fIr1\&.\&.r2\fR is equivalent to saying \fI^r1 r2\fR
-
-
 Here is an illustration, by Jon Loeliger\&. Both node B and C are a commit parents of commit node A\&. Parent commits are ordered left\-to\-right\&.
 
 .nf
 G   H   I   J
  \\ /     \\ /
   D   E   F
-   \\  |  /
-    \\ | /
-     \\|/
+   \\  |  /         \\ | /   |
+     \\|/    |
       B     C
        \\   /
         \\ /
@@ -170,6 +166,32 @@ G = A^^^ = A^1^1^1 = A~3
 H = D^2  = B^^2    = A^^^2  = A~2^2
 I = F^   = B^3^    = A^^3^
 J = F^2  = B^3^2   = A^^3^2
+.fi
+
+.SH "SPECIFYING RANGES"
+
+
+History traversing commands such as git\-log operate on a set of commits, not just a single commit\&. To these commands, specifying a single revision with the notation described in the previous section means the set of commits reachable from that commit, following the commit ancestry chain\&.
+
+
+To exclude commits reachable from a commit, a prefix ^ notation is used\&. E\&.g\&. "^r1 r2" means commits reachable from r2 but exclude the ones reachable from r1\&.
+
+
+This set operation appears so often that there is a shorthand for it\&. "r1\&.\&.r2" is equivalent to "^r1 r2"\&. It is the difference of two sets (subtract the set of commits reachable from r1 from the set of commits reachable from r2)\&.
+
+
+A similar notation "r1\&.\&.\&.r2" is called symmetric difference of r1 and r2 and is defined as "r1 r2 \-\-not $(git\-merge\-base \-\-all r1 r2)"\&. It it the set of commits that are reachable from either one of r1 or r2 but not from both\&.
+
+
+Here are a few examples:
+
+.nf
+D                A B D
+D F              A B C D F
+^A G             B D
+^A F             B C F
+G\&.\&.\&.I            C D F G I
+^B G I           C D F G I
 .fi
 
 .SH "AUTHOR"
