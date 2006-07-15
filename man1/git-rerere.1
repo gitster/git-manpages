@@ -46,27 +46,31 @@ You need to create $GIT_DIR/rr\-cache directory to enable this command\&.
 
 When your topic branch modifies overlapping area that your master branch (or upstream) touched since your topic branch forked from it, you may want to test it with the latest master, even before your topic branch is ready to be pushed upstream:
 
-.IP
+.nf
               o\-\-\-*\-\-\-o topic
              /
     o\-\-\-o\-\-\-o\-\-\-*\-\-\-o\-\-\-o master
+.fi
+
 
 For such a test, you need to merge master and topic somehow\&. One way to do it is to pull master into the topic branch:
 
-.IP
+.nf
         $ git checkout topic
         $ git pull \&. master
 
               o\-\-\-*\-\-\-o\-\-\-+ topic
              /           /
     o\-\-\-o\-\-\-o\-\-\-*\-\-\-o\-\-\-o master
+.fi
+
 
 The commits marked with * touch the same area in the same file; you need to resolve the conflicts when creating the commit marked with +\&. Then you can test the result to make sure your work\-in\-progress still works with what is in the latest master\&.
 
 
 After this test merge, there are two ways to continue your work on the topic\&. The easiest is to build on top of the test merge commit +, and when your work in the topic branch is finally ready, pull the topic branch into master, and/or ask the upstream to pull from you\&. By that time, however, the master or the upstream might have been advanced since the test merge +, in which case the final commit graph would look like this:
 
-.IP
+.nf
         $ git checkout topic
         $ git pull \&. master
         $ \&.\&.\&. work on both topic and master branches
@@ -76,13 +80,15 @@ After this test merge, there are two ways to continue your work on the topic\&. 
               o\-\-\-*\-\-\-o\-\-\-+\-\-\-o\-\-\-o topic
              /           /         \\
     o\-\-\-o\-\-\-o\-\-\-*\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-+ master
+.fi
+
 
 When your topic branch is long\-lived, however, your topic branch would end up having many such "Merge from master" commits on it, which would unnecessarily clutter the development history\&. Readers of the Linux kernel mailing list may remember that Linus complained about such too frequent test merges when a subsystem maintainer asked to pull from a branch full of "useless merges"\&.
 
 
 As an alternative, to keep the topic branch clean of test merges, you could blow away the test merge, and keep building on top of the tip before the test merge:
 
-.IP
+.nf
         $ git checkout topic
         $ git pull \&. master
         $ git reset \-\-hard HEAD^ ;# rewind the test merge
@@ -93,6 +99,8 @@ As an alternative, to keep the topic branch clean of test merges, you could blow
               o\-\-\-*\-\-\-o\-\-\-\-\-\-\-o\-\-\-o topic
              /                     \\
     o\-\-\-o\-\-\-o\-\-\-*\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-+ master
+.fi
+
 
 This would leave only one merge commit when your topic branch is finally ready and merged into the master branch\&. This merge would require you to resolve the conflict, introduced by the commits marked with *\&. However, often this conflict is the same conflict you resolved when you created the test merge you blew away\&. git\-rerere command helps you to resolve this final conflicted merge using the information from your earlier hand resolve\&.
 
@@ -111,7 +119,7 @@ In our example, when you did the test merge, the manual resolution is recorded, 
 
 The information git\-rerere records is also used when running git\-rebase\&. After blowing away the test merge and continuing development on the topic branch:
 
-.IP
+.nf
               o\-\-\-*\-\-\-o\-\-\-\-\-\-\-o\-\-\-o topic
              /
     o\-\-\-o\-\-\-o\-\-\-*\-\-\-o\-\-\-o\-\-\-o\-\-\-o   master
@@ -121,6 +129,8 @@ The information git\-rerere records is also used when running git\-rebase\&. Aft
                                   o\-\-\-*\-\-\-o\-\-\-\-\-\-\-o\-\-\-o topic
                                  /
     o\-\-\-o\-\-\-o\-\-\-*\-\-\-o\-\-\-o\-\-\-o\-\-\-o   master
+.fi
+
 
 you could run git rebase master topic, to keep yourself up\-to\-date even before your topic is ready to be sent upstream\&. This would result in falling back to three\-way merge, and it would conflict the same way the test merge you resolved earlier\&. git\-rerere is run by git rebase to help you resolve this conflict\&.
 
