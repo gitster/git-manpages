@@ -19,22 +19,34 @@
 ..
 .TH "GIT-BLAME" 1 "" "" ""
 .SH NAME
-git-blame \- Blame file lines on commits
+git-blame \- Show what revision and author last modified each line of a file
 .SH "SYNOPSIS"
 
 
-git\-blame file [options] file [revision]
+\fIgit\-blame\fR [\-c] [\-l] [\-t] [\-S <revs\-file>] [\-\-] <file> [<rev>]
 
 .SH "DESCRIPTION"
 
 
-Annotates each line in the given file with information from the commit which introduced the line\&. Start annotation from the given revision\&.
+Annotates each line in the given file with information from the revision which last modified the line\&. Optionally, start annotating from the given revision\&.
+
+
+This report doesn't tell you anything about lines which have been deleted or replaced; you need to use a tool such as \fBgit\-diff\fR(1) or the "pickaxe" interface briefly mentioned in the following paragraph\&.
+
+
+Apart from supporting file annotation, git also supports searching the development history for when a code snippet occured in a change\&. This makes it possible to track when a code snippet was added to a file, moved or copied between files, and eventually deleted or replaced\&. It works by searching for a text string in the diff\&. A small example:
+
+.nf
+$ git log \-\-pretty=oneline \-S'blame_usage'
+5040f17eba15504bad66b14a645bddd9b015ebb7 blame \-S <ancestry\-file>
+ea4c7f9bf69e781dd0cd88d2bccb2bf5cc15c9a7 git\-blame: Make the output
+.fi
 
 .SH "OPTIONS"
 
 .TP
 \-c, \-\-compatibility
-Use the same output mode as git\-annotate (Default: off)\&.
+Use the same output mode as \fBgit\-annotate\fR(1) (Default: off)\&.
 
 .TP
 \-l, \-\-long
@@ -46,7 +58,7 @@ Show raw timestamp (Default: off)\&.
 
 .TP
 \-S, \-\-rev\-file <revs\-file>
-Use revs from revs\-file instead of calling git\-rev\-list\&.
+Use revs from revs\-file instead of calling \fBgit\-rev\-list\fR(1)\&.
 
 .TP
 \-h, \-\-help
