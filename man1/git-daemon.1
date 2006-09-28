@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DAEMON" "1" "09/25/2006" "" ""
+.TH "GIT\-DAEMON" "1" "09/28/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,14 +12,15 @@ git\-daemon \- A really simple server for git repositories
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-daemon\fR [\-\-verbose] [\-\-syslog] [\-\-inetd | \-\-port=n] [\-\-export\-all]
+\fIgit\-daemon\fR [\-\-verbose] [\-\-syslog] [\-\-export\-all]
              [\-\-timeout=n] [\-\-init\-timeout=n] [\-\-strict\-paths]
              [\-\-base\-path=path] [\-\-user\-path | \-\-user\-path=path]
              [\-\-interpolated\-path=pathtemplate]
+             [\-\-reuseaddr] [\-\-detach] [\-\-pid\-file=file]
              [\-\-enable=service] [\-\-disable=service]
              [\-\-allow\-override=service] [\-\-forbid\-override=service]
-             [\-\-reuseaddr] [\-\-detach] [\-\-pid\-file=file]
-             [\-\-user=user [\-\-group=group]] [directory\&...]
+             [\-\-inetd | [\-\-listen=host_or_ipaddr] [\-\-port=n] [\-\-user=user [\-\-group=group]]
+             [directory\&...]
 .fi
 .SH "DESCRIPTION"
 A really simple TCP git daemon that normally listens on port "DEFAULT_GIT_PORT" aka 9418. It waits for a connection asking for a service, and will serve that service if it is enabled.
@@ -45,7 +46,7 @@ will interpret the path as
 \fI/srv/git/hello.git\fR.
 .TP
 \-\-interpolated\-path=pathtemplate
-To support virtual hosting, an interpolated path template can be used to dynamically construct alternate paths. The template supports %H for the target hostname as supplied by the client, and %D for the absolute path of the named repository.
+To support virtual hosting, an interpolated path template can be used to dynamically construct alternate paths. The template supports %H for the target hostname as supplied by the client but converted to all lowercase, %CH for the canonical hostname, %IP for the server's IP address, %P for the port number, and %D for the absolute path of the named repository. After interpolation, the path is validated against the directory whitelist.
 .TP
 \-\-export\-all
 Allow pulling from all directories that look like GIT repositories (have the
@@ -57,10 +58,17 @@ subdirectories), even if they do not have the
 file.
 .TP
 \-\-inetd
-Have the server run as an inetd service. Implies \-\-syslog.
+Have the server run as an inetd service. Implies \-\-syslog. Incompatible with \-\-port, \-\-listen, \-\-user and \-\-group options.
 .TP
-\-\-port
-Listen on an alternative port.
+\-\-listen=host_or_ipaddr
+Listen on an a specific IP address or hostname. IP addresses can be either an IPv4 address or an IPV6 address if supported. If IPv6 is not supported, then \-\-listen=hostname is also not supported and \-\-listen must be given an IPv4 address. Incompatible with
+\fI\-\-inetd\fR
+option.
+.TP
+\-\-port=n
+Listen on an alternative port. Incompatible with
+\fI\-\-inetd\fR
+option.
 .TP
 \-\-init\-timeout
 Timeout between the moment the connection is established and the client request is received (typically a rather low value, since that should be basically immediate).
@@ -168,6 +176,21 @@ will contain a subdirectory for each virtual host name supported. Further, both 
 git://www.example.com/software/repo.git. For pre\-1.4.0 clients, a symlink from
 /software
 into the appropriate default repository could be made as well.
+.TP
+git\-daemon as regular daemon for virtual hosts
+To set up
+git\-daemon
+as a regular, non\-inetd service that handles repositories for multiple virtual hosts based on their IP addresses, start the daemon like this:
+.sp
+.nf
+        git\-daemon \-\-verbose \-\-export\-all
+                \-\-interpolated\-path=/pub/%IP/%D
+                /pub/192.168.1.200/software
+                /pub/10.10.220.23/software
+.fi
+In this example, the root\-level directory
+/pub
+will contain a subdirectory for each virtual host IP address supported. Repositories can still be accessed by hostname though, assuming they correspond to these IP addresses.
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>, YOSHIFUJI Hideaki <yoshfuji@linux\-ipv6.org> and the git\-list <git@vger.kernel.org>
 .sp
