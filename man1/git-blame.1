@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BLAME" "1" "10/03/2006" "" ""
+.TH "GIT\-BLAME" "1" "10/25/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,7 +10,7 @@
 .SH "NAME"
 git\-blame \- Show what revision and author last modified each line of a file
 .SH "SYNOPSIS"
-\fIgit\-blame\fR [\-c] [\-l] [\-t] [\-S <revs\-file>] [\-\-] <file> [<rev>]
+\fIgit\-blame\fR [\-c] [\-l] [\-t] [\-f] [\-n] [\-p] [\-S <revs\-file>] [\-\-] <file> [<rev>]
 .sp
 .SH "DESCRIPTION"
 Annotates each line in the given file with information from the revision which last modified the line. Optionally, start annotating from the given revision.
@@ -42,8 +42,45 @@ Show raw timestamp (Default: off).
 Use revs from revs\-file instead of calling
 \fBgit\-rev\-list\fR(1).
 .TP
+\-f, \-\-show\-name
+Show filename in the original commit. By default filename is shown if there is any line that came from a file with different name, due to rename detection.
+.TP
+\-n, \-\-show\-number
+Show line number in the original commit (Default: off).
+.TP
+\-p, \-\-porcelain
+Show in a format designed for machine consumption.
+.TP
 \-h, \-\-help
 Show help message.
+.SH "THE PORCELAIN FORMAT"
+In this format, each line is output after a header; the header at the minumum has the first line which has:
+.sp
+.TP 3
+\(bu
+40\-byte SHA\-1 of the commit the line is attributed to;
+.TP
+\(bu
+the line number of the line in the original file;
+.TP
+\(bu
+the line number of the line in the final file;
+.TP
+\(bu
+on a line that starts a group of line from a different commit than the previous one, the number of lines in this group. On subsequent lines this field is absent.
+This header line is followed by the following information at least once for each commit:
+.sp
+.TP 3
+\(bu
+author name ("author"), email ("author\-mail"), time ("author\-time"), and timezone ("author\-tz"); similarly for committer.
+.TP
+\(bu
+filename in the commit the line is attributed to.
+.TP
+\(bu
+the first line of the commit log message ("summary").
+The contents of the actual line is output after the above header, prefixed by a TAB. This is to allow adding more header elements later.
+.sp
 .SH "SEE ALSO"
 \fBgit\-annotate\fR(1)
 .sp
