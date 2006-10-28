@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FOR\-EACH\-REF" "1" "10/25/2006" "" ""
+.TH "GIT\-FOR\-EACH\-REF" "1" "10/28/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,10 +10,10 @@
 .SH "NAME"
 git\-for\-each\-ref \- Output information on each ref
 .SH "SYNOPSIS"
-\fIgit\-for\-each\-ref\fR [\-\-count=<count>]\fB [\-\-shell|\-\-perl|\-\-python] [\-\-sort=<key>]\fR [\-\-format=<format>] [<pattern>]
+\fIgit\-for\-each\-ref\fR [\-\-count=<count>]* [\-\-shell|\-\-perl|\-\-python] [\-\-sort=<key>]* [\-\-format=<format>] [<pattern>]
 .sp
 .SH "DESCRIPTION"
-Iterate over all refs that match <pattern> and show them according to the given <format>, after sorting them according to the given set of <key>`s. If <max> is given, stop after showing that many refs. The interporated values in <format>` can optionally be quoted as string literals in the specified host language allowing their direct evaluation in that language.
+Iterate over all refs that match <pattern> and show them according to the given <format>, after sorting them according to the given set of <key>. If <max> is given, stop after showing that many refs. The interporated values in <format> can optionally be quoted as string literals in the specified host language allowing their direct evaluation in that language.
 .sp
 .SH "OPTIONS"
 .TP
@@ -34,7 +34,27 @@ A string that interpolates
 from the object pointed at by a ref being shown. If
 fieldname
 is prefixed with an asterisk (*) and the ref points at a tag object, the value for the field in the object tag refers is used. When unspecified, defaults to
-%(refname).
+%(objectname) SPC %(objecttype) TAB %(refname). It also interpolates
+%%
+to
+%, and
+%xx
+where
+xx
+are hex digits interpolates to character with hex code
+xx; for example
+%00
+interpolates to
+\\0
+(NUL),
+%09
+to
+\\t
+(TAB) and
+%0a
+to
+\\n
+(LF).
 .TP
 <pattern>
 If given, the name of the ref is matched against this using fnmatch(3). Refs that do not match the pattern are not shown.
