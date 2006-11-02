@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-UPDATE\-REF" "1" "10/03/2006" "" ""
+.TH "GIT\-UPDATE\-REF" "1" "11/02/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,12 +10,12 @@
 .SH "NAME"
 git\-update\-ref \- update the object name stored in a ref safely
 .SH "SYNOPSIS"
-\fIgit\-update\-ref\fR [\-m <reason>] <ref> <newvalue> [<oldvalue>]
+\fIgit\-update\-ref\fR [\-m <reason>] (\-d <ref> <oldvalue> | <ref> <newvalue> [<oldvalue>])
 .sp
 .SH "DESCRIPTION"
 Given two arguments, stores the <newvalue> in the <ref>, possibly dereferencing the symbolic refs. E.g. git\-update\-ref HEAD <newvalue> updates the current branch head to the new object.
 .sp
-Given three arguments, stores the <newvalue> in the <ref>, possibly dereferencing the symbolic refs, after verifying that the current value of the <ref> matches <oldvalue>. E.g. git\-update\-ref refs/heads/master <newvalue> <oldvalue> updates the master branch head to <newvalue> only if its current value is <oldvalue>.
+Given three arguments, stores the <newvalue> in the <ref>, possibly dereferencing the symbolic refs, after verifying that the current value of the <ref> matches <oldvalue>. E.g. git\-update\-ref refs/heads/master <newvalue> <oldvalue> updates the master branch head to <newvalue> only if its current value is <oldvalue>. You can specify 40 "0" or an empty string as <oldvalue> to make sure that the ref you are creating does not exist.
 .sp
 It also allows a "ref" file to be a symbolic pointer to another ref file by starting with the four\-byte header sequence of "ref:".
 .sp
@@ -34,6 +34,8 @@ should be a _lot_ safer than doing
 echo "$head" > "$GIT_DIR/HEAD"
 .fi
 both from a symlink following standpoint \fBand\fR an error checking standpoint. The "refs/" rule for symlinks means that symlinks that point to "outside" the tree are safe: they'll be followed for reading but not for writing (so we'll never write through a ref symlink to some other tree, if you have copied a whole archive by creating a symlink tree).
+.sp
+With \-d flag, it deletes the named <ref> after verifying it still contains <oldvalue>.
 .sp
 .SH "LOGGING UPDATES"
 If config parameter "core.logAllRefUpdates" is true or the file "$GIT_DIR/logs/<ref>" exists then git\-update\-ref will append a line to the log file "$GIT_DIR/logs/<ref>" (dereferencing all symbolic refs before creating the log name) describing the change in ref value. Log lines are formatted as:
