@@ -2,23 +2,23 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REPO\-CONFIG" "1" "11/02/2006" "" ""
+.TH "GIT\-REPO\-CONFIG" "1" "11/03/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-repo\-config \- Get and set options in .git/config
+git\-repo\-config \- Get and set repository or global options.
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-repo\-config\fR [type] name [value [value_regex]]
-\fIgit\-repo\-config\fR [type] \-\-replace\-all name [value [value_regex]]
-\fIgit\-repo\-config\fR [type] \-\-get name [value_regex]
-\fIgit\-repo\-config\fR [type] \-\-get\-all name [value_regex]
-\fIgit\-repo\-config\fR [type] \-\-unset name [value_regex]
-\fIgit\-repo\-config\fR [type] \-\-unset\-all name [value_regex]
-\fIgit\-repo\-config\fR \-l | \-\-list
+\fIgit\-repo\-config\fR [\-\-global] [type] name [value [value_regex]]
+\fIgit\-repo\-config\fR [\-\-global] [type] \-\-replace\-all name [value [value_regex]]
+\fIgit\-repo\-config\fR [\-\-global] [type] \-\-get name [value_regex]
+\fIgit\-repo\-config\fR [\-\-global] [type] \-\-get\-all name [value_regex]
+\fIgit\-repo\-config\fR [\-\-global] [type] \-\-unset name [value_regex]
+\fIgit\-repo\-config\fR [\-\-global] [type] \-\-unset\-all name [value_regex]
+\fIgit\-repo\-config\fR [\-\-global] \-l | \-\-list
 .fi
 .SH "DESCRIPTION"
 You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
@@ -43,10 +43,13 @@ no section was provided,
 the section or key is invalid,
 .TP
 5.
-you try to unset an option which does not exist, or
+you try to unset an option which does not exist,
 .TP
 6.
-you try to unset/set an option for which multiple lines match.
+you try to unset/set an option for which multiple lines match, or
+.TP
+7.
+you use \-\-global option without $HOME being properly set.
 .SH "OPTIONS"
 .TP
 \-\-replace\-all
@@ -61,18 +64,21 @@ Like get, but does not fail if the number of values for the key is not exactly o
 \-\-get\-regexp
 Like \-\-get\-all, but interprets the name as a regular expression.
 .TP
+\-\-global
+Use global ~/.gitconfig file rather than the repository .git/config.
+.TP
 \-\-unset
-Remove the line matching the key from .git/config.
+Remove the line matching the key from config file.
 .TP
 \-\-unset\-all
-Remove all matching lines from .git/config.
+Remove all matching lines from config file.
 .TP
 \-l, \-\-list
-List all variables set in .git/config.
+List all variables set in config file.
 .SH "ENVIRONMENT"
 .TP
 GIT_CONFIG
-Take the configuration from the given file instead of .git/config.
+Take the configuration from the given file instead of .git/config. Using the "\-\-global" option forces this to ~/.gitconfig.
 .TP
 GIT_CONFIG_LOCAL
 Currently the same as $GIT_CONFIG; when Git will support global configuration files, this will cause it to take the configuration from the global configuration file in addition to the given file.
