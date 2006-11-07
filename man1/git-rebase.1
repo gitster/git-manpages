@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REBASE" "1" "10/19/2006" "" ""
+.TH "GIT\-REBASE" "1" "11/07/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -44,21 +44,64 @@ would be:
                  /
     D\-\-\-E\-\-\-F\-\-\-G master
 .fi
-While, starting from the same point, the result of either of the following commands:
+The latter form is just a short\-hand of git checkout topic followed by git rebase master.
+.sp
+Here is how you would transplant a topic branch based on one branch to another, to pretend that you forked the topic branch from the latter branch, using rebase \-\-onto.
+.sp
+First let's assume your \fItopic\fR is based on branch \fInext\fR. For example feature developed in \fItopic\fR depends on some functionality which is found in \fInext\fR.
 .sp
 .sp
 .nf
-git\-rebase \-\-onto master~1 master
-git\-rebase \-\-onto master~1 master topic
+    o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
+         \\
+          o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  next
+                           \\
+                            o\-\-\-o\-\-\-o  topic
 .fi
-would be:
+We would want to make \fItopic\fR forked from branch \fImaster\fR, for example because the functionality \fItopic\fR branch depend on got merged into more stable \fImaster\fR branch, like this:
 .sp
 .sp
 .nf
-              A'\-\-B'\-\-C' topic
-             /
-    D\-\-\-E\-\-\-F\-\-\-G master
+    o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
+        |            \\
+        |             o'\-\-o'\-\-o'  topic
+         \\
+          o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  next
 .fi
+We can get this using the following command:
+.sp
+.sp
+.nf
+git\-rebase \-\-onto master next topic
+.fi
+Another example of \-\-onto option is to rebase part of a branch. If we have the following situation:
+.sp
+.sp
+.nf
+                            H\-\-\-I\-\-\-J topicB
+                           /
+                  E\-\-\-F\-\-\-G  topicA
+                 /
+    A\-\-\-B\-\-\-C\-\-\-D  master
+.fi
+then the command
+.sp
+.sp
+.nf
+git\-rebase \-\-onto master topicA topicB
+.fi
+would result in:
+.sp
+.sp
+.nf
+                 H'\-\-I'\-\-J'  topicB
+                /
+                | E\-\-\-F\-\-\-G  topicA
+                |/
+    A\-\-\-B\-\-\-C\-\-\-D  master
+.fi
+This is useful when topicB does not depend on topicA.
+.sp
 In case of conflict, git\-rebase will stop at the first problematic commit and leave conflict markers in the tree. You can use git diff to locate the markers (<<<<<<) and make edits to resolve the conflict. For each file you edit, you need to tell git that the conflict has been resolved, typically this would be done with
 .sp
 .sp
