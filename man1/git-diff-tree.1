@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DIFF\-TREE" "1" "10/27/2006" "" ""
+.TH "GIT\-DIFF\-TREE" "1" "11/23/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -162,8 +162,119 @@ flag.
 \-v
 This flag causes "git\-diff\-tree \-\-stdin" to also show the commit message before the differences.
 .TP
-\-\-pretty[=(raw|medium|short)]
-This is used to control "pretty printing" format of the commit message. Without "=<style>", it defaults to medium.
+\-\-pretty[=\fI<format>\fR]
+Pretty\-prints the details of a commit.
+\-\-pretty
+without an explicit
+=<format>
+defaults to
+\fImedium\fR. If the commit is a merge, and if the pretty\-format is not
+\fIoneline\fR,
+\fIemail\fR
+or
+\fIraw\fR, an additional line is inserted before the
+\fIAuthor:\fR
+line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the
+\fBdirect\fR
+parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file. Here are some additional details for each format:
+.RS
+.TP 3
+\(bu
+\fIoneline\fR
+.sp
+.nf
+<sha1> <title line>
+.fi
+This is designed to be as compact as possible.
+.TP
+\(bu
+\fIshort\fR
+.sp
+.nf
+commit <sha1>
+Author: <author>
+.fi
+.sp
+.nf
+<title line>
+.fi
+.TP
+\(bu
+\fImedium\fR
+.sp
+.nf
+commit <sha1>
+Author: <author>
+Date: <date>
+.fi
+.sp
+.nf
+<title line>
+.fi
+.sp
+.nf
+<full commit message>
+.fi
+.TP
+\(bu
+\fIfull\fR
+.sp
+.nf
+commit <sha1>
+Author: <author>
+Commit: <committer>
+.fi
+.sp
+.nf
+<title line>
+.fi
+.sp
+.nf
+<full commit message>
+.fi
+.TP
+\(bu
+\fIfuller\fR
+.sp
+.nf
+commit <sha1>
+Author: <author>
+AuthorDate: <date & time>
+Commit: <committer>
+CommitDate: <date & time>
+.fi
+.sp
+.nf
+<title line>
+.fi
+.sp
+.nf
+<full commit message>
+.fi
+.TP
+\(bu
+\fIemail\fR
+.sp
+.nf
+From <sha1> <date>
+From: <author>
+Date: <date & time>
+Subject: [PATCH] <title line>
+.fi
+.sp
+.nf
+full commit message>
+.fi
+.TP
+\(bu
+\fIraw\fR
+.sp
+The
+\fIraw\fR
+format shows the entire commit exactly as stored in the commit object. Notably, the SHA1s are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and
+\fIparents\fR
+information show the true parent commits, without taking grafts nor history simplification into account.
+.RE
 .TP
 \-\-no\-commit\-id
 git\-diff\-tree outputs a line with the commit ID when applicable. This flag suppressed the commit ID output.
