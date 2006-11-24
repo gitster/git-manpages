@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CLONE" "1" "11/03/2006" "" ""
+.TH "GIT\-CLONE" "1" "11/24/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,7 +14,8 @@ git\-clone \- Clones a repository
 .nf
 \fIgit\-clone\fR [\-\-template=<template_directory>] [\-l [\-s]] [\-q] [\-n] [\-\-bare]
           [\-o <name>] [\-u <upload\-pack>] [\-\-reference <repository>]
-          [\-\-use\-separate\-remote] <repository> [<directory>]
+          [\-\-use\-separate\-remote | \-\-use\-immingled\-remote] <repository>
+          [<directory>]
 .fi
 .SH "DESCRIPTION"
 Clones a repository into a newly created directory. All remote branch heads are copied under $GIT_DIR/refs/heads/, except that the remote master is also copied to origin branch.
@@ -53,9 +54,10 @@ and placing the administrative files in
 <directory>/.git, make the
 <directory>
 itself the
-$GIT_DIR. This implies
+$GIT_DIR. This obviously implies the
 \-n
-option. When this option is used, neither the
+because there is nowhere to check out the working tree. Also the branch heads at the remote are copied directly to corresponding local branch heads, without mapping them to
+refs/remotes/origin/. When this option is used, neither the
 origin
 branch nor the default
 remotes/origin
@@ -84,7 +86,10 @@ Specify the directory from which templates will be used; if unset the templates 
 Save remotes heads under
 $GIT_DIR/remotes/origin/
 instead of
-$GIT_DIR/refs/heads/. Only the master branch is saved in the latter.
+$GIT_DIR/refs/heads/. Only the local master branch is saved in the latter. This is the default.
+.TP
+\-\-use\-immingled\-remote
+Save remotes heads in the same namespace as the local heads, `$GIT_DIR/refs/heads/'. In regular repositories, this is a legacy setup git\-clone created by default in older Git versions, and will be removed before the next major release.
 .TP
 <repository>
 The (possibly remote) repository to clone from. It can be any URL git\-fetch supports.
