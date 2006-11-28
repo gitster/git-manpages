@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DIFF\-TREE" "1" "11/23/2006" "" ""
+.TH "GIT\-DIFF\-TREE" "1" "11/28/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -431,74 +431,9 @@ Example:
 When \-z option is not used, TAB, LF, and backslash characters in pathnames are represented as \\t, \\n, and \\\\, respectively.
 .sp
 .SH "GENERATING PATCHES WITH \-P"
-When "git\-diff\-index", "git\-diff\-tree", or "git\-diff\-files" are run with a \fI\-p\fR option, they do not produce the output described above; instead they produce a patch file.
+When "git\-diff\-index", "git\-diff\-tree", or "git\-diff\-files" are run with a \fI\-p\fR option, they do not produce the output described above; instead they produce a patch file. You can customize the creation of such patches via the GIT_EXTERNAL_DIFF and the GIT_DIFF_OPTS environment variables.
 .sp
-The patch generation can be customized at two levels.
-.sp
-.TP 3
-1.
-When the environment variable
-\fIGIT_EXTERNAL_DIFF\fR
-is not set, these commands internally invoke "diff" like this:
-.sp
-.nf
-diff \-L a/<path> \-L b/<path> \-pu <old> <new>
-.fi
-For added files,
-/dev/null
-is used for <old>. For removed files,
-/dev/null
-is used for <new>
-.sp
-The "diff" formatting options can be customized via the environment variable
-\fIGIT_DIFF_OPTS\fR. For example, if you prefer context diff:
-.sp
-.nf
-GIT_DIFF_OPTS=\-c git\-diff\-index \-p HEAD
-.fi
-.TP
-2.
-When the environment variable
-\fIGIT_EXTERNAL_DIFF\fR
-is set, the program named by it is called, instead of the diff invocation described above.
-.sp
-For a path that is added, removed, or modified,
-\fIGIT_EXTERNAL_DIFF\fR
-is called with 7 parameters:
-.sp
-.nf
-path old\-file old\-hex old\-mode new\-file new\-hex new\-mode
-.fi
-where:
-<old|new>\-file
-
-are files GIT_EXTERNAL_DIFF can use to read the contents of <old|new>,
-
-<old|new>\-hex
-
-are the 40\-hexdigit SHA1 hashes,
-
-<old|new>\-mode
-
-are the octal representation of the file modes.
-
-The file parameters can point at the user's working file (e.g.
-new\-file
-in "git\-diff\-files"),
-/dev/null
-(e.g.
-old\-file
-when a new file is added), or a temporary file (e.g.
-old\-file
-in the index).
-\fIGIT_EXTERNAL_DIFF\fR
-should not worry about unlinking the temporary file \-\-\- it is removed when
-\fIGIT_EXTERNAL_DIFF\fR
-exits.
-For a path that is unmerged, \fIGIT_EXTERNAL_DIFF\fR is called with 1 parameter, <path>.
-.sp
-.SH "GIT SPECIFIC EXTENSION TO DIFF FORMAT"
-What \-p option produces is slightly different from the traditional diff format.
+What the \-p option produces is slightly different from the traditional diff format.
 .sp
 .TP 3
 1.

@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT" "7" "11/18/2006" "" ""
+.TH "GIT" "7" "11/28/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -573,11 +573,49 @@ see
 \fBgit\-commit\-tree\fR(1)
 .SS "git Diffs"
 .TP
-\fIGIT_DIFF_OPTS\fR , \fIGIT_EXTERNAL_DIFF\fR
-see the "generating patches" section in :
-\fBgit\-diff\-index\fR(1);
-\fBgit\-diff\-files\fR(1);
-\fBgit\-diff\-tree\fR(1)
+\fIGIT_DIFF_OPTS\fR
+Only valid setting is "\-\-unified=??" or "\-u??" to set the number of context lines shown when a unified diff is created. This takes precedence over any "\-U" or "\-\-unified" option value passed on the git diff command line.
+.TP
+\fIGIT_EXTERNAL_DIFF\fR
+When the environment variable
+\fIGIT_EXTERNAL_DIFF\fR
+is set, the program named by it is called, instead of the diff invocation described above. For a path that is added, removed, or modified,
+\fIGIT_EXTERNAL_DIFF\fR
+is called with 7 parameters:
+.sp
+.nf
+path old\-file old\-hex old\-mode new\-file new\-hex new\-mode
+.fi
+where:
+<old|new>\-file
+
+are files GIT_EXTERNAL_DIFF can use to read the contents of <old|new>,
+
+<old|new>\-hex
+
+are the 40\-hexdigit SHA1 hashes,
+
+<old|new>\-mode
+
+are the octal representation of the file modes.
+
+The file parameters can point at the user's working file (e.g.
+new\-file
+in "git\-diff\-files"),
+/dev/null
+(e.g.
+old\-file
+when a new file is added), or a temporary file (e.g.
+old\-file
+in the index).
+\fIGIT_EXTERNAL_DIFF\fR
+should not worry about unlinking the temporary file \-\-\- it is removed when
+\fIGIT_EXTERNAL_DIFF\fR
+exits.
+.sp
+For a path that is unmerged,
+\fIGIT_EXTERNAL_DIFF\fR
+is called with 1 parameter, <path>.
 .SS "other"
 .TP
 \fIGIT_PAGER\fR
