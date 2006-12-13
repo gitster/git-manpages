@@ -2,26 +2,29 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-ADD" "1" "10/03/2006" "" ""
+.TH "GIT\-ADD" "1" "12/13/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-add \- Add files to the index file
+git\-add \- Add file contents to the changeset to be committed next
 .SH "SYNOPSIS"
 \fIgit\-add\fR [\-n] [\-v] [\-\-] <file>\&...
-.sp
 .SH "DESCRIPTION"
-A simple wrapper for git\-update\-index to add files to the index, for people used to do "cvs add".
-.sp
-It only adds non\-ignored files, to add ignored files use "git update\-index \-\-add".
-.sp
+All the changed file contents to be committed together in a single set of changes must be "added" with the \fIadd\fR command before using the \fIcommit\fR command. This is not only for adding new files. Even modified files must be added to the set of changes about to be committed.
+
+This command can be performed multiple times before a commit. The added content corresponds to the state of specified file(s) at the time the \fIadd\fR command is used. This means the \fIcommit\fR command will not consider subsequent changes to already added content if it is not added again before the commit.
+
+The \fIgit status\fR command can be used to obtain a summary of what is included for the next commit.
+
+This command only adds non\-ignored files, to add ignored files use "git update\-index \-\-add".
+
+Please see \fBgit\-commit\fR(1) for alternative ways to add content to a commit.
 .SH "OPTIONS"
 .TP
 <file>\&...
-Files to add to the index (see
-\fBgit\-ls\-files\fR(1)).
+Files to add content from.
 .TP
 \-n
 Don't actually add the file(s), just show if they exist.
@@ -31,45 +34,21 @@ Be verbose.
 .TP
 \-\-
 This option can be used to separate command\-line options from the list of files, (useful when filenames might be mistaken for command\-line options).
-.SH "DISCUSSION"
-The list of <file> given to the command is fed to git\-ls\-files command to list files that are not registered in the index and are not ignored/excluded by $GIT_DIR/info/exclude file or .gitignore file in each directory. This means two things:
-.sp
-.TP 3
-1.
-You can put the name of a directory on the command line, and the command will add all files in it and its subdirectories;
-.TP
-2.
-Giving the name of a file that is already in index does not run
-git\-update\-index
-on that path.
 .SH "EXAMPLES"
 .TP
 git\-add Documentation/\\*.txt
-Adds all
-*.txt
-files that are not in the index under
-Documentation
-directory and its subdirectories.
-.sp
-Note that the asterisk
-*
-is quoted from the shell in this example; this lets the command to include the files from subdirectories of
-Documentation/
-directory.
+Adds content from all *.txt files under Documentation directory and its subdirectories.
+
+Note that the asterisk * is quoted from the shell in this example; this lets the command to include the files from subdirectories of Documentation/ directory.
 .TP
 git\-add git\-*.sh
-Adds all git\-*.sh scripts that are not in the index. Because this example lets shell expand the asterisk (i.e. you are listing the files explicitly), it does not add
-subdir/git\-foo.sh
-to the index.
+Considers adding content from all git\-*.sh scripts. Because this example lets shell expand the asterisk (i.e. you are listing the files explicitly), it does not consider subdir/git\-foo.sh.
 .SH "SEE ALSO"
-\fBgit\-rm\fR(1) \fBgit\-ls\-files\fR(1)
-.sp
+\fBgit\-status\fR(1) \fBgit\-rm\fR(1) \fBgit\-mv\fR(1) \fBgit\-commit\fR(1) \fBgit\-update\-index\fR(1)
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+

@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-COMMIT" "1" "10/03/2006" "" ""
+.TH "GIT\-COMMIT" "1" "12/13/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,32 +17,36 @@ git\-commit \- Record your changes
            [\-\-] [[\-i | \-o ]<file>\&...]
 .fi
 .SH "DESCRIPTION"
-Updates the index file for given paths, or all modified files if \fI\-a\fR is specified, and makes a commit object. The command specified by either the VISUAL or EDITOR environment variables are used to edit the commit log message.
-.sp
-Several environment variable are used during commits. They are documented in \fBgit\-commit\-tree\fR(1).
-.sp
-This command can run commit\-msg, pre\-commit, and post\-commit hooks. See [1]\&\fIhooks\fR for more information.
-.sp
+Use \fIgit commit\fR when you want to record your changes into the repository along with a log message describing what the commit is about. All changes to be committed must be explicitly identified using one of the following methods:
+.TP 3
+1.
+by using \fBgit\-add\fR(1) to incrementally "add" changes to the next commit before using the \fIcommit\fR command (Note: even modified files must be "added");
+.TP
+2.
+by using \fBgit\-rm\fR(1) to identify content removal for the next commit, again before using the \fIcommit\fR command;
+.TP
+3.
+by directly listing files containing changes to be committed as arguments to the \fIcommit\fR command, in which cases only those files alone will be considered for the commit;
+.TP
+4.
+by using the \-a switch with the \fIcommit\fR command to automatically "add" changes from all known files i.e. files that have already been committed before, and perform the actual commit.
+
+The \fBgit\-status\fR(1) command can be used to obtain a summary of what is included by any of the above for the next commit by giving the same set of parameters you would give to this command.
+
+If you make a commit and then found a mistake immediately after that, you can recover from it with \fBgit\-reset\fR(1).
 .SH "OPTIONS"
 .TP
 \-a|\-\-all
-Update all paths in the index file. This flag notices files that have been modified and deleted, but new files you have not told git about are not affected.
+Tell the command to automatically stage files that have been modified and deleted, but new files you have not told git about are not affected.
 .TP
 \-c or \-C <commit>
-Take existing commit object, and reuse the log message and the authorship information (including the timestamp) when creating the commit. With
-\fI\-C\fR, the editor is not invoked; with
-\fI\-c\fR
-the user can further edit the commit message.
+Take existing commit object, and reuse the log message and the authorship information (including the timestamp) when creating the commit. With \fI\-C\fR, the editor is not invoked; with \fI\-c\fR the user can further edit the commit message.
 .TP
 \-F <file>
-Take the commit message from the given file. Use
-\fI\-\fR
-to read the message from the standard input.
+Take the commit message from the given file. Use \fI\-\fR to read the message from the standard input.
 .TP
 \-\-author <author>
-Override the author name used in the commit. Use
-A U Thor <author@example.com>
-format.
+Override the author name used in the commit. Use A U Thor <author@example.com> format.
 .TP
 \-m <msg>
 Use the given <msg> as the commit message.
@@ -50,25 +54,15 @@ Use the given <msg> as the commit message.
 \-s|\-\-signoff
 Add Signed\-off\-by line at the end of the commit message.
 .TP
-\-v|\-\-verify
-Look for suspicious lines the commit introduces, and abort committing if there is one. The definition of
-\fIsuspicious lines\fR
-is currently the lines that has trailing whitespaces, and the lines whose indentation has a SP character immediately followed by a TAB character. This is the default.
-.TP
-\-n|\-\-no\-verify
-The opposite of
-\-\-verify.
+\-\-no\-verify
+By default, the command looks for suspicious lines the commit introduces, and aborts committing if there is one. The definition of \fIsuspicious lines\fR is currently the lines that has trailing whitespaces, and the lines whose indentation has a SP character immediately followed by a TAB character. This option turns off the check.
 .TP
 \-e|\-\-edit
-The message taken from file with
-\-F, command line with
-\-m, and from file with
-\-C
-are usually used as the commit log message unmodified. This option lets you further edit the message taken from these sources.
+The message taken from file with \-F, command line with \-m, and from file with \-C are usually used as the commit log message unmodified. This option lets you further edit the message taken from these sources.
 .TP
 \-\-amend
 Used to amend the tip of the current branch. Prepare the tree object you would want to replace the latest commit as usual (this includes the usual \-i/\-o and explicit paths), and the commit log editor is seeded with the commit message from the tip of the current branch. The commit you create replaces the current tip \(em if it was a merge, it will have the parents of the current tip as parents \(em so the current top commit is discarded.
-.sp
+
 It is a rough equivalent for:
 .sp
 .nf
@@ -79,68 +73,70 @@ It is a rough equivalent for:
 but can be used to amend a merge commit.
 .TP
 \-i|\-\-include
-Instead of committing only the files specified on the command line, update them in the index file and then commit the whole index. This is the traditional behavior.
-.TP
-\-o|\-\-only
-Commit only the files specified on the command line. This format cannot be used during a merge, nor when the index and the latest commit does not match on the specified paths to avoid confusion.
+Before making a commit out of staged contents so far, stage the contents of paths given on the command line as well. This is usually not what you want unless you are concluding a conflicted merge.
 .TP
 \-\-
 Do not interpret any more arguments as options.
 .TP
 <file>\&...
-Files to be committed. The meaning of these is different between
-\-\-include
-and
-\-\-only. Without either, it defaults
-\-\-only
-semantics.
-If you make a commit and then found a mistake immediately after that, you can recover from it with \fBgit\-reset\fR(1).
-.sp
-.SH "DISCUSSION"
-git commit without _any_ parameter commits the tree structure recorded by the current index file. This is a whole\-tree commit even the command is invoked from a subdirectory.
-.sp
-git commit \-\-include paths\&... is equivalent to
-.sp
+When files are given on the command line, the command commits the contents of the named files, without recording the changes already staged. The contents of these files are also staged for the next commit on top of what have been staged before.
+.SH "EXAMPLES"
+When recording your own work, the contents of modified files in your working tree are temporarily stored to a staging area called the "index" with \fBgit\-add\fR(1). Removal of a file is staged with \fBgit\-rm\fR(1). After building the state to be committed incrementally with these commands, git commit (without any pathname parameter) is used to record what has been staged so far. This is the most basic form of the command. An example:
 .sp
 .nf
-git update\-index \-\-remove paths...
-git commit
+$ edit hello.c
+$ git rm goodbye.c
+$ git add hello.c
+$ git commit
 .fi
-That is, update the specified paths to the index and then commit the whole tree.
+Instead of staging files after each individual change, you can tell git commit to notice the changes to the files whose contents are tracked in your working tree and do corresponding git add and git rm for you. That is, this example does the same as the earlier example if there is no other change in your working tree:
 .sp
-git commit paths\&... largely bypasses the index file and commits only the changes made to the specified paths. It has however several safety valves to prevent confusion.
+.nf
+$ edit hello.c
+$ rm goodbye.c
+$ git commit \-a
+.fi
+The command git commit \-a first looks at your working tree, notices that you have modified hello.c and removed goodbye.c, and performs necessary git add and git rm for you.
+
+After staging changes to many files, you can alter the order the changes are recorded in, by giving pathnames to git commit. When pathnames are given, the command makes a commit that only records the changes made to the named paths:
 .sp
-.TP 3
-1.
-It refuses to run during a merge (i.e. when
-$GIT_DIR/MERGE_HEAD
-exists), and reminds trained git users that the traditional semantics now needs \-i flag.
-.TP
-2.
-It refuses to run if named
-paths\&...
-are different in HEAD and the index (ditto about reminding). Added paths are OK. This is because an earlier
-git diff
-(not
-git diff HEAD) would have shown the differences since the last
-git update\-index paths\&...
-to the user, and an inexperienced user may mistakenly think that the changes between the index and the HEAD (i.e. earlier changes made before the last
-git update\-index paths\&...
-was done) are not being committed.
-.TP
-3.
-It reads HEAD commit into a temporary index file, updates the specified
-paths\&...
-and makes a commit. At the same time, the real index file is also updated with the same
-paths\&....
-git commit \-\-all updates the index file with _all_ changes to the working tree, and makes a whole\-tree commit, regardless of which subdirectory the command is invoked in.
+.nf
+$ edit hello.c hello.h
+$ git add hello.c hello.h
+$ edit Makefile
+$ git commit Makefile
+.fi
+This makes a commit that records the modification to Makefile. The changes staged for hello.c and hello.h are not included in the resulting commit. However, their changes are not lost \(em they are still staged and merely held back. After the above sequence, if you do:
 .sp
+.nf
+$ git commit
+.fi
+this second commit would record the changes to hello.c and hello.h as expected.
+
+After a merge (initiated by either \fBgit\-merge\fR(1) or \fBgit\-pull\fR(1)) stops because of conflicts, cleanly merged paths are already staged to be committed for you, and paths that conflicted are left in unmerged state. You would have to first check which paths are conflicting with \fBgit\-status\fR(1) and after fixing them manually in your working tree, you would stage the result as usual with \fBgit\-add\fR(1):
+.sp
+.nf
+$ git status | grep unmerged
+unmerged: hello.c
+$ edit hello.c
+$ git add hello.c
+.fi
+After resolving conflicts and staging the result, git ls\-files \-u would stop mentioning the conflicted path. When you are done, run git commit to finally record the merge:
+.sp
+.nf
+$ git commit
+.fi
+As with the case to record your own changes, you can use \-a option to save typing. One difference is that during a merge resolution, you cannot use git commit with pathnames to alter the order the changes are committed, because the merge should be recorded as a single commit. In fact, the command refuses to run when given pathnames (but see \-i option).
+.SH "ENVIRONMENT VARIABLES"
+The command specified by either the VISUAL or EDITOR environment variables is used to edit the commit log message.
+.SH "HOOKS"
+This command can run commit\-msg, pre\-commit, and post\-commit hooks. See [1]\&\fIhooks\fR for more information.
+.SH "SEE ALSO"
+\fBgit\-add\fR(1), \fBgit\-rm\fR(1), \fBgit\-mv\fR(1), \fBgit\-merge\fR(1), \fBgit\-commit\-tree\fR(1)
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org> and Junio C Hamano <junkio@cox.net>
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
 .SH "REFERENCES"
 .TP 3
 1.\ hooks

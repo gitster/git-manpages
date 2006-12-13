@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-READ\-TREE" "1" "10/03/2006" "" ""
+.TH "GIT\-READ\-TREE" "1" "12/13/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,15 +10,13 @@
 .SH "NAME"
 git\-read\-tree \- Reads tree information into the index
 .SH "SYNOPSIS"
-\fIgit\-read\-tree\fR (<tree\-ish> | [[\-m [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u | \-i]] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
-.sp
+\fIgit\-read\-tree\fR (<tree\-ish> | [[\-m [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u | \-i]] [\-\-exclude\-per\-directory=<gitignore>] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
 .SH "DESCRIPTION"
 Reads the tree information given by <tree\-ish> into the index, but does not actually \fBupdate\fR any of the files it "caches". (see: \fBgit\-checkout\-index\fR(1))
-.sp
+
 Optionally, it can merge a tree into the index, perform a fast\-forward (i.e. 2\-way) merge, or a 3\-way merge, with the \-m flag. When used with \-m, the \-u flag causes it to also update the files in the work tree with the result of the merge.
-.sp
+
 Trivial merges are done by git\-read\-tree itself. Only conflicting paths will be in unmerged state when git\-read\-tree returns.
-.sp
 .SH "OPTIONS"
 .TP
 \-m
@@ -34,9 +32,7 @@ After a successful merge, update the files in the work tree with the result of t
 Usually a merge requires the index file as well as the files in the working tree are up to date with the current head commit, in order not to lose local changes. This flag disables the check with the working tree and is meant to be used when creating a merge of trees that are not directly related to the current working tree status into a temporary index file.
 .TP
 \-\-aggressive
-Usually a three\-way merge by
-git\-read\-tree
-resolves the merge for really trivial cases and leaves other cases unresolved in the index, so that Porcelains can implement different merge policies. This flag makes the command to resolve a few more cases internally:
+Usually a three\-way merge by git\-read\-tree resolves the merge for really trivial cases and leaves other cases unresolved in the index, so that Porcelains can implement different merge policies. This flag makes the command to resolve a few more cases internally:
 .RS
 .TP 3
 \(bu
@@ -50,40 +46,33 @@ when both sides adds a path identically. The resolution is to add that path.
 .RE
 .TP
 \-\-prefix=<prefix>/
-Keep the current index contents, and read the contents of named tree\-ish under directory at
-<prefix>. The original index file cannot have anything at the path
-<prefix>
-itself, and have nothing in
-<prefix>/
-directory. Note that the
-<prefix>/
-value must end with a slash.
+Keep the current index contents, and read the contents of named tree\-ish under directory at <prefix>. The original index file cannot have anything at the path <prefix> itself, and have nothing in <prefix>/ directory. Note that the <prefix>/ value must end with a slash.
+.TP
+\-\-exclude\-per\-directory=<gitignore>
+When running the command with \-u and \-m options, the merge result may need to overwrite paths that are not tracked in the current branch. The command usually refuses to proceed with the merge to avoid losing such a path. However this safety valve sometimes gets in the way. For example, it often happens that the other branch added a file that used to be a generated file in your branch, and the safety valve triggers when you try to switch to that branch after you ran make but before running make clean to remove the generated file. This option tells the command to read per\-directory exclude file (usually \fI.gitignore\fR) and allows such an untracked but explicitly ignored file to be overwritten.
 .TP
 <tree\-ish#>
 The id of the tree object(s) to be read/merged.
 .SH "MERGING"
 If \-m is specified, git\-read\-tree can perform 3 kinds of merge, a single tree merge if only 1 tree is given, a fast\-forward merge with 2 trees, or a 3\-way merge if 3 trees are provided.
-.sp
 .SS "Single Tree Merge"
 If only 1 tree is specified, git\-read\-tree operates as if the user did not specify \-m, except that if the original index has an entry for a given pathname, and the contents of the path matches with the tree being read, the stat info from the index is used. (In other words, the index's stat()s take precedence over the merged tree's).
-.sp
+
 That means that if you do a git\-read\-tree \-m <newtree> followed by a git\-checkout\-index \-f \-u \-a, the git\-checkout\-index only checks out the stuff that really changed.
-.sp
+
 This is used to avoid unnecessary false hits when git\-diff\-files is run after git\-read\-tree.
-.sp
 .SS "Two Tree Merge"
 Typically, this is invoked as git\-read\-tree \-m $H $M, where $H is the head commit of the current repository, and $M is the head of a foreign tree, which is simply ahead of $H (i.e. we are in a fast forward situation).
-.sp
+
 When two trees are specified, the user is telling git\-read\-tree the following:
-.sp
 .TP 3
 1.
 The current index and work tree is derived from $H, but the user may have local changes in them since $H;
 .TP
 2.
 The user wants to fast\-forward to $M.
+
 In this case, the git\-read\-tree \-m $H $M command makes sure that no local change is lost as the result of this "merge". Here are the "carry forward" rules:
-.sp
 .sp
 .nf
   I (index)           H        M        Result
@@ -133,24 +122,21 @@ In this case, the git\-read\-tree \-m $H $M command makes sure that no local cha
 21 no    yes   no      exists   exists   fail
 .fi
 In all "keep index" cases, the index entry stays as in the original index file. If the entry were not up to date, git\-read\-tree keeps the copy in the work tree intact when operating under the \-u flag.
-.sp
+
 When this form of git\-read\-tree returns successfully, you can see what "local changes" you made are carried forward by running git\-diff\-index \-\-cached $M. Note that this does not necessarily match git\-diff\-index \-\-cached $H would have produced before such a two tree merge. This is because of cases 18 and 19 \-\-\- if you already had the changes in $M (e.g. maybe you picked it up via e\-mail in a patch form), git\-diff\-index \-\-cached $H would have told you about the change before this merge, but it would not show in git\-diff\-index \-\-cached $M output after two\-tree merge.
-.sp
 .SS "3\-Way Merge"
 Each "index" entry has two bits worth of "stage" state. stage 0 is the normal one, and is the only one you'd see in any kind of normal use.
-.sp
+
 However, when you do git\-read\-tree with three trees, the "stage" starts out at 1.
-.sp
+
 This means that you can do
-.sp
 .sp
 .nf
 $ git\-read\-tree \-m <tree1> <tree2> <tree3>
 .fi
 and you will end up with an index with all of the <tree1> entries in "stage1", all of the <tree2> entries in "stage2" and all of the <tree3> entries in "stage3". When performing a merge of another branch into the current branch, we use the common ancestor tree as <tree1>, the current branch head as <tree2>, and the other branch head as <tree3>.
-.sp
+
 Furthermore, git\-read\-tree has special\-case logic that says: if you see a file that matches in all respects in the following states, it "collapses" back to "stage0":
-.sp
 .TP 3
 \(bu
 stage 2 and 3 are the same; take one or the other (it makes no difference \- the same work has been done on our branch in stage 2 and their branch in stage 3)
@@ -160,12 +146,12 @@ stage 1 and stage 2 are the same and stage 3 is different; take stage 3 (our bra
 .TP
 \(bu
 stage 1 and stage 3 are the same and stage 2 is different take stage 2 (we did something while they did nothing)
+
 The git\-write\-tree command refuses to write a nonsensical tree, and it will complain about unmerged entries if it sees a single entry that is not stage 0.
-.sp
+
 OK, this all sounds like a collection of totally nonsensical rules, but it's actually exactly what you want in order to do a fast merge. The different stages represent the "result tree" (stage 0, aka "merged"), the original tree (stage 1, aka "orig"), and the two trees you are trying to merge (stage 2 and 3 respectively).
-.sp
+
 The order of stages 1, 2 and 3 (hence the order of three <tree\-ish> command line arguments) are significant when you start a 3\-way merge with an index file that is already populated. Here is an outline of how the algorithm works:
-.sp
 .TP 3
 \(bu
 if a file exists in identical format in all three trees, it will automatically collapse to "merged" state by git\-read\-tree.
@@ -187,11 +173,10 @@ if you find a "stage1", but no matching "stage2" or "stage3", you know it's been
 if you find a matching "stage2" and "stage3" tree, you remove one of them, and turn the other into a "stage0" entry. Remove any matching "stage1" entry if it exists too. .. all the normal trivial rules ..
 .RE
 You would normally use git\-merge\-index with supplied git\-merge\-one\-file to do this last step. The script updates the files in the working tree as it merges each path and at the end of a successful merge.
-.sp
+
 When you start a 3\-way merge with an index file that is already populated, it is assumed that it represents the state of the files in your work tree, and you can even have files with changes unrecorded in the index file. It is further assumed that this state is "derived" from the stage 2 tree. The 3\-way merge refuses to run if it finds an entry in the original index file that does not match stage 2.
-.sp
+
 This is done to prevent you from losing your work\-in\-progress changes, and mixing your random changes in an unrelated merge commit. To illustrate, suppose you start from what has been committed last to your repository:
-.sp
 .sp
 .nf
 $ JC=`git\-rev\-parse \-\-verify "HEAD^0"`
@@ -199,13 +184,11 @@ $ git\-checkout\-index \-f \-u \-a $JC
 .fi
 You do random edits, without running git\-update\-index. And then you notice that the tip of your "upstream" tree has advanced since you pulled from him:
 .sp
-.sp
 .nf
 $ git\-fetch git://.... linus
 $ LT=`cat .git/FETCH_HEAD`
 .fi
 Your work tree is still based on your HEAD ($JC), but you have some edits since. Three\-way merge makes sure that you have not added or modified index entries since $JC, and if you haven't, then does the right thing. So with the following sequence:
-.sp
 .sp
 .nf
 $ git\-read\-tree \-m \-u `git\-merge\-base $JC $LT` $JC $LT
@@ -214,20 +197,16 @@ $ echo "Merge with Linus" | \\
   git\-commit\-tree `git\-write\-tree` \-p $JC \-p $LT
 .fi
 what you would commit is a pure merge between $JC and $LT without your work\-in\-progress changes, and your work tree would be updated to the result of the merge.
-.sp
+
 However, if you have local changes in the working tree that would be overwritten by this merge,git\-read\-tree will refuse to run to prevent your changes from being lost.
-.sp
+
 In other words, there is no need to worry about what exists only in the working tree. When you have local changes in a part of the project that is not involved in the merge, your changes do not interfere with the merge, and are kept intact. When they \fBdo\fR interfere, the merge does not even start (git\-read\-tree complains loudly and fails without modifying anything). In such a case, you can simply continue doing what you were in the middle of doing, and when your working tree is ready (i.e. you have finished your work\-in\-progress), attempt the merge again.
-.sp
 .SH "SEE ALSO"
 \fBgit\-write\-tree\fR(1); \fBgit\-ls\-files\fR(1)
-.sp
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
-.sp
 .SH "DOCUMENTATION"
 Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
