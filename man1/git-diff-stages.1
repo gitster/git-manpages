@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DIFF\-STAGES" "1" "12/06/2006" "" ""
+.TH "GIT\-DIFF\-STAGES" "1" "12/16/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -11,10 +11,8 @@
 git\-diff\-stages \- Compares content and mode of blobs between stages in an unmerged index file
 .SH "SYNOPSIS"
 \fIgit\-diff\-stages\fR [<common diff options>] <stage1> <stage2> [<path>\&...]
-.sp
 .SH "DESCRIPTION"
 Compares the content and mode of the blobs in two stages in an unmerged index file.
-.sp
 .SH "OPTIONS"
 .TP
 \-p
@@ -34,6 +32,9 @@ Generate a diffstat. You can override the default output width for 80\-column te
 .TP
 \-\-numstat
 Similar to \-\-stat, but shows number of added and deleted lines in decimal notation and pathname without abbreviation, to make it more machine friendly.
+.TP
+\-\-shortstat
+Output only the last line of the \-\-stat format containing total number of modified files, as well as number of added and deleted lines.
 .TP
 \-\-summary
 Output a condensed summary of extended header information such as creations, renames and mode changes.
@@ -81,9 +82,7 @@ Detect renames.
 Detect copies as well as renames.
 .TP
 \-\-diff\-filter=[ACDMRTUXB*]
-Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), have their type (mode) changed (T), are Unmerged (U), are Unknown (X), or have had their pairing Broken (B). Any combination of the filter characters may be used. When
-*
-(All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected.
+Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), have their type (mode) changed (T), are Unmerged (U), are Unknown (X), or have had their pairing Broken (B). Any combination of the filter characters may be used. When * (All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected.
 .TP
 \-\-find\-copies\-harder
 For performance reasons, by default, \-C option finds copies only if the original file of the copy was modified in the same changeset. This flag makes the command inspect unmodified files as candidates for the source of copy. This is a very expensive operation for large projects, so use it with caution.
@@ -123,16 +122,15 @@ Ignore white space when comparing lines. This ignores difference even if one lin
 .TP
 \-w
 Shorthand for "\-\-ignore\-all\-space".
+
 For more detailed explanation on these common options, see also [1]\&\fIdiffcore documentation\fR.
-.sp
 .TP
 <stage1>,<stage2>
 The stage number to be compared.
 .SH "OUTPUT FORMAT"
 The output format from "git\-diff\-index", "git\-diff\-tree" and "git\-diff\-files" are very similar.
-.sp
+
 These commands all compare two sets of things; what is compared differs:
-.sp
 .TP
 git\-diff\-index <tree\-ish>
 compares the <tree\-ish> and the files on the filesystem.
@@ -145,8 +143,8 @@ compares the trees named by the two arguments.
 .TP
 git\-diff\-files [<pattern>\&...]
 compares the index and the files on the filesystem.
+
 An output line is formatted this way:
-.sp
 .sp
 .nf
 in\-place edit  :100644 100644 bcd1234... 0123456... M file0
@@ -157,7 +155,6 @@ delete         :100644 000000 1234567... 0000000... D file5
 unmerged       :000000 000000 0000000... 0000000... U file6
 .fi
 That is, from the left to the right:
-.sp
 .TP 3
 1.
 a colon.
@@ -190,40 +187,32 @@ a space.
 status, followed by optional "score" number.
 .TP
 11.
-a tab or a NUL when
-\fI\-z\fR
-option is used.
+a tab or a NUL when \fI\-z\fR option is used.
 .TP
 12.
 path for "src"
 .TP
 13.
-a tab or a NUL when
-\fI\-z\fR
-option is used; only exists for C or R.
+a tab or a NUL when \fI\-z\fR option is used; only exists for C or R.
 .TP
 14.
 path for "dst"; only exists for C or R.
 .TP
 15.
-an LF or a NUL when
-\fI\-z\fR
-option is used, to terminate the record.
+an LF or a NUL when \fI\-z\fR option is used, to terminate the record.
+
 <sha1> is shown as all 0's if a file is new on the filesystem and it is out of sync with the index.
-.sp
+
 Example:
-.sp
 .sp
 .nf
 :100644 100644 5be4a4...... 000000...... M file.c
 .fi
 When \-z option is not used, TAB, LF, and backslash characters in pathnames are represented as \\t, \\n, and \\\\, respectively.
-.sp
 .SH "GENERATING PATCHES WITH \-P"
 When "git\-diff\-index", "git\-diff\-tree", or "git\-diff\-files" are run with a \fI\-p\fR option, they do not produce the output described above; instead they produce a patch file. You can customize the creation of such patches via the GIT_EXTERNAL_DIFF and the GIT_DIFF_OPTS environment variables.
-.sp
+
 What the \-p option produces is slightly different from the traditional diff format.
-.sp
 .TP 3
 1.
 It is preceded with a "git diff" header, that looks like this:
@@ -231,23 +220,9 @@ It is preceded with a "git diff" header, that looks like this:
 .nf
 diff \-\-git a/file1 b/file2
 .fi
-The
-a/
-and
-b/
-filenames are the same unless rename/copy is involved. Especially, even for a creation or a deletion,
-/dev/null
-is _not_ used in place of
-a/
-or
-b/
-filenames.
-.sp
-When rename/copy is involved,
-file1
-and
-file2
-show the name of the source file of the rename/copy and the name of the file that rename/copy produces, respectively.
+The a/ and b/ filenames are the same unless rename/copy is involved. Especially, even for a creation or a deletion, /dev/null is _not_ used in place of a/ or b/ filenames.
+
+When rename/copy is involved, file1 and file2 show the name of the source file of the rename/copy and the name of the file that rename/copy produces, respectively.
 .TP
 2.
 It is followed by one or more extended header lines:
@@ -267,15 +242,9 @@ index <hash>..<hash> <mode>
 .fi
 .TP
 3.
-TAB, LF, double quote and backslash characters in pathnames are represented as
-\\t,
-\\n,
-\\"
-and
-\\\\, respectively. If there is need for such substitution then the whole pathname is put in double quotes.
+TAB, LF, double quote and backslash characters in pathnames are represented as \\t, \\n, \\" and \\\\, respectively. If there is need for such substitution then the whole pathname is put in double quotes.
 .SH "COMBINED DIFF FORMAT"
 git\-diff\-tree and git\-diff\-files can take \fI\-c\fR or \fI\-\-cc\fR option to produce \fIcombined diff\fR, which looks like this:
-.sp
 .sp
 .nf
 diff \-\-combined describe.c
@@ -308,16 +277,12 @@ index fabadb8,cc95eb0..4866510
 .fi
 .TP 3
 1.
-It is preceded with a "git diff" header, that looks like this (when
-\fI\-c\fR
-option is used):
+It is preceded with a "git diff" header, that looks like this (when \fI\-c\fR option is used):
 .sp
 .nf
 diff \-\-combined file
 .fi
-or like this (when
-\fI\-\-cc\fR
-option is used):
+or like this (when \fI\-\-cc\fR option is used):
 .sp
 .nf
 diff \-\-c file
@@ -332,9 +297,7 @@ mode <mode>,<mode>..<mode>
 new file mode <mode>
 deleted file mode <mode>,<mode>
 .fi
-The
-mode <mode>,<mode>..<mode>
-line appears only if at least one of the <mode> is diferent from the rest. Extended headers with information about detected contents movement (renames and copying detection) are designed to work with diff of two <tree\-ish> and are not used by combined diff format.
+The mode <mode>,<mode>..<mode> line appears only if at least one of the <mode> is diferent from the rest. Extended headers with information about detected contents movement (renames and copying detection) are designed to work with diff of two <tree\-ish> and are not used by combined diff format.
 .TP
 3.
 It is followed by two\-line from\-file/to\-file header
@@ -343,41 +306,29 @@ It is followed by two\-line from\-file/to\-file header
 \-\-\- a/file
 +++ b/file
 .fi
-Similar to two\-line header for traditional
-\fIunified\fR
-diff format,
-/dev/null
-is used to signal created or deleted files.
+Similar to two\-line header for traditional \fIunified\fR diff format, /dev/null is used to signal created or deleted files.
 .TP
 4.
-Chunk header format is modified to prevent people from accidentally feeding it to
-patch \-p1. Combined diff format was created for review of merge commit changes, and was not meant for apply. The change is similar to the change in the extended
-\fIindex\fR
-header:
+Chunk header format is modified to prevent people from accidentally feeding it to patch \-p1. Combined diff format was created for review of merge commit changes, and was not meant for apply. The change is similar to the change in the extended \fIindex\fR header:
 .sp
 .nf
 @@@ <from\-file\-range> <from\-file\-range> <to\-file\-range> @@@
 .fi
-There are (number of parents + 1)
-@
-characters in the chunk header for combined diff format.
+There are (number of parents + 1) @ characters in the chunk header for combined diff format.
+
 Unlike the traditional \fIunified\fR diff format, which shows two files A and B with a single column that has \- (minus \(em appears in A but removed in B), + (plus \(em missing in A but added to B), or " " (space \(em unchanged) prefix, this format compares two or more files file1, file2,\&... with one file X, and shows how X differs from each of fileN. One column for each of fileN is prepended to the output line to note how X's line is different from it.
-.sp
+
 A \- character in the column N means that the line appears in fileN but it does not appear in the result. A + character in the column N means that the line appears in the last file, and fileN does not have that line (in other words, the line was added, from the point of view of that parent).
-.sp
+
 In the above example output, the function signature was changed from both files (hence two \- removals from both file1 and file2, plus ++ to mean one line that was added does not appear in either file1 nor file2). Also two other lines are the same from file1 but do not appear in file2 (hence prefixed with +).
-.sp
+
 When shown by git diff\-tree \-c, it compares the parents of a merge commit with the merge result (i.e. file1..fileN are the parents). When shown by git diff\-files \-c, it compares the two unresolved merge parents with the working tree file (i.e. file1 is stage 2 aka "our version", file2 is stage 3 aka "their version").
-.sp
 .SH "AUTHOR"
 Written by Junio C Hamano <junkio@cox.net>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
 .SH "REFERENCES"
 .TP 3
 1.\ diffcore documentation

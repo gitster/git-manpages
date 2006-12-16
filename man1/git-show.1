@@ -2,41 +2,34 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SHOW" "1" "11/23/2006" "" ""
+.TH "GIT\-SHOW" "1" "12/16/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-show \- Show one commit with difference it introduces
+git\-show \- Show various types of objects
 .SH "SYNOPSIS"
-\fIgit\-show\fR <option>\&...
-.sp
+\fIgit\-show\fR [options] <object>\&...
 .SH "DESCRIPTION"
-Shows commit log and textual diff for a single commit. The command internally invokes \fIgit\-rev\-list\fR piped to \fIgit\-diff\-tree\fR, and takes command line options for both of these commands. It also presents the merge commit in a special format as produced by \fIgit\-diff\-tree \-\-cc\fR.
-.sp
+Shows one or more objects (blobs, trees, tags and commits).
+
+For commits it shows the log message and textual diff. It also presents the merge commit in a special format as produced by \fIgit\-diff\-tree \-\-cc\fR.
+
+For tags, it shows the tag message and the referenced objects.
+
+For trees, it shows the names (equivalent to \fBgit\-ls\-tree\fR(1) with \-\-name\-only).
+
+For plain blobs, it shows the plain contents.
+
 This manual page describes only the most frequently used options.
-.sp
 .SH "OPTIONS"
 .TP
 <commitid>
 ID of the commit to show.
 .TP
 \-\-pretty[=\fI<format>\fR]
-Pretty\-prints the details of a commit.
-\-\-pretty
-without an explicit
-=<format>
-defaults to
-\fImedium\fR. If the commit is a merge, and if the pretty\-format is not
-\fIoneline\fR,
-\fIemail\fR
-or
-\fIraw\fR, an additional line is inserted before the
-\fIAuthor:\fR
-line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the
-\fBdirect\fR
-parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file. Here are some additional details for each format:
+Pretty\-prints the details of a commit. \-\-pretty without an explicit =<format> defaults to \fImedium\fR. If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file. Here are some additional details for each format:
 .RS
 .TP 3
 \(bu
@@ -128,21 +121,26 @@ full commit message>
 .TP
 \(bu
 \fIraw\fR
-.sp
-The
-\fIraw\fR
-format shows the entire commit exactly as stored in the commit object. Notably, the SHA1s are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and
-\fIparents\fR
-information show the true parent commits, without taking grafts nor history simplification into account.
+
+The \fIraw\fR format shows the entire commit exactly as stored in the commit object. Notably, the SHA1s are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and \fIparents\fR information show the true parent commits, without taking grafts nor history simplification into account.
 .RE
+.SH "EXAMPLES"
+.TP
+git show v1.0.0
+Shows the tag v1.0.0.
+.TP
+
+Shows the tree pointed to by the tag v1.0.0.
+
+git show next~10:Documentation/README Shows the contents of the file Documentation/README as they were current in the 10th last commit of the branch next.
+
+git show master:Makefile master:t/Makefile Concatenates the contents of said Makefiles in the head of the branch master.
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org> and Junio C Hamano <junkio@cox.net>
-.sp
 .SH "DOCUMENTATION"
 Documentation by David Greaves, Petr Baudis and the git\-list <git@vger.kernel.org>.
-.sp
+
 This manual page is a stub. You can help the git documentation by expanding it.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+

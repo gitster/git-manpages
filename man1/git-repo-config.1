@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REPO\-CONFIG" "1" "12/13/2006" "" ""
+.TH "GIT\-REPO\-CONFIG" "1" "12/16/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,6 +13,7 @@ git\-repo\-config \- Get and set repository or global options.
 .sp
 .nf
 \fIgit\-repo\-config\fR [\-\-global] [type] name [value [value_regex]]
+\fIgit\-repo\-config\fR [\-\-global] [type] \-\-add name value
 \fIgit\-repo\-config\fR [\-\-global] [type] \-\-replace\-all name [value [value_regex]]
 \fIgit\-repo\-config\fR [\-\-global] [type] \-\-get name [value_regex]
 \fIgit\-repo\-config\fR [\-\-global] [type] \-\-get\-all name [value_regex]
@@ -23,7 +24,7 @@ git\-repo\-config \- Get and set repository or global options.
 .SH "DESCRIPTION"
 You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
 
-If you want to set/unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see EXAMPLES).
+Multiple lines can be added to an option by using the \fI\-\-add\fR option. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see EXAMPLES).
 
 The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make \fIgit\-repo\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool). If no type specifier is passed, no checks or transformations are performed on the value.
 
@@ -53,6 +54,9 @@ you use \-\-global option without $HOME being properly set.
 .TP
 \-\-replace\-all
 Default behavior is to replace at most one line. This replaces all lines matching the key (and optionally the value_regex).
+.TP
+\-\-add
+Adds a new line to the option without altering any existing values. This is the same as providing \fI^$\fR as the value_regex.
 .TP
 \-\-get
 Get the value for a given key (optionally filtered by a regex matching the value). Returns error code 1 if the key was not found and error code 2 if multiple key values were found.
@@ -174,6 +178,11 @@ To actually match only values with an exclamation mark, you have to
 .nf
 % git repo\-config section.key value '[!]'
 .fi
+To add a new proxy, without altering any of the existing ones, use
+.sp
+.nf
+% git repo\-config core.gitproxy '"proxy" for example.com'
+.fi
 .SH "CONFIGURATION FILE"
 The git configuration file contains a number of variables that affect the git command's behavior. They can be used by both the git plumbing and the porcelains. The variables are divided into sections, where in the fully qualified variable name the variable itself is the last dot\-separated segment and the section name is everything before the last dot. The variable names are case\-insensitive and only alphanumeric characters are allowed. Some variables may appear multiple times.
 
@@ -215,8 +224,13 @@ Updates to a ref <ref> is logged to the file "$GIT_DIR/logs/<ref>", by appending
 .sp
 .nf
 This information can be used to determine what commit
-was the tip of a branch "2 days ago".  This value is
-false by default (no automated creation of log files).
+was the tip of a branch "2 days ago".
+.fi
+.sp
+.nf
+This value is true by default in a repository that has
+a working directory associated with it, and false by
+default in a bare repository.
 .fi
 .TP
 core.repositoryFormatVersion
@@ -259,7 +273,7 @@ color.status
 A boolean to enable/disable color in the output of \fBgit\-status\fR(1). May be set to true (or always), false (or never) or auto, in which case colors are used only when the output is to a terminal. Defaults to false.
 .TP
 color.status.<slot>
-Use customized color for status colorization. <slot> is one of header (the header text of the status message), updated (files which are updated but not committed), changed (files which are changed but not updated in the index), or untracked (files which are not tracked by git). The values of these variables may be specified as in color.diff.<slot>.
+Use customized color for status colorization. <slot> is one of header (the header text of the status message), added or updated (files which are added but not committed), changed (files which are changed but not added in the index), or untracked (files which are not tracked by git). The values of these variables may be specified as in color.diff.<slot>.
 .TP
 diff.renameLimit
 The number of files to consider when performing the copy/rename detection; equivalent to the git diff option \fI\-l\fR.
