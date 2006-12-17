@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SVNIMPORT" "1" "10/03/2006" "" ""
+.TH "GIT\-SVNIMPORT" "1" "12/17/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,17 +17,17 @@ git\-svnimport \- Import a SVN repository into git
                 [ \-b branch_subdir ] [ \-T trunk_subdir ] [ \-t tag_subdir ]
                 [ \-s start_chg ] [ \-m ] [ \-r ] [ \-M regex ]
                 [ \-I <ignorefile_name> ] [ \-A <author_file> ]
+                [ \-P <path_from_trunk> ]
                 <SVN_repository_URL> [ <path> ]
 .fi
 .SH "DESCRIPTION"
 Imports a SVN repository into git. It will either create a new repository, or incrementally import into an existing one.
-.sp
+
 SVN access is done by the SVN::Perl module.
-.sp
+
 git\-svnimport assumes that SVN repositories are organized into one "trunk" directory where the main development happens, "branch/FOO" directories for branches, and "/tags/FOO" directories for tags. Other subdirectories are ignored.
-.sp
+
 git\-svnimport creates a file ".git/svn2git", which is required for incremental SVN imports.
-.sp
 .SH "OPTIONS"
 .TP
 \-C <target\-dir>
@@ -35,7 +35,7 @@ The GIT repository to import to. If the directory doesn't exist, it will be crea
 .TP
 \-s <start_rev>
 Start importing at this SVN change number. The default is 1.
-.sp
+
 When importing incrementally, you might need to edit the .git/svn2git file.
 .TP
 \-i
@@ -51,16 +51,10 @@ Name the SVN subdirectory for tags. Default "tags".
 Name the SVN subdirectory for branches. Default "branches".
 .TP
 \-o <branch\-for\-HEAD>
-The
-\fItrunk\fR
-branch from SVN is imported to the
-\fIorigin\fR
-branch within the git repository. Use this option if you want to import into a different branch.
+The \fItrunk\fR branch from SVN is imported to the \fIorigin\fR branch within the git repository. Use this option if you want to import into a different branch.
 .TP
 \-r
-Prepend
-\fIrX: \fR
-to commit messages, where X is the imported subversion revision.
+Prepend \fIrX: \fR to commit messages, where X is the imported subversion revision.
 .TP
 \-I <ignorefile_name>
 Import the svn:ignore directory property to files with this name in each directory. (The Subversion and GIT ignore syntaxes are similar enough that using the Subversion patterns directly with "\-I .gitignore" will almost always just work.)
@@ -72,7 +66,7 @@ Read a file with lines on the form
         username = User's Full Name <email@addr.es>
 .fi
 and use "User's Full Name <email@addr.es>" as the GIT author and committer for Subversion commits made by "username". If encountering a commit made by a user not in the list, abort.
-.sp
+
 For convenience, this data is saved to $GIT_DIR/svn\-authors each time the \-A option is provided, and read from that same file each time git\-svnimport is run with an existing GIT repository without \-A.
 .TP
 \-m
@@ -83,28 +77,28 @@ Attempt to detect merges based on the commit message with a custom regex. It can
 .TP
 \-l <max_rev>
 Specify a maximum revision number to pull.
-.sp
-.nf
-Formerly, this option controlled how many revisions to pull,
-due to SVN memory leaks. (These have been worked around.)
-.fi
+
+Formerly, this option controlled how many revisions to pull, due to SVN memory leaks. (These have been worked around.)
+.TP
+\-P <path_from_trunk>
+Partial import of the SVN tree.
+
+By default, the whole tree on the SVN trunk (/trunk) is imported. \fI\-P my/proj\fR will import starting only from \fI/trunk/my/proj\fR. This option is useful when you want to import one project from a svn repo which hosts multiple projects under the same trunk.
 .TP
 \-v
-Verbosity: let
-\fIsvnimport\fR
-report what it is doing.
+Verbosity: let \fIsvnimport\fR report what it is doing.
 .TP
 \-d
 Use direct HTTP requests if possible. The "<path>" argument is used only for retrieving the SVN logs; the path to the contents is included in the SVN log.
 .TP
 \-D
 Use direct HTTP requests if possible. The "<path>" argument is used for retrieving the logs, as well as for the contents.
-.sp
+
 There's no safe way to automatically find out which of these options to use, so you need to try both. Usually, the one that's wrong will die with a 40x error pretty quickly.
 .TP
 <SVN_repository_URL>
 The URL of the SVN module you want to import. For local repositories, use "file:///absolute/path".
-.sp
+
 If you're using the "\-d" or "\-D" option, this is the URL of the SVN repository itself; it usually ends in "/svn".
 .TP
 <path>
@@ -114,17 +108,14 @@ The path to the module you want to check out.
 Print a short usage message and exit.
 .SH "OUTPUT"
 If \fI\-v\fR is specified, the script reports what it is doing.
-.sp
+
 Otherwise, success is indicated the Unix way, i.e. by simply exiting with a zero exit status.
-.sp
 .SH "AUTHOR"
 Written by Matthias Urlichs <smurf@smurf.noris.de>, with help from various participants of the git\-list <git@vger.kernel.org>.
-.sp
+
 Based on a cvs2git script by the same author.
-.sp
 .SH "DOCUMENTATION"
 Documentation by Matthias Urlichs <smurf@smurf.noris.de>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
