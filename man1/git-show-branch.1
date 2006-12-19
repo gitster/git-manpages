@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SHOW\-BRANCH" "1" "10/03/2006" "" ""
+.TH "GIT\-SHOW\-BRANCH" "1" "12/19/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,25 +14,21 @@ git\-show\-branch \- Show branches and their commits
 .nf
 \fIgit\-show\-branch\fR [\-\-all] [\-\-heads] [\-\-tags] [\-\-topo\-order] [\-\-current]
                 [\-\-more=<n> | \-\-list | \-\-independent | \-\-merge\-base]
-                [\-\-no\-name | \-\-sha1\-name] [<rev> | <glob>]\&...
+                [\-\-no\-name | \-\-sha1\-name] [\-\-topics] [<rev> | <glob>]\&...
 .fi
 .SH "DESCRIPTION"
 Shows the commit ancestry graph starting from the commits named with <rev>s or <globs>s (or all refs under $GIT_DIR/refs/heads and/or $GIT_DIR/refs/tags) semi\-visually.
-.sp
+
 It cannot show more than 29 branches and commits at a time.
-.sp
+
 It uses showbranch.default multi\-valued configuration items if no <rev> nor <glob> is given on the command line.
-.sp
 .SH "OPTIONS"
 .TP
 <rev>
-Arbitrary extended SHA1 expression (see
-git\-rev\-parse) that typically names a branch HEAD or a tag.
+Arbitrary extended SHA1 expression (see git\-rev\-parse) that typically names a branch HEAD or a tag.
 .TP
 <glob>
-A glob pattern that matches branch or tag names under $GIT_DIR/refs. For example, if you have many topic branches under $GIT_DIR/refs/heads/topic, giving
-topic/*
-would show all of them.
+A glob pattern that matches branch or tag names under $GIT_DIR/refs. For example, if you have many topic branches under $GIT_DIR/refs/heads/topic, giving topic/* would show all of them.
 .TP
 \-\-all \-\-heads \-\-tags
 Show all refs under $GIT_DIR/refs, $GIT_DIR/refs/heads, and $GIT_DIR/refs/tags, respectively.
@@ -50,13 +46,10 @@ By default, the output omits merges that are reachable from only one tip being s
 Usually the command stops output upon showing the commit that is the common ancestor of all the branches. This flag tells the command to go <n> more common commits beyond that. When <n> is negative, display only the <reference>s given, without showing the commit ancestry tree.
 .TP
 \-\-list
-Synonym to
-\-\-more=\-1
+Synonym to \-\-more=\-1
 .TP
 \-\-merge\-base
-Instead of showing the commit list, just act like the
-\fIgit\-merge\-base \-a\fR
-command, except that it can accept more than two heads.
+Instead of showing the commit list, just act like the \fIgit\-merge\-base \-a\fR command, except that it can accept more than two heads.
 .TP
 \-\-independent
 Among the <reference>s given, display only the ones that cannot be reached from any other <reference>.
@@ -66,15 +59,17 @@ Do not show naming strings for each commit.
 .TP
 \-\-sha1\-name
 Instead of naming the commits using the path to reach them from heads (e.g. "master~2" to mean the grandparent of "master"), name them with the unique prefix of their object names.
+.TP
+\-\-topics
+Shows only commits that are NOT on the first branch given. This helps track topic branches by hiding any commit that is already in the main line of development. When given "git show\-branch \-\-topics master topic1 topic2", this will show the revisions given by "git rev\-list ^master topic1 topic2"
+
 Note that \-\-more, \-\-list, \-\-independent and \-\-merge\-base options are mutually exclusive.
-.sp
 .SH "OUTPUT"
 Given N <references>, the first N lines are the one\-line description from their commit message. The branch head that is pointed at by $GIT_DIR/HEAD is prefixed with an asterisk * character while other heads are prefixed with a ! character.
-.sp
+
 Following these N lines, one\-line log for each commit is displayed, indented N places. If a commit is on the I\-th branch, the I\-th indentation character shows a + sign; otherwise it shows a space. Merge commits are denoted by a \- sign. Each commit shows a short name that can be used as an extended SHA1 to name that commit.
-.sp
+
 The following example shows three branches, "master", "fixes" and "mhf":
-.sp
 .sp
 .nf
 $ git show\-branch master fixes mhf
@@ -95,10 +90,8 @@ $ git show\-branch master fixes mhf
 *++ [master] Add 'git show\-branch'.
 .fi
 These three branches all forked from a common commit, [master], whose commit message is "Add \fIgit show\-branch\fR. "fixes" branch adds one commit \fIIntroduce "reset type"\fR. "mhf" branch has many other commits. The current branch is "master".
-.sp
 .SH "EXAMPLE"
 If you keep your primary branches immediately under $GIT_DIR/refs/heads, and topic branches in subdirectories of it, having the following in the configuration file may help:
-.sp
 .sp
 .nf
 [showbranch]
@@ -106,13 +99,10 @@ If you keep your primary branches immediately under $GIT_DIR/refs/heads, and top
         default = heads/*
 .fi
 With this, git show\-branch without extra parameters would show only the primary branches. In addition, if you happen to be on your topic branch, it is shown as well.
-.sp
 .SH "AUTHOR"
 Written by Junio C Hamano <junkio@cox.net>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
