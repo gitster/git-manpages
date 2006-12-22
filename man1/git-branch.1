@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BRANCH" "1" "12/13/2006" "" ""
+.TH "GIT\-BRANCH" "1" "12/22/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -15,7 +15,7 @@ git\-branch \- List, create, or delete branches.
 \fIgit\-branch\fR [\-r | \-a] [\-v [\-\-abbrev=<length>]]
 \fIgit\-branch\fR [\-l] [\-f] <branchname> [<start\-point>]
 \fIgit\-branch\fR (\-m | \-M) [<oldbranch>] <newbranch>
-\fIgit\-branch\fR (\-d | \-D) <branchname>\&...
+\fIgit\-branch\fR (\-d | \-D) [\-r] <branchname>\&...
 .fi
 .SH "DESCRIPTION"
 With no arguments given a list of existing branches will be shown, the current branch will be highlighted with an asterisk. Option \-r causes the remote\-tracking branches to be listed, and option \-a shows both.
@@ -24,7 +24,7 @@ In its second form, a new branch named <branchname> will be created. It will sta
 
 With a \fI\-m\fR or \fI\-M\fR option, <oldbranch> will be renamed to <newbranch>. If <oldbranch> had a corresponding reflog, it is renamed to match <newbranch>, and a reflog entry is created to remember the branch renaming. If <newbranch> exists, \-M must be used to force the rename to happen.
 
-With a \-d or \-D option, <branchname> will be deleted. You may specify more than one branch for deletion. If the branch currently has a ref log then the ref log will also be deleted.
+With a \-d or \-D option, <branchname> will be deleted. You may specify more than one branch for deletion. If the branch currently has a ref log then the ref log will also be deleted. Use \-r together with \-d to delete remote\-tracking branches.
 .SH "OPTIONS"
 .TP
 \-d
@@ -46,7 +46,7 @@ Move/rename a branch and the corresponding reflog.
 Move/rename a branch even if the new branchname already exists.
 .TP
 \-r
-List the remote\-tracking branches.
+List or delete (if used with \-d) the remote\-tracking branches.
 .TP
 \-a
 List both remote\-tracking branches and local branches.
@@ -87,10 +87,13 @@ Delete unneeded branch
 .nf
 $ git clone git://git.kernel.org/.../git.git my.git
 $ cd my.git
-$ git branch \-D todo    \fB(1)\fR
+$ git branch \-d \-r todo html man   \fB(1)\fR
+$ git branch \-D test               \fB(2)\fR
 .fi
 .sp
-\fB1. \fRdelete todo branch even if the "master" branch does not have all commits from todo branch.
+\fB1. \fRdelete remote\-tracking branches "todo", "html", "man"
+.br
+\fB2. \fRdelete "test" branch even if the "master" branch does not have all commits from todo branch.
 .br
 .SH "NOTES"
 If you are creating a branch that you want to immediately checkout, it's easier to use the git checkout command with its \-b option to create a branch and check it out with a single command.
