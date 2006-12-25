@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REV\-LIST" "1" "11/23/2006" "" ""
+.TH "GIT\-REV\-LIST" "1" "12/25/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,6 +13,7 @@ git\-rev\-list \- Lists commit objects in reverse chronological order
 .sp
 .nf
 \fIgit\-rev\-list\fR [ \-\-max\-count=number ]
+             [ \-\-skip=number ]
              [ \-\-max\-age=timestamp ]
              [ \-\-min\-age=timestamp ]
              [ \-\-sparse ]
@@ -32,17 +33,15 @@ git\-rev\-list \- Lists commit objects in reverse chronological order
 .fi
 .SH "DESCRIPTION"
 Lists commit objects in reverse chronological order starting at the given commit(s), taking ancestry relationship into account. This is useful to produce human\-readable log output.
-.sp
+
 Commits which are stated with a preceding \fI^\fR cause listing to stop at that point. Their parents are implied. Thus the following command:
-.sp
 .sp
 .nf
         $ git\-rev\-list foo bar ^baz
 .fi
 means "list all the commits which are included in \fIfoo\fR and \fIbar\fR, but not in \fIbaz\fR".
-.sp
+
 A special notation "\fI<commit1>\fR..\fI<commit2>\fR" can be used as a short\-hand for "^\fI<commit1>\fR \fI<commit2>\fR". For example, either of the following may be used interchangeably:
-.sp
 .sp
 .nf
         $ git\-rev\-list origin..HEAD
@@ -50,33 +49,17 @@ A special notation "\fI<commit1>\fR..\fI<commit2>\fR" can be used as a short\-ha
 .fi
 Another special notation is "\fI<commit1>\fR\&...\fI<commit2>\fR" which is useful for merges. The resulting set of commits is the symmetric difference between the two operands. The following two commands are equivalent:
 .sp
-.sp
 .nf
         $ git\-rev\-list A B \-\-not $(git\-merge\-base \-\-all A B)
         $ git\-rev\-list A...B
 .fi
 \fBgit\-rev\-list\fR(1) is a very essential git program, since it provides the ability to build and traverse commit ancestry graphs. For this reason, it has a lot of different options that enables it to be used by commands as different as \fBgit\-bisect\fR(1) and \fBgit\-repack\fR(1).
-.sp
 .SH "OPTIONS"
 .SS "Commit Formatting"
 Using these options, \fBgit\-rev\-list\fR(1) will act similar to the more specialized family of commit log tools: \fBgit\-log\fR(1), \fBgit\-show\fR(1), and \fBgit\-whatchanged\fR(1)
-.sp
 .TP
 \-\-pretty[=\fI<format>\fR]
-Pretty\-prints the details of a commit.
-\-\-pretty
-without an explicit
-=<format>
-defaults to
-\fImedium\fR. If the commit is a merge, and if the pretty\-format is not
-\fIoneline\fR,
-\fIemail\fR
-or
-\fIraw\fR, an additional line is inserted before the
-\fIAuthor:\fR
-line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the
-\fBdirect\fR
-parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file. Here are some additional details for each format:
+Pretty\-prints the details of a commit. \-\-pretty without an explicit =<format> defaults to \fImedium\fR. If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file. Here are some additional details for each format:
 .RS
 .TP 3
 \(bu
@@ -168,12 +151,8 @@ full commit message>
 .TP
 \(bu
 \fIraw\fR
-.sp
-The
-\fIraw\fR
-format shows the entire commit exactly as stored in the commit object. Notably, the SHA1s are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and
-\fIparents\fR
-information show the true parent commits, without taking grafts nor history simplification into account.
+
+The \fIraw\fR format shows the entire commit exactly as stored in the commit object. Notably, the SHA1s are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and \fIparents\fR information show the true parent commits, without taking grafts nor history simplification into account.
 .RE
 .TP
 \-\-relative\-date
@@ -186,28 +165,26 @@ Print the contents of the commit in raw\-format; each record is separated with a
 Print the parents of the commit.
 .SS "Diff Formatting"
 Below are listed options that control the formatting of diff output. Some of them are specific to \fBgit\-rev\-list\fR(1), however other diff options may be given. See \fBgit\-diff\-files\fR(1) for more options.
-.sp
 .TP
 \-c
 This flag changes the way a merge commit is displayed. It shows the differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time. Furthermore, it lists only files which were modified from all parents.
 .TP
 \-\-cc
-This flag implies the
-\fI\-c\fR
-options and further compresses the patch output by omitting hunks that show differences from only one parent, or show the same change from all but one parent for an Octopus merge.
+This flag implies the \fI\-c\fR options and further compresses the patch output by omitting hunks that show differences from only one parent, or show the same change from all but one parent for an Octopus merge.
 .TP
 \-r
 Show recursive diffs.
 .TP
 \-t
-Show the tree objects in the diff output. This implies
-\fI\-r\fR.
+Show the tree objects in the diff output. This implies \fI\-r\fR.
 .SS "Commit Limiting"
 Besides specifying a range of commits that should be listed using the special notations explained in the description, additional commit limiting may be applied.
-.sp
 .TP
 \-n \fInumber\fR, \-\-max\-count=\fInumber\fR
 Limit the number of commits output.
+.TP
+\-\-skip=\fInumber\fR
+Skip \fInumber\fR commits before starting to show the commit output.
 .TP
 \-\-since=\fIdate\fR, \-\-after=\fIdate\fR
 Show commits more recent than a specific date.
@@ -231,21 +208,13 @@ Stop when a given path disappears from the tree.
 Do not print commits with more than one parent.
 .TP
 \-\-not
-Reverses the meaning of the
-\fI^\fR
-prefix (or lack thereof) for all following revision specifiers, up to the next
-\fI\-\-not\fR.
+Reverses the meaning of the \fI^\fR prefix (or lack thereof) for all following revision specifiers, up to the next \fI\-\-not\fR.
 .TP
 \-\-all
-Pretend as if all the refs in
-$GIT_DIR/refs/
-are listed on the command line as
-\fI<commit>\fR.
+Pretend as if all the refs in $GIT_DIR/refs/ are listed on the command line as \fI<commit>\fR.
 .TP
 \-\-stdin
-In addition to the
-\fI<commit>\fR
-listed on the command line, read them from the standard input.
+In addition to the \fI<commit>\fR listed on the command line, read them from the standard input.
 .TP
 \-\-merge
 After a failed merge, show refs that touch files having a conflict and don't exist on all heads to merge.
@@ -255,10 +224,8 @@ Output uninteresting commits at the boundary, which are usually not shown.
 .TP
 \-\-dense, \-\-sparse
 When optional paths are given, the default behaviour (\fI\-\-dense\fR) is to only output commits that changes at least one of them, and also ignore merges that do not touch the given paths.
-.sp
-Use the
-\fI\-\-sparse\fR
-flag to makes the command output all eligible commits (still subject to count and age limitation), but apply merge simplification nevertheless.
+
+Use the \fI\-\-sparse\fR flag to makes the command output all eligible commits (still subject to count and age limitation), but apply merge simplification nevertheless.
 .TP
 \-\-bisect
 Limit output to the one commit object which is roughly halfway between the included and excluded commits. Thus, if
@@ -266,8 +233,7 @@ Limit output to the one commit object which is roughly halfway between the inclu
 .nf
         $ git\-rev\-list \-\-bisect foo ^bar ^baz
 .fi
-outputs
-\fImidpoint\fR, the output of the two commands
+outputs \fImidpoint\fR, the output of the two commands
 .sp
 .nf
         $ git\-rev\-list foo ^midpoint
@@ -276,41 +242,27 @@ outputs
 would be of roughly the same length. Finding the change which introduces a regression is thus reduced to a binary search: repeatedly generate and test new 'midpoint's until the commit chain is of length one.
 .SS "Commit Ordering"
 By default, the commits are shown in reverse chronological order.
-.sp
 .TP
 \-\-topo\-order
 This option makes them appear in topological order (i.e. descendant commits are shown before their parents).
 .TP
 \-\-date\-order
-This option is similar to
-\fI\-\-topo\-order\fR
-in the sense that no parent comes before all of its children, but otherwise things are still ordered in the commit timestamp order.
+This option is similar to \fI\-\-topo\-order\fR in the sense that no parent comes before all of its children, but otherwise things are still ordered in the commit timestamp order.
 .SS "Object Traversal"
 These options are mostly targeted for packing of git repositories.
-.sp
 .TP
 \-\-objects
-Print the object IDs of any object referenced by the listed commits.
-\fIgit\-rev\-list \-\-objects foo ^bar\fR
-thus means "send me all object IDs which I need to download if I have the commit object
-\fIbar\fR, but not
-\fIfoo\fR".
+Print the object IDs of any object referenced by the listed commits. \fIgit\-rev\-list \-\-objects foo ^bar\fR thus means "send me all object IDs which I need to download if I have the commit object \fIbar\fR, but not \fIfoo\fR".
 .TP
 \-\-objects\-edge
-Similar to
-\fI\-\-objects\fR, but also print the IDs of excluded commits prefixed with a "\-" character. This is used by
-\fBgit\-pack\-objects\fR(1)
-to build "thin" pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic.
+Similar to \fI\-\-objects\fR, but also print the IDs of excluded commits prefixed with a "\-" character. This is used by \fBgit\-pack\-objects\fR(1) to build "thin" pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic.
 .TP
 \-\-unpacked
-Only useful with
-\fI\-\-objects\fR; print the object IDs that are not in packs.
+Only useful with \fI\-\-objects\fR; print the object IDs that are not in packs.
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
-.sp
 .SH "DOCUMENTATION"
 Documentation by David Greaves, Junio C Hamano, Jonas Fonseca and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
