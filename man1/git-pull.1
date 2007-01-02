@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-PULL" "1" "01/01/2007" "" ""
+.TH "GIT\-PULL" "1" "01/02/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -48,7 +48,10 @@ Most of the tags are fetched automatically as branch heads are downloaded, but t
 Keep downloaded pack.
 .TP
 \-u, \-\-update\-head\-ok
-By default git\-fetch refuses to update the head which corresponds to the current branch. This flag disables the check. Note that fetching into the current branch will not update the index and working directory, so use it with care.
+By default git\-fetch refuses to update the head which corresponds to the current branch. This flag disables the check. This is purely for the internal use for git\-pull to communicate with git\-fetch, and unless you are implementing your own Porcelain you are not supposed to use it.
+.TP
+\-\-depth=<depth>
+Deepen the history of a \fIshallow\fR repository created by git clone with \-\-depth=<depth> option (see \fBgit\-clone\fR(1)) by the specified number of commits.
 .TP
 <repository>
 The "remote" repository that is the source of a fetch or pull operation. See the section GIT URLS below.
@@ -70,7 +73,7 @@ If the remote branch from which you want to pull is modified in non\-linear ways
 .nr an-break-flag 1
 .br
 \fBNote\fR
-You never do your own development on branches that appear on the right hand side of a <refspec> colon on Pull: lines; they are to be updated by git\-fetch. If you intend to do development derived from a remote branch B, have a Pull: line to track it (i.e. Pull: B:remote\-B), and have a separate branch my\-B to do your development on top of it. The latter is created by git branch my\-B remote\-B (or its equivalent git checkout \-b my\-B remote\-B). Run git fetch to keep track of the progress of the remote side, and when you see something new on the remote branch, merge it into your development branch with git pull . remote\-B, while you are on my\-B branch. The common Pull: master:origin mapping of a remote master branch to a local origin branch, which is then merged to a local development branch, again typically named master, is made when you run git clone for you to follow this pattern.
+You never do your own development on branches that appear on the right hand side of a <refspec> colon on Pull: lines; they are to be updated by git\-fetch. If you intend to do development derived from a remote branch B, have a Pull: line to track it (i.e. Pull: B:remote\-B), and have a separate branch my\-B to do your development on top of it. The latter is created by git branch my\-B remote\-B (or its equivalent git checkout \-b my\-B remote\-B). Run git fetch to keep track of the progress of the remote side, and when you see something new on the remote branch, merge it into your development branch with git pull . remote\-B, while you are on my\-B branch.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
@@ -179,13 +182,16 @@ This resolves any number of heads, but the result of the merge is always the cur
 .SH "EXAMPLES"
 .TP
 git pull, git pull origin
-Fetch the default head from the repository you cloned from and merge it into your current branch.
+Update the remote\-tracking branches for the repository you cloned from, then merge one of them into your current branch. Normally the branch merged in is the HEAD of the remote repository, but the choice is determined by the branch.<name>.remote and branch.<name>.merge options; see \fBgit\-repo\-config\fR(1) for details.
 .TP
-git pull \-s ours . obsolete
-Merge local branch obsolete into the current branch, using ours merge strategy.
+git pull origin next
+Merge into the current branch the remote branch next; leaves a copy of next temporarily in FETCH_HEAD, but does not update any remote\-tracking branches.
 .TP
 git pull . fixes enhancements
 Bundle local branch fixes and enhancements on top of the current branch, making an Octopus merge.
+.TP
+git pull \-s ours . obsolete
+Merge local branch obsolete into the current branch, using ours merge strategy.
 .TP
 git pull \-\-no\-commit . maint
 Merge local branch maint into the current branch, but do not make a commit automatically. This can be used when you want to include further changes to the merge, or want to write your own merge commit message.
@@ -195,33 +201,19 @@ You should refrain from abusing this option to sneak substantial changes into a 
 Command line pull of multiple branches from one repository
 .sp
 .nf
-$ cat .git/remotes/origin
-URL: git://git.kernel.org/pub/scm/git/git.git
-Pull: master:origin
-
 $ git checkout master
-$ git fetch origin master:origin +pu:pu maint:maint
-$ git pull . origin
+$ git fetch origin +pu:pu maint:tmp
+$ git pull . tmp
 .fi
-Here, a typical .git/remotes/origin file from a git\-clone operation is used in combination with command line options to git\-fetch to first update multiple branches of the local repository and then to merge the remote origin branch into the local master branch. The local pu branch is updated even if it does not result in a fast forward update. Here, the pull can obtain its objects from the local repository using ., as the previous git\-fetch is known to have already obtained and made available all the necessary objects.
-.TP
-Pull of multiple branches from one repository using .git/remotes file
-.sp
-.nf
-$ cat .git/remotes/origin
-URL: git://git.kernel.org/pub/scm/git/git.git
-Pull: master:origin
-Pull: +pu:pu
-Pull: maint:maint
+This updates (or creates, as necessary) branches pu and tmp in the local repository by fetching from the branches (respectively) pu and maint from the remote repository.
 
-$ git checkout master
-$ git pull origin
-.fi
-Here, a typical .git/remotes/origin file from a git\-clone operation has been hand\-modified to include the branch\-mapping of additional remote and local heads directly. A single git\-pull operation while in the master branch will fetch multiple heads and merge the remote origin head into the current, local master branch.
+The pu branch will be updated even if it is does not fast\-forward; the others will not be.
+
+The final command then merges the newly fetched tmp into master.
 
 If you tried a pull which resulted in a complex conflicts and would want to start over, you can recover with \fBgit\-reset\fR(1).
 .SH "SEE ALSO"
-\fBgit\-fetch\fR(1), \fBgit\-merge\fR(1)
+\fBgit\-fetch\fR(1), \fBgit\-merge\fR(1), \fBgit\-repo\-config\fR(1)
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org> and Junio C Hamano <junkio@cox.net>
 .SH "DOCUMENTATION"
