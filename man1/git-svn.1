@@ -2,23 +2,21 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SVN" "1" "12/21/2006" "" ""
+.TH "GIT\-SVN" "1" "01/05/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-svn \- bidirectional operation between a single Subversion branch and git
+git\-svn \- bidirectional operation between Subversion and git
 .SH "SYNOPSIS"
 \fIgit\-svn\fR <command> [options] [arguments]
 .SH "DESCRIPTION"
-git\-svn is a simple conduit for changesets between a single Subversion branch and git. It is not to be confused with \fBgit\-svnimport\fR(1). They were designed with very different goals in mind.
+git\-svn is a simple conduit for changesets between Subversion and git. It is not to be confused with \fBgit\-svnimport\fR(1), which is read\-only and geared towards tracking multiple branches.
 
-git\-svn is designed for an individual developer who wants a bidirectional flow of changesets between a single branch in Subversion and an arbitrary number of branches in git. git\-svnimport is designed for read\-only operation on repositories that match a particular layout (albeit the recommended one by SVN developers).
+git\-svn was originally designed for an individual developer who wants a bidirectional flow of changesets between a single branch in Subversion and an arbitrary number of branches in git. Since its inception, git\-svn has gained the ability to track multiple branches in a manner similar to git\-svnimport; but it cannot (yet) automatically detect new branches and tags like git\-svnimport does.
 
-For importing svn, git\-svnimport is potentially more powerful when operating on repositories organized under the recommended trunk/branch/tags structure, and should be faster, too.
-
-git\-svn mostly ignores the very limited view of branching that Subversion has. This allows git\-svn to be much easier to use, especially on repositories that are not organized in a manner that git\-svnimport is designed for.
+git\-svn is especially useful when it comes to tracking repositories not organized in the way Subversion developers recommend (trunk, branches, tags directories).
 .SH "COMMANDS"
 .TP
 \fIinit\fR
@@ -227,7 +225,7 @@ By default git\-svn will crash if it tries to import a revision from SVN which h
 
 If supplied git\-svn will convert \fI(no date)\fR entries to the UNIX epoch (midnight on Jan. 1, 1970). Yes, that's probably very wrong. SVN was very wrong.
 .SS "Basic Examples"
-Tracking and contributing to a Subversion\-managed project:
+Tracking and contributing to a the trunk of a Subversion\-managed project:
 .sp
 .nf
 # Initialize a repo (like git init\-db):
@@ -243,6 +241,26 @@ Tracking and contributing to a Subversion\-managed project:
         git\-svn fetch && git rebase remotes/git\-svn
 # Append svn:ignore settings to the default git exclude file:
         git\-svn show\-ignore >> .git/info/exclude
+.fi
+Tracking and contributing to an entire Subversion\-managed project (complete with a trunk, tags and branches): See also: \fITracking Multiple Repositories or Branches\fR
+.sp
+.nf
+# Initialize a repo (like git init\-db):
+        git\-svn multi\-init http://svn.foo.org/project \\
+                \-T trunk \-b branches \-t tags
+# Fetch remote revisions:
+        git\-svn multi\-fetch
+# Create your own branch of trunk to hack on:
+        git checkout \-b my\-trunk remotes/trunk
+# Do some work, and then commit your new changes to SVN, as well as
+# automatically updating your working HEAD:
+        git\-svn dcommit \-i trunk
+# Something has been committed to trunk, rebase the latest into your branch:
+        git\-svn multi\-fetch && git rebase remotes/trunk
+# Append svn:ignore settings of trunk to the default git exclude file:
+        git\-svn show\-ignore \-i trunk >> .git/info/exclude
+# Check for new branches and tags (no arguments are needed):
+        git\-svn multi\-init
 .fi
 .SH "REBASE VS. PULL"
 Originally, git\-svn recommended that the remotes/git\-svn branch be pulled from. This is because the author favored \fIgit\-svn set\-tree B\fR to commit a single head rather than the \fIgit\-svn set\-tree A..B\fR notation to commit multiple commits.
