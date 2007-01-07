@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SVN" "1" "01/05/2007" "" ""
+.TH "GIT\-SVN" "1" "01/07/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -30,7 +30,7 @@ Note: You should never attempt to modify the remotes/git\-svn branch outside of 
 See \fIAdditional Fetch Arguments\fR if you are interested in manually joining branches on commit.
 .TP
 \fIdcommit\fR
-Commit all diffs from a specified head directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head). It is recommended that you run git\-svn fetch and rebase (not pull) your commits against the latest changes in the SVN repository. An optional command\-line argument may be specified as an alternative to HEAD. This is advantageous over \fIset\-tree\fR (below) because it produces cleaner, more linear history.
+Commit each diff from a specified head directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head). This will create a revision in SVN for each commit in git. It is recommended that you run git\-svn fetch and rebase (not pull or merge) your commits against the latest changes in the SVN repository. An optional command\-line argument may be specified as an alternative to HEAD. This is advantageous over \fIset\-tree\fR (below) because it produces cleaner, more linear history.
 .TP
 \fIlog\fR
 This should make it easy to look up svn log messages when svn users refer to \-r/\-\-revision numbers.
@@ -262,10 +262,10 @@ Tracking and contributing to an entire Subversion\-managed project (complete wit
 # Check for new branches and tags (no arguments are needed):
         git\-svn multi\-init
 .fi
-.SH "REBASE VS. PULL"
-Originally, git\-svn recommended that the remotes/git\-svn branch be pulled from. This is because the author favored \fIgit\-svn set\-tree B\fR to commit a single head rather than the \fIgit\-svn set\-tree A..B\fR notation to commit multiple commits.
+.SH "REBASE VS. PULL/MERGE"
+Originally, git\-svn recommended that the remotes/git\-svn branch be pulled or merged from. This is because the author favored \fIgit\-svn set\-tree B\fR to commit a single head rather than the \fIgit\-svn set\-tree A..B\fR notation to commit multiple commits.
 
-If you use \fIgit\-svn set\-tree A..B\fR to commit several diffs and you do not have the latest remotes/git\-svn merged into my\-branch, you should use \fIgit rebase\fR to update your work branch instead of \fIgit pull\fR. \fIpull\fR can cause non\-linear history to be flattened when committing into SVN, which can lead to merge commits reversing previous commits in SVN.
+If you use \fIgit\-svn set\-tree A..B\fR to commit several diffs and you do not have the latest remotes/git\-svn merged into my\-branch, you should use \fIgit rebase\fR to update your work branch instead of \fIgit pull\fR or \fIgit merge\fR. \fIpull/merge\fR can cause non\-linear history to be flattened when committing into SVN, which can lead to merge commits reversing previous commits in SVN.
 .SH "DESIGN PHILOSOPHY"
 Merge tracking in Subversion is lacking and doing branched development with Subversion is cumbersome as a result. git\-svn does not do automated merge/branch tracking by default and leaves it entirely up to the user on the git side.
 .SH "TRACKING MULTIPLE REPOSITORIES OR BRANCHES"
