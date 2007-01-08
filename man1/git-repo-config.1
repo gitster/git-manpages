@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REPO\-CONFIG" "1" "01/03/2007" "" ""
+.TH "GIT\-REPO\-CONFIG" "1" "01/08/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -246,6 +246,20 @@ An integer \-1..9, indicating the compression level for objects that are not in 
 .TP
 core.legacyheaders
 A boolean which enables the legacy object header format in case you want to interoperate with old clients accessing the object database directly (where the "http://" and "rsync://" protocols count as direct access).
+.TP
+core.packedGitWindowSize
+Number of bytes of a pack file to map into memory in a single mapping operation. Larger window sizes may allow your system to process a smaller number of large pack files more quickly. Smaller window sizes will negatively affect performance due to increased calls to the operating system's memory manager, but may improve performance when accessing a large number of large pack files.
+
+Default is 1 MiB if NO_MMAP was set at compile time, otherwise 32 MiB on 32 bit platforms and 1 GiB on 64 bit platforms. This should be reasonable for all users/operating systems. You probably do not need to adjust this value.
+
+Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported.
+.TP
+core.packedGitLimit
+Maximum number of bytes to map simultaneously into memory from pack files. If Git needs to access more than this many bytes at once to complete an operation it will unmap existing regions to reclaim virtual address space within the process.
+
+Default is 256 MiB on 32 bit platforms and 8 GiB on 64 bit platforms. This should be reasonable for all users/operating systems, except on the largest projects. You probably do not need to adjust this value.
+
+Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported.
 .TP
 alias.*
 Command aliases for the \fBgit\fR(1) command wrapper \- e.g. after defining "alias.last = cat\-file commit HEAD", the invocation "git last" is equivalent to "git cat\-file commit HEAD". To avoid confusion and troubles with script usage, aliases that hide existing git commands are ignored. Arguments are split by spaces, the usual shell quoting and escaping is supported. quote pair and a backslash can be used to quote them.
