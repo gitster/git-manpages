@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SVN" "1" "01/08/2007" "" ""
+.TH "GIT\-SVN" "1" "01/10/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -140,7 +140,7 @@ If this option is specified and git\-svn encounters an SVN committer name that d
 repo\-config key: svn.authorsfile
 .TP
 \-q , \-\-quiet
-Make git\-svn less verbose. This only affects git\-svn if you have the SVN::* libraries installed and are using them.
+Make git\-svn less verbose.
 .TP
 \-\-repack[=<n>]
 \-\-repack\-flags=<flags> These should help keep disk usage sane for large fetches with many revisions.
@@ -183,10 +183,7 @@ This sets GIT_SVN_ID (instead of using the environment). See the section on \fIT
 .TP
 \-\-follow\-parent
 This is especially helpful when we're tracking a directory that has been moved around within the repository, or if we started tracking a branch and never tracked the trunk it was descended from.
-.sp
-.nf
-This relies on the SVN::* libraries to work.
-.fi
+
 repo\-config key: svn.followparent
 .TP
 \-\-no\-metadata
@@ -209,19 +206,6 @@ repo\-config key: svn.nometadata
 Only used with the \fIrebuild\fR command.
 
 Run this if you used an old version of git\-svn that used "git\-svn\-HEAD" instead of "remotes/git\-svn" as the branch for tracking the remote.
-.TP
-\-\-no\-ignore\-externals
-Only used with the \fIfetch\fR and \fIrebuild\fR command.
-
-This command has no effect when you are using the SVN::* libraries with git, svn:externals are always avoided.
-
-By default, git\-svn passes \-\-ignore\-externals to svn to avoid fetching svn:external trees into git. Pass this flag to enable externals tracking directly via git.
-
-Versions of svn that do not support \-\-ignore\-externals are automatically detected and this flag will be automatically enabled for them.
-
-Otherwise, do not enable this flag unless you know what you're doing.
-
-repo\-config key: svn.noignoreexternals
 .TP
 \-\-ignore\-nodate
 Only used with the \fIfetch\fR command.
@@ -288,34 +272,12 @@ This allows you to tie unfetched SVN revision 375 to your current HEAD:
 .nf
         git\-svn fetch 375=$(git\-rev\-parse HEAD)
 .fi
-.SS "Advanced Example: Tracking a Reorganized Repository"
-Note: this example is now obsolete if you have SVN::* libraries installed. Simply use \-\-follow\-parent when fetching.
-
-If you're tracking a directory that has moved, or otherwise been branched or tagged off of another directory in the repository and you care about the full history of the project, then you can read this section.
-
-This is how Yann Dirson tracked the trunk of the ufoai directory when the /trunk directory of his repository was moved to /ufoai/trunk and he needed to continue tracking /ufoai/trunk where /trunk left off.
+If you're tracking a directory that has moved, or otherwise been branched or tagged off of another directory in the repository and you care about the full history of the project, then you can use the \-\-follow\-parent option.
 .sp
 .nf
-        # This log message shows when the repository was reorganized:
-        r166 | ydirson | 2006\-03\-02 01:36:55 +0100 (Thu, 02 Mar 2006) | 1 line
-        Changed paths:
-           D /trunk
-           A /ufoai/trunk (from /trunk:165)
-
-        # First we start tracking the old revisions:
-        GIT_SVN_ID=git\-oldsvn git\-svn init \\
-                        https://svn.sourceforge.net/svnroot/ufoai/trunk
-        GIT_SVN_ID=git\-oldsvn git\-svn fetch \-r1:165
-
-        # And now, we continue tracking the new revisions:
-        GIT_SVN_ID=git\-newsvn git\-svn init \\
-              https://svn.sourceforge.net/svnroot/ufoai/ufoai/trunk
-        GIT_SVN_ID=git\-newsvn git\-svn fetch \\
-              166=`git\-rev\-parse refs/remotes/git\-oldsvn`
+        git\-svn fetch \-\-follow\-parent
 .fi
 .SH "BUGS"
-If you are not using the SVN::* Perl libraries and somebody commits a conflicting changeset to SVN at a bad moment (right before you commit) causing a conflict and your commit to fail, your svn working tree ($GIT_DIR/git\-svn/tree) may be dirtied. The easiest thing to do is probably just to rm \-rf $GIT_DIR/git\-svn/tree and run \fIrebuild\fR. You can avoid this problem entirely by using \fIdcommit\fR.
-
 We ignore all SVN properties except svn:executable. Too difficult to map them since we rely heavily on git write\-tree being _exactly_ the same on both the SVN and git working trees and I prefer not to clutter working trees with metadata files.
 
 Renamed and copied directories are not detected by git and hence not tracked when committing to SVN. I do not plan on adding support for this as it's quite difficult and time\-consuming to get working for all the possible corner cases (git doesn't do it, either). Renamed and copied files are fully supported if they're similar enough for git to detect them.
