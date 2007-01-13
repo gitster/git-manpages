@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-P4IMPORT" "1" "10/03/2006" "" ""
+.TH "GIT\-P4IMPORT" "1" "01/13/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -11,18 +11,16 @@
 git\-p4import \- Import a Perforce repository into git
 .SH "SYNOPSIS"
 git\-p4import [\-q|\-v] [\-\-notags] [\-\-authors <file>] [\-t <timezone>] <//p4repo/path> <branch>
-.sp
+
 git\-p4import \-\-stitch <//p4repo/path>
-.sp
+
 git\-p4import
-.sp
 .SH "DESCRIPTION"
 Import a Perforce repository into an existing git repository. When a <//p4repo/path> and <branch> are specified a new branch with the given name will be created and the initial import will begin.
-.sp
+
 Once the initial import is complete you can do an incremental import of new commits from the Perforce repository. You do this by checking out the appropriate git branch and then running git\-p4import without any options.
-.sp
+
 The standard p4 client is used to communicate with the Perforce repository; it must be configured correctly in order for git\-p4import to operate (see below).
-.sp
 .SH "OPTIONS"
 .TP
 \-q
@@ -53,9 +51,8 @@ The Perforce path that will be imported into the specified branch.
 The new branch that will be created to hold the Perforce imports.
 .SH "P4 CLIENT"
 You must make the p4 client command available in your $PATH and configure it to communicate with the target Perforce repository. Typically this means you must set the "$P4PORT" and "$P4CLIENT" environment variables.
-.sp
+
 You must also configure a p4 client "view" which maps the Perforce branch into the top level of your git repository, for example:
-.sp
 .sp
 .nf
 Client: myhost
@@ -69,16 +66,14 @@ View:
 .fi
 With the above p4 client setup, you could import the "jam" perforce branch into a branch named "jammy", like so:
 .sp
-.sp
 .nf
 $ mkdir \-p /home/sean/import/jam
 $ cd /home/sean/import/jam
-$ git init\-db
+$ git init
 $ git p4import //public/jam jammy
 .fi
 .SH "MULTIPLE BRANCHES"
 Note that by creating multiple "views" you can use git\-p4import to import additional branches into the same git repository. However, the p4 client has a limitation in that it silently ignores all but the last "view" that maps into the same local directory. So the following will \fBnot\fR work:
-.sp
 .sp
 .nf
 View:
@@ -87,28 +82,24 @@ View:
         //public/guest/... //myhost/jam/...
 .fi
 If you want more than one Perforce branch to be imported into the same directory you must employ a workaround. A simple option is to adjust your p4 client before each import to only include a single view.
-.sp
+
 Another option is to create multiple symlinks locally which all point to the same directory in your git repository and then use one per "view" instead of listing the actual directory.
-.sp
 .SH "TAGS"
 A git tag of the form p4/xx is created for every change imported from the Perforce repository where xx is the Perforce changeset number. Therefore after the import you can use git to access any commit by its Perforce number, e.g. git show p4/327.
-.sp
+
 The tag associated with the HEAD commit is also how git\-p4import determines if there are new changes to incrementally import from the Perforce repository.
-.sp
+
 If you import from a repository with many thousands of changes you will have an equal number of p4/xxxx git tags. Git tags can be expensive in terms of disk space and repository operations. If you don't need to perform further incremental imports, you may delete the tags.
-.sp
 .SH "NOTES"
 You can interrupt the import (e.g. ctrl\-c) at any time and restart it without worry.
-.sp
+
 Author information is automatically determined by querying the Perforce "users" table using the id associated with each change. However, if you want to manually supply these mappings you can do so with the "\-\-authors" option. It accepts a file containing a list of mappings with each line containing one mapping in the format:
-.sp
 .sp
 .nf
     perforce_id = Full Name <email@address.com>
 .fi
 .SH "AUTHOR"
 Written by Sean Estabrooks <seanlkml@sympatico.ca>
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
