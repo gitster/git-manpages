@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CHECKOUT" "1" "10/03/2006" "" ""
+.TH "GIT\-CHECKOUT" "1" "01/17/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,44 +13,52 @@ git\-checkout \- Checkout and switch to a branch
 .sp
 .nf
 \fIgit\-checkout\fR [\-f] [\-b <new_branch> [\-l]] [\-m] [<branch>]
-\fIgit\-checkout\fR [\-m] [<branch>] <paths>\&...
+\fIgit\-checkout\fR [<branch>] <paths>\&...
 .fi
 .SH "DESCRIPTION"
 When <paths> are not given, this command switches branches by updating the index and working tree to reflect the specified branch, <branch>, and updating HEAD to be <branch> or, if specified, <new_branch>. Using \-b will cause <new_branch> to be created.
-.sp
+
 When <paths> are given, this command does \fBnot\fR switch branches. It updates the named paths in the working tree from the index file (i.e. it runs git\-checkout\-index \-f \-u). In this case, \-f and \-b options are meaningless and giving either of them results in an error. <branch> argument can be used to specify a specific tree\-ish to update the index for the given paths before updating the working tree.
-.sp
 .SH "OPTIONS"
 .TP
 \-f
 Force a re\-read of everything.
 .TP
 \-b
-Create a new branch named <new_branch> and start it at <branch>. The new branch name must pass all checks defined by
-\fBgit\-check\-ref\-format\fR(1). Some of these checks may restrict the characters allowed in a branch name.
+Create a new branch named <new_branch> and start it at <branch>. The new branch name must pass all checks defined by \fBgit\-check\-ref\-format\fR(1). Some of these checks may restrict the characters allowed in a branch name.
 .TP
 \-l
 Create the new branch's ref log. This activates recording of all changes to made the branch ref, enabling use of date
 .TP
 \-m
 If you have local modifications to one or more files that are different between the current branch and the branch to which you are switching, the command refuses to switch branches in order to preserve your modifications in context. However, with this option, a three\-way merge between the current branch, your working tree contents, and the new branch is done, and you will be on the new branch.
-.sp
-When a merge conflict happens, the index entries for conflicting paths are left unmerged, and you need to resolve the conflicts and mark the resolved paths with
-git update\-index.
+
+When a merge conflict happens, the index entries for conflicting paths are left unmerged, and you need to resolve the conflicts and mark the resolved paths with git update\-index.
 .TP
 <new_branch>
 Name for the new branch.
 .TP
 <branch>
 Branch to checkout; may be any object ID that resolves to a commit. Defaults to HEAD.
+
+When this parameter names a non\-branch (but still a valid commit object), your HEAD becomes \fIdetached\fR.
+.SH "DETACHED HEAD"
+It is sometimes useful to be able to \fIcheckout\fR a commit that is not at the tip of one of your branches. The most obvious example is to check out the commit at a tagged official release point, like this:
+.sp
+.nf
+$ git checkout v2.6.18
+.fi
+Earlier versions of git did not allow this and asked you to create a temporary branch using \-b option, but starting from version 1.5.0, the above command \fIdetaches\fR your HEAD from the current branch and directly point at the commit named by the tag (v2.6.18 in the above example).
+
+You can use usual git commands while in this state. You can use git\-reset \-\-hard $othercommit to further move around, for example. You can make changes and create a new commit on top of a detached HEAD. You can even create a merge by using git merge $othercommit.
+
+The state you are in while your HEAD is detached is not recorded by any branch (which is natural \-\-\- you are not on any branch). What this means is that you can discard your temporary commits and merges by switching back to an existing branch (e.g. git checkout master), and a later git prune or git gc would garbage\-collect them.
+
+The command would refuse to switch back to make sure that you do not discard your temporary state by mistake when your detached HEAD is not pointed at by any existing ref. If you did want to save your state (e.g. "I was interested in the fifth commit from the top of \fImaster\fR branch", or "I made two commits to fix minor bugs while on a detached HEAD" \(em and if you do not want to lose these facts), you can create a new branch and switch to it with git checkout \-b newbranch so that you can keep building on that state, or tag it first so that you can come back to it later and switch to the branch you wanted to switch to with git tag that_state; git checkout master. On the other hand, if you did want to discard the temporary state, you can give \-f option (e.g. git checkout \-f master) to override this behaviour.
 .SH "EXAMPLES"
 .TP 3
 1.
-The following sequence checks out the
-master
-branch, reverts the
-Makefile
-to two revisions back, deletes hello.c by mistake, and gets it back from the index.
+The following sequence checks out the master branch, reverts the Makefile to two revisions back, deletes hello.c by mistake, and gets it back from the index.
 .sp
 .nf
 $ git checkout master             \fB(1)\fR
@@ -64,9 +72,8 @@ $ git checkout hello.c            \fB(3)\fR
 \fB2. \fRtake out a file out of other commit
 .br
 \fB3. \fRrestore hello.c from HEAD of current branch
-.sp
-If you have an unfortunate branch that is named
-hello.c, this step would be confused as an instruction to switch to that branch. You should instead write:
+
+If you have an unfortunate branch that is named hello.c, this step would be confused as an instruction to switch to that branch. You should instead write:
 .sp
 .nf
 $ git checkout \-\- hello.c
@@ -85,22 +92,16 @@ However, your "wrong" branch and correct "mytopic" branch may differ in files th
 $ git checkout mytopic
 fatal: Entry 'frotz' not uptodate. Cannot merge.
 .fi
-You can give the
-\-m
-flag to the command, which would try a three\-way merge:
+You can give the \-m flag to the command, which would try a three\-way merge:
 .sp
 .nf
 $ git checkout \-m mytopic
 Auto\-merging frotz
 .fi
-After this three\-way merge, the local modifications are _not_ registered in your index file, so
-git diff
-would show you what changes you made since the tip of the new branch.
+After this three\-way merge, the local modifications are _not_ registered in your index file, so git diff would show you what changes you made since the tip of the new branch.
 .TP
 3.
-When a merge conflict happens during switching branches with the
-\-m
-option, you would see something like this:
+When a merge conflict happens during switching branches with the \-m option, you would see something like this:
 .sp
 .nf
 $ git checkout \-m mytopic
@@ -109,11 +110,7 @@ merge: warning: conflicts during merge
 ERROR: Merge conflict in frotz
 fatal: merge program failed
 .fi
-At this point,
-git diff
-shows the changes cleanly merged as in the previous example, as well as the changes in the conflicted files. Edit and resolve the conflict and mark it resolved with
-git update\-index
-as usual:
+At this point, git diff shows the changes cleanly merged as in the previous example, as well as the changes in the conflicted files. Edit and resolve the conflict and mark it resolved with git update\-index as usual:
 .sp
 .nf
 $ edit frotz
@@ -121,10 +118,8 @@ $ git update\-index frotz
 .fi
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+

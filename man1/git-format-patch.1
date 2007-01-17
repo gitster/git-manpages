@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FORMAT\-PATCH" "1" "10/03/2006" "" ""
+.TH "GIT\-FORMAT\-PATCH" "1" "01/17/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,44 +14,37 @@ git\-format\-patch \- Prepare patches for e\-mail submission
 .nf
 \fIgit\-format\-patch\fR [\-n | \-k] [\-o <dir> | \-\-stdout] [\-\-attach] [\-\-thread]
                    [\-s | \-\-signoff] [\-\-diff\-options] [\-\-start\-number <n>]
-                   [\-\-in\-reply\-to=Message\-Id]
+                   [\-\-in\-reply\-to=Message\-Id] [\-\-suffix=.<sfx>]
                    <since>[..<until>]
 .fi
 .SH "DESCRIPTION"
 Prepare each commit between <since> and <until> with its patch in one file per commit, formatted to resemble UNIX mailbox format. If ..<until> is not specified, the head of the current working tree is implied.
-.sp
+
 The output of this command is convenient for e\-mail submission or for use with \fBgit\-am\fR(1).
-.sp
+
 Each output file is numbered sequentially from 1, and uses the first line of the commit message (massaged for pathname safety) as the filename. The names of the output files are printed to standard output, unless the \-\-stdout option is specified.
-.sp
+
 If \-o is specified, output files are created in <dir>. Otherwise they are created in the current working directory.
-.sp
+
 If \-n is specified, instead of "[PATCH] Subject", the first line is formatted as "[PATCH n/m] Subject".
-.sp
+
 If given \-\-thread, git\-format\-patch will generate In\-Reply\-To and References headers to make the second and subsequent patch mails appear as replies to the first mail; this also generates a Message\-Id header to reference.
-.sp
 .SH "OPTIONS"
 .TP
 \-o|\-\-output\-directory <dir>
 Use <dir> to store the resulting files, instead of the current working directory.
 .TP
 \-n|\-\-numbered
-Name output in
-\fI[PATCH n/m]\fR
-format.
+Name output in \fI[PATCH n/m]\fR format.
 .TP
 \-\-start\-number <n>
 Start numbering the patches at <n> instead of 1.
 .TP
 \-k|\-\-keep\-subject
-Do not strip/add
-\fI[PATCH]\fR
-from the first line of the commit log message.
+Do not strip/add \fI[PATCH]\fR from the first line of the commit log message.
 .TP
 \-s|\-\-signoff
-Add
-Signed\-off\-by:
-line to the commit message, using the committer identity of yourself.
+Add Signed\-off\-by: line to the commit message, using the committer identity of yourself.
 .TP
 \-\-stdout
 Print all commits to the standard output in mbox format, instead of creating a file for each one.
@@ -64,19 +57,26 @@ Add In\-Reply\-To and References headers to make the second and subsequent mails
 .TP
 \-\-in\-reply\-to=Message\-Id
 Make the first mail (or all the mails with \-\-no\-thread) appear as a reply to the given Message\-Id, which avoids breaking threads to provide a new patch series.
+.TP
+\-\-suffix=.<sfx>
+Instead of using .txt as the suffix for generated filenames, use specifed suffix. A common alternative is \-\-suffix=.patch.
+
+Note that you would need to include the leading dot . if you want a filename like 0001\-description\-of\-my\-change.patch, and the first letter does not have to be a dot. Leaving it empty would not add any suffix.
 .SH "CONFIGURATION"
 You can specify extra mail header lines to be added to each message in the repository configuration as follows:
-.sp
 .sp
 .nf
 headers = "Organization: git\-foo\\n"
 .fi
+You can specify default suffix used:
+.sp
+.nf
+suffix = .patch
+.fi
 .SH "EXAMPLES"
 .TP
 git\-format\-patch \-k \-\-stdout R1..R2 | git\-am \-3 \-k
-Extract commits between revisions R1 and R2, and apply them on top of the current branch using
-git\-am
-to cherry\-pick them.
+Extract commits between revisions R1 and R2, and apply them on top of the current branch using git\-am to cherry\-pick them.
 .TP
 git\-format\-patch origin
 Extract all commits which are in the current branch but not in the origin branch. For each commit a separate file is created in the current directory.
@@ -85,13 +85,10 @@ git\-format\-patch \-M \-B origin
 The same as the previous one. Additionally, it detects and handles renames and complete rewrites intelligently to produce a renaming patch. A renaming patch reduces the amount of text output, and generally makes it easier to review it. Note that the "patch" program does not understand renaming patches, so use it only when you know the recipient uses git to apply your patch.
 .SH "SEE ALSO"
 \fBgit\-am\fR(1), \fBgit\-send\-email\fR(1)
-.sp
 .SH "AUTHOR"
 Written by Junio C Hamano <junkio@cox.net>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
