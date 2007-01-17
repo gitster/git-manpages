@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SH\-SETUP" "1" "10/03/2006" "" ""
+.TH "GIT\-SH\-SETUP" "1" "01/17/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -11,20 +11,37 @@
 git\-sh\-setup \- Common git shell script setup code
 .SH "SYNOPSIS"
 \fIgit\-sh\-setup\fR
-.sp
 .SH "DESCRIPTION"
-Sets up the normal git environment variables and a few helper functions (currently just "die()"), and returns OK if it all looks like a git archive. So, to make the rest of the git scripts more careful and readable, use it as follows:
-.sp
-.sp
-.nf
-. git\-sh\-setup || die "Not a git archive"
-.fi
+This is not a command the end user would want to run. Ever. This documentation is meant for people who are studying the Porcelain\-ish scripts and/or are writing new ones.
+
+The git\-sh\-setup scriptlet is designed to be sourced (using .) by other shell scripts to set up some variables pointing at the normal git directories and a few helper shell functions.
+
+Before sourcing it, your script should set up a few variables; USAGE (and LONG_USAGE, if any) is used to define message given by usage() shell function. SUBDIRECTORY_OK can be set if the script can run from a subdirectory of the working tree (some commands do not).
+
+The scriptlet sets GIT_DIR and GIT_OBJECT_DIRECTORY shell variables, but does \fBnot\fR export them to the environment.
+.SH "FUNCTIONS"
+.TP
+die
+exit after emitting the supplied error message to the standard error stream.
+.TP
+usage
+die with the usage message.
+.TP
+set_reflog_action
+set the message that will be recorded to describe the end\-user action in the reflog, when the script updates a ref.
+.TP
+is_bare_repository
+outputs true or false to the standard output stream to indicate if the repository is a bare repository (i.e. without an associated working tree).
+.TP
+cd_to_toplevel
+runs chdir to the toplevel of the working tree.
+.TP
+require_work_tree
+checks if the repository is a bare repository, and dies if so. Used by scripts that require working tree (e.g. checkout).
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
