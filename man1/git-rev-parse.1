@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REV\-PARSE" "1" "11/08/2006" "" ""
+.TH "GIT\-REV\-PARSE" "1" "01/18/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -11,21 +11,15 @@
 git\-rev\-parse \- Pick out and massage parameters
 .SH "SYNOPSIS"
 \fIgit\-rev\-parse\fR [ \-\-option ] <args>\&...
-.sp
 .SH "DESCRIPTION"
 Many git porcelainish commands take mixture of flags (i.e. parameters that begin with a dash \fI\-\fR) and parameters meant for underlying git\-rev\-list command they use internally and flags and parameters for other commands they use as the downstream of git\-rev\-list. This command is used to distinguish between them.
-.sp
 .SH "OPTIONS"
 .TP
 \-\-revs\-only
-Do not output flags and parameters not meant for
-git\-rev\-list
-command.
+Do not output flags and parameters not meant for git\-rev\-list command.
 .TP
 \-\-no\-revs
-Do not output flags and parameters meant for
-git\-rev\-list
-command.
+Do not output flags and parameters meant for git\-rev\-list command.
 .TP
 \-\-flags
 Do not output non\-flag parameters.
@@ -34,46 +28,31 @@ Do not output non\-flag parameters.
 Do not output flag parameters.
 .TP
 \-\-default <arg>
-If there is no parameter given by the user, use
-<arg>
-instead.
+If there is no parameter given by the user, use <arg> instead.
 .TP
 \-\-verify
 The parameter given must be usable as a single, valid object name. Otherwise barf and abort.
 .TP
 \-\-sq
-Usually the output is made one line per flag and parameter. This option makes output a single line, properly quoted for consumption by shell. Useful when you expect your parameter to contain whitespaces and newlines (e.g. when using pickaxe
-\-S
-with
-git\-diff\-*).
+Usually the output is made one line per flag and parameter. This option makes output a single line, properly quoted for consumption by shell. Useful when you expect your parameter to contain whitespaces and newlines (e.g. when using pickaxe \-S with git\-diff\-*).
 .TP
 \-\-not
-When showing object names, prefix them with
-\fI^\fR
-and strip
-\fI^\fR
-prefix from the object names that already have one.
+When showing object names, prefix them with \fI^\fR and strip \fI^\fR prefix from the object names that already have one.
 .TP
 \-\-symbolic
-Usually the object names are output in SHA1 form (with possible
-\fI^\fR
-prefix); this option makes them output in a form as close to the original input as possible.
+Usually the object names are output in SHA1 form (with possible \fI^\fR prefix); this option makes them output in a form as close to the original input as possible.
 .TP
 \-\-all
-Show all refs found in
-$GIT_DIR/refs.
+Show all refs found in $GIT_DIR/refs.
 .TP
 \-\-branches
-Show branch refs found in
-$GIT_DIR/refs/heads.
+Show branch refs found in $GIT_DIR/refs/heads.
 .TP
 \-\-tags
-Show tag refs found in
-$GIT_DIR/refs/tags.
+Show tag refs found in $GIT_DIR/refs/tags.
 .TP
 \-\-remotes
-Show tag refs found in
-$GIT_DIR/refs/remotes.
+Show tag refs found in $GIT_DIR/refs/remotes.
 .TP
 \-\-show\-prefix
 When the command is invoked from a subdirectory, show the path of the current directory relative to the top\-level directory.
@@ -82,9 +61,7 @@ When the command is invoked from a subdirectory, show the path of the current di
 When the command is invoked from a subdirectory, show the path of the top\-level directory relative to the current directory (typically a sequence of "../", or an empty string).
 .TP
 \-\-git\-dir
-Show
-$GIT_DIR
-if defined else show the path to the .git directory.
+Show $GIT_DIR if defined else show the path to the .git directory.
 .TP
 \-\-short, \-\-short=number
 Instead of outputting the full SHA1 values of object names try to abbreviate them to a shorter unique name. When no length is specified 7 is used. The minimum length is 4.
@@ -99,113 +76,61 @@ Parses the date string, and outputs corresponding \-\-min\-age= parameter for gi
 Flags and parameters to be parsed.
 .SH "SPECIFYING REVISIONS"
 A revision parameter typically, but not necessarily, names a commit object. They use what is called an \fIextended SHA1\fR syntax. Here are various ways to spell object names. The ones listed near the end of this list are to name trees and blobs contained in a commit.
-.sp
 .TP 3
 \(bu
 The full SHA1 object name (40\-byte hexadecimal string), or a substring of such that is unique within the repository. E.g. dae86e1950b1277e545cee180551750029cfe735 and dae86e both name the same commit object if there are no other object in your repository whose object name starts with dae86e.
 .TP
 \(bu
-An output from
-git\-describe; i.e. a closest tag, followed by a dash, a
-g, and an abbreviated object name.
+An output from git\-describe; i.e. a closest tag, followed by a dash, a g, and an abbreviated object name.
 .TP
 \(bu
-A symbolic ref name. E.g.
-\fImaster\fR
-typically means the commit object referenced by $GIT_DIR/refs/heads/master. If you happen to have both heads/master and tags/master, you can explicitly say
-\fIheads/master\fR
-to tell git which one you mean. When ambiguous, a
-<name>
-is disambiguated by taking the first match in the following rules:
+A symbolic ref name. E.g. \fImaster\fR typically means the commit object referenced by $GIT_DIR/refs/heads/master. If you happen to have both heads/master and tags/master, you can explicitly say \fIheads/master\fR to tell git which one you mean. When ambiguous, a <name> is disambiguated by taking the first match in the following rules:
 .RS
 .TP 3
 1.
-if
-$GIT_DIR/<name>
-exists, that is what you mean (this is usually useful only for
-HEAD,
-FETCH_HEAD
-and
-MERGE_HEAD);
+if $GIT_DIR/<name> exists, that is what you mean (this is usually useful only for HEAD, FETCH_HEAD and MERGE_HEAD);
 .TP
 2.
-otherwise,
-$GIT_DIR/refs/<name>
-if exists;
+otherwise, $GIT_DIR/refs/<name> if exists;
 .TP
 3.
-otherwise,
-$GIT_DIR/refs/tags/<name>
-if exists;
+otherwise, $GIT_DIR/refs/tags/<name> if exists;
 .TP
 4.
-otherwise,
-$GIT_DIR/refs/heads/<name>
-if exists;
+otherwise, $GIT_DIR/refs/heads/<name> if exists;
 .TP
 5.
-otherwise,
-$GIT_DIR/refs/remotes/<name>
-if exists;
+otherwise, $GIT_DIR/refs/remotes/<name> if exists;
 .TP
 6.
-otherwise,
-$GIT_DIR/refs/remotes/<name>/HEAD
-if exists.
+otherwise, $GIT_DIR/refs/remotes/<name>/HEAD if exists.
 .RE
 .TP
 \(bu
-A ref followed by the suffix
-\fI@\fR
-with a date specification enclosed in a brace pair (e.g.
-\fI{yesterday}\fR,
-\fI{1 month 2 weeks 3 days 1 hour 1 second ago}\fR
-or
-\fI{1979\-02\-26 18:30:00}\fR) to specify the value of the ref at a prior point in time. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>).
+A ref followed by the suffix \fI@\fR with a date specification enclosed in a brace pair (e.g. \fI{yesterday}\fR, \fI{1 month 2 weeks 3 days 1 hour 1 second ago}\fR or \fI{1979\-02\-26 18:30:00}\fR) to specify the value of the ref at a prior point in time. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>).
 .TP
 \(bu
-A suffix
-\fI^\fR
-to a revision parameter means the first parent of that commit object.
-\fI^<n>\fR
-means the <n>th parent (i.e.
-\fIrev^\fR
-is equivalent to
-\fIrev^1\fR). As a special rule,
-\fIrev^0\fR
-means the commit itself and is used when
-\fIrev\fR
-is the object name of a tag object that refers to a commit object.
+A ref followed by the suffix \fI@\fR with an ordinal specification enclosed in a brace pair (e.g. \fI{1}\fR, \fI{15}\fR) to specify the n\-th prior value of that ref. For example \fImaster@{1}\fR is the immediate prior value of \fImaster\fR while \fImaster@{5}\fR is the 5th prior value of \fImaster\fR. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>).
 .TP
 \(bu
-A suffix
-\fI~<n>\fR
-to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parent. I.e. rev~3 is equivalent to rev^^^ which is equivalent to rev^1^1^1. See below for a illustration of the usage of this form.
+A suffix \fI^\fR to a revision parameter means the first parent of that commit object. \fI^<n>\fR means the <n>th parent (i.e. \fIrev^\fR is equivalent to \fIrev^1\fR). As a special rule, \fIrev^0\fR means the commit itself and is used when \fIrev\fR is the object name of a tag object that refers to a commit object.
 .TP
 \(bu
-A suffix
-\fI^\fR
-followed by an object type name enclosed in brace pair (e.g.
-v0.99.8^{commit}) means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf).
-rev^0
-introduced earlier is a short\-hand for
-rev^{commit}.
+A suffix \fI~<n>\fR to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parent. I.e. rev~3 is equivalent to rev^^^ which is equivalent to rev^1^1^1. See below for a illustration of the usage of this form.
 .TP
 \(bu
-A suffix
-\fI^\fR
-followed by an empty brace pair (e.g.
-v0.99.8^{}) means the object could be a tag, and dereference the tag recursively until a non\-tag object is found.
+A suffix \fI^\fR followed by an object type name enclosed in brace pair (e.g. v0.99.8^{commit}) means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf). rev^0 introduced earlier is a short\-hand for rev^{commit}.
 .TP
 \(bu
-A suffix
-\fI:\fR
-followed by a path; this names the blob or tree at the given path in the tree\-ish object named by the part before the colon.
+A suffix \fI^\fR followed by an empty brace pair (e.g. v0.99.8^{}) means the object could be a tag, and dereference the tag recursively until a non\-tag object is found.
+.TP
+\(bu
+A suffix \fI:\fR followed by a path; this names the blob or tree at the given path in the tree\-ish object named by the part before the colon.
 .TP
 \(bu
 A colon, optionally followed by a stage number (0 to 3) and a colon, followed by a path; this names a blob object in the index at the given path. Missing stage number (and the colon that follows it) names an stage 0 entry.
+
 Here is an illustration, by Jon Loeliger. Both node B and C are a commit parents of commit node A. Parent commits are ordered left\-to\-right.
-.sp
 .sp
 .nf
 G   H   I   J
@@ -233,17 +158,16 @@ J = F^2  = B^3^2   = A^^3^2
 .fi
 .SH "SPECIFYING RANGES"
 History traversing commands such as git\-log operate on a set of commits, not just a single commit. To these commands, specifying a single revision with the notation described in the previous section means the set of commits reachable from that commit, following the commit ancestry chain.
-.sp
+
 To exclude commits reachable from a commit, a prefix ^ notation is used. E.g. "^r1 r2" means commits reachable from r2 but exclude the ones reachable from r1.
-.sp
+
 This set operation appears so often that there is a shorthand for it. "r1..r2" is equivalent to "^r1 r2". It is the difference of two sets (subtract the set of commits reachable from r1 from the set of commits reachable from r2).
-.sp
+
 A similar notation "r1...r2" is called symmetric difference of r1 and r2 and is defined as "r1 r2 \-\-not $(git\-merge\-base \-\-all r1 r2)". It it the set of commits that are reachable from either one of r1 or r2 but not from both.
-.sp
+
 Two other shorthands for naming a set that is formed by a commit and its parent commits exists. r1^@ notation means all parents of r1. r1^! includes commit r1 but excludes its all parents.
-.sp
+
 Here are a handful examples:
-.sp
 .sp
 .nf
 D                A B D
@@ -257,10 +181,8 @@ F^! H            D F H
 .fi
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org> and Junio C Hamano <junkio@cox.net>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
