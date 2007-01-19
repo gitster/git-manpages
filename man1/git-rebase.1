@@ -2,27 +2,25 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REBASE" "1" "11/07/2006" "" ""
+.TH "GIT\-REBASE" "1" "01/19/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-rebase \- Rebase local commits to a new head
+git\-rebase \- Forward\-port local commits to the updated upstream head
 .SH "SYNOPSIS"
 \fIgit\-rebase\fR [\-v] [\-\-merge] [\-\-onto <newbase>] <upstream> [<branch>]
-.sp
+
 \fIgit\-rebase\fR \-\-continue | \-\-skip | \-\-abort
-.sp
 .SH "DESCRIPTION"
 git\-rebase replaces <branch> with a new branch of the same name. When the \-\-onto option is provided the new branch starts out with a HEAD equal to <newbase>, otherwise it is equal to <upstream>. It then attempts to create a new commit for each commit from the original <branch> that does not exist in the <upstream> branch.
-.sp
+
 It is possible that a merge failure will prevent this process from being completely automatic. You will have to resolve any such merge failure and run git rebase \-\-continue. Another option is to bypass the commit that caused the merge failure with git rebase \-\-skip. To restore the original <branch> and remove the .dotest working files, use the command git rebase \-\-abort instead.
-.sp
+
 Note that if <branch> is not specified on the command line, the currently checked out branch is used.
-.sp
+
 Assume the following history exists and the current branch is "topic":
-.sp
 .sp
 .nf
           A\-\-\-B\-\-\-C topic
@@ -31,13 +29,11 @@ Assume the following history exists and the current branch is "topic":
 .fi
 From this point, the result of either of the following commands:
 .sp
-.sp
 .nf
 git\-rebase master
 git\-rebase master topic
 .fi
 would be:
-.sp
 .sp
 .nf
                   A'\-\-B'\-\-C' topic
@@ -45,11 +41,10 @@ would be:
     D\-\-\-E\-\-\-F\-\-\-G master
 .fi
 The latter form is just a short\-hand of git checkout topic followed by git rebase master.
-.sp
+
 Here is how you would transplant a topic branch based on one branch to another, to pretend that you forked the topic branch from the latter branch, using rebase \-\-onto.
-.sp
+
 First let's assume your \fItopic\fR is based on branch \fInext\fR. For example feature developed in \fItopic\fR depends on some functionality which is found in \fInext\fR.
-.sp
 .sp
 .nf
     o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
@@ -60,7 +55,6 @@ First let's assume your \fItopic\fR is based on branch \fInext\fR. For example f
 .fi
 We would want to make \fItopic\fR forked from branch \fImaster\fR, for example because the functionality \fItopic\fR branch depend on got merged into more stable \fImaster\fR branch, like this:
 .sp
-.sp
 .nf
     o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
         |            \\
@@ -70,12 +64,10 @@ We would want to make \fItopic\fR forked from branch \fImaster\fR, for example b
 .fi
 We can get this using the following command:
 .sp
-.sp
 .nf
 git\-rebase \-\-onto master next topic
 .fi
 Another example of \-\-onto option is to rebase part of a branch. If we have the following situation:
-.sp
 .sp
 .nf
                             H\-\-\-I\-\-\-J topicB
@@ -86,12 +78,10 @@ Another example of \-\-onto option is to rebase part of a branch. If we have the
 .fi
 then the command
 .sp
-.sp
 .nf
 git\-rebase \-\-onto master topicA topicB
 .fi
 would result in:
-.sp
 .sp
 .nf
                  H'\-\-I'\-\-J'  topicB
@@ -101,21 +91,18 @@ would result in:
     A\-\-\-B\-\-\-C\-\-\-D  master
 .fi
 This is useful when topicB does not depend on topicA.
-.sp
+
 In case of conflict, git\-rebase will stop at the first problematic commit and leave conflict markers in the tree. You can use git diff to locate the markers (<<<<<<) and make edits to resolve the conflict. For each file you edit, you need to tell git that the conflict has been resolved, typically this would be done with
-.sp
 .sp
 .nf
 git update\-index <filename>
 .fi
 After resolving the conflict manually and updating the index with the desired resolution, you can continue the rebasing process with
 .sp
-.sp
 .nf
 git rebase \-\-continue
 .fi
 Alternatively, you can undo the git\-rebase with
-.sp
 .sp
 .nf
 git rebase \-\-abort
@@ -144,12 +131,7 @@ Restart the rebasing process by skipping the current patch.
 Use merging strategies to rebase. When the recursive (default) merge strategy is used, this allows rebase to be aware of renames on the upstream side.
 .TP
 \-s <strategy>, \-\-strategy=<strategy>
-Use the given merge strategy; can be supplied more than once to specify them in the order they should be tried. If there is no
-\-s
-option, a built\-in list of strategies is used instead (git\-merge\-recursive
-when merging a single head,
-git\-merge\-octopus
-otherwise). This implies \-\-merge.
+Use the given merge strategy; can be supplied more than once to specify them in the order they should be tried. If there is no \-s option, a built\-in list of strategies is used instead (git\-merge\-recursive when merging a single head, git\-merge\-octopus otherwise). This implies \-\-merge.
 .TP
 \-v, \-\-verbose
 Display a diffstat of what changed upstream since the last rebase.
@@ -168,17 +150,14 @@ ours
 This resolves any number of heads, but the result of the merge is always the current branch head. It is meant to be used to supersede old development history of side branches.
 .SH "NOTES"
 When you rebase a branch, you are changing its history in a way that will cause problems for anyone who already has a copy of the branch in their repository and tries to pull updates from you. You should understand the implications of using \fIgit rebase\fR on a repository that you share.
-.sp
+
 When the git rebase command is run, it will first execute a "pre\-rebase" hook if one exists. You can use this hook to do sanity checks and reject the rebase if it isn't appropriate. Please see the template pre\-rebase hook script for an example.
-.sp
+
 You must be in the top directory of your project to start (or continue) a rebase. Upon completion, <branch> will be the current branch.
-.sp
 .SH "AUTHOR"
 Written by Junio C Hamano <junkio@cox.net>
-.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+

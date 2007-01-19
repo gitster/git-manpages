@@ -2,13 +2,13 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CHECKOUT\-INDEX" "1" "10/03/2006" "" ""
+.TH "GIT\-CHECKOUT\-INDEX" "1" "01/19/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-checkout\-index \- Copy files from the index to the working directory
+git\-checkout\-index \- Copy files from the index to the working tree
 .SH "SYNOPSIS"
 .sp
 .nf
@@ -20,7 +20,6 @@ git\-checkout\-index \- Copy files from the index to the working directory
 .fi
 .SH "DESCRIPTION"
 Will copy all files listed from the index to the working directory (not overwriting existing files).
-.sp
 .SH "OPTIONS"
 .TP
 \-u|\-\-index
@@ -51,54 +50,44 @@ Instead of copying the files to the working directory write the content to tempo
 Instead of taking list of paths from the command line, read list of paths from the standard input. Paths are separated by LF (i.e. one path per line) by default.
 .TP
 \-z
-Only meaningful with
-\-\-stdin; paths are separated with NUL character instead of LF.
+Only meaningful with \-\-stdin; paths are separated with NUL character instead of LF.
 .TP
 \-\-
 Do not interpret any more arguments as options.
+
 The order of the flags used to matter, but not anymore.
-.sp
+
 Just doing git\-checkout\-index does nothing. You probably meant git\-checkout\-index \-a. And if you want to force it, you want git\-checkout\-index \-f \-a.
-.sp
+
 Intuitiveness is not the goal here. Repeatability is. The reason for the "no arguments means no work" behavior is that from scripts you are supposed to be able to do:
-.sp
 .sp
 .nf
 $ find . \-name '*.h' \-print0 | xargs \-0 git\-checkout\-index \-f \-\-
 .fi
 which will force all existing *.h files to be replaced with their cached copies. If an empty command line implied "all", then this would force\-refresh everything in the index, which was not the point. But since git\-checkout\-index accepts \-\-stdin it would be faster to use:
 .sp
-.sp
 .nf
 $ find . \-name '*.h' \-print0 | git\-checkout\-index \-f \-z \-\-stdin
 .fi
 The \-\- is just a good idea when you know the rest will be filenames; it will prevent problems with a filename of, for example, \-a. Using \-\- is probably a good policy in scripts.
-.sp
 .SH "USING \-\-TEMP OR \-\-STAGE=ALL"
 When \-\-temp is used (or implied by \-\-stage=all) git\-checkout\-index will create a temporary file for each index entry being checked out. The index will not be updated with stat information. These options can be useful if the caller needs all stages of all unmerged entries so that the unmerged files can be processed by an external merge tool.
-.sp
+
 A listing will be written to stdout providing the association of temporary file names to tracked path names. The listing format has two variations:
-.sp
 .TP 3
 1.
 tempname TAB path RS
-.sp
-The first format is what gets used when
-\-\-stage
-is omitted or is not
-\-\-stage=all. The field tempname is the temporary file name holding the file content and path is the tracked path name in the index. Only the requested entries are output.
+
+The first format is what gets used when \-\-stage is omitted or is not \-\-stage=all. The field tempname is the temporary file name holding the file content and path is the tracked path name in the index. Only the requested entries are output.
 .TP
 2.
 stage1temp SP stage2temp SP stage3tmp TAB path RS
-.sp
-The second format is what gets used when
-\-\-stage=all. The three stage temporary fields (stage1temp, stage2temp, stage3temp) list the name of the temporary file if there is a stage entry in the index or
-.
-if there is no stage entry. Paths which only have a stage 0 entry will always be omitted from the output.
+
+The second format is what gets used when \-\-stage=all. The three stage temporary fields (stage1temp, stage2temp, stage3temp) list the name of the temporary file if there is a stage entry in the index or . if there is no stage entry. Paths which only have a stage 0 entry will always be omitted from the output.
+
 In both formats RS (the record separator) is newline by default but will be the null byte if \-z was passed on the command line. The temporary file names are always safe strings; they will never contain directory separators or whitespace characters. The path field is always relative to the current directory and the temporary file names are always relative to the top level directory.
-.sp
+
 If the object being copied out to a temporary file is a symbolic link the content of the link will be written to a normal file. It is up to the end\-user or the Porcelain to make use of this information.
-.sp
 .SH "EXAMPLES"
 .TP
 To update and refresh only the files already checked out
@@ -108,16 +97,13 @@ $ git\-checkout\-index \-n \-f \-a && git\-update\-index \-\-ignore\-missing \-\
 .fi
 .TP
 Using git\-checkout\-index to "export an entire tree"
-The prefix ability basically makes it trivial to use
-git\-checkout\-index
-as an "export as tree" function. Just read the desired tree into the index, and do:
+The prefix ability basically makes it trivial to use git\-checkout\-index as an "export as tree" function. Just read the desired tree into the index, and do:
 .sp
 .nf
 $ git\-checkout\-index \-\-prefix=git\-export\-dir/ \-a
 .fi
-git\-checkout\-index
-will "export" the index into the specified directory.
-.sp
+git\-checkout\-index will "export" the index into the specified directory.
+
 The final "/" is important. The exported name is literally just prefixed with the specified string. Contrast this with the following example.
 .TP
 Export files with a prefix
@@ -125,16 +111,11 @@ Export files with a prefix
 .nf
 $ git\-checkout\-index \-\-prefix=.merged\- Makefile
 .fi
-This will check out the currently cached copy of
-Makefile
-into the file
-.merged\-Makefile.
+This will check out the currently cached copy of Makefile into the file .merged\-Makefile.
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
-.sp
 .SH "DOCUMENTATION"
 Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger.kernel.org>.
-.sp
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+

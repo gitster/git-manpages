@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FORMAT\-PATCH" "1" "01/18/2007" "" ""
+.TH "GIT\-FORMAT\-PATCH" "1" "01/19/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -15,6 +15,7 @@ git\-format\-patch \- Prepare patches for e\-mail submission
 \fIgit\-format\-patch\fR [\-n | \-k] [\-o <dir> | \-\-stdout] [\-\-attach] [\-\-thread]
                    [\-s | \-\-signoff] [\-\-diff\-options] [\-\-start\-number <n>]
                    [\-\-in\-reply\-to=Message\-Id] [\-\-suffix=.<sfx>]
+                   [\-\-ignore\-if\-in\-upstream]
                    <since>[..<until>]
 .fi
 .SH "DESCRIPTION"
@@ -58,20 +59,20 @@ Add In\-Reply\-To and References headers to make the second and subsequent mails
 \-\-in\-reply\-to=Message\-Id
 Make the first mail (or all the mails with \-\-no\-thread) appear as a reply to the given Message\-Id, which avoids breaking threads to provide a new patch series.
 .TP
+\-\-ignore\-if\-in\-upstream
+Do not include a patch that matches a commit in <until>..<since>. This will examine all patches reachable from <since> but not from <until> and compare them with the patches being generated, and any patch that matches is ignored.
+.TP
 \-\-suffix=.<sfx>
-Instead of using .txt as the suffix for generated filenames, use specifed suffix. A common alternative is \-\-suffix=.patch.
+Instead of using .patch as the suffix for generated filenames, use specifed suffix. A common alternative is \-\-suffix=.txt.
 
 Note that you would need to include the leading dot . if you want a filename like 0001\-description\-of\-my\-change.patch, and the first letter does not have to be a dot. Leaving it empty would not add any suffix.
 .SH "CONFIGURATION"
-You can specify extra mail header lines to be added to each message in the repository configuration as follows:
+You can specify extra mail header lines to be added to each message in the repository configuration. Also you can specify the default suffix different from the built\-in one:
 .sp
 .nf
-headers = "Organization: git\-foo\\n"
-.fi
-You can specify default suffix used:
-.sp
-.nf
-suffix = .patch
+[format]
+        headers = "Organization: git\-foo\\n"
+        suffix = .txt
 .fi
 .SH "EXAMPLES"
 .TP
@@ -83,6 +84,9 @@ Extract all commits which are in the current branch but not in the origin branch
 .TP
 git\-format\-patch \-M \-B origin
 The same as the previous one. Additionally, it detects and handles renames and complete rewrites intelligently to produce a renaming patch. A renaming patch reduces the amount of text output, and generally makes it easier to review it. Note that the "patch" program does not understand renaming patches, so use it only when you know the recipient uses git to apply your patch.
+.TP
+git\-format\-patch \-3
+Extract three topmost commits from the current branch and format them as e\-mailable patches.
 .SH "SEE ALSO"
 \fBgit\-am\fR(1), \fBgit\-send\-email\fR(1)
 .SH "AUTHOR"
