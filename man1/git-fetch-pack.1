@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FETCH\-PACK" "1" "01/17/2007" "" ""
+.TH "GIT\-FETCH\-PACK" "1" "01/20/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,7 +10,7 @@
 .SH "NAME"
 git\-fetch\-pack \- Receive missing objects from another repository
 .SH "SYNOPSIS"
-\fIgit\-fetch\-pack\fR [\-q] [\-k] [\-\-exec=<git\-upload\-pack>] [<host>:]<directory> [<refs>\&...]
+\fIgit\-fetch\-pack\fR [\-\-all] [\-\-quiet|\-q] [\-\-keep|\-k] [\-\-thin] [\-\-exec=<git\-upload\-pack>] [\-\-depth=<n>] [\-v] [<host>:]<directory> [<refs>\&...]
 .SH "DESCRIPTION"
 Usually you would want to use \fBgit\-fetch\fR(1) which is a higher level wrapper of this command instead.
 
@@ -19,14 +19,26 @@ Invokes \fIgit\-upload\-pack\fR on a potentially remote repository, and asks it 
 This command degenerates to download everything to complete the asked refs from the remote side when the local side does not have a common ancestor commit.
 .SH "OPTIONS"
 .TP
-\-q
+\-\-all
+Fetch all remote refs.
+.TP
+\-\-quiet, \\\-q
 Pass \fI\-q\fR flag to \fIgit\-unpack\-objects\fR; this makes the cloning process less verbose.
 .TP
-\-k
+\-\-keep, \\\-k
 Do not invoke \fIgit\-unpack\-objects\fR on received data, but create a single packfile out of it instead, and store it in the object database. If provided twice then the pack is locked against repacking.
+.TP
+\-\-thin
+Spend extra cycles to minimize the number of objects to be sent. Use it on slower connection.
 .TP
 \-\-exec=<git\-upload\-pack>
 Use this to specify the path to \fIgit\-upload\-pack\fR on the remote side, if is not found on your $PATH. Installations of sshd ignores the user's environment setup scripts for login shells (e.g. .bash_profile) and your privately installed git may not be found on the system default $PATH. Another workaround suggested is to set up your $PATH in ".bashrc", but this flag is for people who do not want to pay the overhead for non\-interactive shells by having a lean .bashrc file (they set most of the things up in .bash_profile).
+.TP
+\-\-depth=<n>
+Limit fetching to ancestor\-chains not longer than n.
+.TP
+\\\-v
+Run verbosely.
 .TP
 <host>
 A remote host that houses the repository. When this part is specified, \fIgit\-upload\-pack\fR is invoked via ssh.
