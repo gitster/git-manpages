@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SHOW\-BRANCH" "1" "12/26/2006" "" ""
+.TH "GIT\-SHOW\-BRANCH" "1" "01/21/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -15,7 +15,7 @@ git\-show\-branch \- Show branches and their commits
 \fIgit\-show\-branch\fR [\-\-all] [\-\-remotes] [\-\-topo\-order] [\-\-current]
                 [\-\-more=<n> | \-\-list | \-\-independent | \-\-merge\-base]
                 [\-\-no\-name | \-\-sha1\-name] [\-\-topics] [<rev> | <glob>]\&...
-\fIgit\-show\-branch\fR \-\-reflog[=<n>] <ref>
+\fIgit\-show\-branch\fR \-\-reflog[=<n>[,<base>]] [\-\-list] <ref>
 .fi
 .SH "DESCRIPTION"
 Shows the commit ancestry graph starting from the commits named with <rev>s or <globs>s (or all refs under $GIT_DIR/refs/heads and/or $GIT_DIR/refs/tags) semi\-visually.
@@ -67,8 +67,8 @@ Instead of naming the commits using the path to reach them from heads (e.g. "mas
 \-\-topics
 Shows only commits that are NOT on the first branch given. This helps track topic branches by hiding any commit that is already in the main line of development. When given "git show\-branch \-\-topics master topic1 topic2", this will show the revisions given by "git rev\-list ^master topic1 topic2"
 .TP
-\-\-reflog[=<n>] <ref>
-Shows <n> most recent ref\-log entries for the given ref.
+\-\-reflog[=<n>[,<base>]] <ref>
+Shows <n> most recent ref\-log entries for the given ref. If <base> is given, <n> entries going back from that entry. <base> can be specified as count or date
 
 Note that \-\-more, \-\-list, \-\-independent and \-\-merge\-base options are mutually exclusive.
 .SH "OUTPUT"
@@ -106,6 +106,11 @@ If you keep your primary branches immediately under $GIT_DIR/refs/heads, and top
         default = heads/*
 .fi
 With this, git show\-branch without extra parameters would show only the primary branches. In addition, if you happen to be on your topic branch, it is shown as well.
+.sp
+.nf
+$ git show\-branch \-\-reflog='10,1 hour ago' \-\-list master
+.fi
+shows 10 reflog entries going back from the tip as of 1 hour ago. Without \-\-list, the output also shows how these tips are topologically related with each other.
 .SH "AUTHOR"
 Written by Junio C Hamano <junkio@cox.net>
 .SH "DOCUMENTATION"
