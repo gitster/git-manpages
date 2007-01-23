@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REPO\-CONFIG" "1" "01/20/2007" "" ""
+.TH "GIT\-REPO\-CONFIG" "1" "01/23/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -187,8 +187,33 @@ To add a new proxy, without altering any of the existing ones, use
 The git configuration file contains a number of variables that affect the git command's behavior. .git/config file for each repository is used to store the information for that repository, and $HOME/.gitconfig is used to store per user information to give fallback values for .git/config file.
 
 They can be used by both the git plumbing and the porcelains. The variables are divided into sections, where in the fully qualified variable name the variable itself is the last dot\-separated segment and the section name is everything before the last dot. The variable names are case\-insensitive and only alphanumeric characters are allowed. Some variables may appear multiple times.
+.SS "Syntax"
+The syntax is fairly flexible and permissive; whitespaces are mostly ignored. The \fI#\fR and \fI;\fR characters begin comments to the end of line, blank lines are ignored.
 
-The syntax is fairly flexible and permissive; whitespaces are mostly ignored. The \fI#\fR and \fI;\fR characters begin comments to the end of line, blank lines are ignored, lines containing strings enclosed in square brackets start sections and all the other lines are recognized as setting variables, in the form \fIname = value\fR. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true". String values may be entirely or partially enclosed in double quotes; some variables may require special value format.
+The file consists of sections and variables. A section begins with the name of the section in square brackets and continues until the next section begins. Section names are not case sensitive. Only alphanumeric characters, \fI\-\fR and \fI.\fR are allowed in section names. Each variable must belong to some section, which means that there must be section header before first setting of a variable.
+
+Sections can be further divided into subsections. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in example below:
+.sp
+.nf
+        [section "subsection"]
+.fi
+Subsection names can contain any characters (doublequote \fI"\fR, backslash \fI\\\fR and newline have to be entered escaped as \fI\\"\fR, \fI\\\\\fR and \fI\\n\fR, respecitvely) and are case sensitive. Section header cannot span multiple lines. Variables may belong directly to a section or to a given subsection. You can have [section] if you have [section "subsection"], but you don't need to.
+
+There is also (case insensitive) alternative [section.subsection] syntax. In this syntax subsection names follow the same restrictions as for section name.
+
+All the other lines are recognized as setting variables, in the form \fIname = value\fR. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true". The variable names are case\-insensitive and only alphanumeric characters and \fI\-\fR are allowed. There can be more than one value for a given variable; we say then that variable is multivalued.
+
+Leading and trailing whitespace in a variable value is discarded. Internal whitespace within a variable value is retained verbatim.
+
+The values following the equals sign in variable assign are all either a string, an integer, or a boolean. Boolean values may be given as yes/no, 0/1 or true/false. Case is not significant in boolean values, when converting value to the canonical form using \fI\-\-bool\fR type specifier; git\-repo\-config will ensure that the output is "true" or "false".
+
+String values may be entirely or partially enclosed in double quotes. You need to enclose variable value in double quotes if you want to preserve leading or trailing whitespace, or if variable value contains beginning of comment characters (if it contains \fI#\fR or \fI;\fR). Double quote \fI"\fR and backslash \fI\\\fR characters in variable value must be escaped: use \fI\\"\fR for \fI"\fR and \fI\\\\\fR for \fI\\\fR.
+
+The following escape sequences (beside \fI\\"\fR and \fI\\\\\fR) are recognized: \fI\\n\fR for newline character (NL), \fI\\t\fR for horizontal tabulation (HT, TAB) and \fI\\b\fR for backspace (BS). No other char escape sequence, nor octal char sequences are valid.
+
+Variable value ending in a \fI\\\fR is continued on the next line in the customary UNIX fashion.
+
+Some variables may require special value format.
 .SS "Example"
 .sp
 .nf
@@ -209,6 +234,13 @@ The syntax is fairly flexible and permissive; whitespaces are mostly ignored. Th
 [branch "devel"]
         remote = origin
         merge = refs/heads/devel
+.fi
+.sp
+.nf
+# Proxy settings
+[core]
+        gitProxy="ssh" for "ssh://kernel.org/"
+        gitProxy=default\-proxy ; for the rest
 .fi
 .SS "Variables"
 Note that this list is non\-comprehensive and not necessarily complete. For command\-specific variables, you will find a more detailed description in the appropriate manual page. You will find a description of non\-core porcelain configuration variables in the respective porcelain documentation.
