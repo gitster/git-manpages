@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-PACK\-REFS" "1" "01/09/2007" "" ""
+.TH "GIT\-PACK\-REFS" "1" "01/26/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,10 +17,12 @@ Traditionally, tips of branches and tags (collectively known as \fIrefs\fR) were
 This command is used to solve the storage and performance problem by stashing the refs in a single file, $GIT_DIR/packed\-refs. When a ref is missing from the traditional $GIT_DIR/refs hierarchy, it is looked up in this file and used if found.
 
 Subsequent updates to branches always creates new file under $GIT_DIR/refs hierarchy.
+
+A recommended practice to deal with a repository with too many refs is to pack its refs with \-\-all \-\-prune once, and occasionally run git\-pack\-refs \-\-prune. Tags are by definition stationary and are not expected to change. Branch heads will be packed with the initial pack\-refs \-\-all, but only the currently active branch heads will become unpacked, and next pack\-refs (without \-\-all) will leave them unpacked.
 .SH "OPTIONS"
 .TP
 \-\-all
-The command by default packs all tags and leaves branch tips alone. This is because branches are expected to be actively developed and packing their tips does not help performance. This option causes branch tips to be packed as well. Useful for a repository with many branches of historical interests.
+The command by default packs all tags and refs that are already packed, and leaves other refs alone. This is because branches are expected to be actively developed and packing their tips does not help performance. This option causes branch tips to be packed as well. Useful for a repository with many branches of historical interests.
 .TP
 \-\-no\-prune
 The command usually removes loose refs under $GIT_DIR/refs hierarchy after packing them. This option tells it not to.
