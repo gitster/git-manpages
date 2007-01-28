@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BLAME" "1" "01/17/2007" "" ""
+.TH "GIT\-BLAME" "1" "01/28/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,7 +12,7 @@ git\-blame \- Show what revision and author last modified each line of a file
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-blame\fR [\-c] [\-l] [\-t] [\-f] [\-n] [\-p] [\-L n,m] [\-S <revs\-file>]
+\fIgit\-blame\fR [\-c] [\-l] [\-t] [\-f] [\-n] [\-p] [\-\-incremental] [\-L n,m] [\-S <revs\-file>]
             [\-M] [\-C] [\-C] [\-\-since=<date>] [<rev>] [\-\-] <file>
 .fi
 .SH "DESCRIPTION"
@@ -54,6 +54,9 @@ Show line number in the original commit (Default: off).
 .TP
 \-p, \-\-porcelain
 Show in a format designed for machine consumption.
+.TP
+\-\-incremental
+Show the result incrementally in a format designed for machine consumption.
 .TP
 \-M
 Detect moving lines in the file as well. When a commit moves a block of lines in a file (e.g. the original file has A and then B, and the commit changes it to B and then A), traditional \fIblame\fR algorithm typically blames the lines that were moved up (i.e. B) to the parent and assigns blame to the lines that were moved down (i.e. A) to the child commit. With this option, both groups of lines are blamed on the parent.
@@ -122,6 +125,36 @@ and then annotate the change between the commit and its parents, using commit^! 
 .nf
 git blame \-C \-C \-f $commit^! \-\- foo
 .fi
+.SH "INCREMENTAL OUTPUT"
+When called with \-\-incremental option, the command outputs the result as it is built. The output generally will talk about lines touched by more recent commits first (i.e. the lines will be annotated out of order) and is meant to be used by interactive viewers.
+
+The output format is similar to the Porcelain format, but it does not contain the actual lines from the file that is being annotated.
+.TP 3
+1.
+Each blame entry always starts with a line of:
+.sp
+.nf
+<40\-byte hex sha1> <sourceline> <resultline> <num_lines>
+.fi
+Line numbers count from 1.
+.TP
+2.
+The first time that commit shows up in the stream, it has various other information about it printed out with a one\-word tag at the beginning of each line about that "extended commit info" (author, email, committer, dates, summary etc).
+.TP
+3.
+Unlike Porcelain format, the filename information is always given and terminates the entry:
+.sp
+.nf
+"filename" <whitespace\-quoted\-filename\-goes\-here>
+.fi
+and thus it's really quite easy to parse for some line\- and word\-oriented parser (which should be quite natural for most scripting languages).
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+For people who do parsing: to make it more robust, just ignore any lines in between the first and last one ("<sha1>" and "filename" lines) where you don't recognize the tag\-words (or care about that particular one) at the beginning of the "extended information" lines. That way, if there is ever added information (like the commit encoding or extended commit commentary), a blame viewer won't ever care.
 .SH "SEE ALSO"
 \fBgit\-annotate\fR(1)
 .SH "AUTHOR"
