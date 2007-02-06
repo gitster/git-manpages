@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REBASE" "1" "01/19/2007" "" ""
+.TH "GIT\-REBASE" "1" "02/06/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -92,6 +92,23 @@ would result in:
 .fi
 This is useful when topicB does not depend on topicA.
 
+A range of commits could also be removed with rebase. If we have the following situation:
+.sp
+.nf
+    E\-\-\-F\-\-\-G\-\-\-H\-\-\-I\-\-\-J  topicA
+.fi
+then the command
+.sp
+.nf
+git\-rebase \-\-onto topicA~5 topicA~2 topicA
+.fi
+would result in the removal of commits F and G:
+.sp
+.nf
+    E\-\-\-H'\-\-\-I'\-\-\-J'  topicA
+.fi
+This is useful if F and G were flawed in some way, or should not be part of topicA. Note that the argument to \-\-onto and the <upstream> parameter can be any valid commit\-ish.
+
 In case of conflict, git\-rebase will stop at the first problematic commit and leave conflict markers in the tree. You can use git diff to locate the markers (<<<<<<) and make edits to resolve the conflict. For each file you edit, you need to tell git that the conflict has been resolved, typically this would be done with
 .sp
 .nf
@@ -110,10 +127,10 @@ git rebase \-\-abort
 .SH "OPTIONS"
 .TP
 <newbase>
-Starting point at which to create the new commits. If the \-\-onto option is not specified, the starting point is <upstream>.
+Starting point at which to create the new commits. If the \-\-onto option is not specified, the starting point is <upstream>. May be any valid commit, and not just an existing branch name.
 .TP
 <upstream>
-Upstream branch to compare against.
+Upstream branch to compare against. May be any valid commit, not just an existing branch name.
 .TP
 <branch>
 Working branch; defaults to HEAD.
