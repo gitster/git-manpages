@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CHECKOUT" "1" "02/02/2007" "" ""
+.TH "GIT\-CHECKOUT" "1" "02/13/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -55,9 +55,11 @@ Earlier versions of git did not allow this and asked you to create a temporary b
 
 You can use usual git commands while in this state. You can use git\-reset \-\-hard $othercommit to further move around, for example. You can make changes and create a new commit on top of a detached HEAD. You can even create a merge by using git merge $othercommit.
 
-The state you are in while your HEAD is detached is not recorded by any branch (which is natural \-\-\- you are not on any branch). What this means is that you can discard your temporary commits and merges by switching back to an existing branch (e.g. git checkout master), and a later git prune or git gc would garbage\-collect them.
-
-The command would refuse to switch back to make sure that you do not discard your temporary state by mistake when your detached HEAD is not pointed at by any existing ref. If you did want to save your state (e.g. "I was interested in the fifth commit from the top of \fImaster\fR branch", or "I made two commits to fix minor bugs while on a detached HEAD" \(em and if you do not want to lose these facts), you can create a new branch and switch to it with git checkout \-b newbranch so that you can keep building on that state, or tag it first so that you can come back to it later and switch to the branch you wanted to switch to with git tag that_state; git checkout master. On the other hand, if you did want to discard the temporary state, you can give \-f option (e.g. git checkout \-f master) to override this behaviour.
+The state you are in while your HEAD is detached is not recorded by any branch (which is natural \-\-\- you are not on any branch). What this means is that you can discard your temporary commits and merges by switching back to an existing branch (e.g. git checkout master), and a later git prune or git gc would garbage\-collect them. If you did this by mistake, you can ask the reflog for HEAD where you were, e.g.
+.sp
+.nf
+$ git log \-g \-2 HEAD
+.fi
 .SH "EXAMPLES"
 .TP 3
 1.
