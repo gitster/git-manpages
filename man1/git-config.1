@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "02/23/2007" "" ""
+.TH "GIT\-CONFIG" "1" "02/24/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -184,7 +184,7 @@ To add a new proxy, without altering any of the existing ones, use
 % git config core.gitproxy '"proxy" for example.com'
 .fi
 .SH "CONFIGURATION FILE"
-The git configuration file contains a number of variables that affect the git command's behavior. .git/config file for each repository is used to store the information for that repository, and $HOME/.gitconfig is used to store per user information to give fallback values for .git/config file.
+The git configuration file contains a number of variables that affect the git command's behavior. .git/config file for each repository is used to store the information for that repository, and $HOME/.gitconfig is used to store per user information to give fallback values for .git/config file. The file /etc/gitconfig can be used to store system\-wide defaults.
 
 They can be used by both the git plumbing and the porcelains. The variables are divided into sections, where in the fully qualified variable name the variable itself is the last dot\-separated segment and the section name is everything before the last dot. The variable names are case\-insensitive and only alphanumeric characters are allowed. Some variables may appear multiple times.
 .SS "Syntax"
@@ -284,7 +284,9 @@ core.compression
 An integer \-1..9, indicating the compression level for objects that are not in a pack file. \-1 is the zlib and git default. 0 means no compression, and 1..9 are various speed/size tradeoffs, 9 being slowest.
 .TP
 core.legacyheaders
-A boolean which enables the legacy object header format in case you want to interoperate with old clients accessing the object database directly (where the "http://" and "rsync://" protocols count as direct access).
+A boolean which changes the format of loose objects so that they are more efficient to pack and to send out of the repository over git native protocol, since v1.4.2. However, loose objects written in the new format cannot be read by git older than that version; people fetching from your repository using older versions of git over dumb transports (e.g. http) will also be affected.
+
+To let git use the new loose object format, you have to set core.legacyheaders to false.
 .TP
 core.packedGitWindowSize
 Number of bytes of a pack file to map into memory in a single mapping operation. Larger window sizes may allow your system to process a smaller number of large pack files more quickly. Smaller window sizes will negatively affect performance due to increased calls to the operating system's memory manager, but may improve performance when accessing a large number of large pack files.
