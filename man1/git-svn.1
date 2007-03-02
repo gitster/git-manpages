@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SVN" "1" "02/23/2007" "" ""
+.TH "GIT\-SVN" "1" "03/02/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -39,8 +39,9 @@ Set the \fIrewriteRoot\fR option in the [svn\-remote] config.
 .TP
 \-\-username=<USER>
 For transports that SVN handles authentication for (http, https, and plain svn), specify the username. For other transports (eg svn+ssh://), you must include the username in the URL, eg svn+ssh://foo@svn.bar.com/project
-
-\-\-prefix=<prefix> This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want. This is useful if you wish to track multiple projects that share a common repository.
+.TP
+\-\-prefix=<prefix>
+This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want. This is useful if you wish to track multiple projects that share a common repository.
 .TP
 \fIfetch\fR
 Fetch unfetched revisions from the Subversion remote we are tracking. The name of the [svn\-remote "\&..."] section in the .git/config file may be specified as an optional command\-line argument.
@@ -50,57 +51,46 @@ Runs \fIinit\fR and \fIfetch\fR. It will automatically create a directory based 
 .TP
 \fIrebase\fR
 This fetches revisions from the SVN parent of the current HEAD and rebases the current (uncommitted to SVN) work against it.
-.sp
-.nf
-This works similarly to 'svn update' or 'git\-pull' except that
-it preserves linear history with 'git\-rebase' instead of
-\'git\-merge' for ease of dcommit\-ing with git\-svn.
-.fi
-.sp
-.nf
-This accepts all options that 'git\-svn fetch' and 'git\-rebase'
-accepts.  However '\-\-fetch\-all' only fetches from the current
-[svn\-remote], and not all [svn\-remote] definitions.
-.fi
-.sp
-.nf
-Like 'git\-rebase'; this requires that the working tree be clean
-and have no uncommitted changes.
-.fi
+
+This works similarly to \fIsvn update\fR or \fIgit\-pull\fR except that it preserves linear history with \fIgit\-rebase\fR instead of \fIgit\-merge\fR for ease of dcommit\-ing with git\-svn.
+
+This accepts all options that \fIgit\-svn fetch\fR and \fIgit\-rebase\fR accepts. However \fI\-\-fetch\-all\fR only fetches from the current [svn\-remote], and not all [svn\-remote] definitions.
+
+Like \fIgit\-rebase\fR; this requires that the working tree be clean and have no uncommitted changes.
 .TP
 \fIdcommit\fR
 Commit each diff from a specified head directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head). This will create a revision in SVN for each commit in git. It is recommended that you run git\-svn fetch and rebase (not pull or merge) your commits against the latest changes in the SVN repository. An optional command\-line argument may be specified as an alternative to HEAD. This is advantageous over \fIset\-tree\fR (below) because it produces cleaner, more linear history.
 .TP
 \fIlog\fR
 This should make it easy to look up svn log messages when svn users refer to \-r/\-\-revision numbers.
-.sp
-.nf
+
 The following features from `svn log' are supported:
-.fi
-.sp
-.nf
-\-\-revision=<n>[:<n>] \- is supported, non\-numeric args are not:
-                       HEAD, NEXT, BASE, PREV, etc ...
-\-v/\-\-verbose         \- it's not completely compatible with
-                       the \-\-verbose output in svn log, but
-                       reasonably close.
-\-\-limit=<n>          \- is NOT the same as \-\-max\-count,
-                       doesn't count merged/excluded commits
-\-\-incremental        \- supported
-.fi
-.sp
-.nf
+.RS
+.TP
+\-\-revision=<n>[:<n>]
+is supported, non\-numeric args are not: HEAD, NEXT, BASE, PREV, etc \&...
+.TP
+\-v/\-\-verbose
+it's not completely compatible with the \-\-verbose output in svn log, but reasonably close.
+.TP
+\-\-limit=<n>
+is NOT the same as \-\-max\-count, doesn't count merged/excluded commits
+.TP
+\-\-incremental
+supported
+.RE
+.IP
 New features:
-.fi
-.sp
-.nf
-\-\-show\-commit        \- shows the git commit sha1, as well
-\-\-oneline            \- our version of \-\-pretty=oneline
-.fi
-.sp
-.nf
+.RS
+.TP
+\-\-show\-commit
+shows the git commit sha1, as well
+.TP
+\-\-oneline
+our version of \-\-pretty=oneline
+.RE
+.IP
 Any other arguments are passed directly to `git log'
-.fi
 .TP
 \fIset\-tree\fR
 You should consider using \fIdcommit\fR instead of this command. Commit specified commit or tree objects to SVN. This relies on your imported fetch data being up\-to\-date. This makes absolutely no attempts to do patching when committing to SVN, it simply overwrites files with those specified in the tree or commit. All merging is assumed to have taken place independently of git\-svn functions.
@@ -164,19 +154,17 @@ config key: svn.authorsfile
 \-q , \-\-quiet
 Make git\-svn less verbose.
 .TP
-\-\-repack[=<n>]
-\-\-repack\-flags=<flags> These should help keep disk usage sane for large fetches with many revisions.
+\-\-repack[=<n>] , \-\-repack\-flags=<flags>
+These should help keep disk usage sane for large fetches with many revisions.
+
+\-\-repack takes an optional argument for the number of revisions to fetch before repacking. This defaults to repacking every 1000 commits fetched if no argument is specified.
+
+\-\-repack\-flags are passed directly to \fBgit\-repack\fR(1).
 .sp
 .nf
-\-\-repack takes an optional argument for the number of revisions
-to fetch before repacking.  This defaults to repacking every
-1000 commits fetched if no argument is specified.
+config key: svn.repack
+config key: svn.repackflags
 .fi
-.sp
-.nf
-\-\-repack\-flags are passed directly to gitlink:git\-repack[1].
-.fi
-config key: svn.repack config key: svn.repackflags
 .TP
 \-m , \-\-merge , \-s<strategy> , \-\-strategy=<strategy>
 These are only used with the \fIdcommit\fR and \fIrebase\fR commands.
@@ -203,31 +191,15 @@ config key: svn.followparent
 .TP
 svn.noMetadata , svn\-remote.<name>.noMetadata
 This gets rid of the git\-svn\-id: lines at the end of every commit.
-.sp
-.nf
-If you lose your .git/svn/git\-svn/.rev_db file, git\-svn will not
-be able to rebuild it and you won't be able to fetch again,
-either.  This is fine for one\-shot imports.
-.fi
-.sp
-.nf
-The 'git\-svn log' command will not work on repositories using
-this, either.  Using this conflicts with the 'useSvmProps'
-option for (hopefully) obvious reasons.
-.fi
+
+If you lose your .git/svn/git\-svn/.rev_db file, git\-svn will not be able to rebuild it and you won't be able to fetch again, either. This is fine for one\-shot imports.
+
+The \fIgit\-svn log\fR command will not work on repositories using this, either. Using this conflicts with the \fIuseSvmProps\fR option for (hopefully) obvious reasons.
 .TP
 svn.useSvmProps , svn\-remote.<name>.useSvmProps
 This allows git\-svn to re\-map repository URLs and UUIDs from mirrors created using SVN::Mirror (or svk) for metadata.
-.sp
-.nf
-If an SVN revision has a property, "svm:headrev", it is likely
-that the revision was created by SVN::Mirror (also used by SVK).
-The property contains a repository UUID and a revision.  We want
-to make it look like we are mirroring the original URL, so
-introduce a helper function that returns the original identity
-URL and UUID, and use it when generating metadata in commit
-messages.
-.fi
+
+If an SVN revision has a property, "svm:headrev", it is likely that the revision was created by SVN::Mirror (also used by SVK). The property contains a repository UUID and a revision. We want to make it look like we are mirroring the original URL, so introduce a helper function that returns the original identity URL and UUID, and use it when generating metadata in commit messages.
 .TP
 svn.useSvnsyncProps , svn\-remote.<name>.useSvnsyncprops
 Similar to the useSvmProps option; this is for users of the svnsync(1) command distributed with SVN 1.4.x and later.
@@ -238,7 +210,7 @@ This allows users to create repositories from alternate URLs. For example, an ad
 Since the noMetadata, rewriteRoot, useSvnsyncProps and useSvmProps options all affect the metadata generated and used by git\-svn; they \fBmust\fR be set in the configuration file before any history is imported and these settings should never be changed once they are set.
 
 Additionally, only one of these four options can be used per\-svn\-remote section because they affect the \fIgit\-svn\-id:\fR metadata line.
-.SS "Basic Examples"
+.SH "BASIC EXAMPLES"
 Tracking and contributing to a the trunk of a Subversion\-managed project:
 .sp
 .nf
@@ -270,7 +242,7 @@ Tracking and contributing to an entire Subversion\-managed project (complete wit
 # with the appropriate name):
         git reset \-\-hard remotes/trunk
 # You may only dcommit to one branch/tag/trunk at a time.  The usage
-# of dcommit/rebase/show\-ignore should be teh same as above.
+# of dcommit/rebase/show\-ignore should be the same as above.
 .fi
 .SH "REBASE VS. PULL/MERGE"
 Originally, git\-svn recommended that the remotes/git\-svn branch be pulled or merged from. This is because the author favored \fIgit\-svn set\-tree B\fR to commit a single head rather than the \fIgit\-svn set\-tree A..B\fR notation to commit multiple commits.
