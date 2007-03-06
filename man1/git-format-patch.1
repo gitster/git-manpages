@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FORMAT\-PATCH" "1" "01/19/2007" "" ""
+.TH "GIT\-FORMAT\-PATCH" "1" "03/06/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,8 +12,8 @@ git\-format\-patch \- Prepare patches for e\-mail submission
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-format\-patch\fR [\-n | \-k] [\-o <dir> | \-\-stdout] [\-\-attach] [\-\-thread]
-                   [\-s | \-\-signoff] [\-\-diff\-options] [\-\-start\-number <n>]
+\fIgit\-format\-patch\fR [<common diff options>] [\-n | \-k] [\-o <dir> | \-\-stdout]
+                   [\-\-attach] [\-\-thread] [\-s | \-\-signoff] [\-\-start\-number <n>]
                    [\-\-in\-reply\-to=Message\-Id] [\-\-suffix=.<sfx>]
                    [\-\-ignore\-if\-in\-upstream]
                    <since>[..<until>]
@@ -31,6 +31,122 @@ If \-n is specified, instead of "[PATCH] Subject", the first line is formatted a
 
 If given \-\-thread, git\-format\-patch will generate In\-Reply\-To and References headers to make the second and subsequent patch mails appear as replies to the first mail; this also generates a Message\-Id header to reference.
 .SH "OPTIONS"
+.TP
+\-p
+Generate patch (see section on generating patches)
+.TP
+\-u
+Synonym for "\-p".
+.TP
+\-\-raw
+Generate the raw format.
+.TP
+\-\-patch\-with\-raw
+Synonym for "\-p \-\-raw".
+.TP
+\-\-stat[=width[,name\-width]]
+Generate a diffstat. You can override the default output width for 80\-column terminal by "\-\-stat=width". The width of the filename part can be controlled by giving another width to it separated by a comma.
+.TP
+\-\-numstat
+Similar to \-\-stat, but shows number of added and deleted lines in decimal notation and pathname without abbreviation, to make it more machine friendly. For binary files, outputs two \- instead of saying 0 0.
+.TP
+\-\-shortstat
+Output only the last line of the \-\-stat format containing total number of modified files, as well as number of added and deleted lines.
+.TP
+\-\-summary
+Output a condensed summary of extended header information such as creations, renames and mode changes.
+.TP
+\-\-patch\-with\-stat
+Synonym for "\-p \-\-stat".
+.TP
+\-z
+\\0 line termination on output
+.TP
+\-\-name\-only
+Show only names of changed files.
+.TP
+\-\-name\-status
+Show only names and status of changed files.
+.TP
+\-\-color
+Show colored diff.
+.TP
+\-\-no\-color
+Turn off colored diff, even when the configuration file gives the default to color output.
+.TP
+\-\-color\-words
+Show colored word diff, i.e. color words which have changed.
+.TP
+\-\-no\-renames
+Turn off rename detection, even when the configuration file gives the default to do so.
+.TP
+\-\-check
+Warn if changes introduce trailing whitespace or an indent that uses a space before a tab.
+.TP
+\-\-full\-index
+Instead of the first handful characters, show full object name of pre\- and post\-image blob on the "index" line when generating a patch format output.
+.TP
+\-\-binary
+In addition to \-\-full\-index, output "binary diff" that can be applied with "git apply".
+.TP
+\-\-abbrev[=<n>]
+Instead of showing the full 40\-byte hexadecimal object name in diff\-raw format output and diff\-tree header lines, show only handful hexdigits prefix. This is independent of \-\-full\-index option above, which controls the diff\-patch output format. Non default number of digits can be specified with \-\-abbrev=<n>.
+.TP
+\-B
+Break complete rewrite changes into pairs of delete and create.
+.TP
+\-M
+Detect renames.
+.TP
+\-C
+Detect copies as well as renames.
+.TP
+\-\-diff\-filter=[ACDMRTUXB*]
+Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), have their type (mode) changed (T), are Unmerged (U), are Unknown (X), or have had their pairing Broken (B). Any combination of the filter characters may be used. When * (All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected.
+.TP
+\-\-find\-copies\-harder
+For performance reasons, by default, \-C option finds copies only if the original file of the copy was modified in the same changeset. This flag makes the command inspect unmodified files as candidates for the source of copy. This is a very expensive operation for large projects, so use it with caution.
+.TP
+\-l<num>
+\-M and \-C options require O(n^2) processing time where n is the number of potential rename/copy targets. This option prevents rename/copy detection from running if the number of rename/copy targets exceeds the specified number.
+.TP
+\-S<string>
+Look for differences that contain the change in <string>.
+.TP
+\-\-pickaxe\-all
+When \-S finds a change, show all the changes in that changeset, not just the files that contain the change in <string>.
+.TP
+\-\-pickaxe\-regex
+Make the <string> not a plain string but an extended POSIX regex to match.
+.TP
+\-O<orderfile>
+Output the patch in the order specified in the <orderfile>, which has one shell glob pattern per line.
+.TP
+\-R
+Swap two inputs; that is, show differences from index or on\-disk file to tree contents.
+.TP
+\-\-text
+Treat all files as text.
+.TP
+\-a
+Shorthand for "\-\-text".
+.TP
+\-\-ignore\-space\-at\-eol
+Ignore changes in white spaces at EOL.
+.TP
+\-\-ignore\-space\-change
+Ignore changes in amount of white space. This ignores white space at line end, and consider all other sequences of one or more white space characters to be equivalent.
+.TP
+\-b
+Shorthand for "\-\-ignore\-space\-change".
+.TP
+\-\-ignore\-all\-space
+Ignore white space when comparing lines. This ignores difference even if one line has white space where the other line has none.
+.TP
+\-w
+Shorthand for "\-\-ignore\-all\-space".
+
+For more detailed explanation on these common options, see also [1]\&\fIdiffcore documentation\fR.
 .TP
 \-o|\-\-output\-directory <dir>
 Use <dir> to store the resulting files, instead of the current working directory.
@@ -95,4 +211,7 @@ Written by Junio C Hamano <junkio@cox.net>
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-
+.SH "REFERENCES"
+.TP 3
+1.\ diffcore documentation
+\%diffcore.html
