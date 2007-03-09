@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FAST\-IMPORT" "1" "02/14/2007" "" ""
+.TH "GIT\-FAST\-IMPORT" "1" "03/09/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -35,7 +35,10 @@ Maximum delta depth, for blob and tree deltification. Default is 10.
 Maximum number of branches to maintain active at once. See \(lqMemory Utilization\(rq below for details. Default is 5.
 .TP
 \-\-export\-marks=<file>
-Dumps the internal marks table to <file> when complete. Marks are written one per line as :markid SHA\-1. Frontends can use this file to validate imports after they have been completed.
+Dumps the internal marks table to <file> when complete. Marks are written one per line as :markid SHA\-1. Frontends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs. As <file> is only opened and truncated at checkpoint (or completion) the same path can also be safely given to \-\-import\-marks.
+.TP
+\-\-import\-marks=<file>
+Before processing any input, load the marks specified in <file>. The input file must exist, must be readable, and must use the same format as produced by \-\-export\-marks. Multiple options may be supplied to import more than one set of marks. If a mark is defined to different values, the last file wins.
 .TP
 \-\-export\-pack\-edges=<file>
 After creating a packfile, print a line of data to <file> listing the filename of the packfile and the last commit on each branch that was written to that packfile. This information may be useful after importing projects whose total object set exceeds the 4 GiB packfile limit, as these commits can be used as edge points during calls to \fBgit\-pack\-objects\fR(1).
