@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CVSSERVER" "1" "10/03/2006" "" ""
+.TH "GIT\-CVSSERVER" "1" "03/14/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,16 +17,14 @@ export CVS_SERVER=git\-cvsserver
 .fi
 .SH "DESCRIPTION"
 This application is a CVS emulation layer for git.
-.sp
+
 It is highly functional. However, not all methods are implemented, and for those methods that are implemented, not all switches are implemented.
-.sp
+
 Testing has been done using both the CLI CVS client, and the Eclipse CVS plugin. Most functionality works fine with both of these clients.
-.sp
 .SH "LIMITATIONS"
 Currently cvsserver works over SSH connections for read/write clients, and over pserver for anonymous CVS access.
-.sp
+
 CVS clients cannot tag, branch or perform GIT merges.
-.sp
 .SH "INSTALLATION"
 .TP 3
 1.
@@ -35,9 +33,7 @@ If you are going to offer anonymous CVS access via pserver, add a line in /etc/i
 .nf
    cvspserver stream tcp nowait nobody git\-cvsserver pserver
 .fi
-Note: In some cases, you need to pass the
-\fIpserver\fR
-argument twice for git\-cvsserver to see it. So the line would look like
+Note: In some cases, you need to pass the \fIpserver\fR argument twice for git\-cvsserver to see it. So the line would look like
 .sp
 .nf
    cvspserver stream tcp nowait nobody git\-cvsserver pserver pserver
@@ -57,9 +53,9 @@ Note: you need to ensure each user that is going to invoke git\-cvsserver has wr
 .TP
 3.
 On the client machine you need to set the following variables. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo. For example:
-.sp
+
 For SSH access, CVS_SERVER should be set to git\-cvsserver
-.sp
+
 Example:
 .sp
 .nf
@@ -71,18 +67,13 @@ Example:
 For SSH clients that will make commits, make sure their .bashrc file sets the GIT_AUTHOR and GIT_COMMITTER variables.
 .TP
 5.
-Clients should now be able to check out the project. Use the CVS
-\fImodule\fR
-name to indicate what GIT
-\fIhead\fR
-you want to check out. Example:
+Clients should now be able to check out the project. Use the CVS \fImodule\fR name to indicate what GIT \fIhead\fR you want to check out. Example:
 .sp
 .nf
      cvs co \-d project\-master master
 .fi
 .SH "ECLIPSE CVS CLIENT NOTES"
 To get a checkout with the Eclipse CVS client:
-.sp
 .TP 3
 1.
 Select "Create a new project \-> From CVS checkout"
@@ -91,37 +82,47 @@ Select "Create a new project \-> From CVS checkout"
 Create a new location. See the notes below for details on how to choose the right protocol.
 .TP
 3.
-Browse the
-\fImodules\fR
-available. It will give you a list of the heads in the repository. You will not be able to browse the tree from there. Only the heads.
+Browse the \fImodules\fR available. It will give you a list of the heads in the repository. You will not be able to browse the tree from there. Only the heads.
 .TP
 4.
-Pick
-\fIHEAD\fR
-when it asks what branch/tag to check out. Untick the "launch commit wizard" to avoid committing the .project file.
+Pick \fIHEAD\fR when it asks what branch/tag to check out. Untick the "launch commit wizard" to avoid committing the .project file.
+
 Protocol notes: If you are using anonymous access via pserver, just select that. Those using SSH access should choose the \fIext\fR protocol, and configure \fIext\fR access on the Preferences\->Team\->CVS\->ExtConnection pane. Set CVS_SERVER to \fIgit\-cvsserver\fR. Not that password support is not good when using \fIext\fR, you will definitely want to have SSH keys setup.
-.sp
+
 Alternatively, you can just use the non\-standard extssh protocol that Eclipse offer. In that case CVS_SERVER is ignored, and you will have to replace the cvs utility on the server with git\-cvsserver or manipulate your .bashrc so that calling \fIcvs\fR effectively calls git\-cvsserver.
-.sp
 .SH "CLIENTS KNOWN TO WORK"
-CVS 1.12.9 on Debian CVS 1.11.17 on MacOSX (from Fink package) Eclipse 3.0, 3.1.2 on MacOSX (see Eclipse CVS Client Notes) TortoiseCVS
-.sp
+.TP 3
+\(bu
+CVS 1.12.9 on Debian
+.TP
+\(bu
+CVS 1.11.17 on MacOSX (from Fink package)
+.TP
+\(bu
+Eclipse 3.0, 3.1.2 on MacOSX (see Eclipse CVS Client Notes)
+.TP
+\(bu
+TortoiseCVS
 .SH "OPERATIONS SUPPORTED"
 All the operations required for normal use are supported, including checkout, diff, status, update, log, add, remove, commit. Legacy monitoring operations are not supported (edit, watch and related). Exports and tagging (tags and branches) are not supported at this stage.
-.sp
+
 The server will set the \-k mode to binary when relevant. In proper GIT tradition, the contents of the files are always respected. No keyword expansion or newline munging is supported.
-.sp
 .SH "DEPENDENCIES"
 git\-cvsserver depends on DBD::SQLite.
-.sp
 .SH "COPYRIGHT AND AUTHORS"
 This program is copyright The Open University UK \- 2006.
-.sp
-Authors: Martyn Smith <martyn@catalyst.net.nz> Martin Langhoff <martin@catalyst.net.nz> with ideas and patches from participants of the git\-list <git@vger.kernel.org>.
-.sp
+
+Authors:
+.TP 3
+\(bu
+Martyn Smith <martyn@catalyst.net.nz>
+.TP
+\(bu
+Martin Langhoff <martin@catalyst.net.nz>
+
+with ideas and patches from participants of the git\-list <git@vger.kernel.org>.
 .SH "DOCUMENTATION"
-Documentation by Martyn Smith <martyn@catalyst.net.nz> and Martin Langhoff <martin@catalyst.net.nz> Matthias Urlichs <smurf@smurf.noris.de>.
-.sp
+Documentation by Martyn Smith <martyn@catalyst.net.nz>, Martin Langhoff <martin@catalyst.net.nz>, and Matthias Urlichs <smurf@smurf.noris.de>.
 .SH "GIT"
 Part of the \fBgit\fR(7) suite
-.sp
+
