@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-AM" "1" "03/23/2007" "" ""
+.TH "GIT\-AM" "1" "03/25/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -62,6 +62,25 @@ Run interactively, just like git\-applymbox.
 \-\-resolved
 After a patch failure (e.g. attempting to apply conflicting patch), the user has applied it by hand and the index file stores the result of the application. Make a commit using the authorship and commit log extracted from the e\-mail message and the current index file, and continue.
 .SH "DISCUSSION"
+The commit author name is taken from the "From: " line of the message, and commit author time is taken from the "Date: " line of the message. The "Subject: " line is used as the title of the commit, after stripping common prefix "[PATCH <anything>]". It is supposed to describe what the commit is about concisely as a one line text.
+
+The body of the message (iow, after a blank line that terminates RFC2822 headers) can begin with "Subject: " and "From: " lines that are different from those of the mail header, to override the values of these fields.
+
+The commit message is formed by the title taken from the "Subject: ", a blank line and the body of the message up to where the patch begins. Excess whitespaces at the end of the lines are automatically stripped.
+
+The patch is expected to be inline, directly following the message. Any line that is of form:
+.TP 3
+\(bu
+three\-dashes and end\-of\-line, or
+.TP
+\(bu
+a line that begins with "diff \-", or
+.TP
+\(bu
+a line that begins with "Index: "
+
+is taken as the beginning of a patch, and the commit log message is terminated before the first occurrence of such a line.
+
 When initially invoking it, you give it names of the mailboxes to crunch. Upon seeing the first patch that does not apply, it aborts in the middle, just like \fIgit\-applymbox\fR does. You can recover from this in one of two ways:
 .TP 3
 1.
