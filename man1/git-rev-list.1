@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REV\-LIST" "1" "04/04/2007" "Git 1.5.1.31.ge421f" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "04/06/2007" "Git 1.5.1.53.g77e6f" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -24,6 +24,7 @@ git\-rev\-list \- Lists commit objects in reverse chronological order
              [ \-\-stdin ]
              [ \-\-topo\-order ]
              [ \-\-parents ]
+             [ \-\-left\-right ]
              [ \-\-encoding[=<encoding>] ]
              [ \-\-(author|committer|grep)=<pattern> ]
              [ [\-\-objects | \-\-objects\-edge] [ \-\-unpacked ] ]
@@ -259,6 +260,31 @@ Print the contents of the commit in raw\-format; each record is separated with a
 .TP
 \-\-parents
 Print the parents of the commit.
+.TP
+\-\-left\-right
+Mark which side of a symmetric diff a commit is reachable from. Commits from the left side are prefixed with < and those from the right with >. If combined with \-\-boundary, those commits are prefixed with \-.
+
+For example, if you have this topology:
+.sp
+.nf
+             y\-\-\-b\-\-\-b  branch B
+            / \\ /
+           /   .
+          /   / \\
+         o\-\-\-x\-\-\-a\-\-\-a  branch A
+.fi
+you would get an output line this:
+.sp
+.nf
+        $ git rev\-list \-\-left\-right \-\-boundary \-\-pretty=oneline A...B
+
+        >bbbbbbb... 3rd on b
+        >bbbbbbb... 2nd on b
+        <aaaaaaa... 3rd on a
+        <aaaaaaa... 2nd on a
+        \-yyyyyyy... 1st on b
+        \-xxxxxxx... 1st on a
+.fi
 .RE
 .SS "Diff Formatting"
 Below are listed options that control the formatting of diff output. Some of them are specific to \fBgit\-rev\-list\fR(1), however other diff options may be given. See \fBgit\-diff\-files\fR(1) for more options.
