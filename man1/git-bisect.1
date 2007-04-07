@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BISECT" "1" "04/04/2007" "Git 1.5.1.31.ge421f" "Git Manual"
+.TH "GIT\-BISECT" "1" "04/07/2007" "Git 1.5.1.81.gee969" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -15,7 +15,7 @@ git\-bisect \- Find the change that introduced a bug by binary search
 The command takes various subcommands, and different options depending on the subcommand:
 .sp
 .nf
-git bisect start [<paths>...]
+git bisect start [<bad> [<good>...]] [\-\-] [<paths>...]
 git bisect bad <rev>
 git bisect good <rev>
 git bisect reset [<branch>]
@@ -91,11 +91,18 @@ $ git reset \-\-hard HEAD~3               # try 3 revs before what
                                         # was suggested
 .fi
 Then compile and test the one you chose to try. After that, tell bisect what the result was as usual.
-.SS "Cutting down bisection by giving path parameter to bisect start"
+.SS "Cutting down bisection by giving more parameters to bisect start"
 You can further cut down the number of trials if you know what part of the tree is involved in the problem you are tracking down, by giving paths parameters when you say bisect start, like this:
 .sp
 .nf
-$ git bisect start arch/i386 include/asm\-i386
+$ git bisect start \-\- arch/i386 include/asm\-i386
+.fi
+If you know beforehand more than one good commits, you can narrow the bisect space down without doing the whole tree checkout every time you give good commits. You give the bad revision immediately after start and then you give all the good revisions you have:
+.sp
+.nf
+$ git bisect start v2.6.20\-rc6 v2.6.20\-rc4 v2.6.20\-rc1 \-\-
+                   # v2.6.20\-rc6 is bad
+                   # v2.6.20\-rc4 and v2.6.20\-rc1 are good
 .fi
 .SS "Bisect run"
 If you have a script that can tell if the current source code is good or bad, you can automatically bisect using:

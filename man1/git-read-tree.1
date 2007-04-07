@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-READ\-TREE" "1" "04/04/2007" "Git 1.5.1.31.ge421f" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "04/07/2007" "Git 1.5.1.81.gee969" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,7 +10,7 @@
 .SH "NAME"
 git\-read\-tree \- Reads tree information into the index
 .SH "SYNOPSIS"
-\fIgit\-read\-tree\fR (<tree\-ish> | [[\-m [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u | \-i]] [\-\-exclude\-per\-directory=<gitignore>] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
+\fIgit\-read\-tree\fR (<tree\-ish> | [[\-m [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u | \-i]] [\-\-exclude\-per\-directory=<gitignore>] [\-\-index\-output=<file>] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
 .SH "DESCRIPTION"
 Reads the tree information given by <tree\-ish> into the index, but does not actually \fBupdate\fR any of the files it "caches". (see: \fBgit\-checkout\-index\fR(1))
 
@@ -50,6 +50,9 @@ Keep the current index contents, and read the contents of named tree\-ish under 
 .TP
 \-\-exclude\-per\-directory=<gitignore>
 When running the command with \-u and \-m options, the merge result may need to overwrite paths that are not tracked in the current branch. The command usually refuses to proceed with the merge to avoid losing such a path. However this safety valve sometimes gets in the way. For example, it often happens that the other branch added a file that used to be a generated file in your branch, and the safety valve triggers when you try to switch to that branch after you ran make but before running make clean to remove the generated file. This option tells the command to read per\-directory exclude file (usually \fI.gitignore\fR) and allows such an untracked but explicitly ignored file to be overwritten.
+.TP
+\-\-index\-output=<file>
+Instead of writing the results out to $GIT_INDEX_FILE, write the resulting index in the named file. While the command is operating, the original index file is locked with the same mechanism as usual. The file must allow to be rename(2)ed into from a temporary file that is created next to the usual index file; typically this means it needs to be on the same filesystem as the index file itself, and you need write permission to the directories the index file and index output file are located in.
 .TP
 <tree\-ish#>
 The id of the tree object(s) to be read/merged.
