@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SHOW\-REF" "1" "04/04/2007" "Git 1.5.1.31.ge421f" "Git Manual"
+.TH "GIT\-SHOW\-REF" "1" "04/10/2007" "Git 1.5.1.108.gf8ce1" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,9 +14,12 @@ git\-show\-ref \- List references in a local repository
 .nf
 \fIgit\-show\-ref\fR [\-q|\-\-quiet] [\-\-verify] [\-h|\-\-head] [\-d|\-\-dereference]
              [\-s|\-\-hash] [\-\-abbrev] [\-\-tags] [\-\-heads] [\-\-] <pattern>\&...
+\fIgit\-show\-ref\fR \-\-exclude\-existing[=pattern]
 .fi
 .SH "DESCRIPTION"
 Displays references available in a local repository along with the associated commit IDs. Results can be filtered using a pattern and tags can be dereferenced into object IDs. Additionally, it can be used to test whether a particular ref exists.
+
+The \-\-exclude\-existing form is a filter that does the inverse, it shows the refs from stdin that don't exist in the local repository.
 
 Use of this utility is encouraged in favor of directly accessing files under in the .git directory.
 .SH "OPTIONS"
@@ -41,6 +44,9 @@ Abbreviate the object name. When using \-\-hash, you do not have to say \-\-hash
 .TP
 \-q, \-\-quiet
 Do not print any results to stdout. When combined with \fI\-\-verify\fR this can be used to silently check if a reference exists.
+.TP
+\-\-exclude\-existing, \-\-exclude\-existing=pattern
+Make git\-show\-ref act as a filter that reads refs from stdin of the form "(?:<anything>\\s)?<refname>(?:\\{})?$" and performs the following actions on each: (1) strip "^{}" at the end of line if any; (2) ignore if pattern is provided and does not head\-match refname; (3) warn if refname is not a well\-formed refname and skip; (4) ignore if refname is a ref that exists in the local repository; (5) otherwise output the line.
 .TP
 <pattern>
 Show references matching one or more patterns.
