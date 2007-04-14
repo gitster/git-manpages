@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "04/04/2007" "" ""
+.TH "GIT\-CONFIG" "1" "04/14/2007" "Git 1.5.1.1.98.gedb4f" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -256,6 +256,9 @@ Note that this list is non\-comprehensive and not necessarily complete. For comm
 core.fileMode
 If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT. See \fBgit\-update\-index\fR(1). True by default.
 .TP
+core.autocrlf
+If true, makes git convert CRLF at the end of lines in text files to LF when reading from the filesystem, and convert in reverse when writing to the filesystem. The variable can be set to \fIinput\fR, in which case the conversion happens only while reading from the filesystem but files are written out with LF at the end of lines. Currently, which paths to consider "text" (i.e. be subjected to the autocrlf mechanism) is decided purely based on the contents.
+.TP
 core.symlinks
 If false, symbolic links are checked out as small plain files that contain the link text. \fBgit\-update\-index\fR(1) and \fBgit\-add\fR(1) will not change the recorded type to regular file. Useful on filesystems like FAT that do not support symbolic links. True by default.
 .TP
@@ -394,10 +397,13 @@ gc.rerereunresolved
 Records of conflicted merge you have not resolved are kept for this many days when git rerere gc is run. The default is 15 days. See \fBgit\-rerere\fR(1).
 .TP
 gitcvs.enabled
-Whether the cvs pserver interface is enabled for this repository. See \fBgit\-cvsserver\fR(1).
+Whether the cvs server interface is enabled for this repository. See \fBgit\-cvsserver\fR(1).
 .TP
 gitcvs.logfile
-Path to a log file where the cvs pserver interface well\&... logs various stuff. See \fBgit\-cvsserver\fR(1).
+Path to a log file where the cvs server interface well\&... logs various stuff. See \fBgit\-cvsserver\fR(1).
+.TP
+gitcvs.allbinary
+If true, all files are sent to the client in mode \fI\-kb\fR. This causes the client to treat all files as binary files which suppresses any newline munging it otherwise might do. A work\-around for the fact that there is no way yet to set single files to mode \fI\-kb\fR. See \fBgit\-cvsserver\fR(1).
 .TP
 http.sslVerify
 Whether to verify the SSL certificate when fetching or pushing over HTTPS. Can be overridden by the \fIGIT_SSL_NO_VERIFY\fR environment variable.
@@ -421,7 +427,7 @@ http.lowSpeedLimit, http.lowSpeedTime
 If the HTTP transfer speed is less than \fIhttp.lowSpeedLimit\fR for longer than \fIhttp.lowSpeedTime\fR seconds, the transfer is aborted. Can be overridden by the \fIGIT_HTTP_LOW_SPEED_LIMIT\fR and \fIGIT_HTTP_LOW_SPEED_TIME\fR environment variables.
 .TP
 http.noEPSV
-A boolean which disables using of EPSV ftp command by curl. This can helpful with some "poor" ftp servers which doesn't support EPSV mode. Can be overridden by the \fIGIT_CURL_FTP_NO_EPSV\fR environment variable. Default is false (curl will use EPSV).
+A boolean which disables using of EPSV ftp command by curl. This can helpful with some "poor" ftp servers which don't support EPSV mode. Can be overridden by the \fIGIT_CURL_FTP_NO_EPSV\fR environment variable. Default is false (curl will use EPSV).
 .TP
 i18n.commitEncoding
 Character encoding the commit messages are stored in; git itself does not care per se, but this information is necessary e.g. when importing commits from emails or in the gitk graphical history browser (and possibly at other places in the future or in other porcelains). See e.g. \fBgit\-mailinfo\fR(1). Defaults to \fIutf\-8\fR.
