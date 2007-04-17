@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-ANNOTATE" "1" "04/04/2007" "Git 1.5.1.31.ge421f" "Git Manual"
+.TH "GIT\-ANNOTATE" "1" "04/17/2007" "Git 1.5.1.1.135.gf948" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -15,17 +15,55 @@ git\-annotate [options] file [revision]
 Annotates each line in the given file with information from the commit which introduced the line. Optionally annotate from a given revision.
 .SH "OPTIONS"
 .TP
-\-l, \-\-long
-Show long rev (Defaults off).
+\-b
+Show blank SHA\-1 for boundary commits. This can also be controlled via the blame.blankboundary config option.
 .TP
-\-t, \-\-time
-Show raw timestamp (Defaults off).
+\-\-root
+Do not treat root commits as boundaries. This can also be controlled via the blame.showroot config option.
 .TP
-\-r, \-\-rename
-Follow renames (Defaults on).
+\-\-show\-stats
+Include additional statistics at the end of blame output.
 .TP
-\-S, \-\-rev\-file <revs\-file>
-Use revs from revs\-file instead of calling git\-rev\-list.
+\-L n,m
+Annotate only the specified line range (lines count from 1).
+.TP
+\-l
+Show long rev (Default: off).
+.TP
+\-t
+Show raw timestamp (Default: off).
+.TP
+\-S <revs\-file>
+Use revs from revs\-file instead of calling \fBgit\-rev\-list\fR(1).
+.TP
+\-p, \-\-porcelain
+Show in a format designed for machine consumption.
+.TP
+\-\-incremental
+Show the result incrementally in a format designed for machine consumption.
+.TP
+\-\-contents <file>
+When <rev> is not specified, the command annotates the changes starting backwards from the working tree copy. This flag makes the command pretend as if the working tree copy has the contents of he named file (specify \- to make the command read from the standard input).
+.TP
+\-M|<num>|
+Detect moving lines in the file as well. When a commit moves a block of lines in a file (e.g. the original file has A and then B, and the commit changes it to B and then A), traditional \fIblame\fR algorithm typically blames the lines that were moved up (i.e. B) to the parent and assigns blame to the lines that were moved down (i.e. A) to the child commit. With this option, both groups of lines are blamed on the parent.
+.sp
+.nf
+<num> is optional but it is the lower bound on the number of
+alphanumeric characters that git must detect as moving
+within a file for it to associate those lines with the parent
+commit.
+.fi
+.TP
+\-C|<num>|
+In addition to \-M, detect lines copied from other files that were modified in the same commit. This is useful when you reorganize your program and move code around across files. When this option is given twice, the command looks for copies from all other files in the parent for the commit that creates the file in addition.
+.sp
+.nf
+<num> is optional but it is the lower bound on the number of
+alphanumeric characters that git must detect as moving
+between files for it to associate those lines with the parent
+commit.
+.fi
 .TP
 \-h, \-\-help
 Show help message.
