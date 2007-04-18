@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "04/14/2007" "Git 1.5.1.1.98.gedb4f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "04/18/2007" "Git 1.5.1.1.174.gabbf5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -403,7 +403,18 @@ gitcvs.logfile
 Path to a log file where the cvs server interface well\&... logs various stuff. See \fBgit\-cvsserver\fR(1).
 .TP
 gitcvs.allbinary
-If true, all files are sent to the client in mode \fI\-kb\fR. This causes the client to treat all files as binary files which suppresses any newline munging it otherwise might do. A work\-around for the fact that there is no way yet to set single files to mode \fI\-kb\fR. See \fBgit\-cvsserver\fR(1).
+If true, all files are sent to the client in mode \fI\-kb\fR. This causes the client to treat all files as binary files which suppresses any newline munging it otherwise might do. A work\-around for the fact that there is no way yet to set single files to mode \fI\-kb\fR.
+.TP
+gitcvs.dbname
+Database used by git\-cvsserver to cache revision information derived from the git repository. The exact meaning depends on the used database driver, for SQLite (which is the default driver) this is a filename. Supports variable substitution (see \fBgit\-cvsserver\fR(1) for details). May not contain semicolons (;). Default: \fI%Ggitcvs.%m.sqlite\fR
+.TP
+gitcvs.dbdriver
+Used Perl DBI driver. You can specify any available driver for this here, but it might not work. git\-cvsserver is tested with \fIDBD::SQLite\fR, reported to work with \fIDBD::Pg\fR, and reported \fBnot\fR to work with \fIDBD::mysql\fR. Experimental feature. May not contain double colons (:). Default: \fISQLite\fR. See \fBgit\-cvsserver\fR(1).
+.TP
+gitcvs.dbuser, gitcvs.dbpass
+Database user and password. Only useful if setting \fIgitcvs.dbdriver\fR, since SQLite has no concept of database users and/or passwords. \fIgitcvs.dbuser\fR supports variable substitution (see \fBgit\-cvsserver\fR(1) for details).
+
+All gitcvs variables except for \fIgitcvs.allbinary\fR can also specifed as \fIgitcvs.<access_method>.<varname>\fR (where \fIaccess_method\fR is one of "ext" and "pserver") to make them apply only for the given access method.
 .TP
 http.sslVerify
 Whether to verify the SSL certificate when fetching or pushing over HTTPS. Can be overridden by the \fIGIT_SSL_NO_VERIFY\fR environment variable.

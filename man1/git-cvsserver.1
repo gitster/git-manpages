@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CVSSERVER" "1" "04/08/2007" "Git 1.5.1.92.g8d160" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "04/18/2007" "Git 1.5.1.1.174.gabbf5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -25,6 +25,8 @@ Testing has been done using both the CLI CVS client, and the Eclipse CVS plugin.
 Currently cvsserver works over SSH connections for read/write clients, and over pserver for anonymous CVS access.
 
 CVS clients cannot tag, branch or perform GIT merges.
+
+git\-cvsserver maps GIT branches to CVS modules. This is very different from what most CVS users would expect since in CVS modules usually represent one or more directories.
 .SH "INSTALLATION"
 .TP 3
 1.
@@ -49,7 +51,17 @@ For each repo that you want accessible from CVS you need to edit config in the r
         # optional for debugging
         logfile=/path/to/logfile
 .fi
-Note: you need to ensure each user that is going to invoke git\-cvsserver has write access to the log file and to the git repository. When offering anon access via pserver, this means that the nobody user should have write access to at least the sqlite database at the root of the repository.
+Note: you need to ensure each user that is going to invoke git\-cvsserver has write access to the log file and to the database (see Database Backend. If you want to offer write access over SSH, the users of course also need write access to the git repository itself.
+
+All configuration variables can also be overriden for a specific method of access. Valid method names are "ext" (for SSH access) and "pserver". The following example configuration would disable pserver access while still allowing access over SSH.
+.sp
+.nf
+   [gitcvs]
+        enabled=0
+
+   [gitcvs "ext"]
+        enabled=1
+.fi
 .TP
 3.
 On the client machine you need to set the following variables. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo. For example:
@@ -72,6 +84,56 @@ Clients should now be able to check out the project. Use the CVS \fImodule\fR na
 .nf
      cvs co \-d project\-master master
 .fi
+.SH "DATABASE BACKEND"
+git\-cvsserver uses one database per git head (i.e. CVS module) to store information about the repository for faster access. The database doesn't contain any persitent data and can be completly regenerated from the git repository at any time. The database needs to be updated (i.e. written to) after every commit.
+
+If the commit is done directly by using git (as opposed to using git\-cvsserver) the update will need to happen on the next repository access by git\-cvsserver, independent of access method and requested operation.
+
+That means that even if you offer only read access (e.g. by using the pserver method), git\-cvsserver should have write access to the database to work reliably (otherwise you need to make sure that the database if up\-to\-date all the time git\-cvsserver is run).
+
+By default it uses SQLite databases in the git directory, named gitcvs.<module_name>.sqlite. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using git\-cvsserver write access to the database file without granting them write access to the directory, too.
+
+You can configure the database backend with the following configuration variables:
+.SS "Configuring database backend"
+git\-cvsserver uses the Perl DBI module. Please also read its documentation if changing these variables, especially about DBI\->connect().
+.TP
+gitcvs.dbname
+Database name. The exact meaning depends on the used database driver, for SQLite this is a filename. Supports variable substitution (see below). May not contain semicolons (;). Default: \fI%Ggitcvs.%m.sqlite\fR
+.TP
+gitcvs.dbdriver
+Used DBI driver. You can specify any available driver for this here, but it might not work. cvsserver is tested with \fIDBD::SQLite\fR, reported to work with \fIDBD::Pg\fR, and reported \fBnot\fR to work with \fIDBD::mysql\fR. Please regard this as an experimental feature. May not contain double colons (:). Default: \fISQLite\fR
+.TP
+gitcvs.dbuser
+Database user. Only useful if setting dbdriver, since SQLite has no concept of database users. Supports variable substitution (see below).
+.TP
+gitcvs.dbpass
+Database password. Only useful if setting dbdriver, since SQLite has no concept of database passwords.
+
+All variables can also be set per access method, see above.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBVariable substitution\fR
+.RS 3
+In dbdriver and dbuser you can use the following variables:
+.TP
+%G
+git directory name
+.TP
+%g
+git directory name, where all characters except for alpha\-numeric ones, ., and \- are replaced with _ (this should make it easier to use the directory name in a filename if wanted)
+.TP
+%m
+CVS module/git head name
+.TP
+%a
+access method (one of "ext" or "pserver")
+.TP
+%u
+Name of the user running git\-cvsserver. If no name can be determined, the numeric uid is used.
+.RE
 .SH "ECLIPSE CVS CLIENT NOTES"
 To get a checkout with the Eclipse CVS client:
 .TP 3
