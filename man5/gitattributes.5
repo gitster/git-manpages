@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GITATTRIBUTES" "5" "04/22/2007" "Git 1.5.1.2.242.g2d765" "Git Manual"
+.TH "GITATTRIBUTES" "5" "04/23/2007" "Git 1.5.2.rc0.1.g2cc31" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -82,8 +82,26 @@ A path to which the diff attribute is unset will generate Binary files differ.
 .TP
 Unspecified
 A path to which the diff attribute is unspecified first gets its contents inspected, and if it looks like text, it is treated as text. Otherwise it would generate Binary files differ.
+.TP
+String
+Diff is shown using the specified custom diff driver. The driver program is given its input using the same calling convention as used for GIT_EXTERNAL_DIFF program.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBDefining a custom diff driver\fR
+.RS 3
+The definition of a diff driver is done in gitconfig, not gitattributes file, so strictly speaking this manual page is a wrong place to talk about it. However\&...
 
-Any other value set to diff attribute is ignored and git acts as if the attribute is left unspecified.
+To define a custom diff driver jcdiff, add a section to your $GIT_DIR/config file (or $HOME/.gitconfig file) like this:
+.sp
+.nf
+[diff "jcdiff"]
+        command = j\-c\-diff
+.fi
+When git needs to show you a diff for the path with diff attribute set to jcdiff, it calls the command you specified with the above configuration, i.e. j\-c\-diff, with 7 parameters, just like GIT_EXTERNAL_DIFF program is called. See \fBgit\fR(7) for details.
+.RE
 .SS "Performing a three\-way merge"
 The attribute merge affects how three versions of a file is merged when a file\-level merge is necessary during git merge, and other programs such as git revert and git cherry\-pick.
 .TP
@@ -96,7 +114,7 @@ Take the version from the current branch as the tentative merge result, and decl
 Unspecified
 By default, this uses the same built\-in 3\-way merge driver as is the case the merge attribute is set. However, merge.default configuration variable can name different merge driver to be used for paths to which the merge attribute is unspecified.
 .TP
-Any other string value
+String
 3\-way merge is performed using the specified custom merge driver. The built\-in 3\-way merge driver can be explicitly specified by asking for "text" driver; the built\-in "take the current branch" driver can be requested by "binary".
 .sp
 .it 1 an-trap
