@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-AM" "1" "04/22/2007" "Git 1.5.1.2.241.gfdd3e" "Git Manual"
+.TH "GIT\-AM" "1" "05/15/2007" "Git 1.5.2.rc3.39.gaf9b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,8 +12,9 @@ git\-am \- Apply a series of patches from a mailbox
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-am\fR [\-\-signoff] [\-\-dotest=<dir>] [\-\-utf8 | \-\-no\-utf8] [\-\-binary] [\-\-3way]
-         [\-\-interactive] [\-\-whitespace=<option>] [\-C<n>] [\-p<n>]
+\fIgit\-am\fR [\-\-signoff] [\-\-dotest=<dir>] [\-\-keep] [\-\-utf8 | \-\-no\-utf8]
+         [\-\-3way] [\-\-interactive] [\-\-binary]
+         [\-\-whitespace=<option>] [\-C<n>] [\-p<n>]
          <mbox>\&...
 \fIgit\-am\fR [\-\-skip | \-\-resolved]
 .fi
@@ -34,30 +35,30 @@ Instead of .dotest directory, use <dir> as a working area to store extracted pat
 Pass \-k flag to git\-mailinfo (see \fBgit\-mailinfo\fR(1)).
 .TP
 \-u, \-\-utf8
-Pass \-u flag to git\-mailinfo (see \fBgit\-mailinfo\fR(1)). The proposed commit log message taken from the e\-mail are re\-coded into UTF\-8 encoding (configuration variable i18n.commitencoding can be used to specify project's preferred encoding if it is not UTF\-8).
+Pass \-u flag to git\-mailinfo (see \fBgit\-mailinfo\fR(1)). The proposed commit log message taken from the e\-mail is re\-coded into UTF\-8 encoding (configuration variable i18n.commitencoding can be used to specify project's preferred encoding if it is not UTF\-8).
 
 This was optional in prior versions of git, but now it is the default. You could use \-\-no\-utf8 to override this.
 .TP
 \-\-no\-utf8
 Pass \-n flag to git\-mailinfo (see \fBgit\-mailinfo\fR(1)).
 .TP
+\-3, \-\-3way
+When the patch does not apply cleanly, fall back on 3\-way merge, if the patch records the identity of blobs it is supposed to apply to, and we have those blobs available locally.
+.TP
 \-b, \-\-binary
 Pass \-\-allow\-binary\-replacement flag to git\-apply (see \fBgit\-apply\fR(1)).
 .TP
-\-3, \-\-3way
-When the patch does not apply cleanly, fall back on 3\-way merge, if the patch records the identity of blobs it is supposed to apply to, and we have those blobs locally.
+\-\-whitespace=<option>
+This flag is passed to the git\-apply (see \fBgit\-apply\fR(1)) program that applies the patch.
+.TP
+\-C<n>, \-p<n>
+These flags are passed to the git\-apply (see \fBgit\-apply\fR(1)) program that applies the patch.
+.TP
+\-i, \-\-interactive
+Run interactively.
 .TP
 \-\-skip
 Skip the current patch. This is only meaningful when restarting an aborted patch.
-.TP
-\-\-whitespace=<option>
-This flag is passed to the git\-apply program that applies the patch.
-.TP
-\-C<n>, \-p<n>
-These flags are passed to the git\-apply program that applies the patch.
-.TP
-\-i, \-\-interactive
-Run interactively, just like git\-applymbox.
 .TP
 \-r, \-\-resolved
 After a patch failure (e.g. attempting to apply conflicting patch), the user has applied it by hand and the index file stores the result of the application. Make a commit using the authorship and commit log extracted from the e\-mail message and the current index file, and continue.
@@ -87,7 +88,7 @@ is taken as the beginning of a patch, and the commit log message is terminated b
 When initially invoking it, you give it names of the mailboxes to crunch. Upon seeing the first patch that does not apply, it aborts in the middle, just like \fIgit\-applymbox\fR does. You can recover from this in one of two ways:
 .TP 3
 1.
-skip the current one by re\-running the command with \fI\-\-skip\fR option.
+skip the current patch by re\-running the command with \fI\-\-skip\fR option.
 .TP
 2.
 hand resolve the conflict in the working directory, and update the index file to bring it in a state that the patch should have produced. Then run the command with \fI\-\-resolved\fR option.

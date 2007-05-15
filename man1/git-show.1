@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SHOW" "1" "04/22/2007" "Git 1.5.1.1.98.gedb4f" "Git Manual"
+.TH "GIT\-SHOW" "1" "05/15/2007" "Git 1.5.2.rc3.39.gaf9b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -31,8 +31,14 @@ This manual page describes only the most frequently used options.
 The name of the object to show. For a more complete list of ways to spell object names, see "SPECIFYING REVISIONS" section in \fBgit\-rev\-parse\fR(1).
 .TP
 \-\-pretty[=\fI<format>\fR]
-Pretty\-prints the details of a commit. \-\-pretty without an explicit =<format> defaults to \fImedium\fR. If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file. Here are some additional details for each format:
-.RS
+Pretty print the contents of the commit logs in a given format, where \fI<format>\fR can be one of \fIoneline\fR, \fIshort\fR, \fImedium\fR, \fIfull\fR, \fIfuller\fR, \fIemail\fR, \fIraw\fR and \fIformat:<string>\fR. When left out the format default to \fImedium\fR.
+.TP
+\-\-encoding[=<encoding>]
+The commit objects record the encoding used for the log message in their encoding header; this option can be used to tell the command to re\-code the commit log message in the encoding preferred by the user. For non plumbing commands this defaults to UTF\-8.
+.SH "PRETTY FORMATS"
+If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file.
+
+Here are some additional details for each format:
 .TP 3
 \(bu
 \fIoneline\fR
@@ -118,7 +124,7 @@ Subject: [PATCH] <title line>
 .fi
 .sp
 .nf
-full commit message>
+<full commit message>
 .fi
 .TP
 \(bu
@@ -130,12 +136,15 @@ The \fIraw\fR format shows the entire commit exactly as stored in the commit obj
 \fIformat:\fR
 
 The \fIformat:\fR format allows you to specify which information you want to show. It works a little bit like printf format, with the notable exception that you get a newline with \fI%n\fR instead of \fI\\n\fR.
-.RE
-E.g, \fIformat:"The author of %h was %an, %ar%nThe title was >>%s<<"\fR would show something like this:
 
-The author of fe6e0ee was Junio C Hamano, 23 hours ago The title was >>t4119: test autocomputing \-p<n> for traditional diff input.<<
-
+E.g, \fIformat:"The author of %h was %an, %ar%nThe title was >>%s<<%n"\fR would show something like this:
+.sp
+.nf
+The author of fe6e0ee was Junio C Hamano, 23 hours ago
+The title was >>t4119: test autocomputing \-p<n> for traditional diff input.<<
+.fi
 The placeholders are:
+.RS
 .TP 3
 \(bu
 \fI%H\fR: commit hash
@@ -217,10 +226,6 @@ The placeholders are:
 .TP
 \(bu
 \fI%n\fR: newline
-.RS
-.TP
-\-\-encoding[=<encoding>]
-The commit objects record the encoding used for the log message in their encoding header; this option can be used to tell the command to re\-code the commit log message in the encoding preferred by the user. For non plumbing commands this defaults to UTF\-8.
 .RE
 .SH "EXAMPLES"
 .TP
