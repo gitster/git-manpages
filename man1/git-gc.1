@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-GC" "1" "04/22/2007" "Git 1.5.1.2.241.gfdd3e" "Git Manual"
+.TH "GIT\-GC" "1" "05/20/2007" "Git 1.5.2.14.g45bde" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,7 +10,7 @@
 .SH "NAME"
 git\-gc \- Cleanup unnecessary files and optimize the local repository
 .SH "SYNOPSIS"
-\fIgit\-gc\fR [\-\-prune]
+\fIgit\-gc\fR [\-\-prune] [\-\-aggressive]
 .SH "DESCRIPTION"
 Runs a number of housekeeping tasks within the current repository, such as compressing file revisions (to reduce disk space and increase performance) and removing unreachable objects which may have been created from prior invocations of \fBgit\-add\fR(1).
 
@@ -19,6 +19,9 @@ Users are encouraged to run this task on a regular basis within each repository 
 .TP
 \-\-prune
 Usually git\-gc packs refs, expires old reflog entries, packs loose objects, and removes old \fIrerere\fR records. Removal of unreferenced loose objects is an unsafe operation while other git operations are in progress, so it is not done by default. Pass this option if you want it, and only when you know nobody else is creating new objects in the repository at the same time (e.g. never use this option in a cron script).
+.TP
+\-\-aggressive
+Usually \fIgit\-gc\fR runs very quickly while providing good disk space utilization and performance. This option will cause git\-gc to more aggressive optimize the repository at the expense of taking much more time. The effects of this optimization are persistent, so this option only needs to be sporadically; every few hundred changesets or so.
 .SH "CONFIGURATION"
 The optional configuration variable \fIgc.reflogExpire\fR can be set to indicate how long historical entries within each branch's reflog should remain available in this repository. The setting is expressed as a length of time, for example \fI90 days\fR or \fI3 months\fR. It defaults to \fI90 days\fR.
 
@@ -29,6 +32,8 @@ The optional configuration variable \fIgc.rerereresolved\fR indicates how long r
 The optional configuration variable \fIgc.rerereunresolved\fR indicates how long records of conflicted merge you have not resolved are kept. This defaults to 15 days.
 
 The optional configuration variable \fIgc.packrefs\fR determines if git gc runs git\-pack\-refs. Without the configuration, git\-pack\-refs is not run in bare repositories by default, to allow older dumb\-transport clients fetch from the repository, but this will change in the future.
+
+The optional configuration variable \fIgc.aggressiveWindow\fR controls how much time is spent optimizing the delta compression of the objects in the repository when the \-\-aggressive option is specified. The larger the value, the more time is spent optimizing the delta compression. See the documentation for the \-\-window' option in \fBgit\-repack\fR(1) for more details. This defaults to 10.
 .SH "SEE ALSO"
 \fBgit\-prune\fR(1) \fBgit\-reflog\fR(1) \fBgit\-repack\fR(1) \fBgit\-rerere\fR(1)
 .SH "AUTHOR"

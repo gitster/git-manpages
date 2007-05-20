@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-PACK\-OBJECTS" "1" "05/09/2007" "Git 1.5.2.rc2.46.g4675" "Git Manual"
+.TH "GIT\-PACK\-OBJECTS" "1" "05/20/2007" "Git 1.5.2.14.g45bde" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -66,6 +66,12 @@ This flag makes the command not to report its progress on the standard error str
 .TP
 \-\-no\-reuse\-delta
 When creating a packed archive in a repository that has existing packs, the command reuses existing deltas. This sometimes results in a slightly suboptimal pack. This flag tells the command not to reuse existing deltas but compute them from scratch.
+.TP
+\-\-no\-reuse\-object
+This flag tells the command not to reuse existing object data at all, including non deltified object, forcing recompression of everything. This implies \-\-no\-reuse\-delta. Useful only in the obscure case where wholesale enforcement of a different compression level on the packed data is desired.
+.TP
+\-\-compression=[N]
+Specifies compression level for newly\-compressed data in the generated pack. If not specified, pack compression level is determined first by pack.compression, then by core.compression, and defaults to \-1, the zlib default, if neither is set. Data copied from loose objects will be recompressed if core.legacyheaders was true when they were created or if the loose compression level (see core.loosecompression and core.compression) is now a different value than the pack compression level. Add \-\-no\-reuse\-object if you want to force a uniform compression level on all data no matter the source.
 .TP
 \-\-delta\-base\-offset
 A packed archive can express base object of a delta as either 20\-byte object name or as an offset in the stream, but older version of git does not understand the latter. By default, git\-pack\-objects only uses the former format for better compatibility. This option allows the command to use the latter format for compactness. Depending on the average delta chain length, this option typically shrinks the resulting packfile by 3\-5 per\-cent.
