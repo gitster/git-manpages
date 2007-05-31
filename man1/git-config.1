@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "05/24/2007" "Git 1.5.2.58.g98ee" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/31/2007" "Git 1.5.2.146.gb75c6" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -26,7 +26,7 @@ git\-config \- Get and set repository or global options
 .SH "DESCRIPTION"
 You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
 
-Multiple lines can be added to an option by using the \fI\-\-add\fR option. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see EXAMPLES).
+Multiple lines can be added to an option by using the \fI\-\-add\fR option. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq).
 
 The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make \fIgit\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool). Type specifiers currently only take effect for reading operations. If no type specifier is passed, no checks or transformations are performed on the value.
 
@@ -51,7 +51,7 @@ you try to unset an option which does not exist,
 you try to unset/set an option for which multiple lines match, or
 .TP
 7.
-you use \-\-global option without $HOME being properly set.
+you use \fI\-\-global\fR option without $HOME being properly set.
 .SH "OPTIONS"
 .TP
 \-\-replace\-all
@@ -70,10 +70,18 @@ Like get, but does not fail if the number of values for the key is not exactly o
 Like \-\-get\-all, but interprets the name as a regular expression.
 .TP
 \-\-global
-Use global ~/.gitconfig file rather than the repository .git/config.
+For writing options: write to global ~/.gitconfig file rather than the repository .git/config.
+
+For reading options: read only from global ~/.gitconfig rather than from all available files.
+
+See also the section called \(lqFILES\(rq.
 .TP
 \-\-system
-Use system\-wide $(prefix)/etc/gitconfig rather than the repository .git/config.
+For writing options: write to system\-wide $(prefix)/etc/gitconfig rather than the repository .git/config.
+
+For reading options: read only from system\-wide $(prefix)/etc/gitconfig rather than from all available files.
+
+See also the section called \(lqFILES\(rq.
 .TP
 \-\-remove\-section
 Remove the given section from the configuration file.
@@ -95,14 +103,39 @@ git\-config will ensure that the output is "true" or "false"
 .TP
 \-\-int
 git\-config will ensure that the output is a simple decimal number. An optional value suffix of \fIk\fR, \fIm\fR, or \fIg\fR in the config file will cause the value to be multiplied by 1024, 1048576, or 1073741824 prior to output.
+.SH "FILES"
+There are three files where git\-config will search for configuration options:
+
+Example\ 1.\ git/config::.sp
+.nf
+Repository specific configuration file. (The filename is
+of course relative to the repository root, not the working
+directory.)
+.fi
+.TP
+~/.gitconfig
+User\-specific configuration file. Also called "global" configuration file.
+.TP
+$(prefix)/etc/gitconfig
+System\-wide configuration file.
+
+If no further options are given, all reading options will read all of these files that are available. If the global or the system\-wide configuration file are not available they will be ignored. If the repository configuration file is not available or readable, git\-config will exit with a non\-zero error code. However, in neither case will an error message be issued.
+
+All writing options will per default write to the repository specific configuration file. Note that this also affects options like \fI\-\-replace\-all\fR and \fI\-\-unset\fR. \fBgit\-config will only ever change one file at a time\fR.
+
+You can override these rules either by command line options or by environment variables. The \fI\-\-global\fR and the \fI\-\-system\fR options will limit the file used to the global or system\-wide file respectively. The GIT_CONFIG environment variable has a similar effect, but you can specify any filename you want.
+
+The GIT_CONFIG_LOCAL environment variable on the other hand only changes the name used instead of the repository configuration file. The global and the system\-wide configuration files will still be read. (For writing options this will obviously result in the same behavior as using GIT_CONFIG.)
 .SH "ENVIRONMENT"
 .TP
 GIT_CONFIG
-Take the configuration from the given file instead of .git/config. Using the "\-\-global" option forces this to ~/.gitconfig.
+Take the configuration from the given file instead of .git/config. Using the "\-\-global" option forces this to ~/.gitconfig. Using the "\-\-system" option forces this to $(prefix)/etc/gitconfig.
 .TP
 GIT_CONFIG_LOCAL
-Currently the same as $GIT_CONFIG; when Git will support global configuration files, this will cause it to take the configuration from the global configuration file in addition to the given file.
-.SH "EXAMPLE"
+Take the configuration from the given file instead if .git/config. Still read the global and the system\-wide configuration files, though.
+
+See also the section called \(lqFILES\(rq.
+.SH "EXAMPLES"
 Given a .git/config like this:
 .sp
 .nf
