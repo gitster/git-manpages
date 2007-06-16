@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CVSSERVER" "1" "06/08/2007" "Git 1.5.2.1.144.gabc40" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "06/16/2007" "Git 1.5.2.2.236.g952c8" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,11 +10,42 @@
 .SH "NAME"
 git\-cvsserver \- A CVS server emulator for git
 .SH "SYNOPSIS"
+SSH:
 .sp
 .nf
 export CVS_SERVER=git\-cvsserver
 \fIcvs\fR \-d :ext:user@server/path/repo.git co <HEAD_name>
 .fi
+pserver (/etc/inetd.conf):
+.sp
+.nf
+cvspserver stream tcp nowait nobody /usr/bin/git\-cvsserver git\-cvsserver pserver
+.fi
+Usage:
+.sp
+.nf
+\fIgit\-cvsserver\fR [options] [pserver|server] [<directory> \&...]
+.fi
+.SH "OPTIONS"
+All these options obviously only make sense if enforced by the server side. They have been implemented to resemble the \fBgit\-daemon\fR(1) options as closely as possible.
+.TP
+\-\-base\-path <path>
+Prepend \fIpath\fR to requested CVSROOT
+.TP
+\-\-strict\-paths
+Don't allow recursing into subdirectories
+.TP
+\-\-export\-all
+Don't check for gitcvs.enabled in config. You also have to specify a list of allowed directories (see below) if you want to use this option.
+.TP
+\-\-version, \-V
+Print version information and exit
+.TP
+\-\-help, \-h, \-H
+Print usage information and exit
+.TP
+<directory>
+You can specify a list of allowed directories. If no directories are given, all are allowed. This is an additional restriction, gitcvs access still needs to be enabled by the gitcvs.enabled config option unless \fI\-\-export\-all\fR was given, too.
 .SH "DESCRIPTION"
 This application is a CVS emulation layer for git.
 
