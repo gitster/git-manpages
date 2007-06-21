@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REFLOG" "1" "06/16/2007" "Git 1.5.2.2.236.g952c8" "Git Manual"
+.TH "GIT\-REFLOG" "1" "06/21/2007" "Git 1.5.2.2.249.g45fd" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -26,6 +26,11 @@ The subcommand "expire" is used to prune older reflog entries. Entries older tha
 
 The subcommand "show" (which is also the default, in the absense of any subcommands) will take all the normal log options, and show the log of the current branch. It is basically an alias for \fIgit log \-g \-\-abbrev\-commit \-\-pretty=oneline\fR, see \fBgit\-log\fR(1).
 .SH "OPTIONS"
+.TP
+\-\-stale\-fix
+This revamps the logic \(em the definition of "broken commit" becomes: a commit that is not reachable from any of the refs and there is a missing object among the commit, tree, or blob objects reachable from it that is not reachable from any of the refs.
+
+This computation involves traversing all the reachable objects, i.e. it has the same cost as \fIgit prune\fR. Fortunately, once this is run, we should not have to ever worry about missing objects, because the current prune and pack\-objects know about reflogs and protect objects referred by them.
 .TP
 \-\-expire=<time>
 Entries older than this time are pruned. Without the option it is taken from configuration gc.reflogExpire, which in turn defaults to 90 days.
