@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "06/27/2007" "Git 1.5.2.2.585.g9cc0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/02/2007" "Git 1.5.2.2.646.g71e55" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,9 +12,9 @@ git\-config \- Get and set repository or global options
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-config\fR [\-\-system | \-\-global] [\-z|\-\-null] name [value [value_regex]]
-\fIgit\-config\fR [\-\-system | \-\-global] \-\-add name value
-\fIgit\-config\fR [\-\-system | \-\-global] \-\-replace\-all name [value [value_regex]]
+\fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] name [value [value_regex]]
+\fIgit\-config\fR [\-\-system | \-\-global] [type] \-\-add name value
+\fIgit\-config\fR [\-\-system | \-\-global] [type] \-\-replace\-all name [value [value_regex]]
 \fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] \-\-get name [value_regex]
 \fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] \-\-get\-all name [value_regex]
 \fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] \-\-get\-regexp name_regex [value_regex]
@@ -29,7 +29,7 @@ You can query/set/replace/unset options with this command. The name is actually 
 
 Multiple lines can be added to an option by using the \fI\-\-add\fR option. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq).
 
-The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make \fIgit\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool). Type specifiers currently only take effect for reading operations. If no type specifier is passed, no checks or transformations are performed on the value.
+The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make \fIgit\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool). If no type specifier is passed, no checks or transformations are performed on the value.
 
 This command will fail if:
 .TP 3
@@ -296,6 +296,9 @@ Note that this list is non\-comprehensive and not necessarily complete. For comm
 core.fileMode
 If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT. See \fBgit\-update\-index\fR(1). True by default.
 .TP
+core.quotepath
+The commands that output paths (e.g. ls\-files, diff), when not given the \-z option, will quote "unusual" characters in the pathname by enclosing the pathname in a double\-quote pair and with backslashes the same way strings in C source code are quoted. If this variable is set to false, the bytes higher than 0x80 are not quoted but output as verbatim. Note that double quote, backslash and control characters are always quoted without \-z regardless of the setting of this variable.
+.TP
 core.autocrlf
 If true, makes git convert CRLF at the end of lines in text files to LF when reading from the filesystem, and convert in reverse when writing to the filesystem. The variable can be set to \fIinput\fR, in which case the conversion happens only while reading from the filesystem but files are written out with LF at the end of lines. Currently, which paths to consider "text" (i.e. be subjected to the autocrlf mechanism) is decided purely based on the contents.
 .TP
@@ -317,6 +320,9 @@ core.bare
 If true this repository is assumed to be \fIbare\fR and has no working directory associated with it. If this is the case a number of commands that require a working directory will be disabled, such as \fBgit\-add\fR(1) or \fBgit\-merge\fR(1).
 
 This setting is automatically guessed by \fBgit\-clone\fR(1) or \fBgit\-init\fR(1) when the repository was created. By default a repository that ends in "/.git" is assumed to be not bare (bare = false), while all other repositories are assumed to be bare (bare = true).
+.TP
+core.worktree
+Set the path to the working tree. The value will not be used in combination with repositories found automatically in a .git directory (i.e. $GIT_DIR is not set). This can be overriden by the GIT_WORK_TREE environment variable and the \fI\-\-work\-tree\fR command line option.
 .TP
 core.logAllRefUpdates
 Updates to a ref <ref> is logged to the file "$GIT_DIR/logs/<ref>", by appending the new and old SHA1, the date/time and the reason of the update, but only when the file exists. If this configuration variable is set to true, missing "$GIT_DIR/logs/<ref>" file is automatically created for branch heads.
