@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-RECEIVE\-PACK" "1" "06/16/2007" "Git 1.5.2.2.236.g952c8" "Git Manual"
+.TH "GIT\-RECEIVE\-PACK" "1" "07/03/2007" "Git 1.5.3.rc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -31,7 +31,7 @@ Before any ref is updated, if $GIT_DIR/hooks/pre\-receive file exists and is exe
 .nf
 sha1\-old SP sha1\-new SP refname LF
 .fi
-The refname value is relative to $GIT_DIR; e.g. for the master head this is "refs/heads/master". The two sha1 values before each refname are the object names for the refname before and after sha1\-old and sha1\-new should be valid objects in the repository.
+The refname value is relative to $GIT_DIR; e.g. for the master head this is "refs/heads/master". The two sha1 values before each refname are the object names for the refname before and after the update. Refs to be created will have sha1\-old equal to 0{40}, while refs to be deleted will have sha1\-new equal to 0{40}, otherwise sha1\-old and sha1\-new should be valid objects in the repository.
 
 This hook is called before any refname is updated and before any fast\-forward checks are performed.
 
@@ -42,7 +42,7 @@ Before each ref is updated, if $GIT_DIR/hooks/update file exists and is executab
 .nf
 $GIT_DIR/hooks/update refname sha1\-old sha1\-new
 .fi
-The refname parameter is relative to $GIT_DIR; e.g. for the master head this is "refs/heads/master". The two sha1 arguments are the object names for the refname before and after the update. Note that the hook is called before the refname is updated, or it should match what is recorded in refname.
+The refname parameter is relative to $GIT_DIR; e.g. for the master head this is "refs/heads/master". The two sha1 arguments are the object names for the refname before and after the update. Note that the hook is called before the refname is updated, so either sha1\-old is 0{40} (meaning there is no such ref yet), or it should match what is recorded in refname.
 
 The hook should exit with non\-zero status if it wants to disallow updating the named ref. Otherwise it should exit with zero.
 
@@ -53,7 +53,7 @@ After all refs were updated (or attempted to be updated), if any ref update was 
 .nf
 sha1\-old SP sha1\-new SP refname LF
 .fi
-The refname value is relative to $GIT_DIR; e.g. for the master head this is "refs/heads/master". The two sha1 values before each refname are the object names for the refname before and after the update. Refs that were created will have sha1\-old equal to the repository.
+The refname value is relative to $GIT_DIR; e.g. for the master head this is "refs/heads/master". The two sha1 values before each refname are the object names for the refname before and after the update. Refs that were created will have sha1\-old equal to 0{40}, while refs that were deleted will have sha1\-new equal to 0{40}, otherwise sha1\-old and sha1\-new should be valid objects in the repository.
 
 Using this hook, it is easy to generate mails describing the updates to the repository. This example script sends one mail message per ref listing the commits pushed to the repository:
 .sp

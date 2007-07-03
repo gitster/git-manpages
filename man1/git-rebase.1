@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REBASE" "1" "06/16/2007" "Git 1.5.2.1.144.gabc40" "Git Manual"
+.TH "GIT\-REBASE" "1" "07/03/2007" "Git 1.5.3.rc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,7 +12,8 @@ git\-rebase \- Forward\-port local commits to the updated upstream head
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-rebase\fR [\-v] [\-\-merge] [\-C<n>] [\-\-onto <newbase>] <upstream> [<branch>]
+\fIgit\-rebase\fR [\-i | \-\-interactive] [\-v | \-\-verbose] [\-\-merge] [\-C<n>]
+        [\-p | \-\-preserve\-merges] [\-\-onto <newbase>] <upstream> [<branch>]
 \fIgit\-rebase\fR \-\-continue | \-\-skip | \-\-abort
 .fi
 .SH "DESCRIPTION"
@@ -161,6 +162,12 @@ Display a diffstat of what changed upstream since the last rebase.
 .TP
 \-C<n>
 Ensure at least <n> lines of surrounding context match before and after each change. When fewer lines of surrounding context exist they all must match. By default no context is ever ignored.
+.TP
+\-i, \-\-interactive
+Make a list of the commits which are about to be rebased. Let the user edit that list before rebasing.
+.TP
+\-p, \-\-preserve\-merges
+Instead of ignoring merges, try to recreate them. This option only works in interactive mode.
 .SH "MERGE STRATEGIES"
 .TP
 resolve
@@ -180,8 +187,94 @@ When you rebase a branch, you are changing its history in a way that will cause 
 When the git rebase command is run, it will first execute a "pre\-rebase" hook if one exists. You can use this hook to do sanity checks and reject the rebase if it isn't appropriate. Please see the template pre\-rebase hook script for an example.
 
 You must be in the top directory of your project to start (or continue) a rebase. Upon completion, <branch> will be the current branch.
-.SH "AUTHOR"
-Written by Junio C Hamano <junkio@cox.net>
+.SH "INTERACTIVE MODE"
+Rebasing interactively means that you have a chance to edit the commits which are rebased. You can reorder the commits, and you can remove them (weeding out bad or otherwise unwanted patches).
+
+The interactive mode is meant for this type of workflow:
+.TP 3
+1.
+have a wonderful idea
+.TP
+2.
+hack on the code
+.TP
+3.
+prepare a series for submission
+.TP
+4.
+submit
+
+where point 2. consists of several instances of
+.TP 3
+1.
+regular use
+.RS
+.TP 3
+1.
+finish something worthy of a commit
+.TP
+2.
+commit
+.RE
+.TP
+2.
+independent fixup
+.RS
+.TP 3
+1.
+realize that something does not work
+.TP
+2.
+fix that
+.TP
+3.
+commit it
+.RE
+Sometimes the thing fixed in b.2. cannot be amended to the not\-quite perfect commit it fixes, because that commit is buried deeply in a patch series. That is exactly what interactive rebase is for: use it after plenty of "a"s and "b"s, by rearranging and editing commits, and squashing multiple commits into one.
+
+Start it with the last commit you want to retain as\-is:
+.sp
+.nf
+git rebase \-i <after\-this\-commit>
+.fi
+An editor will be fired up with all the commits in your current branch (ignoring merge commits), which come after the given commit. You can reorder the commits in this list to your heart's content, and you can remove them. The list looks more or less like this:
+.sp
+.nf
+pick deadbee The oneline of this commit
+pick fa1afe1 The oneline of the next commit
+...
+.fi
+The oneline descriptions are purely for your pleasure; git\-rebase will not look at them but at the commit names ("deadbee" and "fa1afe1" in this example), so do not delete or edit the names.
+
+By replacing the command "pick" with the command "edit", you can tell git\-rebase to stop after applying that commit, so that you can edit the files and/or the commit message, amend the commit, and continue rebasing.
+
+If you want to fold two or more commits into one, replace the command "pick" with "squash" for the second and subsequent commit. If the commits had different authors, it will attribute the squashed commit to the author of the last commit.
+
+In both cases, or when a "pick" does not succeed (because of merge errors), the loop will stop to let you fix things, and you can continue the loop with git rebase \-\-continue.
+
+For example, if you want to reorder the last 5 commits, such that what was HEAD~4 becomes the new HEAD. To achieve that, you would call git\-rebase like this:
+.sp
+.nf
+$ git rebase \-i HEAD~5
+.fi
+And move the first patch to the end of the list.
+
+You might want to preserve merges, if you have a history like this:
+.sp
+.nf
+           X
+            \\
+         A\-\-\-M\-\-\-B
+        /
+\-\-\-o\-\-\-O\-\-\-P\-\-\-Q
+.fi
+Suppose you want to rebase the side branch starting at "A" to "Q". Make sure that the current HEAD is "B", and call
+.sp
+.nf
+$ git rebase \-i \-p \-\-onto Q O
+.fi
+.SH "AUTHORS"
+Written by Junio C Hamano <junkio@cox.net> and Johannes E. Schindelin <johannes.schindelin@gmx.de>
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
 .SH "GIT"
