@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FILTER\-BRANCH" "1" "07/04/2007" "Git 1.5.3.rc0.11.ge2b1a" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "07/05/2007" "Git 1.5.3.rc0.30.g114f" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -23,22 +23,22 @@ Lets you rewrite git revision history by creating a new branch from your current
 
 The command takes the new branch name as a mandatory argument and the filters as optional arguments. If you specify no filters, the commits will be recommitted without any changes, which would normally have no effect and result in the new branch pointing to the same branch as your current branch. Nevertheless, this may be useful in the future for compensating for some git bugs or such, therefore such a usage is permitted.
 
-WARNING! The rewritten history will have different object names for all the objects and will not converge with the original branch. You will not be able to easily push and distribute the rewritten branch on top of the original branch. Please do not use this command if you do not know the full implications, and avoid using it anyway, if a simple single commit would suffice to fix your problem.
+\fBWARNING\fR! The rewritten history will have different object names for all the objects and will not converge with the original branch. You will not be able to easily push and distribute the rewritten branch on top of the original branch. Please do not use this command if you do not know the full implications, and avoid using it anyway, if a simple single commit would suffice to fix your problem.
 
 Always verify that the rewritten version is correct before disposing the original branch.
 
 Note that since this operation is extensively I/O expensive, it might be a good idea to redirect the temporary directory off\-disk, e.g. on tmpfs. Reportedly the speedup is very noticeable.
 .SS "Filters"
-The filters are applied in the order as listed below. The <command> argument is always evaluated in shell using the \fIeval\fR command. Prior to that, the $GIT_COMMIT environment variable will be set to contain the id of the commit being rewritten. Also, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_AUTHOR_DATE, GIT_COMMITTER_NAME, GIT_COMMITTER_EMAIL, and GIT_COMMITTER_DATE is set according to the current commit.
+The filters are applied in the order as listed below. The <command> argument is always evaluated in shell using the \fIeval\fR command. Prior to that, the $GIT_COMMIT environment variable will be set to contain the id of the commit being rewritten. Also, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_AUTHOR_DATE, GIT_COMMITTER_NAME, GIT_COMMITTER_EMAIL, and GIT_COMMITTER_DATE are set according to the current commit.
 
-A \fImap\fR function is available that takes an "original sha1 id" argument and outputs a "rewritten sha1 id" if the commit has been already rewritten, fails otherwise; the \fImap\fR function can return several ids on separate lines if your commit filter emitted multiple commits.
+A \fImap\fR function is available that takes an "original sha1 id" argument and outputs a "rewritten sha1 id" if the commit has been already rewritten, and "original sha1 id" otherwise; the \fImap\fR function can return several ids on separate lines if your commit filter emitted multiple commits.
 .SH "OPTIONS"
 .TP
 \-\-env\-filter <command>
 This is the filter for modifying the environment in which the commit will be performed. Specifically, you might want to rewrite the author/committer name/email/time environment variables (see \fBgit\-commit\fR(1) for details). Do not forget to re\-export the variables.
 .TP
 \-\-tree\-filter <command>
-This is the filter for rewriting the tree and its contents. The argument is evaluated in shell with the working directory set to the root of the checked out tree. The new tree is then used as\-is (new files are auto\-added, disappeared files are auto\-removed \- neither .gitignore files nor any other ignore rules HAVE ANY EFFECT!).
+This is the filter for rewriting the tree and its contents. The argument is evaluated in shell with the working directory set to the root of the checked out tree. The new tree is then used as\-is (new files are auto\-added, disappeared files are auto\-removed \- neither .gitignore files nor any other ignore rules \fBHAVE ANY EFFECT\fR!).
 .TP
 \-\-index\-filter <command>
 This is the filter for rewriting the index. It is similar to the tree filter but does not check out the tree, which makes it much faster. For hairy cases, see \fBgit\-update\-index\fR(1).
@@ -62,7 +62,7 @@ The original tags are not deleted, but can be overwritten; use "\-\-tag\-name\-f
 Note that there is currently no support for proper rewriting of tag objects; in layman terms, if the tag has a message or signature attached, the rewritten tag won't have it. Sorry. (It is by definition impossible to preserve signatures at any rate.)
 .TP
 \-\-subdirectory\-filter <directory>
-Only ever look at the history, which touches the given subdirectory. The result will contain that directory as its project root.
+Only look at the history which touches the given subdirectory. The result will contain that directory (and only that) as its project root.
 .TP
 \-d <directory>
 Use this option to set the path to the temporary directory used for rewriting. When applying a tree filter, the command needs to temporary checkout the tree to some directory, which may consume considerable space in case of large projects. By default it does this in the \fI.git\-rewrite/\fR directory but you can override that choice by this parameter.
@@ -82,16 +82,22 @@ git filter\-branch \-\-index\-filter 'git update\-index \-\-remove filename' new
 .fi
 Now, you will get the rewritten history saved in the branch \fInewbranch\fR (your current branch is left untouched).
 
-To "etch\-graft" a commit to the revision history (set a commit to be the parent of the current initial commit and propagate that):
+To set a commit (which typically is at the tip of another history) to be the parent of the current initial commit, in order to paste the other history behind the current history:
 .sp
 .nf
-git filter\-branch \-\-parent\-filter sed\\ 's/^$/\-p <graft\-id>/' newbranch
+git filter\-branch \-\-parent\-filter 'sed "s/^\\$/\-p <graft\-id>/"' newbranch
 .fi
 (if the parent string is empty \- therefore we are dealing with the initial commit \- add graftcommit as a parent). Note that this assumes history with a single root (that is, no merge without common ancestors happened). If this is not the case, use:
 .sp
 .nf
 git filter\-branch \-\-parent\-filter \\
         'cat; test $GIT_COMMIT = <commit\-id> && echo "\-p <graft\-id>"' newbranch
+.fi
+or even simpler:
+.sp
+.nf
+echo "$commit\-id $graft\-id" >> .git/info/grafts
+git filter\-branch newbranch $graft\-id..
 .fi
 To remove commits authored by "Darl McBribe" from the history:
 .sp
