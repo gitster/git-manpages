@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GITATTRIBUTES" "5" "06/16/2007" "Git 1.5.2.2.236.g952c8" "Git Manual"
+.TH "GITATTRIBUTES" "5" "07/09/2007" "Git 1.5.3.rc0.81.g1ed84" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -41,7 +41,7 @@ When deciding what attributes are assigned to a path, git consults $GIT_DIR/info
 
 Sometimes you would need to override an setting of an attribute for a path to unspecified state. This can be done by listing the name of the attribute prefixed with an exclamation point !.
 .SH "EFFECTS"
-Certain operations by git can be influenced by assigning particular attributes to a path. Currently, three operations are attributes\-aware.
+Certain operations by git can be influenced by assigning particular attributes to a path. Currently, the following operations are attributes\-aware.
 .SS "Checking\-out and checking\-in"
 These attributes affect how the contents stored in the repository are copied to the working tree files when commands such as git checkout and git merge run. They also affect how git stores the contents you prepare in the working tree in the repository upon git add and git commit.
 .sp
@@ -127,7 +127,7 @@ In the check\-in codepath, the worktree file is first converted with filter driv
 In the check\-out codepath, the blob content is first converted with crlf, and then ident and fed to filter.
 .RE
 .SS "Generating diff text"
-The attribute diff affects if git diff generates textual patch for the path or just says Binary files differ.
+The attribute diff affects if git diff generates textual patch for the path or just says Binary files differ. It also can affect what line is shown on the hunk header @@ \-k,l +n,m @@ line.
 .TP
 Set
 A path to which the diff attribute is set is treated as text, even when they contain byte values that normally never appear in text files, such as NUL.
@@ -139,7 +139,7 @@ Unspecified
 A path to which the diff attribute is unspecified first gets its contents inspected, and if it looks like text, it is treated as text. Otherwise it would generate Binary files differ.
 .TP
 String
-Diff is shown using the specified custom diff driver. The driver program is given its input using the same calling convention as used for GIT_EXTERNAL_DIFF program.
+Diff is shown using the specified custom diff driver. The driver program is given its input using the same calling convention as used for GIT_EXTERNAL_DIFF program. This name is also used for custom hunk header selection.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
@@ -156,6 +156,35 @@ To define a custom diff driver jcdiff, add a section to your $GIT_DIR/config fil
         command = j\-c\-diff
 .fi
 When git needs to show you a diff for the path with diff attribute set to jcdiff, it calls the command you specified with the above configuration, i.e. j\-c\-diff, with 7 parameters, just like GIT_EXTERNAL_DIFF program is called. See \fBgit\fR(7) for details.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBDefining a custom hunk\-header\fR
+.RS 3
+Each group of changes (called "hunk") in the textual diff output is prefixed with a line of the form:
+.sp
+.nf
+@@ \-k,l +n,m @@ TEXT
+.fi
+The text is called \fIhunk header\fR, and by default a line that begins with an alphabet, an underscore or a dollar sign is used, which matches what GNU diff \-p output uses. This default selection however is not suited for some contents, and you can use customized pattern to make a selection.
+
+First in .gitattributes, you would assign the diff attribute for paths.
+.sp
+.nf
+*.tex   diff=tex
+.fi
+Then, you would define "diff.tex.funcname" configuration to specify a regular expression that matches a line that you would want to appear as the hunk header, like this:
+.sp
+.nf
+[diff "tex"]
+        funcname = "^\\\\(\\\\\\\\\\\\(sub\\\\)*section{.*\\\\)$"
+.fi
+Note. A single level of backslashes are eaten by the configuration file parser, so you would need to double the backslashes; the pattern above picks a line that begins with a backslash, and zero or more occurences of sub followed by section followed by open brace, to the end of line.
+
+There are a few built\-in patterns to make this easier, and tex is one of them, so you do not have to write the above in your configuration file (you still need to enable this with the attribute mechanism, via .gitattributes). Another built\-in pattern is defined for java that defines a pattern suitable for program text in Java language.
 .RE
 .SS "Performing a three\-way merge"
 The attribute merge affects how three versions of a file is merged when a file\-level merge is necessary during git merge, and other programs such as git revert and git cherry\-pick.
