@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FAST\-IMPORT" "1" "07/10/2007" "Git 1.5.3.rc0.90.gbaa79" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "07/15/2007" "Git 1.5.3.rc1.27.ga5e40" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -131,7 +131,7 @@ Create or update a branch with a new commit, recording one logical change to the
         data
         ('from' SP <committish> LF)?
         ('merge' SP <committish> LF)?
-        (filemodify | filedelete | filerename | filedeleteall)*
+        (filemodify | filedelete | filecopy | filerename | filedeleteall)*
         LF
 .fi
 where <ref> is the name of the branch to make the commit on. Typically branch names are prefixed with refs/heads/ in Git, so importing the CVS branch symbol RELENG\-1_0 would use refs/heads/RELENG\-1_0 for the value of <ref>. The value of <ref> must be a valid refname in Git. As LF is not valid in a Git refname, no quoting or escaping syntax is supported here.
@@ -140,7 +140,7 @@ A mark command may optionally appear, requesting fast\-import to save a referenc
 
 The data command following committer must supply the commit message (see below for data command syntax). To import an empty commit message use a 0 length data. Commit messages are free\-form and are not interpreted by Git. Currently they must be encoded in UTF\-8, as fast\-import does not permit other encodings to be specified.
 
-Zero or more filemodify, filedelete, filename and filedeleteall commands may be included to update the contents of the branch prior to creating the commit. These commands may be supplied in any order. However it is recommended that a filedeleteall command preceed all filemodify and filerename commands in the same commit, as filedeleteall wipes the branch clean (see below).
+Zero or more filemodify, filedelete, filecopy, filerename and filedeleteall commands may be included to update the contents of the branch prior to creating the commit. These commands may be supplied in any order. However it is recommended that a filedeleteall command preceed all filemodify, filecopy and filerename commands in the same commit, as filedeleteall wipes the branch clean (see below).
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
@@ -290,6 +290,22 @@ here <path> is the complete path of the file or subdirectory to be removed from 
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
+\fBfilecopy\fR
+.RS 3
+Recursively copies an existing file or subdirectory to a different location within the branch. The existing file or directory must exist. If the destination exists it will be completely replaced by the content copied from the source.
+.sp
+.nf
+        'C' SP <path> SP <path> LF
+.fi
+here the first <path> is the source location and the second <path> is the destination. See filemodify above for a detailed description of what <path> may look like. To use a source path that contains SP the path must be quoted.
+
+A filecopy command takes effect immediately. Once the source location has been copied to the destination any future commands applied to the source location will not impact the destination of the copy.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
 \fBfilerename\fR
 .RS 3
 Renames an existing file or subdirectory to a different location within the branch. The existing file or directory must exist. If the destination exists it will be replaced by the source directory.
@@ -300,6 +316,8 @@ Renames an existing file or subdirectory to a different location within the bran
 here the first <path> is the source location and the second <path> is the destination. See filemodify above for a detailed description of what <path> may look like. To use a source path that contains SP the path must be quoted.
 
 A filerename command takes effect immediately. Once the source location has been renamed to the destination any future commands applied to the source location will create new files there and not impact the destination of the rename.
+
+Note that a filerename is the same as a filecopy followed by a filedelete of the source location. There is a slight performance advantage to using filerename, but the advantage is so small that it is never worth trying to convert a delete/add pair in source material into a rename for fast\-import. This filerename command is provided just to simplify frontends that already have rename information and don't want bother with decomposing it into a filecopy followed by a filedelete.
 .RE
 .sp
 .it 1 an-trap
