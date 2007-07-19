@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GITATTRIBUTES" "5" "07/09/2007" "Git 1.5.3.rc0.81.g1ed84" "Git Manual"
+.TH "GITATTRIBUTES" "5" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -152,8 +152,11 @@ The definition of a diff driver is done in gitconfig, not gitattributes file, so
 To define a custom diff driver jcdiff, add a section to your $GIT_DIR/config file (or $HOME/.gitconfig file) like this:
 .sp
 .nf
+.ft C
 [diff "jcdiff"]
         command = j\-c\-diff
+.ft
+
 .fi
 When git needs to show you a diff for the path with diff attribute set to jcdiff, it calls the command you specified with the above configuration, i.e. j\-c\-diff, with 7 parameters, just like GIT_EXTERNAL_DIFF program is called. See \fBgit\fR(7) for details.
 .RE
@@ -174,13 +177,19 @@ The text is called \fIhunk header\fR, and by default a line that begins with an 
 First in .gitattributes, you would assign the diff attribute for paths.
 .sp
 .nf
+.ft C
 *.tex   diff=tex
+.ft
+
 .fi
 Then, you would define "diff.tex.funcname" configuration to specify a regular expression that matches a line that you would want to appear as the hunk header, like this:
 .sp
 .nf
+.ft C
 [diff "tex"]
         funcname = "^\\\\(\\\\\\\\\\\\(sub\\\\)*section{.*\\\\)$"
+.ft
+
 .fi
 Note. A single level of backslashes are eaten by the configuration file parser, so you would need to double the backslashes; the pattern above picks a line that begins with a backslash, and zero or more occurences of sub followed by section followed by open brace, to the end of line.
 
@@ -212,10 +221,13 @@ The definition of a merge driver is done in gitconfig not gitattributes file, so
 To define a custom merge driver filfre, add a section to your $GIT_DIR/config file (or $HOME/.gitconfig file) like this:
 .sp
 .nf
+.ft C
 [merge "filfre"]
         name = feel\-free merge driver
         driver = filfre %O %A %B
         recursive = binary
+.ft
+
 .fi
 The merge.*.name variable gives the driver a human\-readable name.
 
@@ -229,6 +241,7 @@ The merge.*.recursive variable specifies what other merge driver to use when the
 If you have these three gitattributes file:
 .sp
 .nf
+.ft C
 (in $GIT_DIR/info/attributes)
 
 a*      foo !bar \-baz
@@ -240,6 +253,8 @@ abc     foo bar baz
 ab*     merge=filfre
 abc     \-foo \-bar
 *.c     frotz
+.ft
+
 .fi
 the attributes given to path t/abc are computed as follows:
 .TP 3
@@ -255,11 +270,14 @@ Finally it examines $GIT_DIR/info/gitattributes. This file is used to override t
 As the result, the attributes assignement to t/abc becomes:
 .sp
 .nf
+.ft C
 foo     set to true
 bar     unspecified
 baz     set to false
 merge   set to string value "filfre"
 frotz   unspecified
+.ft
+
 .fi
 .SH "GIT"
 Part of the \fBgit\fR(7) suite

@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-READ\-TREE" "1" "06/21/2007" "Git 1.5.2.2.249.g45fd" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -138,7 +138,10 @@ However, when you do git\-read\-tree with three trees, the "stage" starts out at
 This means that you can do
 .sp
 .nf
+.ft C
 $ git\-read\-tree \-m <tree1> <tree2> <tree3>
+.ft
+
 .fi
 and you will end up with an index with all of the <tree1> entries in "stage1", all of the <tree2> entries in "stage2" and all of the <tree3> entries in "stage3". When performing a merge of another branch into the current branch, we use the common ancestor tree as <tree1>, the current branch head as <tree2>, and the other branch head as <tree3>.
 
@@ -185,22 +188,31 @@ When you start a 3\-way merge with an index file that is already populated, it i
 This is done to prevent you from losing your work\-in\-progress changes, and mixing your random changes in an unrelated merge commit. To illustrate, suppose you start from what has been committed last to your repository:
 .sp
 .nf
+.ft C
 $ JC=`git\-rev\-parse \-\-verify "HEAD^0"`
 $ git\-checkout\-index \-f \-u \-a $JC
+.ft
+
 .fi
 You do random edits, without running git\-update\-index. And then you notice that the tip of your "upstream" tree has advanced since you pulled from him:
 .sp
 .nf
+.ft C
 $ git\-fetch git://.... linus
 $ LT=`cat .git/FETCH_HEAD`
+.ft
+
 .fi
 Your work tree is still based on your HEAD ($JC), but you have some edits since. Three\-way merge makes sure that you have not added or modified index entries since $JC, and if you haven't, then does the right thing. So with the following sequence:
 .sp
 .nf
+.ft C
 $ git\-read\-tree \-m \-u `git\-merge\-base $JC $LT` $JC $LT
 $ git\-merge\-index git\-merge\-one\-file \-a
 $ echo "Merge with Linus" | \\
   git\-commit\-tree `git\-write\-tree` \-p $JC \-p $LT
+.ft
+
 .fi
 what you would commit is a pure merge between $JC and $LT without your work\-in\-progress changes, and your work tree would be updated to the result of the merge.
 

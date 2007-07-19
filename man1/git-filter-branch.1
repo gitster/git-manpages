@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FILTER\-BRANCH" "1" "07/06/2007" "Git 1.5.3.rc0.39.g46f7" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -73,35 +73,51 @@ When options are given after the new branch name, they will be passed to \fBgit\
 Suppose you want to remove a file (containing confidential information or copyright violation) from all commits:
 .sp
 .nf
+.ft C
 git filter\-branch \-\-tree\-filter 'rm filename' newbranch
+.ft
+
 .fi
 A significantly faster version:
 .sp
 .nf
+.ft C
 git filter\-branch \-\-index\-filter 'git update\-index \-\-remove filename' newbranch
+.ft
+
 .fi
 Now, you will get the rewritten history saved in the branch \fInewbranch\fR (your current branch is left untouched).
 
 To set a commit (which typically is at the tip of another history) to be the parent of the current initial commit, in order to paste the other history behind the current history:
 .sp
 .nf
+.ft C
 git filter\-branch \-\-parent\-filter 'sed "s/^\\$/\-p <graft\-id>/"' newbranch
+.ft
+
 .fi
 (if the parent string is empty \- therefore we are dealing with the initial commit \- add graftcommit as a parent). Note that this assumes history with a single root (that is, no merge without common ancestors happened). If this is not the case, use:
 .sp
 .nf
+.ft C
 git filter\-branch \-\-parent\-filter \\
         'cat; test $GIT_COMMIT = <commit\-id> && echo "\-p <graft\-id>"' newbranch
+.ft
+
 .fi
 or even simpler:
 .sp
 .nf
+.ft C
 echo "$commit\-id $graft\-id" >> .git/info/grafts
 git filter\-branch newbranch $graft\-id..
+.ft
+
 .fi
 To remove commits authored by "Darl McBribe" from the history:
 .sp
 .nf
+.ft C
 git filter\-branch \-\-commit\-filter '
         if [ "$GIT_AUTHOR_NAME" = "Darl McBribe" ];
         then
@@ -115,6 +131,8 @@ git filter\-branch \-\-commit\-filter '
         else
                 git commit\-tree "$@";
         fi' newbranch
+.ft
+
 .fi
 The shift magic first throws away the tree id and then the \-p parameters. Note that this handles merges properly! In case Darl committed a merge between P1 and P2, it will be propagated properly and all children of the merge will become merge commits with P1,P2 as their parents instead of the merge commit.
 
@@ -125,29 +143,41 @@ Note that the changes introduced by the commits, and not reverted by subsequent 
 Consider this history:
 .sp
 .nf
+.ft C
      D\-\-E\-\-F\-\-G\-\-H
     /     /
 A\-\-B\-\-\-\-\-C
+.ft
+
 .fi
 To rewrite only commits D,E,F,G,H, but leave A, B and C alone, use:
 .sp
 .nf
+.ft C
 git filter\-branch ... new\-H C..H
+.ft
+
 .fi
 To rewrite commits E,F,G,H, use one of these:
 .sp
 .nf
+.ft C
 git filter\-branch ... new\-H C..H \-\-not D
 git filter\-branch ... new\-H D..H \-\-not C
+.ft
+
 .fi
 To move the whole tree into a subdirectory, or remove it from there:
 .sp
 .nf
+.ft C
 git filter\-branch \-\-index\-filter \\
         'git ls\-files \-s | sed "s\-\\t\-&newsubdir/\-" |
                 GIT_INDEX_FILE=$GIT_INDEX_FILE.new \\
                         git update\-index \-\-index\-info &&
          mv $GIT_INDEX_FILE.new $GIT_INDEX_FILE' directorymoved
+.ft
+
 .fi
 .SH "AUTHOR"
 Written by Petr "Pasky" Baudis <pasky@suse.cz>, and the git list <git@vger.kernel.org>

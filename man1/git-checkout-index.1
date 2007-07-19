@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CHECKOUT\-INDEX" "1" "06/16/2007" "Git 1.5.2.2.236.g952c8" "Git Manual"
+.TH "GIT\-CHECKOUT\-INDEX" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -62,12 +62,18 @@ Just doing git\-checkout\-index does nothing. You probably meant git\-checkout\-
 Intuitiveness is not the goal here. Repeatability is. The reason for the "no arguments means no work" behavior is that from scripts you are supposed to be able to do:
 .sp
 .nf
+.ft C
 $ find . \-name '*.h' \-print0 | xargs \-0 git\-checkout\-index \-f \-\-
+.ft
+
 .fi
 which will force all existing *.h files to be replaced with their cached copies. If an empty command line implied "all", then this would force\-refresh everything in the index, which was not the point. But since git\-checkout\-index accepts \-\-stdin it would be faster to use:
 .sp
 .nf
+.ft C
 $ find . \-name '*.h' \-print0 | git\-checkout\-index \-f \-z \-\-stdin
+.ft
+
 .fi
 The \-\- is just a good idea when you know the rest will be filenames; it will prevent problems with a filename of, for example, \-a. Using \-\- is probably a good policy in scripts.
 .SH "USING \-\-TEMP OR \-\-STAGE=ALL"
@@ -93,14 +99,20 @@ If the object being copied out to a temporary file is a symbolic link the conten
 To update and refresh only the files already checked out
 .sp
 .nf
+.ft C
 $ git\-checkout\-index \-n \-f \-a && git\-update\-index \-\-ignore\-missing \-\-refresh
+.ft
+
 .fi
 .TP
 Using git\-checkout\-index to "export an entire tree"
 The prefix ability basically makes it trivial to use git\-checkout\-index as an "export as tree" function. Just read the desired tree into the index, and do:
 .sp
 .nf
+.ft C
 $ git\-checkout\-index \-\-prefix=git\-export\-dir/ \-a
+.ft
+
 .fi
 git\-checkout\-index will "export" the index into the specified directory.
 
@@ -109,7 +121,10 @@ The final "/" is important. The exported name is literally just prefixed with th
 Export files with a prefix
 .sp
 .nf
+.ft C
 $ git\-checkout\-index \-\-prefix=.merged\- Makefile
+.ft
+
 .fi
 This will check out the currently cached copy of Makefile into the file .merged\-Makefile.
 .SH "AUTHOR"

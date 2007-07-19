@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-UPDATE\-INDEX" "1" "06/16/2007" "Git 1.5.2.2.236.g952c8" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -101,7 +101,10 @@ For example, you'd want to do this after doing a "git\-read\-tree", to link up t
 To pretend you have a file with mode and sha1 at path, say:
 .sp
 .nf
+.ft C
 $ git\-update\-index \-\-cacheinfo mode sha1 path
+.ft
+
 .fi
 \fI\-\-info\-only\fR is used to register files without placing them in the object database. This is useful for status\-only repositories.
 
@@ -129,23 +132,32 @@ To place a higher stage entry to the index, the path should first be removed by 
 For example, starting with this index:
 .sp
 .nf
+.ft C
 $ git ls\-files \-s
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 0       frotz
+.ft
+
 .fi
 you can feed the following input to \-\-index\-info:
 .sp
 .nf
+.ft C
 $ git update\-index \-\-index\-info
 0 0000000000000000000000000000000000000000      frotz
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 1       frotz
 100755 8a1218a1024a212bb3db30becd860315f9f3ac52 2       frotz
+.ft
+
 .fi
 The first line of the input feeds 0 as the mode to remove the path; the SHA1 does not matter as long as it is well formatted. Then the second and third line feeds stage 1 and stage 2 entries for that path. After the above, we would end up with this:
 .sp
 .nf
+.ft C
 $ git ls\-files \-s
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 1       frotz
 100755 8a1218a1024a212bb3db30becd860315f9f3ac52 2       frotz
+.ft
+
 .fi
 .SH "USING \(lqASSUME UNCHANGED\(rq BIT"
 Many operations in git depend on your filesystem to have an efficient lstat(2) implementation, so that st_mtime information for working tree files can be cheaply checked to see if the file contents have changed from the version recorded in the index file. Unfortunately, some filesystems have inefficient lstat(2). If your filesystem is one of them, you can set "assume unchanged" bit to paths you have not changed to cause git not to do this check. Note that setting this bit on a path does not mean git will check the contents of the file to see if it has changed \(em it makes git to omit any checking and assume it has \fBnot\fR changed. When you make changes to working tree files, you have to explicitly tell git about it by dropping "assume unchanged" bit, either before or after you modify them.
@@ -157,12 +169,16 @@ The command looks at core.ignorestat configuration variable. When this is true, 
 To update and refresh only the files already checked out:
 .sp
 .nf
+.ft C
 $ git\-checkout\-index \-n \-f \-a && git\-update\-index \-\-ignore\-missing \-\-refresh
+.ft
+
 .fi
 .TP
 On an inefficient filesystem with core.ignorestat set
 .sp
 .nf
+.ft C
 $ git update\-index \-\-really\-refresh              \fB(1)\fR
 $ git update\-index \-\-no\-assume\-unchanged foo.c   \fB(2)\fR
 $ git diff \-\-name\-only                           \fB(3)\fR
@@ -176,6 +192,8 @@ $ git diff \-\-name\-only                           \fB(7)\fR
 $ git update\-index \-\-no\-assume\-unchanged foo.c   \fB(8)\fR
 $ git diff \-\-name\-only                           \fB(9)\fR
 M foo.c
+.ft
+
 .fi
 .sp
 \fB1. \fRforces lstat(2) to set "assume unchanged" bits for paths that match index.

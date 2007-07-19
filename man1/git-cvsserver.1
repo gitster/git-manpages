@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CVSSERVER" "1" "06/16/2007" "Git 1.5.2.2.236.g952c8" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -64,19 +64,28 @@ git\-cvsserver maps GIT branches to CVS modules. This is very different from wha
 If you are going to offer anonymous CVS access via pserver, add a line in /etc/inetd.conf like
 .sp
 .nf
+.ft C
    cvspserver stream tcp nowait nobody git\-cvsserver pserver
+.ft
+
 .fi
 Note: Some inetd servers let you specify the name of the executable independently of the value of argv[0] (i.e. the name the program assumes it was executed with). In this case the correct line in /etc/inetd.conf looks like
 .sp
 .nf
+.ft C
    cvspserver stream tcp nowait nobody /usr/bin/git\-cvsserver git\-cvsserver pserver
+.ft
+
 .fi
 No special setup is needed for SSH access, other than having GIT tools in the PATH. If you have clients that do not accept the CVS_SERVER environment variable, you can rename git\-cvsserver to cvs.
 
 Note: Newer cvs versions (>= 1.12.11) also support specifying CVS_SERVER directly in CVSROOT like
 .sp
 .nf
+.ft C
 cvs \-d ":ext;CVS_SERVER=git\-cvsserver:user@server/path/repo.git" co <HEAD_name>
+.ft
+
 .fi
 This has the advantage that it will be saved in your \fICVS/Root\fR files and you don't need to worry about always setting the correct environment variable.
 .TP
@@ -84,21 +93,27 @@ This has the advantage that it will be saved in your \fICVS/Root\fR files and yo
 For each repo that you want accessible from CVS you need to edit config in the repo and add the following section.
 .sp
 .nf
+.ft C
    [gitcvs]
         enabled=1
         # optional for debugging
         logfile=/path/to/logfile
+.ft
+
 .fi
 Note: you need to ensure each user that is going to invoke git\-cvsserver has write access to the log file and to the database (see Database Backend. If you want to offer write access over SSH, the users of course also need write access to the git repository itself.
 
 All configuration variables can also be overridden for a specific method of access. Valid method names are "ext" (for SSH access) and "pserver". The following example configuration would disable pserver access while still allowing access over SSH.
 .sp
 .nf
+.ft C
    [gitcvs]
         enabled=0
 
    [gitcvs "ext"]
         enabled=1
+.ft
+
 .fi
 .TP
 3.
@@ -109,8 +124,11 @@ For SSH access, CVS_SERVER should be set to git\-cvsserver
 Example:
 .sp
 .nf
+.ft C
      export CVSROOT=:ext:user@server:/var/git/project.git
      export CVS_SERVER=git\-cvsserver
+.ft
+
 .fi
 .TP
 4.
@@ -120,7 +138,10 @@ For SSH clients that will make commits, make sure their .bashrc file sets the GI
 Clients should now be able to check out the project. Use the CVS \fImodule\fR name to indicate what GIT \fIhead\fR you want to check out. Example:
 .sp
 .nf
+.ft C
      cvs co \-d project\-master master
+.ft
+
 .fi
 .SH "DATABASE BACKEND"
 git\-cvsserver uses one database per git head (i.e. CVS module) to store information about the repository for faster access. The database doesn't contain any persistent data and can be completely regenerated from the git repository at any time. The database needs to be updated (i.e. written to) after every commit.

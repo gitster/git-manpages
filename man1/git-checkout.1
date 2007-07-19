@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CHECKOUT" "1" "07/12/2007" "Git 1.5.3.rc0.101.gd972c" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -55,7 +55,10 @@ When this parameter names a non\-branch (but still a valid commit object), your 
 It is sometimes useful to be able to \fIcheckout\fR a commit that is not at the tip of one of your branches. The most obvious example is to check out the commit at a tagged official release point, like this:
 .sp
 .nf
+.ft C
 $ git checkout v2.6.18
+.ft
+
 .fi
 Earlier versions of git did not allow this and asked you to create a temporary branch using \-b option, but starting from version 1.5.0, the above command \fIdetaches\fR your HEAD from the current branch and directly point at the commit named by the tag (v2.6.18 in the above example).
 
@@ -64,7 +67,10 @@ You can use usual git commands while in this state. You can use git\-reset \-\-h
 The state you are in while your HEAD is detached is not recorded by any branch (which is natural \-\-\- you are not on any branch). What this means is that you can discard your temporary commits and merges by switching back to an existing branch (e.g. git checkout master), and a later git prune or git gc would garbage\-collect them. If you did this by mistake, you can ask the reflog for HEAD where you were, e.g.
 .sp
 .nf
+.ft C
 $ git log \-g \-2 HEAD
+.ft
+
 .fi
 .SH "EXAMPLES"
 .TP 3
@@ -72,10 +78,13 @@ $ git log \-g \-2 HEAD
 The following sequence checks out the master branch, reverts the Makefile to two revisions back, deletes hello.c by mistake, and gets it back from the index.
 .sp
 .nf
+.ft C
 $ git checkout master             \fB(1)\fR
 $ git checkout master~2 Makefile  \fB(2)\fR
 $ rm \-f hello.c
 $ git checkout hello.c            \fB(3)\fR
+.ft
+
 .fi
 .sp
 \fB1. \fRswitch branch
@@ -87,7 +96,10 @@ $ git checkout hello.c            \fB(3)\fR
 If you have an unfortunate branch that is named hello.c, this step would be confused as an instruction to switch to that branch. You should instead write:
 .sp
 .nf
+.ft C
 $ git checkout \-\- hello.c
+.ft
+
 .fi
 .br
 .TP
@@ -95,19 +107,28 @@ $ git checkout \-\- hello.c
 After working in a wrong branch, switching to the correct branch would be done using:
 .sp
 .nf
+.ft C
 $ git checkout mytopic
+.ft
+
 .fi
 However, your "wrong" branch and correct "mytopic" branch may differ in files that you have locally modified, in which case, the above checkout would fail like this:
 .sp
 .nf
+.ft C
 $ git checkout mytopic
 fatal: Entry 'frotz' not uptodate. Cannot merge.
+.ft
+
 .fi
 You can give the \-m flag to the command, which would try a three\-way merge:
 .sp
 .nf
+.ft C
 $ git checkout \-m mytopic
 Auto\-merging frotz
+.ft
+
 .fi
 After this three\-way merge, the local modifications are _not_ registered in your index file, so git diff would show you what changes you made since the tip of the new branch.
 .TP
@@ -115,17 +136,23 @@ After this three\-way merge, the local modifications are _not_ registered in you
 When a merge conflict happens during switching branches with the \-m option, you would see something like this:
 .sp
 .nf
+.ft C
 $ git checkout \-m mytopic
 Auto\-merging frotz
 merge: warning: conflicts during merge
 ERROR: Merge conflict in frotz
 fatal: merge program failed
+.ft
+
 .fi
 At this point, git diff shows the changes cleanly merged as in the previous example, as well as the changes in the conflicted files. Edit and resolve the conflict and mark it resolved with git add as usual:
 .sp
 .nf
+.ft C
 $ edit frotz
 $ git add frotz
+.ft
+
 .fi
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
