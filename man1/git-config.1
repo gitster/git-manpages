@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "07/19/2007" "Git 1.5.3.rc1.4.gaf83" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/20/2007" "Git 1.5.3.rc2.22.g69a9b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -175,61 +175,94 @@ Given a .git/config like this:
 you can set the filemode to true with
 .sp
 .nf
+.ft C
 % git config core.filemode true
+.ft
+
 .fi
 The hypothetical proxy command entries actually have a postfix to discern what URL they apply to. Here is how to change the entry for kernel.org to "ssh".
 .sp
 .nf
+.ft C
 % git config core.gitproxy '"ssh" for kernel.org' 'for kernel.org$'
+.ft
+
 .fi
 This makes sure that only the key/value pair for kernel.org is replaced.
 
 To delete the entry for renames, do
 .sp
 .nf
+.ft C
 % git config \-\-unset diff.renames
+.ft
+
 .fi
 If you want to delete an entry for a multivar (like core.gitproxy above), you have to provide a regex matching the value of exactly one line.
 
 To query the value for a given key, do
 .sp
 .nf
+.ft C
 % git config \-\-get core.filemode
+.ft
+
 .fi
 or
 .sp
 .nf
+.ft C
 % git config core.filemode
+.ft
+
 .fi
 or, to query a multivar:
 .sp
 .nf
+.ft C
 % git config \-\-get core.gitproxy "for kernel.org$"
+.ft
+
 .fi
 If you want to know all the values for a multivar, do:
 .sp
 .nf
+.ft C
 % git config \-\-get\-all core.gitproxy
+.ft
+
 .fi
 If you like to live dangerous, you can replace \fBall\fR core.gitproxy by a new one with
 .sp
 .nf
+.ft C
 % git config \-\-replace\-all core.gitproxy ssh
+.ft
+
 .fi
 However, if you really only want to replace the line for the default proxy, i.e. the one without a "for \&..." postfix, do something like this:
 .sp
 .nf
+.ft C
 % git config core.gitproxy ssh '! for '
+.ft
+
 .fi
 To actually match only values with an exclamation mark, you have to
 .sp
 .nf
+.ft C
 % git config section.key value '[!]'
+.ft
+
 .fi
 To add a new proxy, without altering any of the existing ones, use
 .sp
 .nf
+.ft C
 % git config core.gitproxy '"proxy" for example.com'
+.ft
+
 .fi
 .SH "CONFIGURATION FILE"
 The git configuration file contains a number of variables that affect the git command's behavior. .git/config file for each repository is used to store the information for that repository, and $HOME/.gitconfig is used to store per user information to give fallback values for .git/config file. The file /etc/gitconfig can be used to store system\-wide defaults.
@@ -243,7 +276,10 @@ The file consists of sections and variables. A section begins with the name of t
 Sections can be further divided into subsections. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in example below:
 .sp
 .nf
+.ft C
         [section "subsection"]
+.ft
+
 .fi
 Subsection names can contain any characters except newline (doublequote \fI"\fR and backslash have to be escaped as \fI\\"\fR and \fI\\\\\fR, respectively) and are case sensitive. Section header cannot span multiple lines. Variables may belong directly to a section or to a given subsection. You can have [section] if you have [section "subsection"], but you don't need to.
 
@@ -369,6 +405,9 @@ Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported.
 .TP
 core.excludesfile
 In addition to \fI.gitignore\fR (per\-directory) and \fI.git/info/exclude\fR, git looks into this file for patterns of files which are not meant to be tracked. See \fBgitignore\fR(5).
+.TP
+core.editor
+Commands such as commit and tag that lets you edit messages by lauching an editor uses the value of this variable when it is set, and the environment variable GIT_EDITOR is not set. The order of preference is GIT_EDITOR environment, core.editor, EDITOR and VISUAL environment variables and then finally vi.
 .TP
 core.pager
 The command that git will use to paginate output. Can be overridden with the GIT_PAGER environment variable.

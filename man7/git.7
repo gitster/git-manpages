@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT" "7" "07/19/2007" "Git 1.5.3.rc1.4.gaf83" "Git Manual"
+.TH "GIT" "7" "07/20/2007" "Git 1.5.3.rc2.22.g69a9b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -475,6 +475,7 @@ Filter out empty lines.
 Starting from 0.99.9 (actually mid 0.99.8.GIT), .git/config file is used to hold per\-repository configuration options. It is a simple text file modeled after .ini format familiar to some people. Here is an example:
 .sp
 .nf
+.ft C
 #
 # A '#' or ';' character indicates a comment.
 #
@@ -488,6 +489,8 @@ Starting from 0.99.9 (actually mid 0.99.8.GIT), .git/config file is used to hold
 [user]
         name = "Junio C Hamano"
         email = "junkio@twinsun.com"
+.ft
+
 .fi
 Various commands read from the configuration file and adjust their operation accordingly.
 .SH "IDENTIFIER TERMINOLOGY"
@@ -599,7 +602,7 @@ For a path that is unmerged, \fIGIT_EXTERNAL_DIFF\fR is called with 1 parameter,
 A number controlling the amount of output shown by the recursive merge strategy. Overrides merge.verbosity. See \fBgit\-merge\fR(1)
 .TP
 \fIGIT_PAGER\fR
-This environment variable overrides $PAGER.
+This environment variable overrides $PAGER. If it is set to an empty string or to the value "cat", git will not launch a pager.
 .TP
 \fIGIT_FLUSH\fR
 If this environment variable is set to "1", then commands such as git\-blame (in incremental mode), git\-rev\-list, git\-log, git\-whatchanged, etc., will force a flush of the output stream after each commit\-oriented record have been flushed. If this variable is set to "0", the output of these commands will be done using completely buffered I/O. If this environment variable is not set, git will choose buffered or record\-oriented flushing based on whether stdout appears to be redirected to a file or not.
@@ -769,6 +772,8 @@ git\-commit\-tree will return the name of the object that represents that commit
 Here is an ASCII art by Jon Loeliger that illustrates how various pieces fit together.
 .sp
 .nf
+.ft C
+
                      commit\-tree
                       commit obj
                        +\-\-\-\-+
@@ -800,6 +805,8 @@ Here is an ASCII art by Jon Loeliger that illustrates how various pieces fit tog
                     |  Working  |
                     | Directory |
                     +\-\-\-\-\-\-\-\-\-\-\-+
+.ft
+
 .fi
 .SS "6) Examining the data"
 You can examine the data represented in the object database and the index with various helper tools. For every object, you can use \fBgit\-cat\-file\fR(1) to examine details about the object:
@@ -853,21 +860,27 @@ Sadly, many merges aren't trivial. If there are files that have been added, move
 You can examine such index state with git\-ls\-files \-\-unmerged command. An example:
 .sp
 .nf
+.ft C
 $ git\-read\-tree \-m $orig HEAD $target
 $ git\-ls\-files \-\-unmerged
 100644 263414f423d0e4d70dae8fe53fa34614ff3e2860 1       hello.c
 100644 06fa6a24256dc7e560efa5687fa84b51f0263c3a 2       hello.c
 100644 cc44c73eb783565da5831b4d820c962954019b69 3       hello.c
+.ft
+
 .fi
 Each line of the git\-ls\-files \-\-unmerged output begins with the blob mode bits, blob SHA1, \fIstage number\fR, and the filename. The \fIstage number\fR is git's way to say which tree it came from: stage 1 corresponds to $orig tree, stage 2 HEAD tree, and stage3 $target tree.
 
 Earlier we said that trivial merges are done inside git\-read\-tree \-m. For example, if the file did not change from $orig to HEAD nor $target, or if the file changed from $orig to HEAD and $orig to $target the same way, obviously the final outcome is what is in HEAD. What the above example shows is that file hello.c was changed from $orig to HEAD and $orig to $target in a different way. You could resolve this by running your favorite 3\-way merge program, e.g. diff3 or merge, on the blob objects from these three stages yourself, like this:
 .sp
 .nf
+.ft C
 $ git\-cat\-file blob 263414f... >hello.c~1
 $ git\-cat\-file blob 06fa6a2... >hello.c~2
 $ git\-cat\-file blob cc44c73... >hello.c~3
 $ merge hello.c~2 hello.c~1 hello.c~3
+.ft
+
 .fi
 This would leave the merge result in hello.c~2 file, along with conflict markers if there are conflicts. After verifying the merge result makes sense, you can tell git what the final merge result for this file is by:
 .sp

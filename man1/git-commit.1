@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-COMMIT" "1" "07/19/2007" "Git 1.5.3.rc1.4.gaf83" "Git Manual"
+.TH "GIT\-COMMIT" "1" "07/20/2007" "Git 1.5.3.rc2.22.g69a9b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -70,9 +70,12 @@ Used to amend the tip of the current branch. Prepare the tree object you would w
 It is a rough equivalent for:
 .sp
 .nf
+.ft C
         $ git reset \-\-soft HEAD^
         $ ... do something else to come up with the right tree ...
         $ git commit \-c ORIG_HEAD
+.ft
+
 .fi
 but can be used to amend a merge commit.
 .TP
@@ -97,47 +100,65 @@ When files are given on the command line, the command commits the contents of th
 When recording your own work, the contents of modified files in your working tree are temporarily stored to a staging area called the "index" with \fBgit\-add\fR(1). Removal of a file is staged with \fBgit\-rm\fR(1). After building the state to be committed incrementally with these commands, git commit (without any pathname parameter) is used to record what has been staged so far. This is the most basic form of the command. An example:
 .sp
 .nf
+.ft C
 $ edit hello.c
 $ git rm goodbye.c
 $ git add hello.c
 $ git commit
+.ft
+
 .fi
 Instead of staging files after each individual change, you can tell git commit to notice the changes to the files whose contents are tracked in your working tree and do corresponding git add and git rm for you. That is, this example does the same as the earlier example if there is no other change in your working tree:
 .sp
 .nf
+.ft C
 $ edit hello.c
 $ rm goodbye.c
 $ git commit \-a
+.ft
+
 .fi
 The command git commit \-a first looks at your working tree, notices that you have modified hello.c and removed goodbye.c, and performs necessary git add and git rm for you.
 
 After staging changes to many files, you can alter the order the changes are recorded in, by giving pathnames to git commit. When pathnames are given, the command makes a commit that only records the changes made to the named paths:
 .sp
 .nf
+.ft C
 $ edit hello.c hello.h
 $ git add hello.c hello.h
 $ edit Makefile
 $ git commit Makefile
+.ft
+
 .fi
 This makes a commit that records the modification to Makefile. The changes staged for hello.c and hello.h are not included in the resulting commit. However, their changes are not lost \(em they are still staged and merely held back. After the above sequence, if you do:
 .sp
 .nf
+.ft C
 $ git commit
+.ft
+
 .fi
 this second commit would record the changes to hello.c and hello.h as expected.
 
 After a merge (initiated by either \fBgit\-merge\fR(1) or \fBgit\-pull\fR(1)) stops because of conflicts, cleanly merged paths are already staged to be committed for you, and paths that conflicted are left in unmerged state. You would have to first check which paths are conflicting with \fBgit\-status\fR(1) and after fixing them manually in your working tree, you would stage the result as usual with \fBgit\-add\fR(1):
 .sp
 .nf
+.ft C
 $ git status | grep unmerged
 unmerged: hello.c
 $ edit hello.c
 $ git add hello.c
+.ft
+
 .fi
 After resolving conflicts and staging the result, git ls\-files \-u would stop mentioning the conflicted path. When you are done, run git commit to finally record the merge:
 .sp
 .nf
+.ft C
 $ git commit
+.ft
+
 .fi
 As with the case to record your own changes, you can use \-a option to save typing. One difference is that during a merge resolution, you cannot use git commit with pathnames to alter the order the changes are committed, because the merge should be recorded as a single commit. In fact, the command refuses to run when given pathnames (but see \-i option).
 .SH "DISCUSSION"
@@ -160,8 +181,11 @@ Although we encourage that the commit log messages are encoded in UTF\-8, both t
 git\-commit\-tree (hence, git\-commit which uses it) issues an warning if the commit log message given to it does not look like a valid UTF\-8 string, unless you explicitly say your project uses a legacy encoding. The way to say this is to have i18n.commitencoding in .git/config file, like this:
 .sp
 .nf
+.ft C
 [i18n]
         commitencoding = ISO\-8859\-1
+.ft
+
 .fi
 Commit objects created with the above setting record the value of i18n.commitencoding in its encoding header. This is to help other people who look at them later. Lack of this header implies that the commit log message is encoded in UTF\-8.
 .TP
@@ -169,14 +193,17 @@ Commit objects created with the above setting record the value of i18n.commitenc
 git\-log, git\-show and friends looks at the encoding header of a commit object, and tries to re\-code the log message into UTF\-8 unless otherwise specified. You can specify the desired output encoding with i18n.logoutputencoding in .git/config file, like this:
 .sp
 .nf
+.ft C
 [i18n]
         logoutputencoding = ISO\-8859\-1
+.ft
+
 .fi
 If you do not have this configuration variable, the value of i18n.commitencoding is used instead.
 
 Note that we deliberately chose not to re\-code the commit log message when a commit is made to force UTF\-8 at the commit object level, because re\-coding to UTF\-8 is not necessarily a reversible operation.
-.SH "ENVIRONMENT VARIABLES"
-The command specified by either the VISUAL or EDITOR environment variables is used to edit the commit log message.
+.SH "ENVIRONMENT AND CONFIGURATION VARIABLES"
+The editor used to edit the commit log message will be chosen from the GIT_EDITOR environment variable, the core.editor configuration variable, the VISUAL environment variable, or the EDITOR environment variable (in that order).
 .SH "HOOKS"
 This command can run commit\-msg, pre\-commit, and post\-commit hooks. See [1]\&\fIhooks\fR for more information.
 .SH "SEE ALSO"
