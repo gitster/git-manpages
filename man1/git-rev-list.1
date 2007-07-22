@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REV\-LIST" "1" "07/19/2007" "Git 1.5.3.rc1.16.g9d6f" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "07/22/2007" "Git 1.5.3.rc2.29.gc4640" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -30,7 +30,8 @@ git\-rev\-list \- Lists commit objects in reverse chronological order
              [ \-\-cherry\-pick ]
              [ \-\-encoding[=<encoding>] ]
              [ \-\-(author|committer|grep)=<pattern> ]
-             [ \-\-regexp\-ignore\-case ] [ \-\-extended\-regexp ]
+             [ \-\-regexp\-ignore\-case | \\\-i ]
+             [ \-\-extended\-regexp | \\\-E ]
              [ \-\-date={local|relative|default|iso|rfc|short} ]
              [ [\-\-objects | \-\-objects\-edge] [ \-\-unpacked ] ]
              [ \-\-pretty | \-\-header ]
@@ -47,21 +48,30 @@ Lists commit objects in reverse chronological order starting at the given commit
 Commits which are stated with a preceding \fI^\fR cause listing to stop at that point. Their parents are implied. Thus the following command:
 .sp
 .nf
+.ft C
         $ git\-rev\-list foo bar ^baz
+.ft
+
 .fi
 means "list all the commits which are included in \fIfoo\fR and \fIbar\fR, but not in \fIbaz\fR".
 
 A special notation "\fI<commit1>\fR..\fI<commit2>\fR" can be used as a short\-hand for "^\fI<commit1>\fR \fI<commit2>\fR". For example, either of the following may be used interchangeably:
 .sp
 .nf
+.ft C
         $ git\-rev\-list origin..HEAD
         $ git\-rev\-list HEAD ^origin
+.ft
+
 .fi
 Another special notation is "\fI<commit1>\fR\&...\fI<commit2>\fR" which is useful for merges. The resulting set of commits is the symmetric difference between the two operands. The following two commands are equivalent:
 .sp
 .nf
+.ft C
         $ git\-rev\-list A B \-\-not $(git\-merge\-base \-\-all A B)
         $ git\-rev\-list A...B
+.ft
+
 .fi
 \fBgit\-rev\-list\fR(1) is a very essential git program, since it provides the ability to build and traverse commit ancestry graphs. For this reason, it has a lot of different options that enables it to be used by commands as different as \fBgit\-bisect\fR(1) and \fBgit\-repack\fR(1).
 .SH "OPTIONS"
@@ -112,15 +122,19 @@ Mark which side of a symmetric diff a commit is reachable from. Commits from the
 For example, if you have this topology:
 .sp
 .nf
+.ft C
              y\-\-\-b\-\-\-b  branch B
             / \\ /
            /   .
           /   / \\
          o\-\-\-x\-\-\-a\-\-\-a  branch A
+.ft
+
 .fi
 you would get an output line this:
 .sp
 .nf
+.ft C
         $ git rev\-list \-\-left\-right \-\-boundary \-\-pretty=oneline A...B
 
         >bbbbbbb... 3rd on b
@@ -129,6 +143,8 @@ you would get an output line this:
         <aaaaaaa... 2nd on a
         \-yyyyyyy... 1st on b
         \-xxxxxxx... 1st on a
+.ft
+
 .fi
 .SS "Diff Formatting"
 Below are listed options that control the formatting of diff output. Some of them are specific to \fBgit\-rev\-list\fR(1), however other diff options may be given. See \fBgit\-diff\-files\fR(1) for more options.
@@ -168,10 +184,10 @@ Limit the commits output to ones with author/committer header lines that match t
 \-\-grep=\fIpattern\fR
 Limit the commits output to ones with log message that matches the specified pattern (regular expression).
 .TP
-\-\-regexp\-ignore\-case
+\-i, \-\-regexp\-ignore\-case
 Match the regexp limiting patterns without regard to letters case.
 .TP
-\-\-extended\-regexp
+\-E, \-\-extended\-regexp
 Consider the limiting patterns to be extended regular expressions instead of the default basic regular expressions.
 .TP
 \-\-remove\-empty
@@ -213,13 +229,19 @@ Use the \fI\-\-sparse\fR flag to makes the command output all eligible commits (
 Limit output to the one commit object which is roughly halfway between the included and excluded commits. Thus, if
 .sp
 .nf
+.ft C
         $ git\-rev\-list \-\-bisect foo ^bar ^baz
+.ft
+
 .fi
 outputs \fImidpoint\fR, the output of the two commands
 .sp
 .nf
+.ft C
         $ git\-rev\-list foo ^midpoint
         $ git\-rev\-list midpoint ^bar ^baz
+.ft
+
 .fi
 would be of roughly the same length. Finding the change which introduces a regression is thus reduced to a binary search: repeatedly generate and test new 'midpoint's until the commit chain is of length one.
 .TP
@@ -352,8 +374,11 @@ The \fIformat:\fR format allows you to specify which information you want to sho
 E.g, \fIformat:"The author of %h was %an, %ar%nThe title was >>%s<<%n"\fR would show something like this:
 .sp
 .nf
+.ft C
 The author of fe6e0ee was Junio C Hamano, 23 hours ago
 The title was >>t4119: test autocomputing \-p<n> for traditional diff input.<<
+.ft
+
 .fi
 The placeholders are:
 .RS
