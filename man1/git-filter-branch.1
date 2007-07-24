@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FILTER\-BRANCH" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "07/24/2007" "Git 1.5.3.rc2.37.g1cff" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,16 +16,16 @@ git\-filter\-branch \- Rewrite branches
         [\-\-index\-filter <command>] [\-\-parent\-filter <command>]
         [\-\-msg\-filter <command>] [\-\-commit\-filter <command>]
         [\-\-tag\-name\-filter <command>] [\-\-subdirectory\-filter <directory>]
-        [\-d <directory>] <new\-branch\-name> [<rev\-list options>\&...]
+        [\-d <directory>] [\-f | \-\-force] [<rev\-list options>\&...]
 .fi
 .SH "DESCRIPTION"
 Lets you rewrite git revision history by creating a new branch from your current branch, applying custom filters on each revision. Those filters can modify each tree (e.g. removing a file or running a perl rewrite on all files) or information about each commit. Otherwise, all information (including original commit times or merge information) will be preserved.
 
-The command takes the new branch name as a mandatory argument and the filters as optional arguments. If you specify no filters, the commits will be recommitted without any changes, which would normally have no effect and result in the new branch pointing to the same branch as your current branch. Nevertheless, this may be useful in the future for compensating for some git bugs or such, therefore such a usage is permitted.
+The command takes the new branch name as a mandatory argument and the filters as optional arguments. If you specify no filters, the commits will be recommitted without any changes, which would normally have no effect. Nevertheless, this may be useful in the future for compensating for some git bugs or such, therefore such a usage is permitted.
 
 \fBWARNING\fR! The rewritten history will have different object names for all the objects and will not converge with the original branch. You will not be able to easily push and distribute the rewritten branch on top of the original branch. Please do not use this command if you do not know the full implications, and avoid using it anyway, if a simple single commit would suffice to fix your problem.
 
-Always verify that the rewritten version is correct before disposing the original branch.
+Always verify that the rewritten version is correct: The original refs, if different from the rewritten ones, will be stored in the namespace \fIrefs/original/\fR.
 
 Note that since this operation is extensively I/O expensive, it might be a good idea to redirect the temporary directory off\-disk, e.g. on tmpfs. Reportedly the speedup is very noticeable.
 .SS "Filters"
@@ -67,6 +67,9 @@ Only look at the history which touches the given subdirectory. The result will c
 \-d <directory>
 Use this option to set the path to the temporary directory used for rewriting. When applying a tree filter, the command needs to temporary checkout the tree to some directory, which may consume considerable space in case of large projects. By default it does this in the \fI.git\-rewrite/\fR directory but you can override that choice by this parameter.
 .TP
+\-f\\|\-\-force
+git filter\-branch refuses to start with an existing temporary directory or when there are already refs starting with \fIrefs/original/\fR, unless forced.
+.TP
 <rev\-list\-options>
 When options are given after the new branch name, they will be passed to \fBgit\-rev\-list\fR(1). Only commits in the resulting output will be filtered, although the filtered commits can still reference parents which are outside of that set.
 .SH "EXAMPLES"
@@ -74,7 +77,7 @@ Suppose you want to remove a file (containing confidential information or copyri
 .sp
 .nf
 .ft C
-git filter\-branch \-\-tree\-filter 'rm filename' newbranch
+git filter\-branch \-\-tree\-filter 'rm filename' HEAD
 .ft
 
 .fi
@@ -82,7 +85,7 @@ A significantly faster version:
 .sp
 .nf
 .ft C
-git filter\-branch \-\-index\-filter 'git update\-index \-\-remove filename' newbranch
+git filter\-branch \-\-index\-filter 'git update\-index \-\-remove filename' HEAD
 .ft
 
 .fi
@@ -92,7 +95,7 @@ To set a commit (which typically is at the tip of another history) to be the par
 .sp
 .nf
 .ft C
-git filter\-branch \-\-parent\-filter 'sed "s/^\\$/\-p <graft\-id>/"' newbranch
+git filter\-branch \-\-parent\-filter 'sed "s/^\\$/\-p <graft\-id>/"' HEAD
 .ft
 
 .fi
@@ -101,7 +104,7 @@ git filter\-branch \-\-parent\-filter 'sed "s/^\\$/\-p <graft\-id>/"' newbranch
 .nf
 .ft C
 git filter\-branch \-\-parent\-filter \\
-        'cat; test $GIT_COMMIT = <commit\-id> && echo "\-p <graft\-id>"' newbranch
+        'cat; test $GIT_COMMIT = <commit\-id> && echo "\-p <graft\-id>"' HEAD
 .ft
 
 .fi
@@ -110,7 +113,7 @@ or even simpler:
 .nf
 .ft C
 echo "$commit\-id $graft\-id" >> .git/info/grafts
-git filter\-branch newbranch $graft\-id..
+git filter\-branch $graft\-id..HEAD
 .ft
 
 .fi
@@ -130,7 +133,7 @@ git filter\-branch \-\-commit\-filter '
                 done;
         else
                 git commit\-tree "$@";
-        fi' newbranch
+        fi' HEAD
 .ft
 
 .fi
@@ -154,7 +157,7 @@ To rewrite only commits D,E,F,G,H, but leave A, B and C alone, use:
 .sp
 .nf
 .ft C
-git filter\-branch ... new\-H C..H
+git filter\-branch ... C..H
 .ft
 
 .fi
@@ -162,8 +165,8 @@ To rewrite commits E,F,G,H, use one of these:
 .sp
 .nf
 .ft C
-git filter\-branch ... new\-H C..H \-\-not D
-git filter\-branch ... new\-H D..H \-\-not C
+git filter\-branch ... C..H \-\-not D
+git filter\-branch ... D..H \-\-not C
 .ft
 
 .fi
@@ -175,7 +178,7 @@ git filter\-branch \-\-index\-filter \\
         'git ls\-files \-s | sed "s\-\\t\-&newsubdir/\-" |
                 GIT_INDEX_FILE=$GIT_INDEX_FILE.new \\
                         git update\-index \-\-index\-info &&
-         mv $GIT_INDEX_FILE.new $GIT_INDEX_FILE' directorymoved
+         mv $GIT_INDEX_FILE.new $GIT_INDEX_FILE' HEAD
 .ft
 
 .fi
