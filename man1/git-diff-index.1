@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DIFF\-INDEX" "1" "07/19/2007" "Git 1.5.3.rc0.11.ge2b1a" "Git Manual"
+.TH "GIT\-DIFF\-INDEX" "1" "07/26/2007" "Git 1.5.3.rc3.7.gd58e" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -20,6 +20,12 @@ Generate patch (see section on generating patches)
 .TP
 \-u
 Synonym for "\-p".
+.TP
+\-U<n>
+Shorthand for "\-\-unified=<n>".
+.TP
+\-\-unified=<n>
+Generate diffs with <n> lines of context instead of the usual three. Implies "\-p".
 .TP
 \-\-raw
 Generate the raw format.
@@ -171,12 +177,15 @@ compares the index and the files on the filesystem.
 An output line is formatted this way:
 .sp
 .nf
+.ft C
 in\-place edit  :100644 100644 bcd1234... 0123456... M file0
 copy\-edit      :100644 100644 abcd123... 1234567... C68 file1 file2
 rename\-edit    :100644 100644 abcd123... 1234567... R86 file1 file3
 create         :000000 100644 0000000... 1234567... A file4
 delete         :100644 000000 1234567... 0000000... D file5
 unmerged       :000000 000000 0000000... 0000000... U file6
+.ft
+
 .fi
 That is, from the left to the right:
 .TP 3
@@ -230,7 +239,10 @@ an LF or a NUL when \fI\-z\fR option is used, to terminate the record.
 Example:
 .sp
 .nf
+.ft C
 :100644 100644 5be4a4...... 000000...... M file.c
+.ft
+
 .fi
 When \-z option is not used, TAB, LF, and backslash characters in pathnames are represented as \\t, \\n, and \\\\, respectively.
 .SH "DIFF FORMAT FOR MERGES"
@@ -254,7 +266,10 @@ single path, only for "dst"
 Example:
 .sp
 .nf
+.ft C
 ::100644 100644 100644 fabadb8... cc95eb0... 4866510... MM      describe.c
+.ft
+
 .fi
 Note that \fIcombined diff\fR lists only files which were modified from all parents.
 .SH "GENERATING PATCHES WITH \-P"
@@ -297,6 +312,7 @@ The similarity index is the percentage of unchanged lines, and the dissimilarity
 git\-diff\-tree and git\-diff\-files can take \fI\-c\fR or \fI\-\-cc\fR option to produce \fIcombined diff\fR, which looks like this:
 .sp
 .nf
+.ft C
 diff \-\-combined describe.c
 index fabadb8,cc95eb0..4866510
 \-\-\- a/describe.c
@@ -324,6 +340,8 @@ index fabadb8,cc95eb0..4866510
         if (!initialized) {
                 initialized = 1;
                 for_each_ref(get_name);
+.ft
+
 .fi
 .TP 3
 1.
