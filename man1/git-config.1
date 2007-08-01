@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "07/27/2007" "Git 1.5.3.rc3.13.g7ab3" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/01/2007" "Git 1.5.3.rc3.107.g73a7" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,17 +12,17 @@ git\-config \- Get and set repository or global options
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] name [value [value_regex]]
-\fIgit\-config\fR [\-\-system | \-\-global] [type] \-\-add name value
-\fIgit\-config\fR [\-\-system | \-\-global] [type] \-\-replace\-all name [value [value_regex]]
-\fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] \-\-get name [value_regex]
-\fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] \-\-get\-all name [value_regex]
-\fIgit\-config\fR [\-\-system | \-\-global] [type] [\-z|\-\-null] \-\-get\-regexp name_regex [value_regex]
-\fIgit\-config\fR [\-\-system | \-\-global] \-\-unset name [value_regex]
-\fIgit\-config\fR [\-\-system | \-\-global] \-\-unset\-all name [value_regex]
-\fIgit\-config\fR [\-\-system | \-\-global] \-\-rename\-section old_name new_name
-\fIgit\-config\fR [\-\-system | \-\-global] \-\-remove\-section name
-\fIgit\-config\fR [\-\-system | \-\-global] [\-z|\-\-null] \-l | \-\-list
+\fIgit\-config\fR [<file\-option>] [type] [\-z|\-\-null] name [value [value_regex]]
+\fIgit\-config\fR [<file\-option>] [type] \-\-add name value
+\fIgit\-config\fR [<file\-option>] [type] \-\-replace\-all name [value [value_regex]]
+\fIgit\-config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get name [value_regex]
+\fIgit\-config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get\-all name [value_regex]
+\fIgit\-config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get\-regexp name_regex [value_regex]
+\fIgit\-config\fR [<file\-option>] \-\-unset name [value_regex]
+\fIgit\-config\fR [<file\-option>] \-\-unset\-all name [value_regex]
+\fIgit\-config\fR [<file\-option>] \-\-rename\-section old_name new_name
+\fIgit\-config\fR [<file\-option>] \-\-remove\-section name
+\fIgit\-config\fR [<file\-option>] [\-z|\-\-null] \-l | \-\-list
 .fi
 .SH "DESCRIPTION"
 You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
@@ -31,13 +31,15 @@ Multiple lines can be added to an option by using the \fI\-\-add\fR option. If y
 
 The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make \fIgit\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool). If no type specifier is passed, no checks or transformations are performed on the value.
 
+The file\-option can be one of \fI\-\-system\fR, \fI\-\-global\fR or \fI\-\-file\fR which specify where the values will be read from or written to. The default is to assume the config file of the current repository, .git/config unless defined otherwise with GIT_DIR and GIT_CONFIG (see the section called \(lqFILES\(rq).
+
 This command will fail if:
 .TP 3
 1.
-The .git/config file is invalid,
+The config file is invalid,
 .TP
 2.
-Can not write to .git/config,
+Can not write to the config file,
 .TP
 3.
 no section was provided,
@@ -84,6 +86,9 @@ For reading options: read only from system\-wide $(prefix)/etc/gitconfig rather 
 
 See also the section called \(lqFILES\(rq.
 .TP
+\-f config\-file, \-\-file config\-file
+Use the given config file instead of the one specified by GIT_CONFIG.
+.TP
 \-\-remove\-section
 Remove the given section from the configuration file.
 .TP
@@ -108,7 +113,7 @@ git\-config will ensure that the output is a simple decimal number. An optional 
 \-z, \-\-null
 For all options that output values and/or keys, always end values with with the null character (instead of a newline). Use newline instead as a delimiter between key and value. This allows for secure parsing of the output without getting confused e.g. by values that contain line breaks.
 .SH "FILES"
-There are three files where git\-config will search for configuration options:
+If not set explicitely with \fI\-\-file\fR, there are three files where git\-config will search for configuration options:
 
 Example\ 1.\ git/config::.sp
 .nf
