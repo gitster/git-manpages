@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SVN" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
+.TH "GIT\-SVN" "1" "08/07/2007" "Git 1.5.3.rc4.24.g5b56a" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -265,6 +265,23 @@ Tracking and contributing to an entire Subversion\-managed project (complete wit
         git reset \-\-hard remotes/trunk
 # You may only dcommit to one branch/tag/trunk at a time.  The usage
 # of dcommit/rebase/show\-ignore should be the same as above.
+.ft
+
+.fi
+The initial \fIgit\-svn clone\fR can be quite time\-consuming (especially for large Subversion repositories). If multiple people (or one person with multiple machines) want to use git\-svn to interact with the same Subversion repository, you can do the initial \fIgit\-svn clone\fR to a repository on a server and have each person clone that repository with \fIgit clone\fR:
+.sp
+.nf
+.ft C
+# Do the initial import on a server
+        ssh server "cd /pub && git\-svn clone http://svn.foo.org/project
+# Clone locally
+        git clone server:/pub/project
+# Tell git\-svn which branch contains the Subversion commits
+        git update\-ref refs/remotes/git\-svn origin/master
+# Initialize git\-svn locally (be sure to use the same URL and \-T/\-b/\-t options as were used on server)
+        git\-svn init http://svn.foo.org/project
+# Pull the latest changes from Subversion
+        git\-svn rebase
 .ft
 
 .fi
