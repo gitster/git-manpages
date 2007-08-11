@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FETCH" "1" "07/19/2007" "Git 1.5.3.rc0.39.g46f7" "Git Manual"
+.TH "GIT\-FETCH" "1" "08/11/2007" "Git 1.5.3.rc4.67.gf9286" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -115,7 +115,7 @@ ssh://[user@]host.xz/~user/path/to/repo.git/
 \(bu
 ssh://[user@]host.xz/~/path/to/repo.git
 
-SSH is the default transport protocol. You can optionally specify which user to log\-in as, and an alternate, scp\-like syntax is also supported. Both syntaxes support username expansion, as does the native git protocol. The following three are identical to the last three above, respectively:
+SSH is the default transport protocol over the network. You can optionally specify which user to log\-in as, and an alternate, scp\-like syntax is also supported. Both syntaxes support username expansion, as does the native git protocol. The following three are identical to the last three above, respectively:
 .IP
 .TP 3
 \(bu
@@ -127,40 +127,57 @@ SSH is the default transport protocol. You can optionally specify which user to 
 \(bu
 [user@]host.xz:path/to/repo.git
 
-To sync with a local directory, use:
+To sync with a local directory, you can use:
 .IP
 .TP 3
 \(bu
 /path/to/repo.git/
+.TP
+\(bu
+file:///path/to/repo.git/
+
+They are mostly equivalent, except when cloning. See \fBgit\-clone\fR(1) for details.
 .SH "REMOTES"
 In addition to the above, as a short\-hand, the name of a file in $GIT_DIR/remotes directory can be given; the named file should be in the following format:
 .sp
 .nf
+.ft C
         URL: one of the above URL format
         Push: <refspec>
         Pull: <refspec>
+.ft
+
 .fi
 Then such a short\-hand is specified in place of <repository> without <refspec> parameters on the command line, <refspec> specified on Push: lines or Pull: lines are used for git\-push and git\-fetch/git\-pull, respectively. Multiple Push: and Pull: lines may be specified for additional branch mappings.
 
 Or, equivalently, in the $GIT_DIR/config (note the use of fetch instead of Pull:):
 .sp
 .nf
+.ft C
         [remote "<remote>"]
                 url = <url>
                 push = <refspec>
                 fetch = <refspec>
+.ft
+
 .fi
 The name of a file in $GIT_DIR/branches directory can be specified as an older notation short\-hand; the named file should contain a single line, a URL in one of the above formats, optionally followed by a hash # and the name of remote head (URL fragment notation). $GIT_DIR/branches/<remote> file that stores a <url> without the fragment is equivalent to have this in the corresponding file in the $GIT_DIR/remotes/ directory.
 .sp
 .nf
+.ft C
         URL: <url>
         Pull: refs/heads/master:<remote>
+.ft
+
 .fi
 while having <url>#<head> is equivalent to
 .sp
 .nf
+.ft C
         URL: <url>
         Pull: refs/heads/<head>:<remote>
+.ft
+
 .fi
 .SH "SEE ALSO"
 \fBgit\-pull\fR(1)

@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CLONE" "1" "07/19/2007" "Git 1.5.3.rc1.4.gaf83" "Git Manual"
+.TH "GIT\-CLONE" "1" "08/11/2007" "Git 1.5.3.rc4.67.gf9286" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,7 +12,8 @@ git\-clone \- Clone a repository into a new directory
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-clone\fR [\-\-template=<template_directory>] [\-l [\-s]] [\-q] [\-n] [\-\-bare]
+\fIgit\-clone\fR [\-\-template=<template_directory>]
+          [\-l] [\-s] [\-\-no\-hardlinks] [\-q] [\-n] [\-\-bare]
           [\-o <name>] [\-u <upload\-pack>] [\-\-reference <repository>]
           [\-\-depth <depth>] <repository> [<directory>]
 .fi
@@ -25,7 +26,10 @@ This default configuration is achieved by creating references to the remote bran
 .SH "OPTIONS"
 .TP
 \-\-local , \-l
-When the repository to clone from is on a local machine, this flag bypasses normal "git aware" transport mechanism and clones the repository by making a copy of HEAD and everything under objects and refs directories. The files under .git/objects/ directory are hardlinked to save space when possible.
+When the repository to clone from is on a local machine, this flag bypasses normal "git aware" transport mechanism and clones the repository by making a copy of HEAD and everything under objects and refs directories. The files under .git/objects/ directory are hardlinked to save space when possible. This is now the default when the source repository is specified with /path/to/repo syntax, so it essentially is a no\-op option. To force copying instead of hardlinking (which may be desirable if you are trying to make a back\-up of your repository), but still avoid the usual "git aware" transport mechanism, \-\-no\-hardlinks can be used.
+.TP
+\-\-no\-hardlinks
+Optimize the cloning process from a repository on a local filesystem by copying files under .git/objects directory.
 .TP
 \-\-shared , \-s
 When the repository to clone is on the local machine, instead of using hard links, automatically setup .git/objects/info/alternates to share the objects with the source repository. The resulting repository starts out without any object of its own.
@@ -87,7 +91,7 @@ ssh://[user@]host.xz/~user/path/to/repo.git/
 \(bu
 ssh://[user@]host.xz/~/path/to/repo.git
 
-SSH is the default transport protocol. You can optionally specify which user to log\-in as, and an alternate, scp\-like syntax is also supported. Both syntaxes support username expansion, as does the native git protocol. The following three are identical to the last three above, respectively:
+SSH is the default transport protocol over the network. You can optionally specify which user to log\-in as, and an alternate, scp\-like syntax is also supported. Both syntaxes support username expansion, as does the native git protocol. The following three are identical to the last three above, respectively:
 .IP
 .TP 3
 \(bu
@@ -99,49 +103,69 @@ SSH is the default transport protocol. You can optionally specify which user to 
 \(bu
 [user@]host.xz:path/to/repo.git
 
-To sync with a local directory, use:
+To sync with a local directory, you can use:
 .IP
 .TP 3
 \(bu
 /path/to/repo.git/
+.TP
+\(bu
+file:///path/to/repo.git/
+
+They are mostly equivalent, except when cloning. See \fBgit\-clone\fR(1) for details.
 .SH "EXAMPLES"
 .TP
 Clone from upstream
 .sp
 .nf
+.ft C
 $ git clone git://git.kernel.org/pub/scm/.../linux\-2.6 my2.6
 $ cd my2.6
 $ make
+.ft
+
 .fi
 .TP
 Make a local clone that borrows from the current directory, without checking things out
 .sp
 .nf
+.ft C
 $ git clone \-l \-s \-n . ../copy
 $ cd ../copy
 $ git show\-branch
+.ft
+
 .fi
 .TP
 Clone from upstream while borrowing from an existing local directory
 .sp
 .nf
+.ft C
 $ git clone \-\-reference my2.6 \\
         git://git.kernel.org/pub/scm/.../linux\-2.7 \\
         my2.7
 $ cd my2.7
+.ft
+
 .fi
 .TP
 Create a bare repository to publish your changes to the public
 .sp
 .nf
+.ft C
 $ git clone \-\-bare \-l /home/proj/.git /pub/scm/proj.git
+.ft
+
 .fi
 .TP
 Create a repository on the kernel.org machine that borrows from Linus
 .sp
 .nf
+.ft C
 $ git clone \-\-bare \-l \-s /pub/scm/.../torvalds/linux\-2.6.git \\
     /pub/scm/.../me/subsys\-2.6.git
+.ft
+
 .fi
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
