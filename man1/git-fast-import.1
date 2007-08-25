@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FAST\-IMPORT" "1" "08/19/2007" "Git 1.5.3.rc5.40.g2f82" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "08/25/2007" "Git 1.5.3.rc6.23.g0058" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -95,7 +95,7 @@ Unlike the raw format above, the timezone/UTC offset information contained in an
 
 If the source material uses RFC 2822 style dates, the frontend should let fast\-import handle the parsing and conversion (rather than attempting to do it itself) as the Git parser has been well tested in the wild.
 
-Frontends should prefer the raw format if the source material already uses UNIX\-epoch format, can be coaxed to give dates in that format, or its format is easiliy convertible to it, as there is no ambiguity in parsing.
+Frontends should prefer the raw format if the source material already uses UNIX\-epoch format, can be coaxed to give dates in that format, or its format is easily convertible to it, as there is no ambiguity in parsing.
 .TP
 now
 Always use the current time and timezone. The literal now must always be supplied for <when>.
@@ -145,7 +145,7 @@ A mark command may optionally appear, requesting fast\-import to save a referenc
 
 The data command following committer must supply the commit message (see below for data command syntax). To import an empty commit message use a 0 length data. Commit messages are free\-form and are not interpreted by Git. Currently they must be encoded in UTF\-8, as fast\-import does not permit other encodings to be specified.
 
-Zero or more filemodify, filedelete, filecopy, filerename and filedeleteall commands may be included to update the contents of the branch prior to creating the commit. These commands may be supplied in any order. However it is recommended that a filedeleteall command preceed all filemodify, filecopy and filerename commands in the same commit, as filedeleteall wipes the branch clean (see below).
+Zero or more filemodify, filedelete, filecopy, filerename and filedeleteall commands may be included to update the contents of the branch prior to creating the commit. These commands may be supplied in any order. However it is recommended that a filedeleteall command precede all filemodify, filecopy and filerename commands in the same commit, as filedeleteall wipes the branch clean (see below).
 
 The LF after the command is optional (it used to be required).
 .sp
@@ -191,7 +191,7 @@ The name of an existing branch already in fast\-import's internal branch table. 
 \(bu
 A mark reference, :<idnum>, where <idnum> is the mark number.
 
-The reason fast\-import uses : to denote a mark reference is this character is not legal in a Git branch name. The leading : makes it easy to distingush between the mark 42 (:42) and the branch 42 (42 or refs/heads/42), or an abbreviated SHA\-1 which happened to consist only of base\-10 digits.
+The reason fast\-import uses : to denote a mark reference is this character is not legal in a Git branch name. The leading : makes it easy to distinguish between the mark 42 (:42) and the branch 42 (42 or refs/heads/42), or an abbreviated SHA\-1 which happened to consist only of base\-10 digits.
 
 Marks must be declared (via mark) before they can be used.
 .TP
@@ -265,7 +265,7 @@ A <path> string must use UNIX\-style directory separators (forward slash /), may
 
 If an LF or double quote must be encoded into <path> shell\-style quoting should be used, e.g. "path/with\\n and \\" in it".
 
-The value of <path> must be in canoncial form. That is it must not:
+The value of <path> must be in canonical form. That is it must not:
 .TP 3
 \(bu
 contain an empty directory component (e.g. foo//bar is invalid),
@@ -422,7 +422,7 @@ where <count> is the exact number of bytes appearing within <raw>. The value of 
 The LF after <raw> is optional (it used to be required) but recommended. Always including it makes debugging a fast\-import stream easier as the next command always starts in column 0 of the next line, even if <raw> did not end with an LF.
 .TP
 Delimited format
-A delimiter string is used to mark the end of the data. fast\-import will compute the length by searching for the delimiter. This format is primarly useful for testing and is not recommended for real data.
+A delimiter string is used to mark the end of the data. fast\-import will compute the length by searching for the delimiter. This format is primarily useful for testing and is not recommended for real data.
 .sp
 .nf
         'data' SP '<<' <delim> LF
@@ -484,7 +484,7 @@ When committing fixups, consider using merge to connect the commit(s) which are 
 
 After fast\-import terminates the frontend will need to do rm .git/TAG_FIXUP to remove the dummy branch.
 .SS "Import Now, Repack Later"
-As soon as fast\-import completes the Git repository is completely valid and ready for use. Typicallly this takes only a very short time, even for considerably large projects (100,000+ commits).
+As soon as fast\-import completes the Git repository is completely valid and ready for use. Typically this takes only a very short time, even for considerably large projects (100,000+ commits).
 
 However repacking the repository is necessary to improve data locality and access performance. It can also take hours on extremely large projects (especially if \-f and a large \-\-window parameter is used). Since repacking is safe to run alongside readers and writers, run the repack in the background and let it finish when it finishes. There is no reason to wait to explore your new Git project!
 
@@ -502,7 +502,7 @@ The packfile(s) created by fast\-import do not encourage good disk access patter
 
 For this reason it is strongly recommended that users repack the repository with git repack \-a \-d after fast\-import completes, allowing Git to reorganize the packfiles for faster data access. If blob deltas are suboptimal (see above) then also adding the \-f option to force recomputation of all deltas can significantly reduce the final packfile size (30\-50% smaller can be quite typical).
 .SH "MEMORY UTILIZATION"
-There are a number of factors which affect how much memory fast\-import requires to perform an import. Like critical sections of core Git, fast\-import uses its own memory allocators to ammortize any overheads associated with malloc. In practice fast\-import tends to ammoritize any malloc overheads to 0, due to its use of large block allocations.
+There are a number of factors which affect how much memory fast\-import requires to perform an import. Like critical sections of core Git, fast\-import uses its own memory allocators to amortize any overheads associated with malloc. In practice fast\-import tends to amortize any malloc overheads to 0, due to its use of large block allocations.
 .SS "per object"
 fast\-import maintains an in\-memory structure for every object written in this execution. On a 32 bit system the structure is 32 bytes, on a 64 bit system the structure is 40 bytes (due to the larger pointer sizes). Objects in the table are not deallocated until fast\-import terminates. Importing 2 million objects on a 32 bit system will require approximately 64 MiB of memory.
 
@@ -520,7 +520,7 @@ As active branches store metadata about the files contained on that branch, thei
 
 fast\-import automatically moves active branches to inactive status based on a simple least\-recently\-used algorithm. The LRU chain is updated on each commit command. The maximum number of active branches can be increased or decreased on the command line with \-\-active\-branches=.
 .SS "per active tree"
-Trees (aka directories) use just 12 bytes of memory on top of the memory required for their entries (see \(lqper active file\(rq below). The cost of a tree is virtually 0, as its overhead ammortizes out over the individual file entries.
+Trees (aka directories) use just 12 bytes of memory on top of the memory required for their entries (see \(lqper active file\(rq below). The cost of a tree is virtually 0, as its overhead amortizes out over the individual file entries.
 .SS "per active file entry"
 Files (and pointers to subtrees) within active trees require 52 or 64 bytes (32/64 bit platforms) per entry. To conserve space, file and tree names are pooled in a common string table, allowing the filename \(lqMakefile\(rq to use just 16 bytes (after including the string header overhead) no matter how many times it occurs within the project.
 
