@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DIFF" "1" "08/02/2007" "Git 1.5.3.rc3.120.g68d422" "Git Manual"
+.TH "GIT\-DIFF" "1" "08/28/2007" "Git 1.5.3.rc6.54.g9277" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,12 +16,8 @@ Show changes between two trees, a tree and the working tree, a tree and the inde
 .TP
 \fIgit\-diff\fR [\-\-options] [\-\-] [<path>\&...]
 This form is to view the changes you made relative to the index (staging area for the next commit). In other words, the differences are what you _could_ tell git to further add to the index but you still haven't. You can stage these changes by using \fBgit\-add\fR(1).
-.sp
-.nf
-If exactly two paths are given, and at least one is untracked,
-compare the two files / directories. This behavior can be
-forced by \-\-no\-index.
-.fi
+
+If exactly two paths are given, and at least one is untracked, compare the two files / directories. This behavior can be forced by \-\-no\-index.
 .TP
 \fIgit\-diff\fR [\-\-options] \-\-cached [<commit>] [\-\-] [<path>\&...]
 This form is to view the changes you staged for the next commit relative to the named <commit>. Typically you would want comparison with the latest commit, so if you do not give <commit>, it defaults to HEAD.
@@ -30,11 +26,17 @@ This form is to view the changes you staged for the next commit relative to the 
 This form is to view the changes you have in your working tree relative to the named <commit>. You can use HEAD to compare it with the latest commit, or a branch name to compare with the tip of a different branch.
 .TP
 \fIgit\-diff\fR [\-\-options] <commit> <commit> [\-\-] [<path>\&...]
-This form is to view the changes between two <commit>, for example, tips of two branches.
+This is to view the changes between two arbitrary <commit>.
+.TP
+\fIgit\-diff\fR [\-\-options] <commit>..<commit> [\-\-] [<path>\&...]
+This is synonymous to the previous form. If <commit> on one side is omitted, it will have the same effect as using HEAD instead.
+.TP
+\fIgit\-diff\fR [\-\-options] <commit>\&...<commit> [\-\-] [<path>\&...]
+This form is to view the changes on the branch containing and up to the second <commit>, starting at a common ancestor of both <commit>. "git\-diff A\&...B" is equivalent to "git\-diff $(git\-merge\-base A B) B". You can omit any one of <commit>, which has the same effect as using HEAD instead.
 
 Just in case if you are doing something exotic, it should be noted that all of the <commit> in the above description can be any <tree\-ish>.
 
-For a more complete list of ways to spell <commit>, see "SPECIFYING REVISIONS" section in \fBgit\-rev\-parse\fR(1).
+For a more complete list of ways to spell <commit>, see "SPECIFYING REVISIONS" section in \fBgit\-rev\-parse\fR(1). However, "diff" is about comparing two _endpoints_, not ranges, and the range notations ("<commit>..<commit>" and "<commit>\&...<commit>") do not mean a range as defined in the "SPECIFYING RANGES" section in \fBgit\-rev\-parse\fR(1).
 .SH "OPTIONS"
 .TP
 \-p
@@ -209,6 +211,24 @@ $ git diff HEAD^ HEAD      \fB(3)\fR
 \fB2. \fRInstead of comparing with the tip of "test" branch, compare with the tip of the current branch, but limit the comparison to the file "test".
 .br
 \fB3. \fRCompare the version before the last commit and the last commit.
+.br
+.TP
+Comparing branches
+.sp
+.nf
+.ft C
+$ git diff topic master    \fB(1)\fR
+$ git diff topic..master   \fB(2)\fR
+$ git diff topic...master  \fB(3)\fR
+.ft
+
+.fi
+.sp
+\fB1. \fRChanges between the tips of the topic and the master branches.
+.br
+\fB2. \fRSame as above.
+.br
+\fB3. \fRChanges that occured on the master branch since when the topic branch was started off it.
 .br
 .TP
 Limiting the diff output
