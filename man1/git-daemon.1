@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DAEMON" "1" "08/01/2007" "Git 1.5.3.rc3.107.g73a7" "Git Manual"
+.TH "GIT\-DAEMON" "1" "08/31/2007" "Git 1.5.3.rc7.16.ge340d" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -80,7 +80,7 @@ Use SO_REUSEADDR when binding the listening socket. This allows the server to re
 Detach from the shell. Implies \-\-syslog.
 .TP
 \-\-pid\-file=file
-Save the process id in \fIfile\fR.
+Save the process id in \fIfile\fR. Ignored when the daemon is run under \-\-inetd.
 .TP
 \-\-user=user, \-\-group=group
 Change daemon's uid and gid before entering the service loop. When only \-\-user is given without \-\-group, the primary group ID for the user is used. The values of the option are given to getpwnam(3) and getgrnam(3) and numeric IDs are not supported.
@@ -96,12 +96,16 @@ Allow/forbid overriding the site\-wide default with per repository configuration
 <directory>
 A directory to add to the whitelist of allowed directories. Unless \-\-strict\-paths is specified this will also include subdirectories of each named directory.
 .SH "SERVICES"
+These services can be globally enabled/disabled using the command line options of this command. If a finer\-grained control is desired (e.g. to allow git\-archive to be run against only in a few selected repositories the daemon serves), the per\-repository configuration file can be used to enable or disable them.
 .TP
 upload\-pack
 This serves git\-fetch\-pack and git\-peek\-remote clients. It is enabled by default, but a repository can disable it by setting daemon.uploadpack configuration item to false.
 .TP
 upload\-archive
-This serves git\-archive \-\-remote.
+This serves git\-archive \-\-remote. It is disabled by default, but a repository can enable it by setting daemon.uploadarchive configuration item to true.
+.TP
+receive\-pack
+This serves git\-send\-pack clients, allowing anonymous push. It is disabled by default, as there is _no_ authentication in the protocol (in other words, anybody can push anything into the repository, including removal of refs). This is solely meant for a closed LAN setting where everybody is friendly. This service can be enabled by daemon.receivepack configuration item to true.
 .SH "EXAMPLES"
 .TP
 We assume the following in /etc/services
@@ -155,6 +159,19 @@ To set up git\-daemon as a regular, non\-inetd service that handles repositories
 
 .fi
 In this example, the root\-level directory /pub will contain a subdirectory for each virtual host IP address supported. Repositories can still be accessed by hostname though, assuming they correspond to these IP addresses.
+
+To enable git\-archive \-\-remote and disable git\-fetch against a repository, have the following in the configuration file in the repository (that is the file \fIconfig\fR next to \fIHEAD\fR, \fIrefs\fR and \fIobjects\fR).
+
++
+.sp
+.nf
+.ft C
+[daemon]
+        uploadpack = false
+        uploadarchive = true
+.ft
+
+.fi
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>, YOSHIFUJI Hideaki <yoshfuji@linux\-ipv6.org> and the git\-list <git@vger.kernel.org>
 .SH "DOCUMENTATION"
