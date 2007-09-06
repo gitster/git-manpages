@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SEND\-EMAIL" "1" "09/02/2007" "Git 1.5.3" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "09/06/2007" "Git 1.5.3.1.4.gad00" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -49,8 +49,17 @@ If this is set, add emails found in Signed\-off\-by: or Cc: lines to the cc list
 \-\-quiet
 Make git\-send\-email less verbose. One line per email should be all that is output.
 .TP
+\-\-identity
+A configuration identity. When given, causes values in the \fIsendemail.<identity>\fR subsection to take precedence over values in the \fIsendemail\fR section. The default identity is the value of \fIsendemail.identity\fR.
+.TP
 \-\-smtp\-server
 If set, specifies the outgoing SMTP server to use (e.g. smtp.example.com or a raw IP address). Alternatively it can specify a full pathname of a sendmail\-like program instead; the program must support the \-i option. Default value can be specified by the \fIsendemail.smtpserver\fR configuration option; the built\-in default is /usr/sbin/sendmail or /usr/lib/sendmail if such program is available, or localhost otherwise.
+.TP
+\-\-smtp\-user, \-\-smtp\-pass
+Username and password for SMTP\-AUTH. Defaults are the values of the configuration values \fIsendemail.smtpuser\fR and \fIsendemail.smtppass\fR, but see also \fIsendemail.identity\fR. If not set, authentication is not attempted.
+.TP
+\-\-smtp\-ssl
+If set, connects to the SMTP server using SSL. Default is the value of the \fIsendemail.smtpssl\fR configuration value; if that is unspecified, does not use SSL.
 .TP
 \-\-subject
 Specify the initial subject of the email thread. Only necessary if \-\-compose is also set. If \-\-compose is not set, this will be prompted for.
@@ -73,6 +82,9 @@ Specify the primary recipient of the emails generated. Generally, this will be t
 The \-\-to option must be repeated for each user you want on the to list.
 .SH "CONFIGURATION"
 .TP
+sendemail.identity
+The default configuration identity. When specified, \fIsendemail.<identity>.<item>\fR will have higher precedence than \fIsendemail.<item>\fR. This is useful to declare multiple SMTP identities and to hoist sensitive authentication information out of the repository and into the global configuation file.
+.TP
 sendemail.aliasesfile
 To avoid typing long email addresses, point this to one or more email aliases files. You must also supply \fIsendemail.aliasfiletype\fR.
 .TP
@@ -89,7 +101,16 @@ sendemail.chainreplyto
 Boolean value specifying the default to the \fI\-\-chain_reply_to\fR parameter.
 .TP
 sendemail.smtpserver
-Default smtp server to use.
+Default SMTP server to use.
+.TP
+sendemail.smtpuser
+Default SMTP\-AUTH username.
+.TP
+sendemail.smtppass
+Default SMTP\-AUTH password.
+.TP
+sendemail.smtpssl
+Boolean value specifying the default to the \fI\-\-smtp\-ssl\fR parameter.
 .SH "AUTHOR"
 Written by Ryan Anderson <ryan@michonline.com>
 
