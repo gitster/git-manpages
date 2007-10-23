@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-GC" "1" "10/03/2007" "Git 1.5.3.4.203.gcc61a" "Git Manual"
+.TH "GIT\-GC" "1" "10/23/2007" "Git 1.5.3.4.319.gdd817" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,7 +14,7 @@ git\-gc \- Cleanup unnecessary files and optimize the local repository
 .SH "DESCRIPTION"
 Runs a number of housekeeping tasks within the current repository, such as compressing file revisions (to reduce disk space and increase performance) and removing unreachable objects which may have been created from prior invocations of \fBgit\-add\fR(1).
 
-Users are encouraged to run this task on a regular basis within each repository to maintain good disk space utilization and good operating performance.
+Users are encouraged to run this task on a regular basis within each repository to maintain good disk space utilization and good operating performance. Some git commands may automatically run git\-gc; see the \-\-auto flag below for details.
 .SH "OPTIONS"
 .TP
 \-\-prune
@@ -24,7 +24,11 @@ Usually git\-gc packs refs, expires old reflog entries, packs loose objects, and
 Usually \fIgit\-gc\fR runs very quickly while providing good disk space utilization and performance. This option will cause git\-gc to more aggressively optimize the repository at the expense of taking much more time. The effects of this optimization are persistent, so this option only needs to be used occasionally; every few hundred changesets or so.
 .TP
 \-\-auto
-With this option, git gc checks if there are too many loose objects in the repository and runs \fBgit\-repack\fR(1) with \-d \-l option to pack them. The threshold for loose objects is set with gc.auto configuration variable, and can be disabled by setting it to 0. Some Porcelain commands use this after they perform operation that could create many loose objects automatically. Additionally, when there are too many packs are present, they are consolidated into one larger pack by running the git\-repack command with \-A option. The threshold for number of packs is set with gc.autopacklimit configuration variable.
+With this option, git gc checks whether any housekeeping is required; if not, it exits without performing any work. Some git commands run git gc \-\-auto after performing operations that could create many loose objects.
+
+Housekeeping is required if there are too many loose objects or too many packs in the repository. If the number of loose objects exceeds the value of the gc.auto configuration variable, then all loose objects are combined into a single pack using git\-repack \-d \-l. Setting the value of gc.auto to 0 disables automatic packing of loose objects.
+
+If the number of packs exceeds the value of gc.autopacklimit, then existing packs (except those marked with a .keep file) are consolidated into a single pack by using the \-A option of git\-repack. Setting gc.autopacklimit to 0 disables automatic consolidation of packs.
 .SH "CONFIGURATION"
 The optional configuration variable \fIgc.reflogExpire\fR can be set to indicate how long historical entries within each branch's reflog should remain available in this repository. The setting is expressed as a length of time, for example \fI90 days\fR or \fI3 months\fR. It defaults to \fI90 days\fR.
 

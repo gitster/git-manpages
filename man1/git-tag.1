@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-TAG" "1" "08/28/2007" "Git 1.5.3.rc6.54.g9277" "Git Manual"
+.TH "GIT\-TAG" "1" "10/23/2007" "Git 1.5.3.4.319.gdd817" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -82,7 +82,7 @@ The sane thing. Just admit you screwed up, and use a different name. Others have
 2.
 The insane thing. You really want to call the new version "X" too, \fIeven though\fR others have already seen the old one. So just use "git tag \-f" again, as if you hadn't already published the old one.
 
-However, Git does \fBnot\fR (and it should not)change tags behind users back. So if somebody already got the old tag, doing a "git pull" on your tree shouldn't just make them overwrite the old one.
+However, Git does \fBnot\fR (and it should not) change tags behind users back. So if somebody already got the old tag, doing a "git pull" on your tree shouldn't just make them overwrite the old one.
 
 If somebody got a release tag from you, you cannot just change the tag for them by updating your own one. This is a big security issue, in that people MUST be able to trust their tag\-names. If you really want to do the insane thing, you need to just fess up to it, and tell people that you messed up. You can do that by making a very public announcement saying:
 .sp
@@ -142,6 +142,19 @@ One important aspect of git is it is distributed, and being distributed largely 
 A one\-shot pull is a sign that a commit history is now crossing the boundary between one circle of people (e.g. "people who are primarily interested in networking part of the kernel") who may have their own set of tags (e.g. "this is the third release candidate from the networking group to be proposed for general consumption with 2.6.21 release") to another circle of people (e.g. "people who integrate various subsystem improvements"). The latter are usually not interested in the detailed tags used internally in the former group (that is what "internal" means). That is why it is desirable not to follow tags automatically in this case.
 
 It may well be that among networking people, they may want to exchange the tags internal to their group, but in that workflow they are most likely tracking with each other's progress by having tracking branches. Again, the heuristic to automatically follow such tags is a good thing.
+.SS "On Backdating Tags"
+If you have imported some changes from another VCS and would like to add tags for major releases of your work, it is useful to be able to specify the date to embed inside of the tag object. The data in the tag object affects, for example, the ordering of tags in the gitweb interface.
+
+To set the date used in future tag objects, set the environment variable GIT_AUTHOR_DATE to one or more of the date and time. The date and time can be specified in a number of ways; the most common is "YYYY\-MM\-DD HH:MM".
+
+An example follows.
+.sp
+.nf
+.ft C
+$ GIT_AUTHOR_DATE="2006\-10\-02 10:31" git tag \-s v1.0.1
+.ft
+
+.fi
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>, Junio C Hamano <junkio@cox.net> and Chris Wright <chrisw@osdl.org>.
 .SH "DOCUMENTATION"

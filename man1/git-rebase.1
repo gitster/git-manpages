@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REBASE" "1" "09/30/2007" "Git 1.5.3.3.126.g72dc" "Git Manual"
+.TH "GIT\-REBASE" "1" "10/23/2007" "Git 1.5.3.4.319.gdd817" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -24,7 +24,7 @@ All changes made by commits in the current branch but that are not in <upstream>
 
 The current branch is reset to <upstream>, or <newbase> if the \-\-onto option was supplied. This has the exact same effect as git reset \-\-hard <upstream> (or <newbase>).
 
-The commits that were previously saved into the temporary area are then reapplied to the current branch, one by one, in order.
+The commits that were previously saved into the temporary area are then reapplied to the current branch, one by one, in order. Note that any commits in HEAD which introduce the same textual changes as a commit in HEAD..<upstream> are omitted (i.e., a patch already accepted upstream with a different commit message or timestamp will be skipped).
 
 It is possible that a merge failure will prevent this process from being completely automatic. You will have to resolve any such merge failure and run git rebase \-\-continue. Another option is to bypass the commit that caused the merge failure with git rebase \-\-skip. To restore the original <branch> and remove the .dotest working files, use the command git rebase \-\-abort instead.
 
@@ -56,6 +56,26 @@ would be:
 .fi
 The latter form is just a short\-hand of git checkout topic followed by git rebase master.
 
+If the upstream branch already contains a change you have made (e.g., because you mailed a patch which was applied upstream), then that commit will be skipped. For example, running git\-rebase master on the following history (in which A' and A introduce the same set of changes, but have different committer information):
+.sp
+.nf
+.ft C
+          A\-\-\-B\-\-\-C topic
+         /
+    D\-\-\-E\-\-\-A'\-\-\-F master
+.ft
+
+.fi
+will result in:
+.sp
+.nf
+.ft C
+                   B'\-\-\-C' topic
+                  /
+    D\-\-\-E\-\-\-A'\-\-\-F master
+.ft
+
+.fi
 Here is how you would transplant a topic branch based on one branch to another, to pretend that you forked the topic branch from the latter branch, using rebase \-\-onto.
 
 First let's assume your \fItopic\fR is based on branch \fInext\fR. For example feature developed in \fItopic\fR depends on some functionality which is found in \fInext\fR.
