@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BISECT" "1" "07/19/2007" "Git 1.5.3.rc2.19.gc4fba" "Git Manual"
+.TH "GIT\-BISECT" "1" "10/31/2007" "Git 1.5.3.4.498.g9c514" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,8 +16,9 @@ The command takes various subcommands, and different options depending on the su
 .sp
 .nf
 git bisect start [<bad> [<good>...]] [\-\-] [<paths>...]
-git bisect bad <rev>
-git bisect good <rev>
+git bisect bad [<rev>]
+git bisect good [<rev>...]
+git bisect skip [<rev>...]
 git bisect reset [<branch>]
 git bisect visualize
 git bisect replay <logfile>
@@ -118,6 +119,16 @@ $ git reset \-\-hard HEAD~3               # try 3 revs before what
 
 .fi
 Then compile and test the one you chose to try. After that, tell bisect what the result was as usual.
+.SS "Bisect skip"
+Instead of choosing by yourself a nearby commit, you may just want git to do it for you using:
+.sp
+.nf
+.ft C
+$ git bisect skip                 # Current version cannot be tested
+.ft
+
+.fi
+But computing the commit to test may be slower afterwards and git may eventually not be able to tell the first bad among a bad and one or more "skip"ped commits.
 .SS "Cutting down bisection by giving more parameters to bisect start"
 You can further cut down the number of trials if you know what part of the tree is involved in the problem you are tracking down, by giving paths parameters when you say bisect start, like this:
 .sp
@@ -146,9 +157,11 @@ $ git bisect run my_script
 .ft
 
 .fi
-Note that the "run" script (my_script in the above example) should exit with code 0 in case the current source code is good and with a code between 1 and 127 (included) in case the current source code is bad.
+Note that the "run" script (my_script in the above example) should exit with code 0 in case the current source code is good. Exit with a code between 1 and 127 (inclusive), except 125, if the current source code is bad.
 
 Any other exit code will abort the automatic bisect process. (A program that does "exit(\-1)" leaves $? = 255, see exit(3) manual page, the value is chopped with "& 0377".)
+
+The special exit code 125 should be used when the current source code cannot be tested. If the "run" script exits with this code, the current revision will be skipped, see git bisect skip above.
 
 You may often find that during bisect you want to have near\-constant tweaks (e.g., s/#define DEBUG 0/#define DEBUG 1/ in a header file, or "revision that does not have this commit needs this patch applied to work around other problem this bisection is not interested in") applied to the revision being tested.
 
