@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BRANCH" "1" "11/14/2007" "Git 1.5.3.5.666.gfb5f" "Git Manual"
+.TH "GIT\-BRANCH" "1" "11/29/2007" "Git 1.5.3.6.970.gd25430" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -29,14 +29,16 @@ When a local branch is started off a remote branch, git can setup the branch so 
 
 With a \fI\-m\fR or \fI\-M\fR option, <oldbranch> will be renamed to <newbranch>. If <oldbranch> had a corresponding reflog, it is renamed to match <newbranch>, and a reflog entry is created to remember the branch renaming. If <newbranch> exists, \-M must be used to force the rename to happen.
 
-With a \-d or \-D option, <branchname> will be deleted. You may specify more than one branch for deletion. If the branch currently has a reflog then the reflog will also be deleted. Use \-r together with \-d to delete remote\-tracking branches.
+With a \-d or \-D option, <branchname> will be deleted. You may specify more than one branch for deletion. If the branch currently has a reflog then the reflog will also be deleted.
+
+Use \-r together with \-d to delete remote\-tracking branches. Note, that it only makes sense to delete remote\-tracking branches if they no longer exist in remote repository or if \fBgit\-fetch\fR(1) was configured not to fetch them again. See also \fIprune\fR subcommand of \fBgit\-remote\fR(1) for way to clean up all obsolete remote\-tracking branches.
 .SH "OPTIONS"
 .TP
 \-d
-Delete a branch. The branch must be fully merged.
+Delete a branch. The branch must be fully merged in HEAD.
 .TP
 \-D
-Delete a branch irrespective of its index status.
+Delete a branch irrespective of its merged status.
 .TP
 \-l
 Create the branch's reflog. This activates recording of all changes made to the branch ref, enabling use of date based sha1 expressions such as "<branchname>@{yesterday}".
@@ -117,9 +119,9 @@ $ git branch \-D test                                    \fB(2)\fR
 
 .fi
 .sp
-\fB1. \fRDelete remote\-tracking branches "todo", "html", "man"
+\fB1. \fRDelete remote\-tracking branches "todo", "html", "man". Next \fIfetch\fR or \fIpull\fR will create them again unless you configure them not to. See \fBgit\-fetch\fR(1).
 .br
-\fB2. \fRDelete "test" branch even if the "master" branch does not have all commits from test branch.
+\fB2. \fRDelete "test" branch even if the "master" branch (or whichever branch is currently checked out) does not have all commits from test branch.
 .br
 .SH "NOTES"
 If you are creating a branch that you want to immediately checkout, it's easier to use the git checkout command with its \-b option to create a branch and check it out with a single command.
