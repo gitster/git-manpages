@@ -1,0 +1,56 @@
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "GIT\-FAST\-EXPORT" "1" "12/03/2007" "Git 1.5.3.7.994.g36863" "Git Manual"
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+git\-fast\-export \- Git data exporter
+.SH "SYNOPSIS"
+\fIgit\-fast\-export [options]\fR | \fIgit\-fast\-import\fR
+.SH "DESCRIPTION"
+This program dumps the given revisions in a form suitable to be piped into \fBgit\-fast\-import\fR(1).
+
+You can use it as a human readable bundle replacement (see \fBgit\-bundle\fR(1)), or as a kind of an interactive \fBgit\-filter\-branch\fR(1).
+.SH "OPTIONS"
+.TP
+\-\-progress=<n>
+Insert \fIprogress\fR statements every <n> objects, to be shown by \fBgit\-fast\-import\fR(1) during import.
+.TP
+\-\-signed\-tags=(ignore|warn|strip|abort)
+Specify how to handle signed tags. Since any transformation after the export can change the tag names (which can also happen when excluding revisions) the signatures will not match.
+
+When asking to \fIabort\fR (which is the default), this program will die when encountering a signed tag. With \fIstrip\fR, the tags will be made unsigned, with \fIignore\fR, they will be silently ignored (i.e. not exported) and with \fIwarn\fR, they will be exported, but you will see a warning.
+.SH "EXAMPLES"
+.sp
+.nf
+.ft C
+$ git fast\-export \-\-all | (cd /empty/repository && git fast\-import)
+.ft
+
+.fi
+This will export the whole repository and import it into the existing empty repository. Except for reencoding commits that are not in UTF\-8, it would be a one\-to\-one mirror.
+.sp
+.nf
+.ft C
+$ git fast\-export master~5..master |
+        sed "s|refs/heads/master|refs/heads/other|" |
+        git fast\-import
+.ft
+
+.fi
+This makes a new branch called \fIother\fR from \fImaster~5..master\fR (i.e. if \fImaster\fR has linear history, it will take the last 5 commits).
+
+Note that this assumes that none of the blobs and commit messages referenced by that revision range contains the string \fIrefs/heads/master\fR.
+.SH "LIMITATIONS"
+Since \fBgit\-fast\-import\fR(1) cannot tag trees, you will not be able to export the linux\-2.6.git repository completely, as it contains a tag referencing a tree instead of a commit.
+.SH "AUTHOR"
+Written by Johannes E. Schindelin <johannes.schindelin@gmx.de>.
+.SH "DOCUMENTATION"
+Documentation by Johannes E. Schindelin <johannes.schindelin@gmx.de>.
+.SH "GIT"
+Part of the \fBgit\fR(7) suite
+

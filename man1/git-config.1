@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "11/21/2007" "Git 1.5.3.6.861.gd794" "Git Manual"
+.TH "GIT\-CONFIG" "1" "12/03/2007" "Git 1.5.3.7.994.g36863" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -23,6 +23,7 @@ git\-config \- Get and set repository or global options
 \fIgit\-config\fR [<file\-option>] \-\-rename\-section old_name new_name
 \fIgit\-config\fR [<file\-option>] \-\-remove\-section name
 \fIgit\-config\fR [<file\-option>] [\-z|\-\-null] \-l | \-\-list
+\fIgit\-config\fR [<file\-option>] \-\-get\-color name [default]
 .fi
 .SH "DESCRIPTION"
 You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
@@ -112,6 +113,9 @@ git\-config will ensure that the output is a simple decimal number. An optional 
 .TP
 \-z, \-\-null
 For all options that output values and/or keys, always end values with with the null character (instead of a newline). Use newline instead as a delimiter between key and value. This allows for secure parsing of the output without getting confused e.g. by values that contain line breaks.
+.TP
+\-\-get\-color name default
+Find the color configured for name (e.g. color.diff.new) and output it as the ANSI color escape sequence to the standard output. The optional default parameter is used instead, if there is no color configured for name.
 .SH "FILES"
 If not set explicitly with \fI\-\-file\fR, there are three files where git\-config will search for configuration options:
 .TP
@@ -260,6 +264,17 @@ To add a new proxy, without altering any of the existing ones, use
 .nf
 .ft C
 % git config core.gitproxy '"proxy\-command" for example.com'
+.ft
+
+.fi
+An example to use customized color from the configuration in your script:
+.sp
+.nf
+.ft C
+#!/bin/sh
+WS=$(git config \-\-get\-color color.diff.whitespace "blue reverse")
+RESET=$(git config \-\-get\-color "" "reset")
+echo "${WS}your whitespace color or blue reverse${RESET}"
 .ft
 
 .fi
@@ -430,6 +445,9 @@ When in branch <name>, it tells git fetch the default refspec to be marked for m
 .TP
 branch.<name>.mergeoptions
 Sets default options for merging into branch <name>. The syntax and supported options are equal to that of \fBgit\-merge\fR(1), but option values containing whitespace characters are currently not supported.
+.TP
+branch.<name>.rebase
+When true, rebase the branch <name> on top of the fetched branch, instead of merging the default branch from the default remote. \fBNOTE\fR: this is a possibly dangerous operation; do \fBnot\fR use it unless you understand the implications (see \fBgit\-rebase\fR(1) for details).
 .TP
 clean.requireForce
 A boolean to make git\-clean do nothing unless given \-f or \-n. Defaults to true.
