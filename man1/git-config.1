@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "12/06/2007" "Git 1.5.3.7.1077.gcec9" "Git Manual"
+.TH "GIT\-CONFIG" "1" "12/07/2007" "Git 1.5.3.7.1112.g9758e" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -24,6 +24,7 @@ git\-config \- Get and set repository or global options
 \fIgit\-config\fR [<file\-option>] \-\-remove\-section name
 \fIgit\-config\fR [<file\-option>] [\-z|\-\-null] \-l | \-\-list
 \fIgit\-config\fR [<file\-option>] \-\-get\-color name [default]
+\fIgit\-config\fR [<file\-option>] \-\-get\-colorbool name [stdout\-is\-tty]
 .fi
 .SH "DESCRIPTION"
 You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
@@ -113,6 +114,9 @@ git\-config will ensure that the output is a simple decimal number. An optional 
 .TP
 \-z, \-\-null
 For all options that output values and/or keys, always end values with with the null character (instead of a newline). Use newline instead as a delimiter between key and value. This allows for secure parsing of the output without getting confused e.g. by values that contain line breaks.
+.TP
+\-\-get\-colorbool name [stdout\-is\-tty]
+Find the color setting for name (e.g. color.diff) and output "true" or "false". stdout\-is\-tty should be either "true" or "false", and is taken into account when configuration says "auto". If stdout\-is\-tty is missing, then checks the standard output of the command itself, and exits with status 0 if color is to be used, or exits with status 1 otherwise.
 .TP
 \-\-get\-color name default
 Find the color configured for name (e.g. color.diff.new) and output it as the ANSI color escape sequence to the standard output. The optional default parameter is used instead, if there is no color configured for name.
@@ -465,6 +469,12 @@ When set to always, always use colors in patch. When false (or never), never. Wh
 .TP
 color.diff.<slot>
 Use customized color for diff colorization. <slot> specifies which part of the patch to use the specified color, and is one of plain (context text), meta (metainformation), frag (hunk header), old (removed lines), new (added lines), commit (commit headers), or whitespace (highlighting dubious whitespace). The values of these variables may be specified as in color.branch.<slot>.
+.TP
+color.interactive
+When set to always, always use colors in git add \-\-interactive. When false (or never), never. When set to true or auto, use colors only when the output is to the terminal. Defaults to false.
+.TP
+color.interactive.<slot>
+Use customized color for git add \-\-interactive output. <slot> may be prompt, header, or help, for three distinct types of normal output from interactive programs. The values of these variables may be specified as in color.branch.<slot>.
 .TP
 color.pager
 A boolean to enable/disable colored output when the pager is in use (default is true).
