@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-APPLY" "1" "11/14/2007" "Git 1.5.3.5.666.gfb5f" "Git Manual"
+.TH "GIT\-APPLY" "1" "12/09/2007" "Git 1.5.3.7.1141.g4eb3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,7 +16,7 @@ git\-apply \- Apply a patch on a git index file and a working tree
           [\-\-apply] [\-\-no\-add] [\-\-build\-fake\-ancestor <file>] [\-R | \-\-reverse]
           [\-\-allow\-binary\-replacement | \-\-binary] [\-\-reject] [\-z]
           [\-pNUM] [\-CNUM] [\-\-inaccurate\-eof] [\-\-cached]
-          [\-\-whitespace=<nowarn|warn|error|error\-all|strip>]
+          [\-\-whitespace=<nowarn|warn|fix|error|error\-all>]
           [\-\-exclude=PATH] [\-\-verbose] [<patch>\&...]
 .fi
 .SH "DESCRIPTION"
@@ -81,24 +81,28 @@ Historically we did not allow binary patch applied without an explicit permissio
 \-\-exclude=<path\-pattern>
 Don't apply changes to files matching the given path pattern. This can be useful when importing patchsets, where you want to exclude certain files or directories.
 .TP
-\-\-whitespace=<option>
-When applying a patch, detect a new or modified line that ends with trailing whitespaces (this includes a line that solely consists of whitespaces). By default, the command outputs warning messages and applies the patch. When \fBgit\-apply\fR(1) is used for statistics and not applying a patch, it defaults to nowarn. You can use different <option> to control this behavior:
+\-\-whitespace=<action>
+When applying a patch, detect a new or modified line that has whitespace errors. What are considered whitespace errors is controlled by core.whitespace configuration. By default, trailing whitespaces (including lines that solely consist of whitespaces) and a space character that is immediately followed by a tab character inside the initial indent of the line are considered whitespace errors.
+
+By default, the command outputs warning messages but applies the patch. When \fBgit\-apply\fR(1) is used for statistics and not applying a patch, it defaults to nowarn.
+
+You can use different <action> to control this behavior:
 .RS
 .TP 3
 \(bu
 nowarn turns off the trailing whitespace warning.
 .TP
 \(bu
-warn outputs warnings for a few such errors, but applies the patch (default).
+warn outputs warnings for a few such errors, but applies the patch as\-is (default).
+.TP
+\(bu
+fix outputs warnings for a few such errors, and applies the patch after fixing them (strip is a synonym \-\-\- the tool used to consider only trailing whitespaces as errors, and the fix involved \fIstripping\fR them, but modern gits do more).
 .TP
 \(bu
 error outputs warnings for a few such errors, and refuses to apply the patch.
 .TP
 \(bu
 error\-all is similar to error but shows all errors.
-.TP
-\(bu
-strip outputs warnings for a few such errors, strips out the trailing whitespaces and applies the patch.
 .RE
 .TP
 \-\-inaccurate\-eof

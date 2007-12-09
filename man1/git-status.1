@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-STATUS" "1" "12/07/2007" "Git 1.5.3.7.1112.g9758e" "Git Manual"
+.TH "GIT\-STATUS" "1" "12/09/2007" "Git 1.5.3.7.1141.g4eb3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,19 +12,21 @@ git\-status \- Show the working tree status
 .SH "SYNOPSIS"
 \fIgit\-status\fR <options>\&...
 .SH "DESCRIPTION"
-Examines paths in the working tree that has changes unrecorded to the index file, and changes between the index file and the current HEAD commit. The former paths are what you _could_ commit by running \fIgit add\fR before running \fIgit commit\fR, and the latter paths are what you _would_ commit by running \fIgit commit\fR.
-
-If there is no path that is different between the index file and the current HEAD commit, the command exits with non\-zero status.
+Displays paths that have differences between the index file and the current HEAD commit, paths that have differences between the working tree and the index file, and paths in the working tree that are not tracked by git (and are not ignored by \fBgitignore\fR(5)). The first are what you _would_ commit by running git commit; the second and third are what you _could_ commit by running git add before running git commit.
 
 The command takes the same set of options as git\-commit; it shows what would be committed if the same options are given to git\-commit.
 
+If there is no path that is different between the index file and the current HEAD commit (i.e., there is nothing to commit by running git\-commit), the command exits with non\-zero status.
+
 If any paths have been touched in the working tree (that is, their modification times have changed) but their contents and permissions are identical to those in the index file, the command updates the index file. Running git\-status can thus speed up subsequent operations such as git\-diff if the working tree contains many paths that have been touched but not modified.
 .SH "OUTPUT"
-The output from this command is designed to be used as a commit template comments, and all the output lines are prefixed with \fI#\fR.
+The output from this command is designed to be used as a commit template comment, and all the output lines are prefixed with \fI#\fR.
 
-The paths mentioned in the output, unlike many other git commands, are made relative to the current directory, if you are working in a subdirectory (this is on purpose, to help cutting and pasting).
+The paths mentioned in the output, unlike many other git commands, are made relative to the current directory if you are working in a subdirectory (this is on purpose, to help cutting and pasting). See the status.relativePaths config option below.
 .SH "CONFIGURATION"
 The command honors color.status (or status.color \(em they mean the same thing and the latter is kept for backward compatibility) and color.status.<slot> configuration variables to colorize its output.
+
+If the config variable status.relativePaths is set to false, then all paths shown are relative to the repository root, not to the current directory.
 .SH "SEE ALSO"
 \fBgitignore\fR(5)
 .SH "AUTHOR"
