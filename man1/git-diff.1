@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-DIFF" "1" "12/07/2007" "Git 1.5.3.7.1112.g9758e" "Git Manual"
+.TH "GIT\-DIFF" "1" "12/12/2007" "Git 1.5.3.7.1170.g8d08" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -145,16 +145,16 @@ Treat all files as text.
 Shorthand for "\-\-text".
 .TP
 \-\-ignore\-space\-at\-eol
-Ignore changes in white spaces at EOL.
+Ignore changes in whitespace at EOL.
 .TP
 \-\-ignore\-space\-change
-Ignore changes in amount of white space. This ignores white space at line end, and consider all other sequences of one or more white space characters to be equivalent.
+Ignore changes in amount of whitespace. This ignores whitespace at line end, and considers all other sequences of one or more whitespace characters to be equivalent.
 .TP
 \-b
 Shorthand for "\-\-ignore\-space\-change".
 .TP
 \-\-ignore\-all\-space
-Ignore white space when comparing lines. This ignores difference even if one line has white space where the other line has none.
+Ignore whitespace when comparing lines. This ignores differences even if one line has whitespace where the other line has none.
 .TP
 \-w
 Shorthand for "\-\-ignore\-all\-space".
@@ -409,6 +409,85 @@ A \- character in the column N means that the line appears in fileN but it does 
 In the above example output, the function signature was changed from both files (hence two \- removals from both file1 and file2, plus ++ to mean one line that was added does not appear in either file1 nor file2). Also two other lines are the same from file1 but do not appear in file2 (hence prefixed with +).
 
 When shown by git diff\-tree \-c, it compares the parents of a merge commit with the merge result (i.e. file1..fileN are the parents). When shown by git diff\-files \-c, it compares the two unresolved merge parents with the working tree file (i.e. file1 is stage 2 aka "our version", file2 is stage 3 aka "their version").
+.SH "OTHER DIFF FORMATS"
+The \-\-summary option describes newly added, deleted, renamed and copied files. The \-\-stat option adds diffstat(1) graph to the output. These options can be combined with other options, such as \-p, and are meant for human consumption.
+
+When showing a change that involves a rename or a copy, \-\-stat output formats the pathnames compactly by combining common prefix and suffix of the pathnames. For example, a change that moves arch/i386/Makefile to arch/x86/Makefile while modifying 4 lines will be shown like this:
+.sp
+.nf
+.ft C
+arch/{i386 => x86}/Makefile    |   4 +\-\-
+.ft
+
+.fi
+The \-\-numstat option gives the diffstat(1) information but is designed for easier machine consumption. An entry in \-\-numstat output looks like this:
+.sp
+.nf
+.ft C
+1       2       README
+3       1       arch/{i386 => x86}/Makefile
+.ft
+
+.fi
+That is, from left to right:
+.TP 3
+1.
+the number of added lines;
+.TP
+2.
+a tab;
+.TP
+3.
+the number of deleted lines;
+.TP
+4.
+a tab;
+.TP
+5.
+pathname (possibly with rename/copy information);
+.TP
+6.
+a newline.
+
+When \-z output option is in effect, the output is formatted this way:
+.sp
+.nf
+.ft C
+1       2       README NUL
+3       1       NUL arch/i386/Makefile NUL arch/x86/Makefile NUL
+.ft
+
+.fi
+That is:
+.TP 3
+1.
+the number of added lines;
+.TP
+2.
+a tab;
+.TP
+3.
+the number of deleted lines;
+.TP
+4.
+a tab;
+.TP
+5.
+a NUL (only exists if renamed/copied);
+.TP
+6.
+pathname in preimage;
+.TP
+7.
+a NUL (only exists if renamed/copied);
+.TP
+8.
+pathname in postimage (only exists if renamed/copied);
+.TP
+9.
+a NUL.
+
+The extra NUL before the preimage path in renamed case is to allow scripts that read the output to tell if the current record being read is a single\-path record or a rename/copy record without reading ahead. After reading added and deleted lines, reading up to NUL would yield the pathname, but if that is NUL, the record will show two paths.
 .SH "EXAMPLES"
 .TP
 Various ways to check your working tree
