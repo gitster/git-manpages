@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-LOG" "1" "01/07/2008" "Git 1.5.4.rc2.60.gb2e62" "Git Manual"
+.TH "GIT\-LOG" "1" "01/19/2008" "Git 1.5.4.rc3.37.gfdcf3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -15,20 +15,7 @@ git\-log \- Show commit logs
 Shows the commit logs.
 
 The command takes options applicable to the \fBgit\-rev\-list\fR(1) command to control what is shown and how, and options applicable to the \fBgit\-diff\-tree\fR(1) commands to control how the changes each commit introduces are shown.
-
-This manual page describes only the most frequently used options.
 .SH "OPTIONS"
-.TP
-\-\-pretty[=\fI<format>\fR]
-Pretty\-print the contents of the commit logs in a given format, where \fI<format>\fR can be one of \fIoneline\fR, \fIshort\fR, \fImedium\fR, \fIfull\fR, \fIfuller\fR, \fIemail\fR, \fIraw\fR and \fIformat:<string>\fR. When omitted, the format defaults to \fImedium\fR.
-.TP
-\-\-abbrev\-commit
-Instead of showing the full 40\-byte hexadecimal commit object name, show only handful hexdigits prefix. Non default number of digits can be specified with "\-\-abbrev=<n>" (which also modifies diff output, if it is displayed).
-
-This should make "\-\-pretty=oneline" a whole lot more readable for people using 80\-column terminals.
-.TP
-\-\-encoding[=<encoding>]
-The commit objects record the encoding used for the log message in their encoding header; this option can be used to tell the command to re\-code the commit log message in the encoding preferred by the user. For non plumbing commands this defaults to UTF\-8.
 .TP
 \-p
 Generate patch (see section on generating patches).
@@ -179,12 +166,6 @@ Limits the number of commits to show.
 <since>..<until>
 Show only commits between the named two commits. When either <since> or <until> is omitted, it defaults to HEAD, i.e. the tip of the current branch. For a more complete list of ways to spell <since> and <until>, see "SPECIFYING REVISIONS" section in \fBgit\-rev\-parse\fR(1).
 .TP
-\-\-first\-parent
-Follow only the first parent commit upon seeing a merge commit. This option can give a better overview when viewing the evolution of a particular topic branch, because merges into a topic branch tend to be only about adjusting to updated upstream from time to time, and this option allows you to ignore the individual commits brought in to your history by such a merge.
-.TP
-\-g, \-\-walk\-reflogs
-Show commits as they were recorded in the reflog. The log contains a record about how the tip of a reference was changed. Cannot be combined with \-\-reverse. See also \fBgit\-reflog\fR(1).
-.TP
 \-\-decorate
 Print out the ref names of any commits that are shown.
 .TP
@@ -199,6 +180,190 @@ Before the log message print out its size in bytes. Intended mainly for porcelai
 .TP
 <paths>\&...
 Show only commits that affect the specified paths.
+.SS "Commit Formatting"
+.TP
+\-\-pretty[=\fI<format>\fR]
+Pretty\-print the contents of the commit logs in a given format, where \fI<format>\fR can be one of \fIoneline\fR, \fIshort\fR, \fImedium\fR, \fIfull\fR, \fIfuller\fR, \fIemail\fR, \fIraw\fR and \fIformat:<string>\fR. When omitted, the format defaults to \fImedium\fR.
+.TP
+\-\-abbrev\-commit
+Instead of showing the full 40\-byte hexadecimal commit object name, show only handful hexdigits prefix. Non default number of digits can be specified with "\-\-abbrev=<n>" (which also modifies diff output, if it is displayed).
+
+This should make "\-\-pretty=oneline" a whole lot more readable for people using 80\-column terminals.
+.TP
+\-\-encoding[=<encoding>]
+The commit objects record the encoding used for the log message in their encoding header; this option can be used to tell the command to re\-code the commit log message in the encoding preferred by the user. For non plumbing commands this defaults to UTF\-8.
+.TP
+\-\-relative\-date
+Synonym for \-\-date=relative.
+.TP
+\-\-date={relative,local,default,iso,rfc}
+Only takes effect for dates shown in human\-readable format, such as when using "\-\-pretty".
+
+\-\-date=relative shows dates relative to the current time, e.g. "2 hours ago".
+
+\-\-date=local shows timestamps in user's local timezone.
+
+\-\-date=iso (or \-\-date=iso8601) shows timestamps in ISO 8601 format.
+
+\-\-date=rfc (or \-\-date=rfc2822) shows timestamps in RFC 2822 format, often found in E\-mail messages.
+
+\-\-date=short shows only date but not time, in YYYY\-MM\-DD format.
+
+\-\-date=default shows timestamps in the original timezone (either committer's or author's).
+.TP
+\-\-header
+Print the contents of the commit in raw\-format; each record is separated with a NUL character.
+.TP
+\-\-parents
+Print the parents of the commit.
+.TP
+\-\-timestamp
+Print the raw commit timestamp.
+.TP
+\-\-left\-right
+Mark which side of a symmetric diff a commit is reachable from. Commits from the left side are prefixed with < and those from the right with >. If combined with \-\-boundary, those commits are prefixed with \-.
+
+For example, if you have this topology:
+.sp
+.nf
+.ft C
+             y\-\-\-b\-\-\-b  branch B
+            / \\ /
+           /   .
+          /   / \\
+         o\-\-\-x\-\-\-a\-\-\-a  branch A
+.ft
+
+.fi
+you would get an output line this:
+.sp
+.nf
+.ft C
+        $ git rev\-list \-\-left\-right \-\-boundary \-\-pretty=oneline A...B
+
+        >bbbbbbb... 3rd on b
+        >bbbbbbb... 2nd on b
+        <aaaaaaa... 3rd on a
+        <aaaaaaa... 2nd on a
+        \-yyyyyyy... 1st on b
+        \-xxxxxxx... 1st on a
+.ft
+
+.fi
+.SS "Diff Formatting"
+Below are listed options that control the formatting of diff output. Some of them are specific to \fBgit\-rev\-list\fR(1), however other diff options may be given. See \fBgit\-diff\-files\fR(1) for more options.
+.TP
+\-c
+This flag changes the way a merge commit is displayed. It shows the differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time. Furthermore, it lists only files which were modified from all parents.
+.TP
+\-\-cc
+This flag implies the \fI\-c\fR options and further compresses the patch output by omitting hunks that show differences from only one parent, or show the same change from all but one parent for an Octopus merge.
+.TP
+\-r
+Show recursive diffs.
+.TP
+\-t
+Show the tree objects in the diff output. This implies \fI\-r\fR.
+.SS "Commit Limiting"
+Besides specifying a range of commits that should be listed using the special notations explained in the description, additional commit limiting may be applied.
+.TP
+\-n \fInumber\fR, \-\-max\-count=\fInumber\fR
+Limit the number of commits output.
+.TP
+\-\-skip=\fInumber\fR
+Skip \fInumber\fR commits before starting to show the commit output.
+.TP
+\-\-since=\fIdate\fR, \-\-after=\fIdate\fR
+Show commits more recent than a specific date.
+.TP
+\-\-until=\fIdate\fR, \-\-before=\fIdate\fR
+Show commits older than a specific date.
+.TP
+\-\-max\-age=\fItimestamp\fR, \-\-min\-age=\fItimestamp\fR
+Limit the commits output to specified time range.
+.TP
+\-\-author=\fIpattern\fR, \-\-committer=\fIpattern\fR
+Limit the commits output to ones with author/committer header lines that match the specified pattern (regular expression).
+.TP
+\-\-grep=\fIpattern\fR
+Limit the commits output to ones with log message that matches the specified pattern (regular expression).
+.TP
+\-i, \-\-regexp\-ignore\-case
+Match the regexp limiting patterns without regard to letters case.
+.TP
+\-E, \-\-extended\-regexp
+Consider the limiting patterns to be extended regular expressions instead of the default basic regular expressions.
+.TP
+\-\-remove\-empty
+Stop when a given path disappears from the tree.
+.TP
+\-\-full\-history
+Show also parts of history irrelevant to current state of a given path. This turns off history simplification, which removed merges which didn't change anything at all at some child. It will still actually simplify away merges that didn't change anything at all into either child.
+.TP
+\-\-no\-merges
+Do not print commits with more than one parent.
+.TP
+\-\-first\-parent
+Follow only the first parent commit upon seeing a merge commit. This option can give a better overview when viewing the evolution of a particular topic branch, because merges into a topic branch tend to be only about adjusting to updated upstream from time to time, and this option allows you to ignore the individual commits brought in to your history by such a merge.
+.TP
+\-\-not
+Reverses the meaning of the \fI^\fR prefix (or lack thereof) for all following revision specifiers, up to the next \fI\-\-not\fR.
+.TP
+\-\-all
+Pretend as if all the refs in $GIT_DIR/refs/ are listed on the command line as \fI<commit>\fR.
+.TP
+\-\-stdin
+In addition to the \fI<commit>\fR listed on the command line, read them from the standard input.
+.TP
+\-\-quiet
+Don't print anything to standard output. This form is primarily meant to allow the caller to test the exit status to see if a range of objects is fully connected (or not). It is faster than redirecting stdout to /dev/null as the output does not have to be formatted.
+.TP
+\-\-cherry\-pick
+Omit any commit that introduces the same change as another commit on the "other side" when the set of commits are limited with symmetric difference. For example, if you have two branches, A and B, a usual way to list all commits on only one side of them is with \-\-left\-right, like the example above in the description of that option. It however shows the commits that were cherry\-picked from the other branch (for example, "3rd on b" may be cherry\-picked from branch A). With this option, such pairs of commits are excluded from the output.
+.TP
+\-g, \-\-walk\-reflogs
+Instead of walking the commit ancestry chain, walk reflog entries from the most recent one to older ones. When this option is used you cannot specify commits to exclude (that is, \fI^commit\fR, \fIcommit1..commit2\fR, nor \fIcommit1\&...commit2\fR notations cannot be used). With \fI\-\-pretty\fR format other than oneline (for obvious reasons), this causes the output to have two extra lines of information taken from the reflog. By default, \fIcommit@{Nth}\fR notation is used in the output. When the starting commit is specified as instead. Under \fI\-\-pretty=oneline\fR, the commit message is prefixed with this information on the same line.
+
+Cannot be combined with \fI\-\-reverse\fR. See also \fBgit\-reflog\fR(1).
+.TP
+\-\-merge
+After a failed merge, show refs that touch files having a conflict and don't exist on all heads to merge.
+.TP
+\-\-boundary
+Output uninteresting commits at the boundary, which are usually not shown.
+.TP
+\-\-dense, \-\-sparse
+When optional paths are given, the default behaviour (\fI\-\-dense\fR) is to only output commits that changes at least one of them, and also ignore merges that do not touch the given paths.
+
+Use the \fI\-\-sparse\fR flag to makes the command output all eligible commits (still subject to count and age limitation), but apply merge simplification nevertheless.
+.SS "Commit Ordering"
+By default, the commits are shown in reverse chronological order.
+.TP
+\-\-topo\-order
+This option makes them appear in topological order (i.e. descendant commits are shown before their parents).
+.TP
+\-\-date\-order
+This option is similar to \fI\-\-topo\-order\fR in the sense that no parent comes before all of its children, but otherwise things are still ordered in the commit timestamp order.
+.TP
+\-\-reverse
+Output the commits in reverse order. Cannot be combined with \fI\-\-walk\-reflogs\fR.
+.SS "Object Traversal"
+These options are mostly targeted for packing of git repositories.
+.TP
+\-\-objects
+Print the object IDs of any object referenced by the listed commits. \fI\-\-objects foo ^bar\fR thus means "send me all object IDs which I need to download if I have the commit object \fIbar\fR, but not \fIfoo\fR".
+.TP
+\-\-objects\-edge
+Similar to \fI\-\-objects\fR, but also print the IDs of excluded commits prefixed with a "\-" character. This is used by \fBgit\-pack\-objects\fR(1) to build "thin" pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic.
+.TP
+\-\-unpacked
+Only useful with \fI\-\-objects\fR; print the object IDs that are not in packs.
+.TP
+\-\-no\-walk
+Only show the given revs, but do not traverse their ancestors.
+.TP
+\-\-do\-walk
+Overrides a previous \-\-no\-walk.
 .SH "PRETTY FORMATS"
 If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file.
 
