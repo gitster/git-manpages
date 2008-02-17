@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GITATTRIBUTES" "5" "01/07/2008" "Git 1.5.4.rc2.60.gb2e62" "Git Manual"
+.TH "GITATTRIBUTES" "5" "02/17/2008" "Git 1.5.4.1.183.gf873" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -79,6 +79,17 @@ If the configuration variable core.autocrlf is false, no conversion is done.
 When core.autocrlf is true, it means that the platform wants CRLF line endings for files in the working tree, and you want to convert them back to the normal LF line endings when checking in to the repository.
 
 When core.autocrlf is set to "input", line endings are converted to LF upon checkin, but there is no conversion done upon checkout.
+
+If core.safecrlf is set to "true" or "warn", git verifies if the conversion is reversible for the current setting of core.autocrlf. For "true", git rejects irreversible conversions; for "warn", git only prints a warning but accepts an irreversible conversion. The safety triggers to prevent such a conversion done to the files in the work tree, but there are a few exceptions. Even though\&...
+.TP 3
+\(bu
+"git add" itself does not touch the files in the work tree, the next checkout would, so the safety triggers;
+.TP
+\(bu
+"git apply" to update a text file with a patch does touch the files in the work tree, but the operation is about text files and CRLF conversion is about fixing the line ending inconsistencies, so the safety does not trigger;
+.TP
+\(bu
+"git diff" itself does not touch the files in the work tree, it is often run to inspect the changes you intend to next "git add". To catch potential problems early, safety triggers.
 .RE
 .sp
 .it 1 an-trap

@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-RESET" "1" "01/07/2008" "Git 1.5.4.rc2.60.gb2e62" "Git Manual"
+.TH "GIT\-RESET" "1" "02/17/2008" "Git 1.5.4.1.183.gf873" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,8 +12,8 @@ git\-reset \- Reset current HEAD to the specified state
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-reset\fR [\-\-mixed | \-\-soft | \-\-hard] [\-q] [<commit>]
-\fIgit\-reset\fR [\-\-mixed] [\-q] [<commit>] [\-\-] <paths>\&...
+\fIgit reset\fR [\-\-mixed | \-\-soft | \-\-hard] [\-q] [<commit>]
+\fIgit reset\fR [\-q] [<commit>] [\-\-] <paths>\&...
 .fi
 .SH "DESCRIPTION"
 Sets the current head to the specified commit and optionally resets the index and working tree to match.
@@ -29,7 +29,7 @@ The second form with \fIpaths\fR is used to revert selected paths in the index f
 Resets the index but not the working tree (i.e., the changed files are preserved but not marked for commit) and reports what has not been updated. This is the default action.
 .TP
 \-\-soft
-Does not touch the index file nor the working tree at all, but requires them to be in a good order. This leaves all your changed files "Added but not yet committed", as \fBgit\-status\fR(1) would put it.
+Does not touch the index file nor the working tree at all, but requires them to be in a good order. This leaves all your changed files "Changes to be committed", as \fBgit\-status\fR(1) would put it.
 .TP
 \-\-hard
 Matches the working tree and index to that of the tree being switched to. Any changes to tracked files in the working tree since <commit> are lost.
@@ -164,6 +164,25 @@ $ git reset                                       \fB(3)\fR
 \fB2. \fRThis removes the \fIWIP\fR commit from the commit history, and sets your working tree to the state just before you made that snapshot.
 .br
 \fB3. \fRAt this point the index file still has all the WIP changes you committed as \fIsnapshot WIP\fR. This updates the index to show your WIP files as uncommitted.
+.br
+.TP
+Reset a single file in the index
+Suppose you have added a file to your index, but later decide you do not want to add it to your commit. You can remove the file from the index while keeping your changes with git reset.
+.sp
+.nf
+.ft C
+$ git reset \-\- frotz.c                      \fB(1)\fR
+$ git commit \-m "Commit files in index"     \fB(2)\fR
+$ git add frotz.c                           \fB(3)\fR
+.ft
+
+.fi
+.sp
+\fB1. \fRThis removes the file from the index while keeping it in the working directory.
+.br
+\fB2. \fRThis commits all other changes in the index.
+.br
+\fB3. \fRAdds the file to the index again.
 .br
 .SH "AUTHOR"
 Written by Junio C Hamano <junkio@cox.net> and Linus Torvalds <torvalds@osdl.org>
