@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-PULL" "1" "02/12/2008" "Git 1.5.4.1.97.g40aab" "Git Manual"
+.TH "GIT\-PULL" "1" "02/20/2008" "Git 1.5.4.2.156.ge3c5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,7 +12,7 @@ git\-pull \- Fetch from and merge with another repository or a local branch
 .SH "SYNOPSIS"
 \fIgit\-pull\fR <options> <repository> <refspec>\&...
 .SH "DESCRIPTION"
-Runs git\-fetch with the given parameters, and calls git\-merge to merge the retrieved head(s) into the current branch.
+Runs git\-fetch with the given parameters, and calls git\-merge to merge the retrieved head(s) into the current branch. With \-\-rebase, calls git\-rebase instead of git\-merge.
 
 Note that you can use . (current directory) as the <repository> to pull from the local repository \(em this is useful when merging local branches into the current branch.
 .SH "OPTIONS"
@@ -43,6 +43,14 @@ Do not generate a merge commit if the merge resolved as a fast\-forward, only up
 .TP
 \-s <strategy>, \-\-strategy=<strategy>
 Use the given merge strategy; can be supplied more than once to specify them in the order they should be tried. If there is no \-s option, a built\-in list of strategies is used instead (git\-merge\-recursive when merging a single head, git\-merge\-octopus otherwise).
+.TP
+\-\-rebase
+Instead of a merge, perform a rebase after fetching. If there is a remote ref for the upstream branch, and this branch was rebased since last fetched, the rebase uses that information to avoid rebasing non\-local changes. To make this the default for branch <name>, set configuration branch.<name>.rebase to true.
+
+\fBNOTE:\fR This is a potentially _dangerous_ mode of operation. It rewrites history, which does not bode well when you published that history already. Do \fBnot\fR use this option unless you have read \fBgit\-rebase\fR(1) carefully.
+.TP
+\-\-no\-rebase
+Override earlier \-\-rebase.
 .TP
 \-q, \-\-quiet
 Pass \-\-quiet to git\-fetch\-pack and silence any other internally used programs.
@@ -220,14 +228,6 @@ This resolves more than two\-head case, but refuses to do complex merge that nee
 .TP
 ours
 This resolves any number of heads, but the result of the merge is always the current branch head. It is meant to be used to supersede old development history of side branches.
-.TP
-\-\-rebase
-Instead of a merge, perform a rebase after fetching. If there is a remote ref for the upstream branch, and this branch was rebased since last fetched, the rebase uses that information to avoid rebasing non\-local changes.
-
-\fBNOTE:\fR This is a potentially _dangerous_ mode of operation. It rewrites history, which does not bode well when you published that history already. Do \fBnot\fR use this option unless you have read \fBgit\-rebase\fR(1) carefully.
-.TP
-\-\-no\-rebase
-Override earlier \-\-rebase.
 .SH "DEFAULT BEHAVIOUR"
 Often people use git pull without giving any parameter. Traditionally, this has been equivalent to saying git pull origin. However, when configuration branch.<name>.remote is present while on branch <name>, that value is used instead of origin.
 
