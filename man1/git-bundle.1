@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BUNDLE" "1" "01/07/2008" "Git 1.5.4.rc2.60.gb2e62" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "02/25/2008" "Git 1.5.4.3.220.g99d8e" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -43,9 +43,26 @@ git\-bundle will only package references that are shown by git\-show\-ref: this 
 
 It is very important that the basis used be held by the destination. It is okay to err on the side of conservatism, causing the bundle file to contain objects already in the destination as these are ignored when unpacking at the destination.
 .SH "EXAMPLE"
-Assume two repositories exist as R1 on machine A, and R2 on machine B. For whatever reason, direct connection between A and B is not allowed, but we can move data from A to B via some mechanism (CD, email, etc). We want to update R2 with developments made on branch master in R1. We set a tag in R1 (lastR2bundle) after the previous such transport, and move it afterwards to help build the bundle.
+Assume two repositories exist as R1 on machine A, and R2 on machine B. For whatever reason, direct connection between A and B is not allowed, but we can move data from A to B via some mechanism (CD, email, etc). We want to update R2 with developments made on branch master in R1.
 
-in R1 on A:
+To create the bundle you have to specify the basis. You have some options:
+.TP 3
+\(bu
+Without basis.
+
+This is useful when sending the whole history.
+.sp
+.nf
+.ft C
+$ git bundle create mybundle master
+.ft
+
+.fi
+.TP 3
+\(bu
+Using temporally tags.
+
+We set a tag in R1 (lastR2bundle) after the previous such transport, and move it afterwards to help build the bundle.
 .sp
 .nf
 .ft C
@@ -54,26 +71,56 @@ $ git tag \-f lastR2bundle master
 .ft
 
 .fi
-(move mybundle from A to B by some mechanism)
+.TP 3
+\(bu
+Using a tag present in both repositories
+.sp
+.nf
+.ft C
+$ git bundle create mybundle master ^v1.0.0
+.ft
 
-in R2 on B:
+.fi
+.TP 3
+\(bu
+A basis based on time.
+.sp
+.nf
+.ft C
+$ git bundle create mybundle master \-\-since=10.days.ago
+.ft
+
+.fi
+.TP 3
+\(bu
+With a limit on the number of commits
+.sp
+.nf
+.ft C
+$ git bundle create mybundle master \-n 10
+.ft
+
+.fi
+Then you move mybundle from A to B, and in R2 on B:
 .sp
 .nf
 .ft C
 $ git\-bundle verify mybundle
-$ git\-fetch mybundle  refspec
+$ git\-fetch mybundle master:localRef
 .ft
 
 .fi
-where refspec is refInBundle:localRef
-
-Also, with something like this in your config:
+With something like this in the config in R2:
 .sp
 .nf
-url = /home/me/tmp/file.bdl
-fetch = refs/heads/*:refs/remotes/origin/*
+.ft C
+[remote "bundle"]
+    url = /home/me/tmp/file.bdl
+    fetch = refs/heads/*:refs/remotes/origin/*
+.ft
+
 .fi
-You can first sneakernet the bundle file to ~/tmp/file.bdl and then these commands:
+You can first sneakernet the bundle file to ~/tmp/file.bdl and then these commands on machine B:
 .sp
 .nf
 .ft C
