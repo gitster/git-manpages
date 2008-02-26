@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FILTER\-BRANCH" "1" "02/01/2008" "Git 1.5.4.rc5.19.g0509eb" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "02/26/2008" "Git 1.5.4.3.230.g2db511" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -30,7 +30,7 @@ Always verify that the rewritten version is correct: The original refs, if diffe
 
 Note that since this operation is extensively I/O expensive, it might be a good idea to redirect the temporary directory off\-disk with the \fI\-d\fR option, e.g. on tmpfs. Reportedly the speedup is very noticeable.
 .SS "Filters"
-The filters are applied in the order as listed below. The <command> argument is always evaluated in shell using the \fIeval\fR command (with the notable exception of the commit filter, for technical reasons). Prior to that, the $GIT_COMMIT environment variable will be set to contain the id of the commit being rewritten. Also, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_AUTHOR_DATE, GIT_COMMITTER_NAME, GIT_COMMITTER_EMAIL, and GIT_COMMITTER_DATE are set according to the current commit.
+The filters are applied in the order as listed below. The <command> argument is always evaluated in shell using the \fIeval\fR command (with the notable exception of the commit filter, for technical reasons). Prior to that, the $GIT_COMMIT environment variable will be set to contain the id of the commit being rewritten. Also, GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_AUTHOR_DATE, GIT_COMMITTER_NAME, GIT_COMMITTER_EMAIL, and GIT_COMMITTER_DATE are set according to the current commit. If any evaluation of <command> returns a non\-zero exit status, the whole operation will be aborted.
 
 A \fImap\fR function is available that takes an "original sha1 id" argument and outputs a "rewritten sha1 id" if the commit has been already rewritten, and "original sha1 id" otherwise; the \fImap\fR function can return several ids on separate lines if your commit filter emitted multiple commits.
 .SH "OPTIONS"
@@ -110,7 +110,7 @@ git filter\-branch \-\-parent\-filter 'sed "s/^\\$/\-p <graft\-id>/"' HEAD
 .nf
 .ft C
 git filter\-branch \-\-parent\-filter \\
-        'cat; test $GIT_COMMIT = <commit\-id> && echo "\-p <graft\-id>"' HEAD
+        'test $GIT_COMMIT = <commit\-id> && echo "\-p <graft\-id>" || cat' HEAD
 .ft
 
 .fi
@@ -156,6 +156,16 @@ skip_commit()
 .fi
 The shift magic first throws away the tree id and then the \-p parameters. Note that this handles merges properly! In case Darl committed a merge between P1 and P2, it will be propagated properly and all children of the merge will become merge commits with P1,P2 as their parents instead of the merge commit.
 
+You can rewrite the commit log messages using \-\-message\-filter. For example, git\-svn\-id strings in a repository created by git\-svn can be removed this way:
+.sp
+.nf
+.ft C
+git filter\-branch \-\-message\-filter '
+        sed \-e "/^git\-svn\-id:/d"
+\'
+.ft
+
+.fi
 To restrict rewriting to only part of the history, specify a revision range in addition to the new branch name. The new branch name will point to the top\-most revision that a \fIgit rev\-list\fR of this range will print.
 
 \fBNOTE\fR the changes introduced by the commits, and which are not reverted by subsequent commits, will still be in the rewritten branch. If you want to throw out _changes_ together with the commits, you should use the interactive mode of \fBgit\-rebase\fR(1).
