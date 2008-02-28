@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "02/25/2008" "Git 1.5.4.3.220.g99d8e" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/28/2008" "Git 1.5.4.3.325.g6d21" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -467,7 +467,7 @@ apply.whitespace
 Tells git\-apply how to handle whitespaces, in the same way as the \fI\-\-whitespace\fR option. See \fBgit\-apply\fR(1).
 .TP
 branch.autosetupmerge
-Tells git\-branch and git\-checkout to setup new branches so that \fBgit\-pull\fR(1) will appropriately merge from that remote branch. Note that even if this option is not set, this behavior can be chosen per\-branch using the \-\-track and \-\-no\-track options. This option defaults to true.
+Tells git\-branch and git\-checkout to setup new branches so that \fBgit\-pull\fR(1) will appropriately merge from the starting point branch. Note that even if this option is not set, this behavior can be chosen per\-branch using the \-\-track and \-\-no\-track options. The valid settings are: false \(em no automatic setup is done; true \(em automatic setup is done when the starting point is a remote branch; always \(em automatic setup is done when the starting point is either a local branch or remote branch. This option defaults to true.
 .TP
 branch.<name>.remote
 When in branch <name>, it tells git fetch which remote to fetch. If this option is not given, git fetch defaults to remote "origin".
@@ -690,7 +690,7 @@ pack.deltaCacheLimit
 The maximum size of a delta, that is cached in \fBgit\-pack\-objects\fR(1). Defaults to 1000.
 .TP
 pack.threads
-Specifies the number of threads to spawn when searching for best delta matches. This requires that \fBgit\-pack\-objects\fR(1) be compiled with pthreads otherwise this option is ignored with a warning. This is meant to reduce packing time on multiprocessor machines. The required amount of memory for the delta search window is however multiplied by the number of threads.
+Specifies the number of threads to spawn when searching for best delta matches. This requires that \fBgit\-pack\-objects\fR(1) be compiled with pthreads otherwise this option is ignored with a warning. This is meant to reduce packing time on multiprocessor machines. The required amount of memory for the delta search window is however multiplied by the number of threads. Specifying 0 will cause git to auto\-detect the number of CPU's and set the number of threads accordingly.
 .TP
 pack.indexVersion
 Specify the default pack index version. Valid values are 1 for legacy pack index used by Git versions prior to 1.5.2, and 2 for the new pack index with capabilities for packs larger than 4 GB as well as proper protection against the repacking of corrupted packs. Version 2 is selected and this config option ignored whenever the corresponding pack is larger than 2 GB. Otherwise the default is 1.
@@ -744,6 +744,9 @@ By default, \fBgit\-status\fR(1) shows paths relative to the current directory. 
 .TP
 tar.umask
 This variable can be used to restrict the permission bits of tar archive entries. The default is 0002, which turns off the world write bit. The special value "user" indicates that the archiving user's umask will be used instead. See umask(2) and \fBgit\-archive\fR(1).
+.TP
+url.<base>.insteadOf
+Any URL that starts with this value will be rewritten to start, instead, with <base>. In cases where some site serves a large number of repositories, and serves them with multiple access methods, and some users need to use different access methods, this feature allows people to specify any of the equivalent URLs and have git automatically rewrite the URL to the best alternative for the particular user, even for a never\-before\-seen repository on the site. When more than one insteadOf strings match a given URL, the longest match is used.
 .TP
 user.email
 Your email address to be recorded in any newly created commits. Can be overridden by the \fIGIT_AUTHOR_EMAIL\fR, \fIGIT_COMMITTER_EMAIL\fR, and \fIEMAIL\fR environment variables. See \fBgit\-commit\-tree\fR(1).
