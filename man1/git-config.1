@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "03/04/2008" "Git 1.5.4.3.447.gc95b3" "Git Manual"
+.TH "GIT\-CONFIG" "1" "03/08/2008" "Git 1.5.4.3.484.g60e3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -546,6 +546,9 @@ Additional email headers to include in a patch to be submitted by mail. See \fBg
 format.suffix
 The default for format\-patch is to output files with the suffix .patch. Use this variable to change that suffix (make sure to include the dot if you want it).
 .TP
+format.pretty
+The default pretty format for log/show/whatchanged command, See \fBgit\-log\fR(1), \fBgit\-show\fR(1), \fBgit\-whatchanged\fR(1).
+.TP
 gc.aggressiveWindow
 The window size parameter used in the delta compression algorithm used by \fIgit gc \-\-aggressive\fR. This defaults to 10.
 .TP
@@ -654,7 +657,7 @@ merge.summary
 Whether to include summaries of merged commits in newly created merge commit messages. False by default.
 .TP
 merge.tool
-Controls which merge resolution program is used by \fBgit\-mergetool\fR(1). Valid values are: "kdiff3", "tkdiff", "meld", "xxdiff", "emerge", "vimdiff", "gvimdiff", and "opendiff".
+Controls which merge resolution program is used by \fBgit\-mergetool\fR(1). Valid built\-in values are: "kdiff3", "tkdiff", "meld", "xxdiff", "emerge", "vimdiff", "gvimdiff", and "opendiff". Any other value is treated is custom merge tool and there must be a corresponing mergetool.<tool>.cmd option.
 .TP
 merge.verbosity
 Controls the amount of output shown by the recursive merge strategy. Level 0 outputs nothing except a final error message if conflicts were detected. Level 1 outputs only conflicts, 2 outputs conflicts and file changes. Level 5 and above outputs debugging information. The default is level 2. Can be overridden by \fIGIT_MERGE_VERBOSITY\fR environment variable.
@@ -670,6 +673,15 @@ Names a low\-level merge driver to be used when performing an internal merge bet
 .TP
 mergetool.<tool>.path
 Override the path for the given tool. This is useful in case your tool is not in the PATH.
+.TP
+mergetool.<tool>.cmd
+Specify the command to invoke the specified merge tool. The specified command is evaluated in shell with the following variables available: \fIBASE\fR is the name of a temporary file containing the common base of the files to be merged, if available; \fILOCAL\fR is the name of a temporary file containing the contents of the file on the current branch; \fIREMOTE\fR is the name of a temporary file containing the contents of the file from the branch being merged; \fIMERGED\fR contains the name of the file to which the merge tool should write the results of a successful merge.
+.TP
+mergetool.<tool>.trustExitCode
+For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful. If this is not set to true then the merge target file timestamp is checked and the merge assumed to have been successful if the file has been updated, otherwise the user is prompted to indicate the success of the merge.
+.TP
+mergetool.keepBackup
+After performing a merge, the original file with conflict markers can be saved as a file with a .orig extension. If this variable is set to false then this file is not preserved. Defaults to true (i.e. keep the backup files).
 .TP
 pack.window
 The size of the window used by \fBgit\-pack\-objects\fR(1) when no window size is given on the command line. Defaults to 10.
@@ -719,10 +731,10 @@ remote.<name>.skipDefaultUpdate
 If true, this remote will be skipped by default when updating using the update subcommand of \fBgit\-remote\fR(1).
 .TP
 remote.<name>.receivepack
-The default program to execute on the remote side when pushing. See option \-\-exec of \fBgit\-push\fR(1).
+The default program to execute on the remote side when pushing. See option \-\-receive\-pack of \fBgit\-push\fR(1).
 .TP
 remote.<name>.uploadpack
-The default program to execute on the remote side when fetching. See option \-\-exec of \fBgit\-fetch\-pack\fR(1).
+The default program to execute on the remote side when fetching. See option \-\-upload\-pack of \fBgit\-fetch\-pack\fR(1).
 .TP
 remote.<name>.tagopt
 Setting this value to \-\-no\-tags disables automatic tag following when fetching from remote <name>
