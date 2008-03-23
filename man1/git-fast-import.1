@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FAST\-IMPORT" "1" "02/16/2008" "Git 1.5.4.1.143.ge7e51" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "03/23/2008" "Git 1.5.5.rc1" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -179,7 +179,7 @@ The time of the change is specified by <when> using the date format that was sel
 .RS 3
 The from command is used to specify the commit to initialize this branch from. This revision will be the first ancestor of the new commit.
 
-Omitting the from command in the first commit of a new branch will cause fast\-import to create that commit with no ancestor. This tends to be desired only for the initial commit of a project. Omitting the from command on existing branches is usually desired, as the current commit on that branch is automatically assumed to be the first ancestor of the new commit.
+Omitting the from command in the first commit of a new branch will cause fast\-import to create that commit with no ancestor. This tends to be desired only for the initial commit of a project. If the frontend creates all files from scratch when making a new branch, a merge command may be used instead of from to start the commit with an empty tree. Omitting the from command on existing branches is usually desired, as the current commit on that branch is automatically assumed to be the first ancestor of the new commit.
 
 As LF is not valid in a Git refname or SHA\-1 expression, no quoting or escaping syntax is supported within <committish>.
 
@@ -218,7 +218,7 @@ The ^0 suffix is necessary as fast\-import does not permit a branch to start fro
 .br
 \fBmerge\fR
 .RS 3
-Includes one additional ancestor commit, and makes the current commit a merge commit. An unlimited number of merge commands per commit are permitted by fast\-import, thereby establishing an n\-way merge. However Git's other tools never create commits with more than 15 additional ancestors (forming a 16\-way merge). For this reason it is suggested that frontends do not use more than 15 merge commands per commit.
+Includes one additional ancestor commit. If the from command is omitted when creating a new branch, the first merge commit will be the first ancestor of the current commit, and the branch will start out with no files. An unlimited number of merge commands per commit are permitted by fast\-import, thereby establishing an n\-way merge. However Git's other tools never create commits with more than 15 additional ancestors (forming a 16\-way merge). For this reason it is suggested that frontends do not use more than 15 merge commands per commit; 16, if starting a new, empty branch.
 
 Here <committish> is any of the commit specification expressions also accepted by from (see above).
 .RE
