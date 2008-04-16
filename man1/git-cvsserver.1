@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CVSSERVER" "1" "04/02/2008" "Git 1.5.5.rc2.25.g5fbd" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "04/16/2008" "Git 1.5.5.63.ga17b1" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -87,7 +87,7 @@ cvs \-d ":ext;CVS_SERVER=git\-cvsserver:user@server/path/repo.git" co <HEAD_name
 .ft
 
 .fi
-This has the advantage that it will be saved in your \fICVS/Root\fR files and you don't need to worry about always setting the correct environment variable.
+This has the advantage that it will be saved in your \fICVS/Root\fR files and you don't need to worry about always setting the correct environment variable. SSH users restricted to git\-shell don't need to override the default with CVS_SERVER (and shouldn't) as git\-shell understands cvs to mean git\-cvsserver and pretends that the other end runs the real cvs better.
 .TP
 2.
 For each repo that you want accessible from CVS you need to edit config in the repo and add the following section.
@@ -117,11 +117,7 @@ All configuration variables can also be overridden for a specific method of acce
 .fi
 .TP
 3.
-On the client machine you need to set the following variables. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo. For example:
-
-For SSH access, CVS_SERVER should be set to git\-cvsserver
-
-Example:
+If you didn't specify the CVSROOT/CVS_SERVER directly in the checkout command, automatically saving it in your \fICVS/Root\fR files, then you need to set them explicitly in your environment. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo. As above, for SSH clients _not_ restricted to git\-shell, CVS_SERVER should be set to git\-cvsserver.
 .sp
 .nf
 .ft C
@@ -132,10 +128,10 @@ Example:
 .fi
 .TP
 4.
-For SSH clients that will make commits, make sure their .bashrc file sets the GIT_AUTHOR and GIT_COMMITTER variables.
+For SSH clients that will make commits, make sure their server\-side .ssh/environment files (or .bashrc, etc., according to their specific shell) export appropriate values for GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_COMMITTER_NAME, and GIT_COMMITTER_EMAIL. For SSH clients whose login shell is bash, .bashrc may be a reasonable alternative.
 .TP
 5.
-Clients should now be able to check out the project. Use the CVS \fImodule\fR name to indicate what GIT \fIhead\fR you want to check out. Example:
+Clients should now be able to check out the project. Use the CVS \fImodule\fR name to indicate what GIT \fIhead\fR you want to check out. This also sets the name of your newly checked\-out directory, unless you tell it otherwise with \-d <dir_name>. For example, this checks out \fImaster\fR branch to the project\-master directory:
 .sp
 .nf
 .ft C
