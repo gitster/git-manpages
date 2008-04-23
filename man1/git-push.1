@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-PUSH" "1" "02/28/2008" "Git 1.5.4.3.325.g6d21" "Git Manual"
+.TH "GIT\-PUSH" "1" "04/23/2008" "Git 1.5.5.1.79.g57cf" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -27,9 +27,9 @@ The "remote" repository that is destination of a push operation. See the section
 <refspec>
 The canonical format of a <refspec> parameter is +?<src>:<dst>; that is, an optional plus +, followed by the source ref, followed by a colon :, followed by the destination ref.
 
-The <src> side can be an arbitrary "SHA1 expression" that can be used as an argument to git\-cat\-file \-t. E.g. master~4 (push four parents before the current master head).
+The <src> side represents the source branch (or arbitrary "SHA1 expression", such as master~4 (four parents before the tip of master branch); see \fBgit\-rev\-parse\fR(1)) that you want to push. The <dst> side represents the destination location.
 
-The local ref that matches <src> is used to fast forward the remote ref that matches <dst>. If the optional plus + is used, the remote ref is updated even if it does not result in a fast forward update.
+The local ref that matches <src> is used to fast forward the remote ref that matches <dst> (or, if no <dst> was specified, the same ref that <src> referred to locally). If the optional leading plus + is used, the remote ref is updated even if it does not result in a fast forward update.
 
 Note: If no explicit refspec is found, (that is neither on the command line nor in any Push line of the corresponding remotes file\-\-\-see below), then "matching" heads are pushed: for every head that exists on the local side, the remote side is updated if a head of the same name already exists on the remote side.
 
@@ -213,7 +213,7 @@ A human\-readable explanation. In the case of successfully pushed refs, no expla
 .SH "EXAMPLES"
 .TP
 git push origin master
-Find a ref that matches master in the source repository (most likely, it would find refs/heads/master), and update the same ref (e.g. refs/heads/master) in origin repository with it.
+Find a ref that matches master in the source repository (most likely, it would find refs/heads/master), and update the same ref (e.g. refs/heads/master) in origin repository with it. If master did not exist remotely, it would be created.
 .TP
 git push origin :experimental
 Find a ref that matches experimental in the origin repository (e.g. refs/heads/experimental), and delete it.
@@ -222,7 +222,7 @@ git push origin master:satellite/master
 Find a ref that matches master in the source repository (most likely, it would find refs/heads/master), and update the ref that matches satellite/master (most likely, it would be refs/remotes/satellite/master) in origin repository with it.
 .TP
 git push origin master:refs/heads/experimental
-Create the branch experimental in the origin repository by copying the current master branch. This form is usually needed to create a new branch in the remote repository as there is no experimental branch to match.
+Create the branch experimental in the origin repository by copying the current master branch. This form is only needed to create a new branch or tag in the remote repository when the local name and the remote name are different; otherwise, the ref name on its own will work.
 .SH "AUTHOR"
 Written by Junio C Hamano <junkio@cox.net>, later rewritten in C by Linus Torvalds <torvalds@osdl.org>
 .SH "DOCUMENTATION"
