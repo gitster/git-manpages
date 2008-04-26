@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-INIT" "1" "01/07/2008" "Git 1.5.4.rc2.60.gb2e62" "Git Manual"
+.TH "GIT\-INIT" "1" "04/26/2008" "Git 1.5.5.1.89.g36c79" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -21,7 +21,7 @@ Provide the directory from which templates will be used. The default template di
 
 When specified, <template_directory> is used as the source of the template files rather than the default. The template files include some directory structure, some suggested "exclude patterns", and copies of non\-executing "hook" files. The suggested patterns and hook files are all modifiable and extensible.
 .TP
-\-\-shared[={false|true|umask|group|all|world|everybody}]
+\-\-shared[={false|true|umask|group|all|world|everybody|0xxx}]
 Specify that the git repository is to be shared amongst several users. This allows users belonging to the same group to push into that repository. When specified, the config variable "core.sharedRepository" is set so that files and directories under $GIT_DIR are created with the requested permissions. When not specified, git will use permissions reported by umask(2).
 
 The option can have the following values, defaulting to \fIgroup\fR if no value is given:
@@ -35,6 +35,9 @@ The option can have the following values, defaulting to \fIgroup\fR if no value 
 .TP
 \(bu
 \fIall\fR (or \fIworld\fR or \fIeverybody\fR): Same as \fIgroup\fR, but make the repository readable by all users.
+.TP
+\(bu
+\fI0xxx\fR: \fI0xxx\fR is an octal number and each file will have mode \fI0xxx\fR Any option except \fIumask\fR can be set using this option. \fI0xxx\fR will override users umask(2) value, and thus, users with a safe umask (0077) can use this option. \fI0640\fR will create a repository which is group\-readable but not writable. \fI0660\fR is equivalent to \fIgroup\fR.
 
 By default, the configuration flag receive.denyNonFastForwards is enabled in shared repositories, so that you cannot force a non fast\-forwarding push into it.
 .RE
