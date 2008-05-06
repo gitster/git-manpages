@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BRANCH" "1" "02/28/2008" "Git 1.5.4.3.325.g6d21" "Git Manual"
+.TH "GIT\-BRANCH" "1" "05/06/2008" "Git 1.5.5.1.147.g867f" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,7 +12,7 @@ git\-branch \- List, create, or delete branches
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-branch\fR [\-\-color | \-\-no\-color] [\-r | \-a]
+\fIgit\-branch\fR [\-\-color | \-\-no\-color] [\-r | \-a] [\-\-merged | \-\-no\-merged]
            [\-v [\-\-abbrev=<length> | \-\-no\-abbrev]]
            [\-\-contains <commit>]
 \fIgit\-branch\fR [\-\-track | \-\-no\-track] [\-l] [\-f] <branchname> [<start\-point>]
@@ -20,7 +20,7 @@ git\-branch \- List, create, or delete branches
 \fIgit\-branch\fR (\-d | \-D) [\-r] <branchname>\&...
 .fi
 .SH "DESCRIPTION"
-With no arguments given a list of existing branches will be shown, the current branch will be highlighted with an asterisk. Option \-r causes the remote\-tracking branches to be listed, and option \-a shows both. With \-\-contains <commit>, shows only the branches that contains the named commit (in other words, the branches whose tip commits are descendant of the named commit).
+With no arguments given a list of existing branches will be shown, the current branch will be highlighted with an asterisk. Option \-r causes the remote\-tracking branches to be listed, and option \-a shows both. With \-\-contains <commit>, shows only the branches that contains the named commit (in other words, the branches whose tip commits are descendant of the named commit). With \-\-merged, only branches merged into HEAD will be listed, and with \-\-no\-merged only branches not merged into HEAD will be listed.
 
 In its second form, a new branch named <branchname> will be created. It will start out with a head equal to the one given as <start\-point>. If no <start\-point> is given, the branch will be created with a head equal to that of the currently checked out branch.
 
@@ -80,6 +80,15 @@ When creating a new branch, set up configuration so that git\-pull will automati
 \-\-no\-track
 Ignore the branch.autosetupmerge configuration variable.
 .TP
+\-\-contains <commit>
+Only list branches which contain the specified commit.
+.TP
+\-\-merged
+Only list branches which are fully contained by HEAD.
+.TP
+\-\-no\-merged
+Do not list branches which are fully contained by HEAD.
+.TP
 <branchname>
 The name of the branch to create or delete. The new branch name must pass all checks defined by \fBgit\-check\-ref\-format\fR(1). Some of these checks may restrict the characters allowed in a branch name.
 .TP
@@ -126,6 +135,17 @@ $ git branch \-D test                                    \fB(2)\fR
 .br
 .SH "NOTES"
 If you are creating a branch that you want to immediately checkout, it's easier to use the git checkout command with its \-b option to create a branch and check it out with a single command.
+
+The options \-\-contains, \-\-merged and \-\-no\-merged serves three related but different purposes:
+.TP 3
+\(bu
+\-\-contains <commit> is used to find all branches which will need special attention if <commit> were to be rebased or amended, since those branches contain the specified <commit>.
+.TP
+\(bu
+\-\-merged is used to find all branches which can be safely deleted, since those branches are fully contained by HEAD.
+.TP
+\(bu
+\-\-no\-merged is used to find branches which are candidates for merging into HEAD, since those branches are not fully contained by HEAD.
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org> and Junio C Hamano <junkio@cox.net>
 .SH "DOCUMENTATION"
