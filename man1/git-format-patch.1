@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FORMAT\-PATCH" "1" "04/23/2008" "Git 1.5.5.1.79.g57cf" "Git Manual"
+.TH "GIT\-FORMAT\-PATCH" "1" "05/09/2008" "Git 1.5.5.1.178.g1f81" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -264,21 +264,58 @@ You can specify extra mail header lines to be added to each message in the repos
 
 .fi
 .SH "EXAMPLES"
+.TP 3
+\(bu
+Extract commits between revisions R1 and R2, and apply them on top of the current branch using git\-am to cherry\-pick them:
+.sp
+.nf
+.ft C
+$ git format\-patch \-k \-\-stdout R1..R2 | git\-am \-3 \-k
+.ft
+
+.fi
 .TP
-git\-format\-patch \-k \-\-stdout R1..R2 | git\-am \-3 \-k
-Extract commits between revisions R1 and R2, and apply them on top of the current branch using git\-am to cherry\-pick them.
+\(bu
+Extract all commits which are in the current branch but not in the origin branch:
+.sp
+.nf
+.ft C
+$ git format\-patch origin
+.ft
+
+.fi
+For each commit a separate file is created in the current directory.
 .TP
-git\-format\-patch origin
-Extract all commits which are in the current branch but not in the origin branch. For each commit a separate file is created in the current directory.
+\(bu
+Extract all commits that lead to \fIorigin\fR since the inception of the project:
+.sp
+.nf
+.ft C
+$ git format\-patch \\\-\-root origin
+.ft
+
+.fi
 .TP
-git\-format\-patch \-\-root origin
-Extract all commits that lead to \fIorigin\fR since the inception of the project.
+\(bu
+The same as the previous one:
+.sp
+.nf
+.ft C
+$ git format\-patch \-M \-B origin
+.ft
+
+.fi
+Additionally, it detects and handles renames and complete rewrites intelligently to produce a renaming patch. A renaming patch reduces the amount of text output, and generally makes it easier to review it. Note that the "patch" program does not understand renaming patches, so use it only when you know the recipient uses git to apply your patch.
 .TP
-git\-format\-patch \-M \-B origin
-The same as the previous one. Additionally, it detects and handles renames and complete rewrites intelligently to produce a renaming patch. A renaming patch reduces the amount of text output, and generally makes it easier to review it. Note that the "patch" program does not understand renaming patches, so use it only when you know the recipient uses git to apply your patch.
-.TP
-git\-format\-patch \-3
-Extract three topmost commits from the current branch and format them as e\-mailable patches.
+\(bu
+Extract three topmost commits from the current branch and format them as e\-mailable patches:
+.sp
+.nf
+.ft C
+$ git format\-patch \-3
+.ft
+
+.fi
 .SH "SEE ALSO"
 \fBgit\-am\fR(1), \fBgit\-send\-email\fR(1)
 .SH "AUTHOR"

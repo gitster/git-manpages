@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BISECT" "1" "04/12/2008" "Git 1.5.5.40.g4cdda" "Git Manual"
+.TH "GIT\-BISECT" "1" "05/09/2008" "Git 1.5.5.1.178.g1f81" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -178,6 +178,56 @@ The special exit code 125 should be used when the current source code cannot be 
 You may often find that during bisect you want to have near\-constant tweaks (e.g., s/#define DEBUG 0/#define DEBUG 1/ in a header file, or "revision that does not have this commit needs this patch applied to work around other problem this bisection is not interested in") applied to the revision being tested.
 
 To cope with such a situation, after the inner git\-bisect finds the next revision to test, with the "run" script, you can apply that tweak before compiling, run the real test, and after the test decides if the revision (possibly with the needed tweaks) passed the test, rewind the tree to the pristine state. Finally the "run" script can exit with the status of the real test to let "git bisect run" command loop to know the outcome.
+.SH "EXAMPLES"
+.TP 3
+\(bu
+Automatically bisect a broken build between v1.2 and HEAD:
+.sp
+.nf
+.ft C
+$ git bisect start HEAD v1.2 \-\-      # HEAD is bad, v1.2 is good
+$ git bisect run make                # "make" builds the app
+.ft
+
+.fi
+.TP
+\(bu
+Automatically bisect a broken test suite:
+.sp
+.nf
+.ft C
+$ cat ~/test.sh
+#!/bin/sh
+make || exit 125                   # this "skip"s broken builds
+make test                          # "make test" runs the test suite
+$ git bisect start v1.3 v1.1 \-\-    # v1.3 is bad, v1.1 is good
+$ git bisect run ~/test.sh
+.ft
+
+.fi
+Here we use a "test.sh" custom script. In this script, if "make" fails, we "skip" the current commit.
+
+It's safer to use a custom script outside the repo to prevent interactions between the bisect, make and test processes and the script.
+
+And "make test" should "exit 0", if the test suite passes, and "exit 1" (for example) otherwise.
+.TP
+\(bu
+Automatically bisect a broken test case:
+.sp
+.nf
+.ft C
+$ cat ~/test.sh
+#!/bin/sh
+make || exit 125                     # this "skip"s broken builds
+~/check_test_case.sh                 # does the test case passes ?
+$ git bisect start HEAD HEAD~10 \-\-   # culprit is among the last 10
+$ git bisect run ~/test.sh
+.ft
+
+.fi
+Here "check_test_case.sh" should "exit 0", if the test case passes, and "exit 1" (for example) otherwise.
+
+It's safer if both "test.sh" and "check_test_case.sh" scripts are outside the repo to prevent interactions between the bisect, make and test processes and the scripts.
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl.org>
 .SH "DOCUMENTATION"

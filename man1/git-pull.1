@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-PULL" "1" "03/19/2008" "Git 1.5.5.rc0.16.g02b0" "Git Manual"
+.TH "GIT\-PULL" "1" "05/09/2008" "Git 1.5.5.1.178.g1f81" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -19,11 +19,20 @@ Note that you can use . (current directory) as the <repository> to pull from the
 Also note that options meant for git\-pull itself and underlying git\-merge must be given before the options meant for git\-fetch.
 .SH "OPTIONS"
 .TP
-\-\-summary
-Show a diffstat at the end of the merge. The diffstat is also controlled by the configuration option merge.diffstat.
+\-\-stat
+Show a diffstat at the end of the merge. The diffstat is also controlled by the configuration option merge.stat.
 .TP
-\-n, \-\-no\-summary
+\-n, \-\-no\-stat
 Do not show diffstat at the end of the merge.
+.TP
+\-\-summary, \-\-no\-summary
+Synonyms to \-\-stat and \-\-no\-stat; these are deprecated and will be removed in the future.
+.TP
+\-\-log
+In addition to branch names, populate the log message with one\-line descriptions from the actual commits that are being merged.
+.TP
+\-\-no\-log
+Do not list one\-line descriptions from the actual commits being merged.
 .TP
 \-\-no\-commit
 Perform the merge but pretend the merge failed and do not autocommit, to give the user a chance to inspect and further tweak the merge result before committing.
@@ -284,25 +293,65 @@ If the refspec is a globbing one, nothing is merged.
 3.
 Otherwise the remote branch of the first refspec is merged.
 .SH "EXAMPLES"
+.TP 3
+\(bu
+Update the remote\-tracking branches for the repository you cloned from, then merge one of them into your current branch:
+.sp
+.nf
+.ft C
+$ git pull, git pull origin
+.ft
+
+.fi
+Normally the branch merged in is the HEAD of the remote repository, but the choice is determined by the branch.<name>.remote and branch.<name>.merge options; see \fBgit\-config\fR(1) for details.
 .TP
-git pull, git pull origin
-Update the remote\-tracking branches for the repository you cloned from, then merge one of them into your current branch. Normally the branch merged in is the HEAD of the remote repository, but the choice is determined by the branch.<name>.remote and branch.<name>.merge options; see \fBgit\-config\fR(1) for details.
+\(bu
+Merge into the current branch the remote branch next:
+.sp
+.nf
+.ft C
+$ git pull origin next
+.ft
+
+.fi
+This leaves a copy of next temporarily in FETCH_HEAD, but does not update any remote\-tracking branches.
 .TP
-git pull origin next
-Merge into the current branch the remote branch next; leaves a copy of next temporarily in FETCH_HEAD, but does not update any remote\-tracking branches.
+\(bu
+Bundle local branch fixes and enhancements on top of the current branch, making an Octopus merge:
+.sp
+.nf
+.ft C
+$ git pull . fixes enhancements
+.ft
+
+.fi
+This git pull . syntax is equivalent to git merge.
 .TP
-git pull . fixes enhancements
-Bundle local branch fixes and enhancements on top of the current branch, making an Octopus merge. This git pull . syntax is equivalent to git merge.
+\(bu
+Merge local branch obsolete into the current branch, using ours merge strategy:
+.sp
+.nf
+.ft C
+$ git pull \-s ours . obsolete
+.ft
+
+.fi
 .TP
-git pull \-s ours . obsolete
-Merge local branch obsolete into the current branch, using ours merge strategy.
-.TP
-git pull \-\-no\-commit . maint
-Merge local branch maint into the current branch, but do not make a commit automatically. This can be used when you want to include further changes to the merge, or want to write your own merge commit message.
+\(bu
+Merge local branch maint into the current branch, but do not make a commit automatically:
+.sp
+.nf
+.ft C
+$ git pull \-\-no\-commit . maint
+.ft
+
+.fi
+This can be used when you want to include further changes to the merge, or want to write your own merge commit message.
 
 You should refrain from abusing this option to sneak substantial changes into a merge commit. Small fixups like bumping release/version name would be acceptable.
 .TP
-Command line pull of multiple branches from one repository
+\(bu
+Command line pull of multiple branches from one repository:
 .sp
 .nf
 .ft C
