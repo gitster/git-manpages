@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CVSSERVER" "1" "04/16/2008" "Git 1.5.5.63.ga17b1" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "05/26/2008" "Git 1.5.6.rc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -225,8 +225,14 @@ Eclipse 3.0, 3.1.2 on MacOSX (see Eclipse CVS Client Notes)
 TortoiseCVS
 .SH "OPERATIONS SUPPORTED"
 All the operations required for normal use are supported, including checkout, diff, status, update, log, add, remove, commit. Legacy monitoring operations are not supported (edit, watch and related). Exports and tagging (tags and branches) are not supported at this stage.
+.SS "CRLF Line Ending Conversions"
+By default the server leaves the \fI\-k\fR mode blank for all files, which causes the cvs client to treat them as a text files, subject to crlf conversion on some platforms.
 
-The server should set the \fI\-k\fR mode to binary when relevant, however, this is not really implemented yet. For now, you can force the server to set \fI\-kb\fR for all files by setting the gitcvs.allbinary config variable. In proper GIT tradition, the contents of the files are always respected. No keyword expansion or newline munging is supported.
+You can make the server use crlf attributes to set the \fI\-k\fR modes for files by setting the gitcvs.usecrlfattr config variable. In this case, if crlf is explicitly unset (\fI\-crlf\fR), then the server will set \fI\-kb\fR mode for binary files. If crlf is set, then the \fI\-k\fR mode will explicitly be left blank. See also \fBgitattributes\fR(5) for more information about the crlf attribute.
+
+Alternatively, if gitcvs.usecrlfattr config is not enabled or if the crlf attribute is unspecified for a filename, then the server uses the gitcvs.allbinary config for the default setting. If gitcvs.allbinary is set, then file not otherwise specified will default to \fI\-kb\fR mode. Otherwise the \fI\-k\fR mode is left blank. But if gitcvs.allbinary is set to "guess", then the correct \fI\-k\fR mode will be guessed based on the contents of the file.
+
+For best consistency with cvs, it is probably best to override the defaults by setting gitcvs.usecrlfattr to true, and gitcvs.allbinary to "guess".
 .SH "DEPENDENCIES"
 git\-cvsserver depends on DBD::SQLite.
 .SH "COPYRIGHT AND AUTHORS"

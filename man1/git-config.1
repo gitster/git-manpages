@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "05/24/2008" "Git 1.5.5.1.382.g182f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/26/2008" "Git 1.5.6.rc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -590,9 +590,11 @@ Whether the CVS server interface is enabled for this repository. See \fBgit\-cvs
 .TP
 gitcvs.logfile
 Path to a log file where the CVS server interface well\&... logs various stuff. See \fBgit\-cvsserver\fR(1).
+
+gitcvs.usecrlfattr If true, the server will look up the crlf attribute for files to determine the \fI\-k\fR modes to use. If crlf is set, the \fI\-k\fR mode will be left blank, so cvs clients will treat it as text. If crlf is explicitly unset, the file will be set with \fI\-kb\fR mode, which supresses any newline munging the client might otherwise do. If crlf is not specified, then \fIgitcvs.allbinary\fR is used. See \fBgitattribute\fR(5).
 .TP
 gitcvs.allbinary
-If true, all files are sent to the client in mode \fI\-kb\fR. This causes the client to treat all files as binary files which suppresses any newline munging it otherwise might do. A work\-around for the fact that there is no way yet to set single files to mode \fI\-kb\fR.
+This is used if \fIgitcvs.usecrlfattr\fR does not resolve the correct \fI\-kb\fR mode to use. If true, all unresolved files are sent to the client in mode \fI\-kb\fR. This causes the client to treat them as binary files, which suppresses any newline munging it otherwise might do. Alternatively, if it is set to "guess", then the contents of the file are examined to decide if it is binary, similar to \fIcore.autocrlf\fR.
 .TP
 gitcvs.dbname
 Database used by git\-cvsserver to cache revision information derived from the git repository. The exact meaning depends on the used database driver, for SQLite (which is the default driver) this is a filename. Supports variable substitution (see \fBgit\-cvsserver\fR(1) for details). May not contain semicolons (;). Default: \fI%Ggitcvs.%m.sqlite\fR
@@ -606,7 +608,7 @@ Database user and password. Only useful if setting \fIgitcvs.dbdriver\fR, since 
 gitcvs.dbTableNamePrefix
 Database table name prefix. Prepended to the names of any database tables used, allowing a single database to be used for several repositories. Supports variable substitution (see \fBgit\-cvsserver\fR(1) for details). Any non\-alphabetic characters will be replaced with underscores.
 
-All gitcvs variables except for \fIgitcvs.allbinary\fR can also be specified as \fIgitcvs.<access_method>.<varname>\fR (where \fIaccess_method\fR is one of "ext" and "pserver") to make them apply only for the given access method.
+All gitcvs variables except for \fIgitcvs.usecrlfattr\fR and \fIgitcvs.allbinary\fR can also be specified as \fIgitcvs.<access_method>.<varname>\fR (where \fIaccess_method\fR is one of "ext" and "pserver") to make them apply only for the given access method.
 .TP
 gui.commitmsgwidth
 Defines how wide the commit message window is in the \fBgit\-gui\fR(1). "75" is the default.
