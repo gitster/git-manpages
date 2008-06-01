@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-PULL" "1" "05/09/2008" "Git 1.5.5.1.178.g1f81" "Git Manual"
+.TH "GIT\-PULL" "1" "06/01/2008" "Git 1.5.6.rc0.52.g58124" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -94,7 +94,7 @@ By default git\-fetch refuses to update the head which corresponds to the curren
 Deepen the history of a \fIshallow\fR repository created by git clone with \-\-depth=<depth> option (see \fBgit\-clone\fR(1)) by the specified number of commits.
 .TP
 <repository>
-The "remote" repository that is the source of a fetch or pull operation. See the section GIT URLS below.
+The "remote" repository that is the source of a fetch or pull operation. This parameter can be either a URL (see the section GIT URLS below) or the name of a remote (see the section REMOTES below).
 .TP
 <refspec>
 The canonical format of a <refspec> parameter is +?<src>:<dst>; that is, an optional plus +, followed by the source ref, followed by a colon :, followed by the destination ref.
@@ -206,7 +206,32 @@ For example, with this:
 .fi
 a URL like "work:repo.git" or like "host.xz:/path/to/repo.git" will be rewritten in any context that takes a URL to be "git://git.host.xz/repo.git".
 .SH "REMOTES"
-In addition to the above, as a short\-hand, the name of a file in $GIT_DIR/remotes directory can be given; the named file should be in the following format:
+The name of one of the following can be used instead of a URL as <repository> argument:
+.TP 3
+\(bu
+a remote in the git configuration file: $GIT_DIR/config,
+.TP
+\(bu
+a file in the $GIT_DIR/remotes directory, or
+.TP
+\(bu
+a file in the $GIT_DIR/branches directory.
+
+All of these also allow you to omit the refspec from the command line because they each contain a refspec which git will use by default.
+.SS "Named remote in configuration file"
+You can choose to provide the name of a remote which you had previously configured using \fBgit\-remote\fR(1), \fBgit\-config\fR(1) or even by a manual edit to the $GIT_DIR/config file. The URL of this remote will be used to access the repository. The refspec of this remote will be used by default when you do not provide a refspec on the command line. The entry in the config file would appear like this:
+.sp
+.nf
+.ft C
+        [remote "<name>"]
+                url = <url>
+                push = <refspec>
+                fetch = <refspec>
+.ft
+
+.fi
+.SS "Named file in $GIT_DIR/remotes"
+You can choose to provide the name of a file in $GIT_DIR/remotes. The URL in this file will be used to access the repository. The refspec in this file will be used as default when you do not provide a refspec on the command line. This file should have the following format:
 .sp
 .nf
 .ft C
@@ -216,34 +241,21 @@ In addition to the above, as a short\-hand, the name of a file in $GIT_DIR/remot
 .ft
 
 .fi
-Then such a short\-hand is specified in place of <repository> without <refspec> parameters on the command line, <refspec> specified on Push: lines or Pull: lines are used for git\-push and git\-fetch/git\-pull, respectively. Multiple Push: and Pull: lines may be specified for additional branch mappings.
-
-Or, equivalently, in the $GIT_DIR/config (note the use of fetch instead of Pull:):
+Push: lines are used by git\-push and Pull: lines are used by git\-pull and git\-fetch. Multiple Push: and Pull: lines may be specified for additional branch mappings.
+.SS "Named file in $GIT_DIR/branches"
+You can choose to provide the name of a file in $GIT_DIR/branches. The URL in this file will be used to access the repository. This file should have the following format:
 .sp
 .nf
 .ft C
-        [remote "<remote>"]
-                url = <url>
-                push = <refspec>
-                fetch = <refspec>
+        <url>#<head>
 .ft
 
 .fi
-The name of a file in $GIT_DIR/branches directory can be specified as an older notation short\-hand; the named file should contain a single line, a URL in one of the above formats, optionally followed by a hash # and the name of remote head (URL fragment notation). $GIT_DIR/branches/<remote> file that stores a <url> without the fragment is equivalent to have this in the corresponding file in the $GIT_DIR/remotes/ directory.
+<url> is required; #<head> is optional. When you do not provide a refspec on the command line, git will use the following refspec, where <head> defaults to master, and <repository> is the name of this file you provided in the command line.
 .sp
 .nf
 .ft C
-        URL: <url>
-        Pull: refs/heads/master:<remote>
-.ft
-
-.fi
-while having <url>#<head> is equivalent to
-.sp
-.nf
-.ft C
-        URL: <url>
-        Pull: refs/heads/<head>:<remote>
+        refs/heads/<head>:<repository>
 .ft
 
 .fi
