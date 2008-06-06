@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FOR\-EACH\-REF" "1" "06/01/2008" "Git 1.5.6.rc0.52.g58124" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "06/06/2008" "Git 1.5.6.rc1.21.g03300" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,9 +12,8 @@ git\-for\-each\-ref \- Output information on each ref
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-for\-each\-ref\fR [\-\-count=<count>]*
-                   [\-\-shell|\-\-perl|\-\-python|\-\-tcl]
-                   [\-\-sort=<key>]* [\-\-format=<format>] [<pattern>]
+\fIgit\-for\-each\-ref\fR [\-\-count=<count>] [\-\-shell|\-\-perl|\-\-python|\-\-tcl]
+                   [\-\-sort=<key>]* [\-\-format=<format>] [<pattern>\&...]
 .fi
 .SH "DESCRIPTION"
 Iterate over all refs that match <pattern> and show them according to the given <format>, after sorting them according to the given set of <key>. If <max> is given, stop after showing that many refs. The interpolated values in <format> can optionally be quoted as string literals in the specified host language allowing their direct evaluation in that language.
@@ -24,13 +23,13 @@ Iterate over all refs that match <pattern> and show them according to the given 
 By default the command shows all refs that match <pattern>. This option makes it stop after showing that many refs.
 .TP
 <key>
-A field name to sort on. Prefix \- to sort in descending order of the value. When unspecified, refname is used. More than one sort keys can be given.
+A field name to sort on. Prefix \- to sort in descending order of the value. When unspecified, refname is used. You may use the \-\-sort=<key> option multiple times, in which case the last key becomes the primary key.
 .TP
 <format>
 A string that interpolates %(fieldname) from the object pointed at by a ref being shown. If fieldname is prefixed with an asterisk (*) and the ref points at a tag object, the value for the field in the object tag refers is used. When unspecified, defaults to %(objectname) SPC %(objecttype) TAB %(refname). It also interpolates %% to %, and %xx where xx are hex digits interpolates to character with hex code xx; for example %00 interpolates to \\0 (NUL), %09 to \\t (TAB) and %0a to \\n (LF).
 .TP
 <pattern>
-If given, the name of the ref is matched against this using fnmatch(3). Refs that do not match the pattern are not shown.
+If one or more patterns are given, only refs are shown that match againt at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash.
 .TP
 \-\-shell, \-\-perl, \-\-python, \-\-tcl
 If given, strings that substitute %(fieldname) placeholders are quoted as string literals suitable for the specified host language. This is meant to produce a scriptlet that can directly be `eval`ed.
