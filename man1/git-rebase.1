@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REBASE" "1" "06/08/2008" "Git 1.5.6.rc2.15.g457bb" "Git Manual"
+.TH "GIT\-REBASE" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,11 +12,11 @@ git\-rebase \- Forward\-port local commits to the updated upstream head
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-rebase\fR [\-i | \-\-interactive] [\-v | \-\-verbose] [\-m | \-\-merge]
+\fIgit rebase\fR [\-i | \-\-interactive] [\-v | \-\-verbose] [\-m | \-\-merge]
         [\-s <strategy> | \-\-strategy=<strategy>]
         [\-C<n>] [ \-\-whitespace=<option>] [\-p | \-\-preserve\-merges]
         [\-\-onto <newbase>] <upstream> [<branch>]
-\fIgit\-rebase\fR \-\-continue | \-\-skip | \-\-abort
+\fIgit rebase\fR \-\-continue | \-\-skip | \-\-abort
 .fi
 .SH "DESCRIPTION"
 If <branch> is specified, git\-rebase will perform an automatic git checkout <branch> before doing anything else. Otherwise it remains on the current branch.
@@ -42,8 +42,8 @@ Assume the following history exists and the current branch is "topic":
 From this point, the result of either of the following commands:
 .sp
 .nf
-git\-rebase master
-git\-rebase master topic
+git rebase master
+git rebase master topic
 .fi
 would be:
 .sp
@@ -57,7 +57,7 @@ would be:
 .fi
 The latter form is just a short\-hand of git checkout topic followed by git rebase master.
 
-If the upstream branch already contains a change you have made (e.g., because you mailed a patch which was applied upstream), then that commit will be skipped. For example, running git\-rebase master on the following history (in which A' and A introduce the same set of changes, but have different committer information):
+If the upstream branch already contains a change you have made (e.g., because you mailed a patch which was applied upstream), then that commit will be skipped. For example, running git rebase master on the following history (in which A' and A introduce the same set of changes, but have different committer information):
 .sp
 .nf
 .ft C
@@ -106,7 +106,7 @@ We would want to make \fItopic\fR forked from branch \fImaster\fR, for example b
 We can get this using the following command:
 .sp
 .nf
-git\-rebase \-\-onto master next topic
+git rebase \-\-onto master next topic
 .fi
 Another example of \-\-onto option is to rebase part of a branch. If we have the following situation:
 .sp
@@ -123,7 +123,7 @@ Another example of \-\-onto option is to rebase part of a branch. If we have the
 then the command
 .sp
 .nf
-git\-rebase \-\-onto master topicA topicB
+git rebase \-\-onto master topicA topicB
 .fi
 would result in:
 .sp
@@ -150,7 +150,7 @@ A range of commits could also be removed with rebase. If we have the following s
 then the command
 .sp
 .nf
-git\-rebase \-\-onto topicA~5 topicA~3 topicA
+git rebase \-\-onto topicA~5 topicA~3 topicA
 .fi
 would result in the removal of commits F and G:
 .sp
@@ -162,7 +162,7 @@ would result in the removal of commits F and G:
 .fi
 This is useful if F and G were flawed in some way, or should not be part of topicA. Note that the argument to \-\-onto and the <upstream> parameter can be any valid commit\-ish.
 
-In case of conflict, git\-rebase will stop at the first problematic commit and leave conflict markers in the tree. You can use git diff to locate the markers (<<<<<<) and make edits to resolve the conflict. For each file you edit, you need to tell git that the conflict has been resolved, typically this would be done with
+In case of conflict, git\-rebase will stop at the first problematic commit and leave conflict markers in the tree. You can use git\-diff to locate the markers (<<<<<<) and make edits to resolve the conflict. For each file you edit, you need to tell git that the conflict has been resolved, typically this would be done with
 .sp
 .nf
 git add <filename>
@@ -338,19 +338,19 @@ $ git rebase \-i \-p \-\-onto Q O
 
 .fi
 .SH "SPLITTING COMMITS"
-In interactive mode, you can mark commits with the action "edit". However, this does not necessarily mean that \fIgit rebase\fR expects the result of this edit to be exactly one commit. Indeed, you can undo the commit, or you can add other commits. This can be used to split a commit into two:
+In interactive mode, you can mark commits with the action "edit". However, this does not necessarily mean that git\-rebase expects the result of this edit to be exactly one commit. Indeed, you can undo the commit, or you can add other commits. This can be used to split a commit into two:
 .TP 3
 \(bu
-Start an interactive rebase with \fIgit rebase \-i <commit>^\fR, where <commit> is the commit you want to split. In fact, any commit range will do, as long as it contains that commit.
+Start an interactive rebase with git rebase \-i <commit>^, where <commit> is the commit you want to split. In fact, any commit range will do, as long as it contains that commit.
 .TP
 \(bu
 Mark the commit you want to split with the action "edit".
 .TP
 \(bu
-When it comes to editing that commit, execute \fIgit reset HEAD^\fR. The effect is that the HEAD is rewound by one, and the index follows suit. However, the working tree stays the same.
+When it comes to editing that commit, execute git reset HEAD^. The effect is that the HEAD is rewound by one, and the index follows suit. However, the working tree stays the same.
 .TP
 \(bu
-Now add the changes to the index that you want to have in the first commit. You can use \fBgit\-add\fR(1) (possibly interactively) and/or \fBgit\-gui\fR(1) to do that.
+Now add the changes to the index that you want to have in the first commit. You can use git add (possibly interactively) or git\-gui (or both) to do that.
 .TP
 \(bu
 Commit the now\-current index with whatever commit message is appropriate now.
@@ -359,9 +359,9 @@ Commit the now\-current index with whatever commit message is appropriate now.
 Repeat the last two steps until your working tree is clean.
 .TP
 \(bu
-Continue the rebase with \fIgit rebase \-\-continue\fR.
+Continue the rebase with git rebase \-\-continue.
 
-If you are not absolutely sure that the intermediate revisions are consistent (they compile, pass the testsuite, etc.) you should use \fBgit\-stash\fR(1) to stash away the not\-yet\-committed changes after each commit, test, and amend the commit if fixes are necessary.
+If you are not absolutely sure that the intermediate revisions are consistent (they compile, pass the testsuite, etc.) you should use git\-stash to stash away the not\-yet\-committed changes after each commit, test, and amend the commit if fixes are necessary.
 .SH "AUTHORS"
 Written by Junio C Hamano <junkio@cox.net> and Johannes E. Schindelin <johannes.schindelin@gmx.de>
 .SH "DOCUMENTATION"

@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-COMMIT" "1" "06/23/2008" "Git 1.5.6.49.g112db" "Git Manual"
+.TH "GIT\-COMMIT" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,7 +12,7 @@ git\-commit \- Record changes to the repository
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-commit\fR [\-a | \-\-interactive] [\-s] [\-v] [\-u<mode>] [\-\-amend]
+\fIgit commit\fR [\-a | \-\-interactive] [\-s] [\-v] [\-u<mode>] [\-\-amend]
            [(\-c | \-C) <commit>] [\-F <file> | \-m <msg>]
            [\-\-allow\-empty] [\-\-no\-verify] [\-e] [\-\-author=<author>]
            [\-\-cleanup=<mode>] [\-\-] [[\-i | \-o ]<file>\&...]
@@ -23,10 +23,10 @@ Use \fIgit commit\fR to store the current contents of the index in a new commit 
 The content to be added can be specified in several ways:
 .TP 3
 1.
-by using \fBgit\-add\fR(1) to incrementally "add" changes to the index before using the \fIcommit\fR command (Note: even modified files must be "added");
+by using git\-add to incrementally "add" changes to the index before using the \fIcommit\fR command (Note: even modified files must be "added");
 .TP
 2.
-by using \fBgit\-rm\fR(1) to remove files from the working tree and the index, again before using the \fIcommit\fR command;
+by using git\-rm to remove files from the working tree and the index, again before using the \fIcommit\fR command;
 .TP
 3.
 by listing files as arguments to the \fIcommit\fR command, in which case the commit will ignore changes staged in the index, and instead record the current content of the listed files;
@@ -37,9 +37,9 @@ by using the \-a switch with the \fIcommit\fR command to automatically "add" cha
 5.
 by using the \-\-interactive switch with the \fIcommit\fR command to decide one by one which files should be part of the commit, before finalizing the operation. Currently, this is done by invoking git\-add \-\-interactive.
 
-The \fBgit\-status\fR(1) command can be used to obtain a summary of what is included by any of the above for the next commit by giving the same set of parameters you would give to this command.
+The git\-status command can be used to obtain a summary of what is included by any of the above for the next commit by giving the same set of parameters you would give to this command.
 
-If you make a commit and then found a mistake immediately after that, you can recover from it with \fBgit\-reset\fR(1).
+If you make a commit and then find a mistake immediately after that, you can recover from it with git\-reset.
 .SH "OPTIONS"
 .TP
 \-a , \-\-all
@@ -67,7 +67,7 @@ Use the contents of the given file as the initial version of the commit message.
 Add Signed\-off\-by line at the end of the commit message.
 .TP
 \-n , \-\-no\-verify
-This option bypasses the pre\-commit and commit\-msg hooks. See also \fBgithooks\fR(5)[hooks].
+This option bypasses the pre\-commit and commit\-msg hooks. See also \fBgithooks\fR(5).
 .TP
 \-\-allow\-empty
 Usually recording a commit that has the exact same tree as its sole parent commit is a mistake, and the command prevents you from making such a commit. This option bypasses the safety, and is primarily for use by foreign scm interface scripts.
@@ -129,7 +129,7 @@ Do not interpret any more arguments as options.
 <file>\&...
 When files are given on the command line, the command commits the contents of the named files, without recording the changes already staged. The contents of these files are also staged for the next commit on top of what have been staged before.
 .SH "EXAMPLES"
-When recording your own work, the contents of modified files in your working tree are temporarily stored to a staging area called the "index" with \fBgit\-add\fR(1). A file can be reverted back, only in the index but not in the working tree, to that of the last commit with git\-reset HEAD \(em <file>, which effectively reverts git\-add and prevents the changes to this file from participating in the next commit. After building the state to be committed incrementally with these commands, git commit (without any pathname parameter) is used to record what has been staged so far. This is the most basic form of the command. An example:
+When recording your own work, the contents of modified files in your working tree are temporarily stored to a staging area called the "index" with git\-add. A file can be reverted back, only in the index but not in the working tree, to that of the last commit with git reset HEAD \(em <file>, which effectively reverts git\-add and prevents the changes to this file from participating in the next commit. After building the state to be committed incrementally with these commands, git commit (without any pathname parameter) is used to record what has been staged so far. This is the most basic form of the command. An example:
 .sp
 .nf
 .ft C
@@ -173,7 +173,7 @@ $ git commit
 .fi
 this second commit would record the changes to hello.c and hello.h as expected.
 
-After a merge (initiated by either \fBgit\-merge\fR(1) or \fBgit\-pull\fR(1)) stops because of conflicts, cleanly merged paths are already staged to be committed for you, and paths that conflicted are left in unmerged state. You would have to first check which paths are conflicting with \fBgit\-status\fR(1) and after fixing them manually in your working tree, you would stage the result as usual with \fBgit\-add\fR(1):
+After a merge (initiated by git\-merge or git\-pull) stops because of conflicts, cleanly merged paths are already staged to be committed for you, and paths that conflicted are left in unmerged state. You would have to first check which paths are conflicting with git\-status and after fixing them manually in your working tree, you would stage the result as usual with git\-add:
 .sp
 .nf
 .ft C
@@ -237,7 +237,7 @@ Note that we deliberately chose not to re\-code the commit log message when a co
 .SH "ENVIRONMENT AND CONFIGURATION VARIABLES"
 The editor used to edit the commit log message will be chosen from the GIT_EDITOR environment variable, the core.editor configuration variable, the VISUAL environment variable, or the EDITOR environment variable (in that order).
 .SH "HOOKS"
-This command can run commit\-msg, prepare\-commit\-msg, pre\-commit, and post\-commit hooks. See \fBgithooks\fR(5)[hooks] for more information.
+This command can run commit\-msg, prepare\-commit\-msg, pre\-commit, and post\-commit hooks. See \fBgithooks\fR(5) for more information.
 .SH "SEE ALSO"
 \fBgit\-add\fR(1), \fBgit\-rm\fR(1), \fBgit\-mv\fR(1), \fBgit\-merge\fR(1), \fBgit\-commit\-tree\fR(1)
 .SH "AUTHOR"

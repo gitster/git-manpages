@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GITCLI" "7" "06/28/2008" "Git 1.5.6.1.93.gef98" "Git Manual"
+.TH "GITCLI" "7" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -93,8 +93,20 @@ $ git describe \-\-abbrev 10 HEAD  # NOT WHAT YOU MEANT
 .ft
 
 .fi
+.SH "NOTES ON FREQUENTLY CONFUSED OPTIONS"
+Many commands that can work on files in the working tree and/or in the index can take \-\-cached and/or \-\-index options. Sometimes people incorrectly think that, because the index was originally called cache, these two are synonyms. They are \fBnot\fR \(em these two options mean very different things.
+.TP 3
+\(bu
+The \-\-cached option is used to ask a command that usually works on files in the working tree to \fBonly\fR work with the index. For example, git grep, when used without a commit to specify from which commit to look for strings in, usually works on files in the working tree, but with the \-\-cached option, it looks for strings in the index.
+.TP
+\(bu
+The \-\-index option is used to ask a command that usually works on files in the working tree to \fBalso\fR affect the index. For example, git stash apply usually merges changes recorded in a stash to the working tree, but with the \-\-index option, it also merges changes to the index as well.
+
+git apply command can be used with \-\-cached and \-\-index (but not at the same time). Usually the command only affects the files in the working tree, but with \-\-index, it patches both the files and their index entries, and with \-\-cached, it modifies only the index entries.
+
+See also http://marc.info/?l=git&m=116563135620359 and http://marc.info/?l=git&m=119150393620273 for further information.
 .SH "DOCUMENTATION"
-Documentation by Pierre Habouzit.
+Documentation by Pierre Habouzit and the git\-list <git@vger.kernel.org>.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 

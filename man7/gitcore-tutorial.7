@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GITCORE\-TUTORIAL" "7" "06/08/2008" "Git 1.5.6.rc2" "Git Manual"
+.TH "GITCORE\-TUTORIAL" "7" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,7 +14,7 @@ git *
 .SH "DESCRIPTION"
 This tutorial explains how to use the "core" git programs to set up and work with a git repository.
 
-If you just need to use git as a revision control system you may prefer to start with \fBgittutorial\fR(7)[a tutorial introduction to git] or [1]\&\fIthe git user manual\fR.
+If you just need to use git as a revision control system you may prefer to start with "A Tutorial Introduction to GIT" (\fBgittutorial\fR(7)) or [1]\&\fIthe GIT User Manual\fR.
 
 However, an understanding of these low\-level tools can be helpful if you want to understand git's internals.
 
@@ -35,7 +35,7 @@ For our first example, we're going to start a totally new repository from scratc
 .ft C
 $ mkdir git\-tutorial
 $ cd git\-tutorial
-$ git\-init
+$ git init
 .ft
 
 .fi
@@ -78,7 +78,7 @@ An \fIobject\fR is identified by its 160\-bit SHA1 hash, aka \fIobject name\fR, 
 .nr an-break-flag 1
 .br
 \fBNote\fR
-An advanced user may want to take a look at the \fBgitrepository\-layout\fR(5)[repository layout] document after finishing this tutorial.
+An advanced user may want to take a look at \fBgitrepository\-layout\fR(5) after finishing this tutorial.
 
 You have now created your first git repository. Of course, since it's empty, that's not very useful, so let's start populating it with data.
 .SH "POPULATING A GIT REPOSITORY"
@@ -107,7 +107,7 @@ So to populate the index with the two files you just created, you can do
 .sp
 .nf
 .ft C
-$ git\-update\-index \-\-add hello example
+$ git update\-index \-\-add hello example
 .ft
 
 .fi
@@ -136,7 +136,7 @@ If you want to, you can use git\-cat\-file to look at those objects, but you'll 
 .sp
 .nf
 .ft C
-$ git\-cat\-file \-t 557db03de997c86a4a028e1ebd3a1ceb225be238
+$ git cat\-file \-t 557db03de997c86a4a028e1ebd3a1ceb225be238
 .ft
 
 .fi
@@ -144,7 +144,7 @@ where the \-t tells git\-cat\-file to tell you what the "type" of the object is.
 .sp
 .nf
 .ft C
-$ git\-cat\-file "blob" 557db03
+$ git cat\-file "blob" 557db03
 .ft
 
 .fi
@@ -182,7 +182,7 @@ and you can now, since you told git about the previous state of hello, ask git w
 .sp
 .nf
 .ft C
-$ git\-diff\-files
+$ git diff\-files
 .ft
 
 .fi
@@ -192,7 +192,7 @@ To make it readable, we can tell git\-diff\-files to output the differences as a
 .sp
 .nf
 .ft C
-$ git\-diff\-files \-p
+$ git diff\-files \-p
 diff \-\-git a/hello b/hello
 index 557db03..263414f 100644
 \-\-\- a/hello
@@ -207,7 +207,7 @@ i.e. the diff of the change we caused by adding another line to hello.
 
 In other words, git\-diff\-files always shows us the difference between what is recorded in the index, and what is currently in the working tree. That's very useful.
 
-A common shorthand for git\-diff\-files \-p is to just write git diff, which will do the same thing.
+A common shorthand for git diff\-files \-p is to just write git diff, which will do the same thing.
 .sp
 .nf
 .ft C
@@ -225,11 +225,11 @@ index 557db03..263414f 100644
 .SH "COMMITTING GIT STATE"
 Now, we want to go to the next stage in git, which is to take the files that git knows about in the index, and commit them as a real tree. We do that in two phases: creating a \fItree\fR object, and committing that \fItree\fR object as a \fIcommit\fR object together with an explanation of what the tree was all about, along with information of how we came to that state.
 
-Creating a tree object is trivial, and is done with git\-write\-tree. There are no options or other input: git\-write\-tree will take the current index state, and write an object that describes that whole index. In other words, we're now tying together all the different filenames with their contents (and their permissions), and we're creating the equivalent of a git "directory" object:
+Creating a tree object is trivial, and is done with git\-write\-tree. There are no options or other input: git write\-tree will take the current index state, and write an object that describes that whole index. In other words, we're now tying together all the different filenames with their contents (and their permissions), and we're creating the equivalent of a git "directory" object:
 .sp
 .nf
 .ft C
-$ git\-write\-tree
+$ git write\-tree
 .ft
 
 .fi
@@ -241,7 +241,7 @@ and this will just output the name of the resulting tree, in this case (if you h
 .ft
 
 .fi
-which is another incomprehensible object name. Again, if you want to, you can use git\-cat\-file \-t 8988d... to see that this time the object is not a "blob" object, but a "tree" object (you can also use git\-cat\-file to actually output the raw object contents, but you'll see mainly a binary mess, so that's less interesting).
+which is another incomprehensible object name. Again, if you want to, you can use git cat\-file \-t 8988d... to see that this time the object is not a "blob" object, but a "tree" object (you can also use git cat\-file to actually output the raw object contents, but you'll see mainly a binary mess, so that's less interesting).
 
 However \(em normally you'd never use git\-write\-tree on its own, because normally you always commit a tree into a commit object using the git\-commit\-tree command. In fact, it's easier to not actually use git\-write\-tree on its own at all, but to just pass its result in as an argument to git\-commit\-tree.
 
@@ -251,9 +251,9 @@ And this is where we create the .git/refs/heads/master file which is pointed at 
 .sp
 .nf
 .ft C
-$ tree=$(git\-write\-tree)
-$ commit=$(echo 'Initial commit' | git\-commit\-tree $tree)
-$ git\-update\-ref HEAD $commit
+$ tree=$(git write\-tree)
+$ commit=$(echo 'Initial commit' | git commit\-tree $tree)
+$ git update\-ref HEAD $commit
 .ft
 
 .fi
@@ -265,7 +265,7 @@ Remember how we did the git\-update\-index on file hello and then we changed hel
 
 Further, remember how I said that git\-write\-tree writes the contents of the \fBindex\fR file to the tree, and thus what we just committed was in fact the \fBoriginal\fR contents of the file hello, not the new ones. We did that on purpose, to show the difference between the index state, and the state in the working tree, and how they don't have to match, even when we commit things.
 
-As before, if we do git\-diff\-files \-p in our git\-tutorial project, we'll still see the same difference we saw last time: the index file hasn't changed by the act of committing anything. However, now that we have committed something, we can also learn to use a new command: git\-diff\-index.
+As before, if we do git diff\-files \-p in our git\-tutorial project, we'll still see the same difference we saw last time: the index file hasn't changed by the act of committing anything. However, now that we have committed something, we can also learn to use a new command: git\-diff\-index.
 
 Unlike git\-diff\-files, which showed the difference between the index file and the working tree, git\-diff\-index shows the differences between a committed \fBtree\fR and either the index file or the working tree. In other words, git\-diff\-index wants a tree to be diffed against, and before we did the commit, we couldn't do that, because we didn't have anything to diff against.
 
@@ -273,7 +273,7 @@ But now we can do
 .sp
 .nf
 .ft C
-$ git\-diff\-index \-p HEAD
+$ git diff\-index \-p HEAD
 .ft
 
 .fi
@@ -289,7 +289,7 @@ $ git diff HEAD
 .fi
 which ends up doing the above for you.
 
-In other words, git\-diff\-index normally compares a tree against the working tree, but when given the \-\-cached flag, it is told to instead compare against just the index cache contents, and ignore the current working tree state entirely. Since we just wrote the index file to HEAD, doing git\-diff\-index \-\-cached \-p HEAD should thus return an empty set of differences, and that's exactly what it does.
+In other words, git\-diff\-index normally compares a tree against the working tree, but when given the \-\-cached flag, it is told to instead compare against just the index cache contents, and ignore the current working tree state entirely. Since we just wrote the index file to HEAD, doing git diff\-index \-\-cached \-p HEAD should thus return an empty set of differences, and that's exactly what it does.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
@@ -304,13 +304,13 @@ However, our next step is to commit the \fBchange\fR we did, and again, to under
 .sp
 .nf
 .ft C
-$ git\-update\-index hello
+$ git update\-index hello
 .ft
 
 .fi
 (note how we didn't need the \-\-add flag this time, since git knew about the file already).
 
-Note what happens to the different git\-diff\-* versions here. After we've updated hello in the index, git\-diff\-files \-p now shows no differences, but git\-diff\-index \-p HEAD still *does* show that the current state is different from the state we committed. In fact, now git\-diff\-index shows the same difference whether we use the \-\-cached flag or not, since now the index is coherent with the working tree.
+Note what happens to the different git\-diff\-* versions here. After we've updated hello in the index, git diff\-files \-p now shows no differences, but git diff\-index \-p HEAD still *does* show that the current state is different from the state we committed. In fact, now git\-diff\-index shows the same difference whether we use the \-\-cached flag or not, since now the index is coherent with the working tree.
 
 Now, since we've updated hello in the index, we can commit the new version. We could do it by writing the tree by hand again, and committing the tree (this time we'd have to use the \-p HEAD flag to tell commit that the HEAD was the \fBparent\fR of the new commit, and that this wasn't an initial commit any more), but you've done that once already, so let's just use the helpful script this time:
 .sp
@@ -332,7 +332,7 @@ git\-diff\-tree can be given two arbitrary trees, and it will tell you the diffe
 .sp
 .nf
 .ft C
-$ git\-diff\-tree \-p HEAD
+$ git diff\-tree \-p HEAD
 .ft
 
 .fi
@@ -391,7 +391,7 @@ which shows just the log messages, or if we want to see the log together with th
 .sp
 .nf
 .ft C
-$ git\-whatchanged \-p
+$ git whatchanged \-p
 .ft
 
 .fi
@@ -474,7 +474,7 @@ Note that when you've moved or copied a git repository, your git index file (whi
 .sp
 .nf
 .ft C
-$ git\-update\-index \-\-refresh
+$ git update\-index \-\-refresh
 .ft
 
 .fi
@@ -486,12 +486,12 @@ When copying a remote repository, you'll want to at a minimum update the index c
 .sp
 .nf
 .ft C
-$ git\-read\-tree \-\-reset HEAD
-$ git\-update\-index \-\-refresh
+$ git read\-tree \-\-reset HEAD
+$ git update\-index \-\-refresh
 .ft
 
 .fi
-which will force a total index re\-build from the tree pointed to by HEAD. It resets the index contents to HEAD, and then the git\-update\-index makes sure to match up all index entries with the checked\-out files. If the original repository had uncommitted changes in its working tree, git\-update\-index \-\-refresh notices them and tells you they need to be updated.
+which will force a total index re\-build from the tree pointed to by HEAD. It resets the index contents to HEAD, and then the git\-update\-index makes sure to match up all index entries with the checked\-out files. If the original repository had uncommitted changes in its working tree, git update\-index \-\-refresh notices them and tells you they need to be updated.
 
 The above can also be written as simply
 .sp
@@ -501,7 +501,7 @@ $ git reset
 .ft
 
 .fi
-and in fact a lot of the common git command combinations can be scripted with the git xyz interfaces. You can learn things by just looking at what the various git scripts do. For example, git reset used to be the above two lines implemented in git\-reset, but some things like git status and git commit are slightly more complex scripts around the basic git commands.
+and in fact a lot of the common git command combinations can be scripted with the git xyz interfaces. You can learn things by just looking at what the various git scripts do. For example, git reset used to be the above two lines implemented in git\-reset, but some things like git\-status and git\-commit are slightly more complex scripts around the basic git commands.
 
 Many (most?) public remote repositories will not contain any of the checked out files or even an index file, and will \fBonly\fR contain the actual core git files. Such a repository usually doesn't even have the .git subdirectory, but has all the git files directly in the repository.
 
@@ -519,7 +519,7 @@ followed by
 .sp
 .nf
 .ft C
-$ git\-read\-tree HEAD
+$ git read\-tree HEAD
 .ft
 
 .fi
@@ -527,7 +527,7 @@ to populate the index. However, now you have populated the index, and you have a
 .sp
 .nf
 .ft C
-$ git\-checkout\-index \-u \-a
+$ git checkout\-index \-u \-a
 .ft
 
 .fi
@@ -622,7 +622,7 @@ $ git commit \-m "Some work." \-i hello
 .ft
 
 .fi
-Here, we just added another line to hello, and we used a shorthand for doing both git\-update\-index hello and git commit by just giving the filename directly to git commit, with an \-i flag (it tells git to \fIinclude\fR that file in addition to what you have done to the index file so far when making the commit). The \-m flag is to give the commit log message from the command line.
+Here, we just added another line to hello, and we used a shorthand for doing both git update\-index hello and git commit by just giving the filename directly to git commit, with an \-i flag (it tells git to \fIinclude\fR that file in addition to what you have done to the index file so far when making the commit). The \-m flag is to give the commit log message from the command line.
 
 Now, to make it a bit more interesting, let's assume that somebody else does some work in the original branch, and simulate that by going back to the master branch, and editing the same file differently there:
 .sp
@@ -703,7 +703,7 @@ Another useful tool, especially if you do not always work in X\-Window environme
 .sp
 .nf
 .ft C
-$ git\-show\-branch \-\-topo\-order \-\-more=1 master mybranch
+$ git show\-branch \-\-topo\-order \-\-more=1 master mybranch
 * [master] Merge work in mybranch
  ! [mybranch] Some work.
 \-\-
@@ -713,23 +713,23 @@ $ git\-show\-branch \-\-topo\-order \-\-more=1 master mybranch
 .ft
 
 .fi
-The first two lines indicate that it is showing the two branches and the first line of the commit log message from their top\-of\-the\-tree commits, you are currently on master branch (notice the asterisk * character), and the first column for the later output lines is used to show commits contained in the master branch, and the second column for the mybranch branch. Three commits are shown along with their log messages. All of them have non blank characters in the first column (* shows an ordinary commit on the current branch, \- is a merge commit), which means they are now part of the master branch. Only the "Some work" commit has the plus + character in the second column, because mybranch has not been merged to incorporate these commits from the master branch. The string inside brackets before the commit log message is a short name you can use to name the commit. In the above example, \fImaster\fR and \fImybranch\fR are branch heads. \fImaster^\fR is the first parent of \fImaster\fR branch head. Please see \fIgit\-rev\-parse\fR documentation if you see more complex cases.
+The first two lines indicate that it is showing the two branches and the first line of the commit log message from their top\-of\-the\-tree commits, you are currently on master branch (notice the asterisk * character), and the first column for the later output lines is used to show commits contained in the master branch, and the second column for the mybranch branch. Three commits are shown along with their log messages. All of them have non blank characters in the first column (* shows an ordinary commit on the current branch, \- is a merge commit), which means they are now part of the master branch. Only the "Some work" commit has the plus + character in the second column, because mybranch has not been merged to incorporate these commits from the master branch. The string inside brackets before the commit log message is a short name you can use to name the commit. In the above example, \fImaster\fR and \fImybranch\fR are branch heads. \fImaster^\fR is the first parent of \fImaster\fR branch head. Please see \fBgit\-rev\-parse\fR(1) if you want to see more complex cases.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
 \fBNote\fR
-Without the \fI\-\-more=1\fR option, \fIgit\-show\-branch\fR would not output the \fI[master^]\fR commit, as \fI[mybranch]\fR commit is a common ancestor of both \fImaster\fR and \fImybranch\fR tips. Please see \fIgit\-show\-branch\fR documentation for details.
+Without the \fI\-\-more=1\fR option, git\-show\-branch would not output the \fI[master^]\fR commit, as \fI[mybranch]\fR commit is a common ancestor of both \fImaster\fR and \fImybranch\fR tips. Please see \fBgit\-show\-branch\fR(1) for details.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
 \fBNote\fR
-If there were more commits on the \fImaster\fR branch after the merge, the merge commit itself would not be shown by \fIgit\-show\-branch\fR by default. You would need to provide \fI\-\-sparse\fR option to make the merge commit visible in this case.
+If there were more commits on the \fImaster\fR branch after the merge, the merge commit itself would not be shown by git\-show\-branch by default. You would need to provide \fI\-\-sparse\fR option to make the merge commit visible in this case.
 
-Now, let's pretend you are the one who did all the work in mybranch, and the fruit of your hard work has finally been merged to the master branch. Let's go back to mybranch, and run git merge to get the "upstream changes" back to your branch.
+Now, let's pretend you are the one who did all the work in mybranch, and the fruit of your hard work has finally been merged to the master branch. Let's go back to mybranch, and run git\-merge to get the "upstream changes" back to your branch.
 .sp
 .nf
 .ft C
@@ -898,7 +898,7 @@ git merge command, when merging two branches, uses 3\-way merge algorithm. First
 .sp
 .nf
 .ft C
-$ mb=$(git\-merge\-base HEAD mybranch)
+$ mb=$(git merge\-base HEAD mybranch)
 .ft
 
 .fi
@@ -906,7 +906,7 @@ The command writes the commit object name of the common ancestor to the standard
 .sp
 .nf
 .ft C
-$ git\-name\-rev $mb
+$ git name\-rev $mb
 my\-first\-tag
 .ft
 
@@ -915,7 +915,7 @@ After finding out a common ancestor commit, the second step is this:
 .sp
 .nf
 .ft C
-$ git\-read\-tree \-m \-u $mb HEAD mybranch
+$ git read\-tree \-m \-u $mb HEAD mybranch
 .ft
 
 .fi
@@ -925,7 +925,7 @@ After \fIcollapsing\fR operation, paths that are different in three trees are le
 .sp
 .nf
 .ft C
-$ git\-ls\-files \-\-stage
+$ git ls\-files \-\-stage
 100644 7f8b141b65fdcee47321e399a2598a235a032422 0       example
 100644 263414f423d0e4d70dae8fe53fa34614ff3e2860 1       hello
 100644 06fa6a24256dc7e560efa5687fa84b51f0263c3a 2       hello
@@ -939,7 +939,7 @@ To look at only non\-zero stages, use \-\-unmerged flag:
 .sp
 .nf
 .ft C
-$ git\-ls\-files \-\-unmerged
+$ git ls\-files \-\-unmerged
 100644 263414f423d0e4d70dae8fe53fa34614ff3e2860 1       hello
 100644 06fa6a24256dc7e560efa5687fa84b51f0263c3a 2       hello
 100644 cc44c73eb783565da5831b4d820c962954019b69 3       hello
@@ -950,7 +950,7 @@ The next step of merging is to merge these three versions of the file, using 3\-
 .sp
 .nf
 .ft C
-$ git\-merge\-index git\-merge\-one\-file hello
+$ git merge\-index git\-merge\-one\-file hello
 Auto\-merging hello.
 merge: warning: conflicts during merge
 ERROR: Merge conflict in hello.
@@ -962,7 +962,7 @@ git\-merge\-one\-file script is called with parameters to describe those three v
 .sp
 .nf
 .ft C
-$ git\-ls\-files \-\-stage
+$ git ls\-files \-\-stage
 100644 7f8b141b65fdcee47321e399a2598a235a032422 0       example
 100644 263414f423d0e4d70dae8fe53fa34614ff3e2860 1       hello
 100644 06fa6a24256dc7e560efa5687fa84b51f0263c3a 2       hello
@@ -970,7 +970,7 @@ $ git\-ls\-files \-\-stage
 .ft
 
 .fi
-This is the state of the index file and the working file after git merge returns control back to you, leaving the conflicting merge for you to resolve. Notice that the path hello is still unmerged, and what you see with git diff at this point is differences since stage 2 (i.e. your version).
+This is the state of the index file and the working file after git\-merge returns control back to you, leaving the conflicting merge for you to resolve. Notice that the path hello is still unmerged, and what you see with git\-diff at this point is differences since stage 2 (i.e. your version).
 .SH "PUBLISHING YOUR WORK"
 So, we can use somebody else's work from a remote repository, but how can \fByou\fR prepare a repository to let other people pull from it?
 
@@ -992,7 +992,7 @@ First, you need to create an empty repository on the remote machine that will ho
 .nr an-break-flag 1
 .br
 \fBNote\fR
-git push uses a pair of programs, git\-send\-pack on your local machine, and git\-receive\-pack on the remote machine. The communication between the two over the network internally uses an SSH connection.
+git\-push uses a pair of programs, git\-send\-pack on your local machine, and git\-receive\-pack on the remote machine. The communication between the two over the network internally uses an SSH connection.
 
 Your private repository's git directory is usually .git, but your public repository is often named after the project name, i.e. <project>.git. Let's create such a public repository for project my\-git. After logging into the remote machine, create an empty directory:
 .sp
@@ -1006,7 +1006,7 @@ Then, make that directory into a git repository by running git init, but this ti
 .sp
 .nf
 .ft C
-$ GIT_DIR=my\-git.git git\-init
+$ GIT_DIR=my\-git.git git init
 .ft
 
 .fi
@@ -1024,7 +1024,7 @@ Many installations of sshd do not invoke your shell as the login shell when you 
 .nr an-break-flag 1
 .br
 \fBNote\fR
-If you plan to publish this repository to be accessed over http, you should do chmod +x my\-git.git/hooks/post\-update at this point. This makes sure that every time you push into this repository, git\-update\-server\-info is run.
+If you plan to publish this repository to be accessed over http, you should do chmod +x my\-git.git/hooks/post\-update at this point. This makes sure that every time you push into this repository, git update\-server\-info is run.
 
 Your "public repository" is now ready to accept your changes. Come back to the machine you have your private repository. From there, run this command:
 .sp
@@ -1105,7 +1105,7 @@ If other people are pulling from your repository over dumb transport protocols (
 Push into the public repository from your primary repository.
 .TP
 4.
-git repack the public repository. This establishes a big pack that contains the initial set of objects as the baseline, and possibly git prune if the transport used for pulling from your repository supports packed repositories.
+git\-repack the public repository. This establishes a big pack that contains the initial set of objects as the baseline, and possibly git\-prune if the transport used for pulling from your repository supports packed repositories.
 .TP
 5.
 Keep working in your primary repository. Your changes include modifications of your own, patches you receive via e\-mails, and merges resulting from pulling the "public" repositories of your "subsystem maintainers".
@@ -1116,12 +1116,12 @@ You can repack this private repository whenever you feel like.
 Push your changes to the public repository, and announce it to the public.
 .TP
 7.
-Every once in a while, "git repack" the public repository. Go back to step 5. and continue working.
+Every once in a while, "git\-repack" the public repository. Go back to step 5. and continue working.
 
 A recommended work cycle for a "subsystem maintainer" who works on that project and has an own "public repository" goes like this:
 .TP 3
 1.
-Prepare your work repository, by git clone the public repository of the "project lead". The URL used for the initial cloning is stored in the remote.origin.url configuration variable.
+Prepare your work repository, by git\-clone the public repository of the "project lead". The URL used for the initial cloning is stored in the remote.origin.url configuration variable.
 .TP
 2.
 Prepare a public repository accessible to others, just like the "project lead" person does.
@@ -1130,7 +1130,7 @@ Prepare a public repository accessible to others, just like the "project lead" p
 Copy over the packed files from "project lead" public repository to your public repository, unless the "project lead" repository lives on the same machine as yours. In the latter case, you can use objects/info/alternates file to point at the repository you are borrowing from.
 .TP
 4.
-Push into the public repository from your primary repository. Run git repack, and possibly git prune if the transport used for pulling from your repository supports packed repositories.
+Push into the public repository from your primary repository. Run git\-repack, and possibly git\-prune if the transport used for pulling from your repository supports packed repositories.
 .TP
 5.
 Keep working in your primary repository. Your changes include modifications of your own, patches you receive via e\-mails, and merges resulting from pulling the "public" repositories of your "project lead" and possibly your "sub\-subsystem maintainers".
@@ -1141,12 +1141,12 @@ You can repack this private repository whenever you feel like.
 Push your changes to your public repository, and ask your "project lead" and possibly your "sub\-subsystem maintainers" to pull from it.
 .TP
 7.
-Every once in a while, git repack the public repository. Go back to step 5. and continue working.
+Every once in a while, git\-repack the public repository. Go back to step 5. and continue working.
 
 A recommended work cycle for an "individual developer" who does not have a "public" repository is somewhat different. It goes like this:
 .TP 3
 1.
-Prepare your work repository, by git clone the public repository of the "project lead" (or a "subsystem maintainer", if you work on a subsystem). The URL used for the initial cloning is stored in the remote.origin.url configuration variable.
+Prepare your work repository, by git\-clone the public repository of the "project lead" (or a "subsystem maintainer", if you work on a subsystem). The URL used for the initial cloning is stored in the remote.origin.url configuration variable.
 .TP
 2.
 Do your work in your repository on \fImaster\fR branch.
@@ -1162,7 +1162,7 @@ Use git format\-patch origin to prepare patches for e\-mail submission to your u
 .SH "WORKING WITH OTHERS, SHARED REPOSITORY STYLE"
 If you are coming from CVS background, the style of cooperation suggested in the previous section may be new to you. You do not have to worry. git supports "shared public repository" style of cooperation you are probably more familiar with as well.
 
-See \fBgitcvs\-migration\fR(7)[git for CVS users] for the details.
+See \fBgitcvs\-migration\fR(7) for the details.
 .SH "BUNDLING YOUR WORK TOGETHER"
 It is likely that you will be working on more than one thing at a time. It is easy to manage those more\-or\-less independent tasks using branches with git.
 
@@ -1245,7 +1245,7 @@ Note that you should not do Octopus because you can. An octopus is a valid thing
 Part of the \fBgit\fR(1) suite.
 .SH "REFERENCES"
 .TP 3
-1.\ the git user manual
+1.\ the GIT User Manual
 \%user\-manual.html
 .TP 3
 2.\ Randy Dunlap's presentation

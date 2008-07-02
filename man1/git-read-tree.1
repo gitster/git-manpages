@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-READ\-TREE" "1" "06/10/2008" "Git 1.5.6.rc2.23.gea81e" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,7 +10,7 @@
 .SH "NAME"
 git\-read\-tree \- Reads tree information into the index
 .SH "SYNOPSIS"
-\fIgit\-read\-tree\fR (<tree\-ish> | [[\-m [\-\-trivial] [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u | \-i]] [\-\-exclude\-per\-directory=<gitignore>] [\-\-index\-output=<file>] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
+\fIgit read\-tree\fR (<tree\-ish> | [[\-m [\-\-trivial] [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u | \-i]] [\-\-exclude\-per\-directory=<gitignore>] [\-\-index\-output=<file>] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
 .SH "DESCRIPTION"
 Reads the tree information given by <tree\-ish> into the index, but does not actually \fBupdate\fR any of the files it "caches". (see: \fBgit\-checkout\-index\fR(1))
 
@@ -67,11 +67,11 @@ If \-m is specified, git\-read\-tree can perform 3 kinds of merge, a single tree
 .SS "Single Tree Merge"
 If only 1 tree is specified, git\-read\-tree operates as if the user did not specify \-m, except that if the original index has an entry for a given pathname, and the contents of the path matches with the tree being read, the stat info from the index is used. (In other words, the index's stat()s take precedence over the merged tree's).
 
-That means that if you do a git\-read\-tree \-m <newtree> followed by a git\-checkout\-index \-f \-u \-a, the git\-checkout\-index only checks out the stuff that really changed.
+That means that if you do a git read\-tree \-m <newtree> followed by a git checkout\-index \-f \-u \-a, the git\-checkout\-index only checks out the stuff that really changed.
 
 This is used to avoid unnecessary false hits when git\-diff\-files is run after git\-read\-tree.
 .SS "Two Tree Merge"
-Typically, this is invoked as git\-read\-tree \-m $H $M, where $H is the head commit of the current repository, and $M is the head of a foreign tree, which is simply ahead of $H (i.e. we are in a fast forward situation).
+Typically, this is invoked as git read\-tree \-m $H $M, where $H is the head commit of the current repository, and $M is the head of a foreign tree, which is simply ahead of $H (i.e. we are in a fast forward situation).
 
 When two trees are specified, the user is telling git\-read\-tree the following:
 .TP 3
@@ -81,7 +81,7 @@ The current index and work tree is derived from $H, but the user may have local 
 2.
 The user wants to fast\-forward to $M.
 
-In this case, the git\-read\-tree \-m $H $M command makes sure that no local change is lost as the result of this "merge". Here are the "carry forward" rules:
+In this case, the git read\-tree \-m $H $M command makes sure that no local change is lost as the result of this "merge". Here are the "carry forward" rules:
 .sp
 .nf
   I (index)           H        M        Result
@@ -132,7 +132,7 @@ In this case, the git\-read\-tree \-m $H $M command makes sure that no local cha
 .fi
 In all "keep index" cases, the index entry stays as in the original index file. If the entry were not up to date, git\-read\-tree keeps the copy in the work tree intact when operating under the \-u flag.
 
-When this form of git\-read\-tree returns successfully, you can see what "local changes" you made are carried forward by running git\-diff\-index \-\-cached $M. Note that this does not necessarily match git\-diff\-index \-\-cached $H would have produced before such a two tree merge. This is because of cases 18 and 19 \-\-\- if you already had the changes in $M (e.g. maybe you picked it up via e\-mail in a patch form), git\-diff\-index \-\-cached $H would have told you about the change before this merge, but it would not show in git\-diff\-index \-\-cached $M output after two\-tree merge.
+When this form of git\-read\-tree returns successfully, you can see what "local changes" you made are carried forward by running git diff\-index \-\-cached $M. Note that this does not necessarily match git diff\-index \-\-cached $H would have produced before such a two tree merge. This is because of cases 18 and 19 \-\-\- if you already had the changes in $M (e.g. maybe you picked it up via e\-mail in a patch form), git diff\-index \-\-cached $H would have told you about the change before this merge, but it would not show in git diff\-index \-\-cached $M output after two\-tree merge.
 .SS "3\-Way Merge"
 Each "index" entry has two bits worth of "stage" state. stage 0 is the normal one, and is the only one you'd see in any kind of normal use.
 
@@ -142,7 +142,7 @@ This means that you can do
 .sp
 .nf
 .ft C
-$ git\-read\-tree \-m <tree1> <tree2> <tree3>
+$ git read\-tree \-m <tree1> <tree2> <tree3>
 .ft
 
 .fi
@@ -192,8 +192,8 @@ This is done to prevent you from losing your work\-in\-progress changes, and mix
 .sp
 .nf
 .ft C
-$ JC=`git\-rev\-parse \-\-verify "HEAD^0"`
-$ git\-checkout\-index \-f \-u \-a $JC
+$ JC=`git rev\-parse \-\-verify "HEAD^0"`
+$ git checkout\-index \-f \-u \-a $JC
 .ft
 
 .fi
@@ -201,7 +201,7 @@ You do random edits, without running git\-update\-index. And then you notice tha
 .sp
 .nf
 .ft C
-$ git\-fetch git://.... linus
+$ git fetch git://.... linus
 $ LT=`cat .git/FETCH_HEAD`
 .ft
 
@@ -210,16 +210,16 @@ Your work tree is still based on your HEAD ($JC), but you have some edits since.
 .sp
 .nf
 .ft C
-$ git\-read\-tree \-m \-u `git\-merge\-base $JC $LT` $JC $LT
-$ git\-merge\-index git\-merge\-one\-file \-a
+$ git read\-tree \-m \-u `git merge\-base $JC $LT` $JC $LT
+$ git merge\-index git\-merge\-one\-file \-a
 $ echo "Merge with Linus" | \\
-  git\-commit\-tree `git\-write\-tree` \-p $JC \-p $LT
+  git commit\-tree `git write\-tree` \-p $JC \-p $LT
 .ft
 
 .fi
 what you would commit is a pure merge between $JC and $LT without your work\-in\-progress changes, and your work tree would be updated to the result of the merge.
 
-However, if you have local changes in the working tree that would be overwritten by this merge,git\-read\-tree will refuse to run to prevent your changes from being lost.
+However, if you have local changes in the working tree that would be overwritten by this merge, git\-read\-tree will refuse to run to prevent your changes from being lost.
 
 In other words, there is no need to worry about what exists only in the working tree. When you have local changes in a part of the project that is not involved in the merge, your changes do not interfere with the merge, and are kept intact. When they \fBdo\fR interfere, the merge does not even start (git\-read\-tree complains loudly and fails without modifying anything). In such a case, you can simply continue doing what you were in the middle of doing, and when your working tree is ready (i.e. you have finished your work\-in\-progress), attempt the merge again.
 .SH "SEE ALSO"

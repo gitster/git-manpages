@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FILTER\-BRANCH" "1" "06/08/2008" "Git 1.5.6.rc2.15.g457bb" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -12,7 +12,7 @@ git\-filter\-branch \- Rewrite branches
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-filter\-branch\fR [\-\-env\-filter <command>] [\-\-tree\-filter <command>]
+\fIgit filter\-branch\fR [\-\-env\-filter <command>] [\-\-tree\-filter <command>]
         [\-\-index\-filter <command>] [\-\-parent\-filter <command>]
         [\-\-msg\-filter <command>] [\-\-commit\-filter <command>]
         [\-\-tag\-name\-filter <command>] [\-\-subdirectory\-filter <directory>]
@@ -45,17 +45,17 @@ This is the filter for rewriting the tree and its contents. The argument is eval
 This is the filter for rewriting the index. It is similar to the tree filter but does not check out the tree, which makes it much faster. For hairy cases, see \fBgit\-update\-index\fR(1).
 .TP
 \-\-parent\-filter <command>
-This is the filter for rewriting the commit's parent list. It will receive the parent string on stdin and shall output the new parent string on stdout. The parent string is in a format accepted by \fBgit\-commit\-tree\fR(1): empty for the initial commit, "\-p parent" for a normal commit and "\-p parent1 \-p parent2 \-p parent3 \&..." for a merge commit.
+This is the filter for rewriting the commit's parent list. It will receive the parent string on stdin and shall output the new parent string on stdout. The parent string is in the format described in \fBgit\-commit\-tree\fR(1): empty for the initial commit, "\-p parent" for a normal commit and "\-p parent1 \-p parent2 \-p parent3 \&..." for a merge commit.
 .TP
 \-\-msg\-filter <command>
 This is the filter for rewriting the commit messages. The argument is evaluated in the shell with the original commit message on standard input; its standard output is used as the new commit message.
 .TP
 \-\-commit\-filter <command>
-This is the filter for performing the commit. If this filter is specified, it will be called instead of the \fBgit\-commit\-tree\fR(1) command, with arguments of the form "<TREE_ID> [\-p <PARENT_COMMIT_ID>]\&..." and the log message on stdin. The commit id is expected on stdout.
+This is the filter for performing the commit. If this filter is specified, it will be called instead of the git\-commit\-tree command, with arguments of the form "<TREE_ID> [\-p <PARENT_COMMIT_ID>]\&..." and the log message on stdin. The commit id is expected on stdout.
 
 As a special extension, the commit filter may emit multiple commit ids; in that case, the rewritten children of the original commit will have all of them as parents.
 
-You can use the \fImap\fR convenience function in this filter, and other convenience functions, too. For example, calling \fIskip_commit "$@"\fR will leave out the current commit (but not its changes! If you want that, use \fBgit\-rebase\fR(1) instead).
+You can use the \fImap\fR convenience function in this filter, and other convenience functions, too. For example, calling \fIskip_commit "$@"\fR will leave out the current commit (but not its changes! If you want that, use git\-rebase instead).
 .TP
 \-\-tag\-name\-filter <command>
 This is the filter for rewriting tag names. When passed, it will be called for every tag ref that points to a rewritten object (or to a tag object which points to a rewritten object). The original tag name is passed via standard input, and the new tag name is expected on standard output.
@@ -77,7 +77,7 @@ Use this option to set the path to the temporary directory used for rewriting. W
 git filter\-branch refuses to start with an existing temporary directory or when there are already refs starting with \fIrefs/original/\fR, unless forced.
 .TP
 <rev\-list\-options>
-When options are given after the new branch name, they will be passed to \fBgit\-rev\-list\fR(1). Only commits in the resulting output will be filtered, although the filtered commits can still reference parents which are outside of that set.
+When options are given after the new branch name, they will be passed to git\-rev\-list. Only commits in the resulting output will be filtered, although the filtered commits can still reference parents which are outside of that set.
 .SH "EXAMPLES"
 Suppose you want to remove a file (containing confidential information or copyright violation) from all commits:
 .sp
@@ -168,9 +168,9 @@ git filter\-branch \-\-msg\-filter '
 .ft
 
 .fi
-To restrict rewriting to only part of the history, specify a revision range in addition to the new branch name. The new branch name will point to the top\-most revision that a \fIgit rev\-list\fR of this range will print.
+To restrict rewriting to only part of the history, specify a revision range in addition to the new branch name. The new branch name will point to the top\-most revision that a git\-rev\-list of this range will print.
 
-\fBNOTE\fR the changes introduced by the commits, and which are not reverted by subsequent commits, will still be in the rewritten branch. If you want to throw out _changes_ together with the commits, you should use the interactive mode of \fBgit\-rebase\fR(1).
+\fBNOTE\fR the changes introduced by the commits, and which are not reverted by subsequent commits, will still be in the rewritten branch. If you want to throw out _changes_ together with the commits, you should use the interactive mode of git\-rebase.
 
 Consider this history:
 .sp
