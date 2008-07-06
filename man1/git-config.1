@@ -1,16 +1,20 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-CONFIG" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-config
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-CONFIG" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-config \- Get and set repository or global options
+git-config - Get and set repository or global options
 .SH "SYNOPSIS"
 .sp
+.RS 4
 .nf
 \fIgit config\fR [<file\-option>] [type] [\-z|\-\-null] name [value [value_regex]]
 \fIgit config\fR [<file\-option>] [type] \-\-add name value
@@ -26,847 +30,1273 @@ git\-config \- Get and set repository or global options
 \fIgit config\fR [<file\-option>] \-\-get\-color name [default]
 \fIgit config\fR [<file\-option>] \-\-get\-colorbool name [stdout\-is\-tty]
 .fi
+.RE
 .SH "DESCRIPTION"
-You can query/set/replace/unset options with this command. The name is actually the section and the key separated by a dot, and the value will be escaped.
+You can query/set/replace/unset options with this command\. The name is actually the section and the key separated by a dot, and the value will be escaped\.
 
-Multiple lines can be added to an option by using the \fI\-\-add\fR option. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given. Only the existing values that match the regexp are updated or unset. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq).
+Multiple lines can be added to an option by using the \fI\-\-add\fR option\. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given\. Only the existing values that match the regexp are updated or unset\. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq)\.
 
-The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make git\-config ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool). If no type specifier is passed, no checks or transformations are performed on the value.
+The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make \fIgit\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool)\. If no type specifier is passed, no checks or transformations are performed on the value\.
 
-The file\-option can be one of \fI\-\-system\fR, \fI\-\-global\fR or \fI\-\-file\fR which specify where the values will be read from or written to. The default is to assume the config file of the current repository, .git/config unless defined otherwise with GIT_DIR and GIT_CONFIG (see the section called \(lqFILES\(rq).
+The file\-option can be one of \fI\-\-system\fR, \fI\-\-global\fR or \fI\-\-file\fR which specify where the values will be read from or written to\. The default is to assume the config file of the current repository, \.git/config unless defined otherwise with GIT_DIR and GIT_CONFIG (see the section called \(lqFILES\(rq)\.
 
 This command will fail if:
-.TP 3
-1.
-The config file is invalid,
-.TP
-2.
-Can not write to the config file,
-.TP
-3.
-no section was provided,
-.TP
-4.
-the section or key is invalid,
-.TP
-5.
-you try to unset an option which does not exist,
-.TP
-6.
-you try to unset/set an option for which multiple lines match, or
-.TP
-7.
-you use \fI\-\-global\fR option without $HOME being properly set.
-.SH "OPTIONS"
-.TP
-\-\-replace\-all
-Default behavior is to replace at most one line. This replaces all lines matching the key (and optionally the value_regex).
-.TP
-\-\-add
-Adds a new line to the option without altering any existing values. This is the same as providing \fI^$\fR as the value_regex.
-.TP
-\-\-get
-Get the value for a given key (optionally filtered by a regex matching the value). Returns error code 1 if the key was not found and error code 2 if multiple key values were found.
-.TP
-\-\-get\-all
-Like get, but does not fail if the number of values for the key is not exactly one.
-.TP
-\-\-get\-regexp
-Like \-\-get\-all, but interprets the name as a regular expression. Also outputs the key names.
-.TP
-\-\-global
-For writing options: write to global ~/.gitconfig file rather than the repository .git/config.
 
-For reading options: read only from global ~/.gitconfig rather than from all available files.
-
-See also the section called \(lqFILES\(rq.
-.TP
-\-\-system
-For writing options: write to system\-wide $(prefix)/etc/gitconfig rather than the repository .git/config.
-
-For reading options: read only from system\-wide $(prefix)/etc/gitconfig rather than from all available files.
-
-See also the section called \(lqFILES\(rq.
-.TP
-\-f config\-file , \-\-file config\-file
-Use the given config file instead of the one specified by GIT_CONFIG.
-.TP
-\-\-remove\-section
-Remove the given section from the configuration file.
-.TP
-\-\-rename\-section
-Rename the given section to a new name.
-.TP
-\-\-unset
-Remove the line matching the key from config file.
-.TP
-\-\-unset\-all
-Remove all lines matching the key from config file.
-.TP
-\-l , \-\-list
-List all variables set in config file.
-.TP
-\-\-bool
-git\-config will ensure that the output is "true" or "false"
-.TP
-\-\-int
-git\-config will ensure that the output is a simple decimal number. An optional value suffix of \fIk\fR, \fIm\fR, or \fIg\fR in the config file will cause the value to be multiplied by 1024, 1048576, or 1073741824 prior to output.
-.TP
-\-z , \-\-null
-For all options that output values and/or keys, always end values with the null character (instead of a newline). Use newline instead as a delimiter between key and value. This allows for secure parsing of the output without getting confused e.g. by values that contain line breaks.
-.TP
-\-\-get\-colorbool name [stdout\-is\-tty]
-Find the color setting for name (e.g. color.diff) and output "true" or "false". stdout\-is\-tty should be either "true" or "false", and is taken into account when configuration says "auto". If stdout\-is\-tty is missing, then checks the standard output of the command itself, and exits with status 0 if color is to be used, or exits with status 1 otherwise. When the color setting for name is undefined, the command uses color.ui as fallback.
-.TP
-\-\-get\-color name default
-Find the color configured for name (e.g. color.diff.new) and output it as the ANSI color escape sequence to the standard output. The optional default parameter is used instead, if there is no color configured for name.
-.SH "FILES"
-If not set explicitly with \fI\-\-file\fR, there are three files where git\-config will search for configuration options:
-.TP
-$GIT_DIR/config
-Repository specific configuration file. (The filename is of course relative to the repository root, not the working directory.)
-.TP
-~/.gitconfig
-User\-specific configuration file. Also called "global" configuration file.
-.TP
-$(prefix)/etc/gitconfig
-System\-wide configuration file.
-
-If no further options are given, all reading options will read all of these files that are available. If the global or the system\-wide configuration file are not available they will be ignored. If the repository configuration file is not available or readable, git\-config will exit with a non\-zero error code. However, in neither case will an error message be issued.
-
-All writing options will per default write to the repository specific configuration file. Note that this also affects options like \fI\-\-replace\-all\fR and \fI\-\-unset\fR. \fBgit\-config\fR\fB will only ever change one file at a time\fR.
-
-You can override these rules either by command line options or by environment variables. The \fI\-\-global\fR and the \fI\-\-system\fR options will limit the file used to the global or system\-wide file respectively. The GIT_CONFIG environment variable has a similar effect, but you can specify any filename you want.
-
-The GIT_CONFIG_LOCAL environment variable on the other hand only changes the name used instead of the repository configuration file. The global and the system\-wide configuration files will still be read. (For writing options this will obviously result in the same behavior as using GIT_CONFIG.)
-.SH "ENVIRONMENT"
-.TP
-GIT_CONFIG
-Take the configuration from the given file instead of .git/config. Using the "\-\-global" option forces this to ~/.gitconfig. Using the "\-\-system" option forces this to $(prefix)/etc/gitconfig.
-.TP
-GIT_CONFIG_LOCAL
-Take the configuration from the given file instead if .git/config. Still read the global and the system\-wide configuration files, though.
-
-See also the section called \(lqFILES\(rq.
-.SH "EXAMPLES"
-Given a .git/config like this:
 .sp
+.RS 4
+\h'-04' 1.\h'+02'The config file is invalid,
+.RE
+.sp
+.RS 4
+\h'-04' 2.\h'+02'Can not write to the config file,
+.RE
+.sp
+.RS 4
+\h'-04' 3.\h'+02'no section was provided,
+.RE
+.sp
+.RS 4
+\h'-04' 4.\h'+02'the section or key is invalid,
+.RE
+.sp
+.RS 4
+\h'-04' 5.\h'+02'you try to unset an option which does not exist,
+.RE
+.sp
+.RS 4
+\h'-04' 6.\h'+02'you try to unset/set an option for which multiple lines match, or
+.RE
+.sp
+.RS 4
+\h'-04' 7.\h'+02'you use \fI\-\-global\fR option without $HOME being properly set\.
+.RE
+.SH "OPTIONS"
+.PP
+\-\-replace\-all
+.RS 4
+Default behavior is to replace at most one line\. This replaces all lines matching the key (and optionally the value_regex)\.
+.RE
+.PP
+\-\-add
+.RS 4
+Adds a new line to the option without altering any existing values\. This is the same as providing \fI^$\fR as the value_regex\.
+.RE
+.PP
+\-\-get
+.RS 4
+Get the value for a given key (optionally filtered by a regex matching the value)\. Returns error code 1 if the key was not found and error code 2 if multiple key values were found\.
+.RE
+.PP
+\-\-get\-all
+.RS 4
+Like get, but does not fail if the number of values for the key is not exactly one\.
+.RE
+.PP
+\-\-get\-regexp
+.RS 4
+Like \-\-get\-all, but interprets the name as a regular expression\. Also outputs the key names\.
+.RE
+.PP
+\-\-global
+.RS 4
+For writing options: write to global ~/\.gitconfig file rather than the repository \.git/config\.
+
+For reading options: read only from global ~/\.gitconfig rather than from all available files\.
+
+See also the section called \(lqFILES\(rq\.
+.RE
+.PP
+\-\-system
+.RS 4
+For writing options: write to system\-wide $(prefix)/etc/gitconfig rather than the repository \.git/config\.
+
+For reading options: read only from system\-wide $(prefix)/etc/gitconfig rather than from all available files\.
+
+See also the section called \(lqFILES\(rq\.
+.RE
+.PP
+\-f config\-file, \-\-file config\-file
+.RS 4
+Use the given config file instead of the one specified by GIT_CONFIG\.
+.RE
+.PP
+\-\-remove\-section
+.RS 4
+Remove the given section from the configuration file\.
+.RE
+.PP
+\-\-rename\-section
+.RS 4
+Rename the given section to a new name\.
+.RE
+.PP
+\-\-unset
+.RS 4
+Remove the line matching the key from config file\.
+.RE
+.PP
+\-\-unset\-all
+.RS 4
+Remove all lines matching the key from config file\.
+.RE
+.PP
+\-l, \-\-list
+.RS 4
+List all variables set in config file\.
+.RE
+.PP
+\-\-bool
+.RS 4
+\fIgit\-config\fR will ensure that the output is "true" or "false"
+.RE
+.PP
+\-\-int
+.RS 4
+\fIgit\-config\fR will ensure that the output is a simple decimal number\. An optional value suffix of \fIk\fR, \fIm\fR, or \fIg\fR in the config file will cause the value to be multiplied by 1024, 1048576, or 1073741824 prior to output\.
+.RE
+.PP
+\-z, \-\-null
+.RS 4
+For all options that output values and/or keys, always end values with the null character (instead of a newline)\. Use newline instead as a delimiter between key and value\. This allows for secure parsing of the output without getting confused e\.g\. by values that contain line breaks\.
+.RE
+.PP
+\-\-get\-colorbool name [stdout\-is\-tty]
+.RS 4
+Find the color setting for name (e\.g\. color\.diff) and output "true" or "false"\. stdout\-is\-tty should be either "true" or "false", and is taken into account when configuration says "auto"\. If stdout\-is\-tty is missing, then checks the standard output of the command itself, and exits with status 0 if color is to be used, or exits with status 1 otherwise\. When the color setting for name is undefined, the command uses color\.ui as fallback\.
+.RE
+.PP
+\-\-get\-color name default
+.RS 4
+Find the color configured for name (e\.g\. color\.diff\.new) and output it as the ANSI color escape sequence to the standard output\. The optional default parameter is used instead, if there is no color configured for name\.
+.RE
+.SH "FILES"
+If not set explicitly with \fI\-\-file\fR, there are three files where \fIgit\-config\fR will search for configuration options:
+.PP
+$GIT_DIR/config
+.RS 4
+Repository specific configuration file\. (The filename is of course relative to the repository root, not the working directory\.)
+.RE
+.PP
+~/\.gitconfig
+.RS 4
+User\-specific configuration file\. Also called "global" configuration file\.
+.RE
+.PP
+$(prefix)/etc/gitconfig
+.RS 4
+System\-wide configuration file\.
+.RE
+If no further options are given, all reading options will read all of these files that are available\. If the global or the system\-wide configuration file are not available they will be ignored\. If the repository configuration file is not available or readable, \fIgit\-config\fR will exit with a non\-zero error code\. However, in neither case will an error message be issued\.
+
+All writing options will per default write to the repository specific configuration file\. Note that this also affects options like \fI\-\-replace\-all\fR and \fI\-\-unset\fR\. \fB\fIgit\-config\fR\fR\fB will only ever change one file at a time\fR\.
+
+You can override these rules either by command line options or by environment variables\. The \fI\-\-global\fR and the \fI\-\-system\fR options will limit the file used to the global or system\-wide file respectively\. The GIT_CONFIG environment variable has a similar effect, but you can specify any filename you want\.
+
+The GIT_CONFIG_LOCAL environment variable on the other hand only changes the name used instead of the repository configuration file\. The global and the system\-wide configuration files will still be read\. (For writing options this will obviously result in the same behavior as using GIT_CONFIG\.)
+.SH "ENVIRONMENT"
+.PP
+GIT_CONFIG
+.RS 4
+Take the configuration from the given file instead of \.git/config\. Using the "\-\-global" option forces this to ~/\.gitconfig\. Using the "\-\-system" option forces this to $(prefix)/etc/gitconfig\.
+.RE
+.PP
+GIT_CONFIG_LOCAL
+.RS 4
+Take the configuration from the given file instead if \.git/config\. Still read the global and the system\-wide configuration files, though\.
+.RE
+See also the section called \(lqFILES\(rq\.
+.SH "EXAMPLES"
+Given a \.git/config like this:
+
+.sp
+.RS 4
 .nf
 #
 # This is the config file, and
-# a '#' or ';' character indicates
+# a \'#\' or \';\' character indicates
 # a comment
 #
 .fi
+.RE
 .sp
+.RS 4
 .nf
 ; core variables
 [core]
-        ; Don't trust file modes
+        ; Don\'t trust file modes
         filemode = false
 .fi
+.RE
 .sp
+.RS 4
 .nf
 ; Our diff algorithm
 [diff]
         external = "/usr/local/bin/gnu\-diff \-u"
         renames = true
 .fi
+.RE
 .sp
+.RS 4
 .nf
 ; Proxy settings
 [core]
-        gitproxy="proxy\-command" for kernel.org
+        gitproxy="proxy\-command" for kernel\.org
         gitproxy=default\-proxy ; for all the rest
 .fi
+.RE
 you can set the filemode to true with
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config core.filemode true
-.ft
+
+\.ft C
+% git config core\.filemode true
+\.ft
 
 .fi
-The hypothetical proxy command entries actually have a postfix to discern what URL they apply to. Here is how to change the entry for kernel.org to "ssh".
+.RE
+The hypothetical proxy command entries actually have a postfix to discern what URL they apply to\. Here is how to change the entry for kernel\.org to "ssh"\.
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config core.gitproxy '"ssh" for kernel.org' 'for kernel.org$'
-.ft
+
+\.ft C
+% git config core\.gitproxy \'"ssh" for kernel\.org\' \'for kernel\.org$\'
+\.ft
 
 .fi
-This makes sure that only the key/value pair for kernel.org is replaced.
+.RE
+This makes sure that only the key/value pair for kernel\.org is replaced\.
 
 To delete the entry for renames, do
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config \-\-unset diff.renames
-.ft
+
+\.ft C
+% git config \-\-unset diff\.renames
+\.ft
 
 .fi
-If you want to delete an entry for a multivar (like core.gitproxy above), you have to provide a regex matching the value of exactly one line.
+.RE
+If you want to delete an entry for a multivar (like core\.gitproxy above), you have to provide a regex matching the value of exactly one line\.
 
 To query the value for a given key, do
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config \-\-get core.filemode
-.ft
+
+\.ft C
+% git config \-\-get core\.filemode
+\.ft
 
 .fi
+.RE
 or
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config core.filemode
-.ft
+
+\.ft C
+% git config core\.filemode
+\.ft
 
 .fi
+.RE
 or, to query a multivar:
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config \-\-get core.gitproxy "for kernel.org$"
-.ft
+
+\.ft C
+% git config \-\-get core\.gitproxy "for kernel\.org$"
+\.ft
 
 .fi
+.RE
 If you want to know all the values for a multivar, do:
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config \-\-get\-all core.gitproxy
-.ft
+
+\.ft C
+% git config \-\-get\-all core\.gitproxy
+\.ft
 
 .fi
-If you like to live dangerous, you can replace \fBall\fR core.gitproxy by a new one with
+.RE
+If you like to live dangerous, you can replace \fBall\fR core\.gitproxy by a new one with
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config \-\-replace\-all core.gitproxy ssh
-.ft
+
+\.ft C
+% git config \-\-replace\-all core\.gitproxy ssh
+\.ft
 
 .fi
-However, if you really only want to replace the line for the default proxy, i.e. the one without a "for \&..." postfix, do something like this:
+.RE
+However, if you really only want to replace the line for the default proxy, i\.e\. the one without a "for \&..." postfix, do something like this:
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config core.gitproxy ssh '! for '
-.ft
+
+\.ft C
+% git config core\.gitproxy ssh \'! for \'
+\.ft
 
 .fi
+.RE
 To actually match only values with an exclamation mark, you have to
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config section.key value '[!]'
-.ft
+
+\.ft C
+% git config section\.key value \'[!]\'
+\.ft
 
 .fi
+.RE
 To add a new proxy, without altering any of the existing ones, use
+
 .sp
+.RS 4
 .nf
-.ft C
-% git config core.gitproxy '"proxy\-command" for example.com'
-.ft
+
+\.ft C
+% git config core\.gitproxy \'"proxy\-command" for example\.com\'
+\.ft
 
 .fi
+.RE
 An example to use customized color from the configuration in your script:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 #!/bin/sh
-WS=$(git config \-\-get\-color color.diff.whitespace "blue reverse")
+WS=$(git config \-\-get\-color color\.diff\.whitespace "blue reverse")
 RESET=$(git config \-\-get\-color "" "reset")
 echo "${WS}your whitespace color or blue reverse${RESET}"
-.ft
+\.ft
 
 .fi
+.RE
 .SH "CONFIGURATION FILE"
-The git configuration file contains a number of variables that affect the git command's behavior. .git/config file for each repository is used to store the information for that repository, and $HOME/.gitconfig is used to store per user information to give fallback values for .git/config file. The file /etc/gitconfig can be used to store system\-wide defaults.
+The git configuration file contains a number of variables that affect the git command\'s behavior\. \.git/config file for each repository is used to store the information for that repository, and $HOME/\.gitconfig is used to store per user information to give fallback values for \.git/config file\. The file /etc/gitconfig can be used to store system\-wide defaults\.
 
-They can be used by both the git plumbing and the porcelains. The variables are divided into sections, where in the fully qualified variable name the variable itself is the last dot\-separated segment and the section name is everything before the last dot. The variable names are case\-insensitive and only alphanumeric characters are allowed. Some variables may appear multiple times.
+They can be used by both the git plumbing and the porcelains\. The variables are divided into sections, where in the fully qualified variable name the variable itself is the last dot\-separated segment and the section name is everything before the last dot\. The variable names are case\-insensitive and only alphanumeric characters are allowed\. Some variables may appear multiple times\.
 .SS "Syntax"
-The syntax is fairly flexible and permissive; whitespaces are mostly ignored. The \fI#\fR and \fI;\fR characters begin comments to the end of line, blank lines are ignored.
+The syntax is fairly flexible and permissive; whitespaces are mostly ignored\. The \fI#\fR and \fI;\fR characters begin comments to the end of line, blank lines are ignored\.
 
-The file consists of sections and variables. A section begins with the name of the section in square brackets and continues until the next section begins. Section names are not case sensitive. Only alphanumeric characters, \fI\-\fR and \fI.\fR are allowed in section names. Each variable must belong to some section, which means that there must be section header before first setting of a variable.
+The file consists of sections and variables\. A section begins with the name of the section in square brackets and continues until the next section begins\. Section names are not case sensitive\. Only alphanumeric characters, \fI\-\fR and \fI\.\fR are allowed in section names\. Each variable must belong to some section, which means that there must be section header before first setting of a variable\.
 
-Sections can be further divided into subsections. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in example below:
+Sections can be further divided into subsections\. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in example below:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
         [section "subsection"]
-.ft
+
+\.ft
 
 .fi
-Subsection names can contain any characters except newline (doublequote \fI"\fR and backslash have to be escaped as \fI\\"\fR and \fI\\\\\fR, respectively) and are case sensitive. Section header cannot span multiple lines. Variables may belong directly to a section or to a given subsection. You can have [section] if you have [section "subsection"], but you don't need to.
+.RE
+Subsection names can contain any characters except newline (doublequote \fI"\fR and backslash have to be escaped as \fI\e"\fR and \fI\e\e\fR, respectively) and are case sensitive\. Section header cannot span multiple lines\. Variables may belong directly to a section or to a given subsection\. You can have [section] if you have [section "subsection"], but you don\'t need to\.
 
-There is also (case insensitive) alternative [section.subsection] syntax. In this syntax subsection names follow the same restrictions as for section name.
+There is also (case insensitive) alternative [section\.subsection] syntax\. In this syntax subsection names follow the same restrictions as for section name\.
 
-All the other lines are recognized as setting variables, in the form \fIname = value\fR. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true". The variable names are case\-insensitive and only alphanumeric characters and \fI\-\fR are allowed. There can be more than one value for a given variable; we say then that variable is multivalued.
+All the other lines are recognized as setting variables, in the form \fIname = value\fR\. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true"\. The variable names are case\-insensitive and only alphanumeric characters and \fI\-\fR are allowed\. There can be more than one value for a given variable; we say then that variable is multivalued\.
 
-Leading and trailing whitespace in a variable value is discarded. Internal whitespace within a variable value is retained verbatim.
+Leading and trailing whitespace in a variable value is discarded\. Internal whitespace within a variable value is retained verbatim\.
 
-The values following the equals sign in variable assign are all either a string, an integer, or a boolean. Boolean values may be given as yes/no, 0/1 or true/false. Case is not significant in boolean values, when converting value to the canonical form using \fI\-\-bool\fR type specifier; git\-config will ensure that the output is "true" or "false".
+The values following the equals sign in variable assign are all either a string, an integer, or a boolean\. Boolean values may be given as yes/no, 0/1 or true/false\. Case is not significant in boolean values, when converting value to the canonical form using \fI\-\-bool\fR type specifier; \fIgit\-config\fR will ensure that the output is "true" or "false"\.
 
-String values may be entirely or partially enclosed in double quotes. You need to enclose variable value in double quotes if you want to preserve leading or trailing whitespace, or if variable value contains beginning of comment characters (if it contains \fI#\fR or \fI;\fR). Double quote \fI"\fR and backslash \fI\\\fR characters in variable value must be escaped: use \fI\\"\fR for \fI"\fR and \fI\\\\\fR for \fI\\\fR.
+String values may be entirely or partially enclosed in double quotes\. You need to enclose variable value in double quotes if you want to preserve leading or trailing whitespace, or if variable value contains beginning of comment characters (if it contains \fI#\fR or \fI;\fR)\. Double quote \fI"\fR and backslash \fI\e\fR characters in variable value must be escaped: use \fI\e"\fR for \fI"\fR and \fI\e\e\fR for \fI\e\fR\.
 
-The following escape sequences (beside \fI\\"\fR and \fI\\\\\fR) are recognized: \fI\\n\fR for newline character (NL), \fI\\t\fR for horizontal tabulation (HT, TAB) and \fI\\b\fR for backspace (BS). No other char escape sequence, nor octal char sequences are valid.
+The following escape sequences (beside \fI\e"\fR and \fI\e\e\fR) are recognized: \fI\en\fR for newline character (NL), \fI\et\fR for horizontal tabulation (HT, TAB) and \fI\eb\fR for backspace (BS)\. No other char escape sequence, nor octal char sequences are valid\.
 
-Variable value ending in a \fI\\\fR is continued on the next line in the customary UNIX fashion.
+Variable value ending in a \fI\e\fR is continued on the next line in the customary UNIX fashion\.
 
-Some variables may require special value format.
+Some variables may require special value format\.
 .SS "Example"
 .sp
+.RS 4
 .nf
 # Core variables
 [core]
-        ; Don't trust file modes
+        ; Don\'t trust file modes
         filemode = false
 .fi
+.RE
 .sp
+.RS 4
 .nf
 # Our diff algorithm
 [diff]
         external = "/usr/local/bin/gnu\-diff \-u"
         renames = true
 .fi
+.RE
 .sp
+.RS 4
 .nf
 [branch "devel"]
         remote = origin
         merge = refs/heads/devel
 .fi
+.RE
 .sp
+.RS 4
 .nf
 # Proxy settings
 [core]
-        gitProxy="ssh" for "kernel.org"
+        gitProxy="ssh" for "kernel\.org"
         gitProxy=default\-proxy ; for the rest
 .fi
+.RE
 .SS "Variables"
-Note that this list is non\-comprehensive and not necessarily complete. For command\-specific variables, you will find a more detailed description in the appropriate manual page. You will find a description of non\-core porcelain configuration variables in the respective porcelain documentation.
-.TP
-core.fileMode
-If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT. See \fBgit\-update\-index\fR(1). True by default.
-.TP
-core.quotepath
-The commands that output paths (e.g. ls\-files, diff), when not given the \-z option, will quote "unusual" characters in the pathname by enclosing the pathname in a double\-quote pair and with backslashes the same way strings in C source code are quoted. If this variable is set to false, the bytes higher than 0x80 are not quoted but output as verbatim. Note that double quote, backslash and control characters are always quoted without \-z regardless of the setting of this variable.
-.TP
-core.autocrlf
-If true, makes git convert CRLF at the end of lines in text files to LF when reading from the filesystem, and convert in reverse when writing to the filesystem. The variable can be set to \fIinput\fR, in which case the conversion happens only while reading from the filesystem but files are written out with LF at the end of lines. Currently, which paths to consider "text" (i.e. be subjected to the autocrlf mechanism) is decided purely based on the contents.
-.TP
-core.safecrlf
-If true, makes git check if converting CRLF as controlled by core.autocrlf is reversible. Git will verify if a command modifies a file in the work tree either directly or indirectly. For example, committing a file followed by checking out the same file should yield the original file in the work tree. If this is not the case for the current setting of core.autocrlf, git will reject the file. The variable can be set to "warn", in which case git will only warn about an irreversible conversion but continue the operation.
-
-CRLF conversion bears a slight chance of corrupting data. autocrlf=true will convert CRLF to LF during commit and LF to CRLF during checkout. A file that contains a mixture of LF and CRLF before the commit cannot be recreated by git. For text files this is the right thing to do: it corrects line endings such that we have only LF line endings in the repository. But for binary files that are accidentally classified as text the conversion can corrupt data.
-
-If you recognize such corruption early you can easily fix it by setting the conversion type explicitly in .gitattributes. Right after committing you still have the original file in your work tree and this file is not yet corrupted. You can explicitly tell git that this file is binary and git will handle the file appropriately.
-
-Unfortunately, the desired effect of cleaning up text files with mixed line endings and the undesired effect of corrupting binary files cannot be distinguished. In both cases CRLFs are removed in an irreversible way. For text files this is the right thing to do because CRLFs are line endings, while for binary files converting CRLFs corrupts data.
-
-Note, this safety check does not mean that a checkout will generate a file identical to the original file for a different setting of core.autocrlf, but only for the current one. For example, a text file with LF would be accepted with core.autocrlf=input and could later be checked out with core.autocrlf=true, in which case the resulting file would contain CRLF, although the original file contained LF. However, in both work trees the line endings would be consistent, that is either all LF or all CRLF, but never mixed. A file with mixed line endings would be reported by the core.safecrlf mechanism.
-.TP
-core.symlinks
-If false, symbolic links are checked out as small plain files that contain the link text. \fBgit\-update\-index\fR(1) and \fBgit\-add\fR(1) will not change the recorded type to regular file. Useful on filesystems like FAT that do not support symbolic links. True by default.
-.TP
-core.gitProxy
-A "proxy command" to execute (as \fIcommand host port\fR) instead of establishing direct connection to the remote server when using the git protocol for fetching. If the variable value is in the "COMMAND for DOMAIN" format, the command is applied only on hostnames ending with the specified domain string. This variable may be set multiple times and is matched in the given order; the first match wins.
-
-Can be overridden by the \fIGIT_PROXY_COMMAND\fR environment variable (which always applies universally, without the special "for" handling).
-.TP
-core.ignoreStat
-If true, commands which modify both the working tree and the index will mark the updated paths with the "assume unchanged" bit in the index. These marked files are then assumed to stay unchanged in the working copy, until you mark them otherwise manually \- Git will not detect the file changes by lstat() calls. This is useful on systems where those are very slow, such as Microsoft Windows. See \fBgit\-update\-index\fR(1). False by default.
-.TP
-core.preferSymlinkRefs
-Instead of the default "symref" format for HEAD and other symbolic reference files, use symbolic links. This is sometimes needed to work with old scripts that expect HEAD to be a symbolic link.
-.TP
-core.bare
-If true this repository is assumed to be \fIbare\fR and has no working directory associated with it. If this is the case a number of commands that require a working directory will be disabled, such as \fBgit\-add\fR(1) or \fBgit\-merge\fR(1).
-
-This setting is automatically guessed by \fBgit\-clone\fR(1) or \fBgit\-init\fR(1) when the repository was created. By default a repository that ends in "/.git" is assumed to be not bare (bare = false), while all other repositories are assumed to be bare (bare = true).
-.TP
-core.worktree
-Set the path to the working tree. The value will not be used in combination with repositories found automatically in a .git directory (i.e. $GIT_DIR is not set). This can be overridden by the GIT_WORK_TREE environment variable and the \fI\-\-work\-tree\fR command line option. It can be a absolute path or relative path to the directory specified by \-\-git\-dir or GIT_DIR. Note: If \-\-git\-dir or GIT_DIR are specified but none of \-\-work\-tree, GIT_WORK_TREE and core.worktree is specified, the current working directory is regarded as the top directory of your working tree.
-.TP
-core.logAllRefUpdates
-Enable the reflog. Updates to a ref <ref> is logged to the file "$GIT_DIR/logs/<ref>", by appending the new and old SHA1, the date/time and the reason of the update, but only when the file exists. If this configuration variable is set to true, missing "$GIT_DIR/logs/<ref>" file is automatically created for branch heads.
-
-This information can be used to determine what commit was the tip of a branch "2 days ago".
-
-This value is true by default in a repository that has a working directory associated with it, and false by default in a bare repository.
-.TP
-core.repositoryFormatVersion
-Internal variable identifying the repository format and layout version.
-.TP
-core.sharedRepository
-When \fIgroup\fR (or \fItrue\fR), the repository is made shareable between several users in a group (making sure all the files and objects are group\-writable). When \fIall\fR (or \fIworld\fR or \fIeverybody\fR), the repository will be readable by all users, additionally to being group\-shareable. When \fIumask\fR (or \fIfalse\fR), git will use permissions reported by umask(2). When \fI0xxx\fR, where \fI0xxx\fR is an octal number, files in the repository will have this mode value. \fI0xxx\fR will override user's umask value, and thus, users with a safe umask (0077) can use this option. Examples: \fI0660\fR is equivalent to \fIgroup\fR. \fI0640\fR is a repository that is group\-readable but not group\-writable. See \fBgit\-init\fR(1). False by default.
-.TP
-core.warnAmbiguousRefs
-If true, git will warn you if the ref name you passed it is ambiguous and might match multiple refs in the .git/refs/ tree. True by default.
-.TP
-core.compression
-An integer \-1..9, indicating a default compression level. \-1 is the zlib default. 0 means no compression, and 1..9 are various speed/size tradeoffs, 9 being slowest. If set, this provides a default to other compression variables, such as \fIcore.loosecompression\fR and \fIpack.compression\fR.
-.TP
-core.loosecompression
-An integer \-1..9, indicating the compression level for objects that are not in a pack file. \-1 is the zlib default. 0 means no compression, and 1..9 are various speed/size tradeoffs, 9 being slowest. If not set, defaults to core.compression. If that is not set, defaults to 1 (best speed).
-.TP
-core.packedGitWindowSize
-Number of bytes of a pack file to map into memory in a single mapping operation. Larger window sizes may allow your system to process a smaller number of large pack files more quickly. Smaller window sizes will negatively affect performance due to increased calls to the operating system's memory manager, but may improve performance when accessing a large number of large pack files.
-
-Default is 1 MiB if NO_MMAP was set at compile time, otherwise 32 MiB on 32 bit platforms and 1 GiB on 64 bit platforms. This should be reasonable for all users/operating systems. You probably do not need to adjust this value.
-
-Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported.
-.TP
-core.packedGitLimit
-Maximum number of bytes to map simultaneously into memory from pack files. If Git needs to access more than this many bytes at once to complete an operation it will unmap existing regions to reclaim virtual address space within the process.
-
-Default is 256 MiB on 32 bit platforms and 8 GiB on 64 bit platforms. This should be reasonable for all users/operating systems, except on the largest projects. You probably do not need to adjust this value.
-
-Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported.
-.TP
-core.deltaBaseCacheLimit
-Maximum number of bytes to reserve for caching base objects that multiple deltafied objects reference. By storing the entire decompressed base objects in a cache Git is able to avoid unpacking and decompressing frequently used base objects multiple times.
-
-Default is 16 MiB on all platforms. This should be reasonable for all users/operating systems, except on the largest projects. You probably do not need to adjust this value.
-
-Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported.
-.TP
-core.excludesfile
-In addition to \fI.gitignore\fR (per\-directory) and \fI.git/info/exclude\fR, git looks into this file for patterns of files which are not meant to be tracked. See \fBgitignore\fR(5).
-.TP
-core.editor
-Commands such as commit and tag that lets you edit messages by launching an editor uses the value of this variable when it is set, and the environment variable GIT_EDITOR is not set. The order of preference is GIT_EDITOR environment, core.editor, VISUAL and EDITOR environment variables and then finally vi.
-.TP
-core.pager
-The command that git will use to paginate output. Can be overridden with the GIT_PAGER environment variable.
-.TP
-core.whitespace
-A comma separated list of common whitespace problems to notice. git diff will use color.diff.whitespace to highlight them, and git apply \-\-whitespace=error will consider them as errors:
-.RS
-.TP 3
-\(bu
-trailing\-space treats trailing whitespaces at the end of the line as an error (enabled by default).
-.TP
-\(bu
-space\-before\-tab treats a space character that appears immediately before a tab character in the initial indent part of the line as an error (enabled by default).
-.TP
-\(bu
-indent\-with\-non\-tab treats a line that is indented with 8 or more space characters as an error (not enabled by default).
-.TP
-\(bu
-cr\-at\-eol treats a carriage\-return at the end of line as part of the line terminator, i.e. with it, trailing\-space does not trigger if the character before such a carriage\-return is not a whitespace (not enabled by default).
+Note that this list is non\-comprehensive and not necessarily complete\. For command\-specific variables, you will find a more detailed description in the appropriate manual page\. You will find a description of non\-core porcelain configuration variables in the respective porcelain documentation\.
+.PP
+core\.fileMode
+.RS 4
+If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT\. See \fBgit-update-index\fR(1)\. True by default\.
 .RE
-.TP
-core.fsyncobjectfiles
-This boolean will enable \fIfsync()\fR when writing object files.
+.PP
+core\.quotepath
+.RS 4
+The commands that output paths (e\.g\. \fIls\-files\fR, \fIdiff\fR), when not given the \-z option, will quote "unusual" characters in the pathname by enclosing the pathname in a double\-quote pair and with backslashes the same way strings in C source code are quoted\. If this variable is set to false, the bytes higher than 0x80 are not quoted but output as verbatim\. Note that double quote, backslash and control characters are always quoted without \-z regardless of the setting of this variable\.
+.RE
+.PP
+core\.autocrlf
+.RS 4
+If true, makes git convert CRLF at the end of lines in text files to LF when reading from the filesystem, and convert in reverse when writing to the filesystem\. The variable can be set to \fIinput\fR, in which case the conversion happens only while reading from the filesystem but files are written out with LF at the end of lines\. Currently, which paths to consider "text" (i\.e\. be subjected to the autocrlf mechanism) is decided purely based on the contents\.
+.RE
+.PP
+core\.safecrlf
+.RS 4
+If true, makes git check if converting CRLF as controlled by core\.autocrlf is reversible\. Git will verify if a command modifies a file in the work tree either directly or indirectly\. For example, committing a file followed by checking out the same file should yield the original file in the work tree\. If this is not the case for the current setting of core\.autocrlf, git will reject the file\. The variable can be set to "warn", in which case git will only warn about an irreversible conversion but continue the operation\.
 
-This is a total waste of time and effort on a filesystem that orders data writes properly, but can be useful for filesystems that do not use journalling (traditional UNIX filesystems) or that only journal metadata and not file contents (OS X's HFS+, or Linux ext3 with "data=writeback").
-.TP
-alias.*
-Command aliases for the \fBgit\fR(1) command wrapper \- e.g. after defining "alias.last = cat\-file commit HEAD", the invocation "git last" is equivalent to "git cat\-file commit HEAD". To avoid confusion and troubles with script usage, aliases that hide existing git commands are ignored. Arguments are split by spaces, the usual shell quoting and escaping is supported. quote pair and a backslash can be used to quote them.
+CRLF conversion bears a slight chance of corrupting data\. autocrlf=true will convert CRLF to LF during commit and LF to CRLF during checkout\. A file that contains a mixture of LF and CRLF before the commit cannot be recreated by git\. For text files this is the right thing to do: it corrects line endings such that we have only LF line endings in the repository\. But for binary files that are accidentally classified as text the conversion can corrupt data\.
 
-If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command. For example, defining "alias.new = !gitk \-\-all \-\-not ORIG_HEAD", the invocation "git new" is equivalent to running the shell command "gitk \-\-all \-\-not ORIG_HEAD".
-.TP
-apply.whitespace
-Tells git\-apply how to handle whitespaces, in the same way as the \fI\-\-whitespace\fR option. See \fBgit\-apply\fR(1).
-.TP
-branch.autosetupmerge
-Tells git\-branch and git\-checkout to setup new branches so that \fBgit\-pull\fR(1) will appropriately merge from the starting point branch. Note that even if this option is not set, this behavior can be chosen per\-branch using the \-\-track and \-\-no\-track options. The valid settings are: false \(em no automatic setup is done; true \(em automatic setup is done when the starting point is a remote branch; always \(em automatic setup is done when the starting point is either a local branch or remote branch. This option defaults to true.
-.TP
-branch.autosetuprebase
-When a new branch is created with git\-branch or git\-checkout that tracks another branch, this variable tells git to set up pull to rebase instead of merge (see "branch.<name>.rebase"). When never, rebase is never automatically set to true. When local, rebase is set to true for tracked branches of other local branches. When remote, rebase is set to true for tracked branches of remote branches. When always, rebase will be set to true for all tracking branches. See "branch.autosetupmerge" for details on how to set up a branch to track another branch. This option defaults to never.
-.TP
-branch.<name>.remote
-When in branch <name>, it tells git fetch which remote to fetch. If this option is not given, git fetch defaults to remote "origin".
-.TP
-branch.<name>.merge
-When in branch <name>, it tells git fetch the default refspec to be marked for merging in FETCH_HEAD. The value is handled like the remote part of a refspec, and must match a ref which is fetched from the remote given by "branch.<name>.remote". The merge information is used by git pull (which at first calls git fetch) to lookup the default branch for merging. Without this option, git pull defaults to merge the first refspec fetched. Specify multiple values to get an octopus merge. If you wish to setup git pull so that it merges into <name> from another branch in the local repository, you can point branch.<name>.merge to the desired branch, and use the special setting . (a period) for branch.<name>.remote.
-.TP
-branch.<name>.mergeoptions
-Sets default options for merging into branch <name>. The syntax and supported options are equal to that of \fBgit\-merge\fR(1), but option values containing whitespace characters are currently not supported.
-.TP
-branch.<name>.rebase
-When true, rebase the branch <name> on top of the fetched branch, instead of merging the default branch from the default remote when "git pull" is run. \fBNOTE\fR: this is a possibly dangerous operation; do \fBnot\fR use it unless you understand the implications (see \fBgit\-rebase\fR(1) for details).
-.TP
-browser.<tool>.cmd
-Specify the command to invoke the specified browser. The specified command is evaluated in shell with the URLs passed as arguments. (See \fBgit\-web\-\-browse\fR(1).)
-.TP
-browser.<tool>.path
-Override the path for the given tool that may be used to browse HTML help (see \fI\-w\fR option in \fBgit\-help\fR(1)) or a working repository in gitweb (see \fBgit\-instaweb\fR(1)).
-.TP
-clean.requireForce
-A boolean to make git\-clean do nothing unless given \-f or \-n. Defaults to true.
-.TP
-color.branch
-A boolean to enable/disable color in the output of \fBgit\-branch\fR(1). May be set to always, false (or never) or auto (or true), in which case colors are used only when the output is to a terminal. Defaults to false.
-.TP
-color.branch.<slot>
-Use customized color for branch coloration. <slot> is one of current (the current branch), local (a local branch), remote (a tracking branch in refs/remotes/), plain (other refs).
+If you recognize such corruption early you can easily fix it by setting the conversion type explicitly in \.gitattributes\. Right after committing you still have the original file in your work tree and this file is not yet corrupted\. You can explicitly tell git that this file is binary and git will handle the file appropriately\.
 
-The value for these configuration variables is a list of colors (at most two) and attributes (at most one), separated by spaces. The colors accepted are normal, black, red, green, yellow, blue, magenta, cyan and white; the attributes are bold, dim, ul, blink and reverse. The first color given is the foreground; the second is the background. The position of the attribute, if any, doesn't matter.
-.TP
-color.diff
-When set to always, always use colors in patch. When false (or never), never. When set to true or auto, use colors only when the output is to the terminal. Defaults to false.
-.TP
-color.diff.<slot>
-Use customized color for diff colorization. <slot> specifies which part of the patch to use the specified color, and is one of plain (context text), meta (metainformation), frag (hunk header), old (removed lines), new (added lines), commit (commit headers), or whitespace (highlighting whitespace errors). The values of these variables may be specified as in color.branch.<slot>.
-.TP
-color.interactive
-When set to always, always use colors for interactive prompts and displays (such as those used by "git add \-\-interactive"). When false (or never), never. When set to true or auto, use colors only when the output is to the terminal. Defaults to false.
-.TP
-color.interactive.<slot>
-Use customized color for git add \-\-interactive output. <slot> may be prompt, header, or help, for three distinct types of normal output from interactive programs. The values of these variables may be specified as in color.branch.<slot>.
-.TP
-color.pager
-A boolean to enable/disable colored output when the pager is in use (default is true).
-.TP
-color.status
-A boolean to enable/disable color in the output of \fBgit\-status\fR(1). May be set to always, false (or never) or auto (or true), in which case colors are used only when the output is to a terminal. Defaults to false.
-.TP
-color.status.<slot>
-Use customized color for status colorization. <slot> is one of header (the header text of the status message), added or updated (files which are added but not committed), changed (files which are changed but not added in the index), untracked (files which are not tracked by git), or nobranch (the color the \fIno branch\fR warning is shown in, defaulting to red). The values of these variables may be specified as in color.branch.<slot>.
-.TP
-commit.template
-Specify a file to use as the template for new commit messages.
-.TP
-color.ui
-When set to always, always use colors in all git commands which are capable of colored output. When false (or never), never. When set to true or auto, use colors only when the output is to the terminal. When more specific variables of color.* are set, they always take precedence over this setting. Defaults to false.
-.TP
-diff.autorefreshindex
-When using git diff to compare with work tree files, do not consider stat\-only change as changed. Instead, silently run git update\-index \-\-refresh to update the cached stat information for paths whose contents in the work tree match the contents in the index. This option defaults to true. Note that this affects only git diff Porcelain, and not lower level diff commands, such as git diff\-files.
-.TP
-diff.external
-If this config variable is set, diff generation is not performed using the internal diff machinery, but using the given command. Note: if you want to use an external diff program only on a subset of your files, you might want to use \fBgitattributes\fR(5) instead.
-.TP
-diff.renameLimit
-The number of files to consider when performing the copy/rename detection; equivalent to the git diff option \fI\-l\fR.
-.TP
-diff.renames
-Tells git to detect renames. If set to any boolean value, it will enable basic rename detection. If set to "copies" or "copy", it will detect copies, as well.
-.TP
-fetch.unpackLimit
-If the number of objects fetched over the git native transfer is below this limit, then the objects will be unpacked into loose object files. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems. If not set, the value of transfer.unpackLimit is used instead.
-.TP
-format.numbered
-A boolean which can enable sequence numbers in patch subjects. Setting this option to "auto" will enable it only if there is more than one patch. See \-\-numbered option in \fBgit\-format\-patch\fR(1).
-.TP
-format.headers
-Additional email headers to include in a patch to be submitted by mail. See \fBgit\-format\-patch\fR(1).
-.TP
-format.suffix
-The default for format\-patch is to output files with the suffix .patch. Use this variable to change that suffix (make sure to include the dot if you want it).
-.TP
-format.pretty
-The default pretty format for log/show/whatchanged command, See \fBgit\-log\fR(1), \fBgit\-show\fR(1), \fBgit\-whatchanged\fR(1).
-.TP
-gc.aggressiveWindow
-The window size parameter used in the delta compression algorithm used by \fIgit gc \-\-aggressive\fR. This defaults to 10.
-.TP
-gc.auto
-When there are approximately more than this many loose objects in the repository, git gc \-\-auto will pack them. Some Porcelain commands use this command to perform a light\-weight garbage collection from time to time. The default value is 6700. Setting this to 0 disables it.
-.TP
-gc.autopacklimit
-When there are more than this many packs that are not marked with *.keep file in the repository, git gc \-\-auto consolidates them into one larger pack. The default value is 50. Setting this to 0 disables it.
-.TP
-gc.packrefs
-git gc does not run git pack\-refs in a bare repository by default so that older dumb\-transport clients can still fetch from the repository. Setting this to true lets git gc to run git pack\-refs. Setting this to false tells git gc never to run git pack\-refs. The default setting is notbare. Enable it only when you know you do not have to support such clients. The default setting will change to true at some stage, and setting this to false will continue to prevent git pack\-refs from being run from git gc.
-.TP
-gc.pruneexpire
-When git gc is run, it will call prune \-\-expire 2.weeks.ago. Override the grace period with this config variable.
-.TP
-gc.reflogexpire
-git reflog expire removes reflog entries older than this time; defaults to 90 days.
-.TP
-gc.reflogexpireunreachable
-git reflog expire removes reflog entries older than this time and are not reachable from the current tip; defaults to 30 days.
-.TP
-gc.rerereresolved
-Records of conflicted merge you resolved earlier are kept for this many days when git rerere gc is run. The default is 60 days. See \fBgit\-rerere\fR(1).
-.TP
-gc.rerereunresolved
-Records of conflicted merge you have not resolved are kept for this many days when git rerere gc is run. The default is 15 days. See \fBgit\-rerere\fR(1).
-.TP
-rerere.enabled
-Activate recording of resolved conflicts, so that identical conflict hunks can be resolved automatically, should they be encountered again. \fBgit\-rerere\fR(1) command is by default enabled if you create rr\-cache directory under $GIT_DIR, but can be disabled by setting this option to false.
-.TP
-gitcvs.enabled
-Whether the CVS server interface is enabled for this repository. See \fBgit\-cvsserver\fR(1).
-.TP
-gitcvs.logfile
-Path to a log file where the CVS server interface well\&... logs various stuff. See \fBgit\-cvsserver\fR(1).
+Unfortunately, the desired effect of cleaning up text files with mixed line endings and the undesired effect of corrupting binary files cannot be distinguished\. In both cases CRLFs are removed in an irreversible way\. For text files this is the right thing to do because CRLFs are line endings, while for binary files converting CRLFs corrupts data\.
 
-gitcvs.usecrlfattr If true, the server will look up the crlf attribute for files to determine the \fI\-k\fR modes to use. If crlf is set, the \fI\-k\fR mode will be left blank, so cvs clients will treat it as text. If crlf is explicitly unset, the file will be set with \fI\-kb\fR mode, which supresses any newline munging the client might otherwise do. If crlf is not specified, then \fIgitcvs.allbinary\fR is used. See \fBgitattribute\fR(5).
-.TP
-gitcvs.allbinary
-This is used if \fIgitcvs.usecrlfattr\fR does not resolve the correct \fI\-kb\fR mode to use. If true, all unresolved files are sent to the client in mode \fI\-kb\fR. This causes the client to treat them as binary files, which suppresses any newline munging it otherwise might do. Alternatively, if it is set to "guess", then the contents of the file are examined to decide if it is binary, similar to \fIcore.autocrlf\fR.
-.TP
-gitcvs.dbname
-Database used by git\-cvsserver to cache revision information derived from the git repository. The exact meaning depends on the used database driver, for SQLite (which is the default driver) this is a filename. Supports variable substitution (see \fBgit\-cvsserver\fR(1) for details). May not contain semicolons (;). Default: \fI%Ggitcvs.%m.sqlite\fR
-.TP
-gitcvs.dbdriver
-Used Perl DBI driver. You can specify any available driver for this here, but it might not work. git\-cvsserver is tested with \fIDBD::SQLite\fR, reported to work with \fIDBD::Pg\fR, and reported \fBnot\fR to work with \fIDBD::mysql\fR. Experimental feature. May not contain double colons (:). Default: \fISQLite\fR. See \fBgit\-cvsserver\fR(1).
-.TP
-gitcvs.dbuser, gitcvs.dbpass
-Database user and password. Only useful if setting \fIgitcvs.dbdriver\fR, since SQLite has no concept of database users and/or passwords. \fIgitcvs.dbuser\fR supports variable substitution (see \fBgit\-cvsserver\fR(1) for details).
-.TP
-gitcvs.dbTableNamePrefix
-Database table name prefix. Prepended to the names of any database tables used, allowing a single database to be used for several repositories. Supports variable substitution (see \fBgit\-cvsserver\fR(1) for details). Any non\-alphabetic characters will be replaced with underscores.
+Note, this safety check does not mean that a checkout will generate a file identical to the original file for a different setting of core\.autocrlf, but only for the current one\. For example, a text file with LF would be accepted with core\.autocrlf=input and could later be checked out with core\.autocrlf=true, in which case the resulting file would contain CRLF, although the original file contained LF\. However, in both work trees the line endings would be consistent, that is either all LF or all CRLF, but never mixed\. A file with mixed line endings would be reported by the core\.safecrlf mechanism\.
+.RE
+.PP
+core\.symlinks
+.RS 4
+If false, symbolic links are checked out as small plain files that contain the link text\. \fBgit-update-index\fR(1) and \fBgit-add\fR(1) will not change the recorded type to regular file\. Useful on filesystems like FAT that do not support symbolic links\. True by default\.
+.RE
+.PP
+core\.gitProxy
+.RS 4
+A "proxy command" to execute (as \fIcommand host port\fR) instead of establishing direct connection to the remote server when using the git protocol for fetching\. If the variable value is in the "COMMAND for DOMAIN" format, the command is applied only on hostnames ending with the specified domain string\. This variable may be set multiple times and is matched in the given order; the first match wins\.
 
-All gitcvs variables except for \fIgitcvs.usecrlfattr\fR and \fIgitcvs.allbinary\fR can also be specified as \fIgitcvs.<access_method>.<varname>\fR (where \fIaccess_method\fR is one of "ext" and "pserver") to make them apply only for the given access method.
-.TP
-gui.commitmsgwidth
-Defines how wide the commit message window is in the \fBgit\-gui\fR(1). "75" is the default.
-.TP
-gui.diffcontext
-Specifies how many context lines should be used in calls to diff made by the \fBgit\-gui\fR(1). The default is "5".
-.TP
-gui.matchtrackingbranch
-Determines if new branches created with \fBgit\-gui\fR(1) should default to tracking remote branches with matching names or not. Default: "false".
-.TP
-gui.newbranchtemplate
-Is used as suggested name when creating new branches using the \fBgit\-gui\fR(1).
-.TP
-gui.pruneduringfetch
-"true" if \fBgit\-gui\fR(1) should prune tracking branches when performing a fetch. The default value is "false".
-.TP
-gui.trustmtime
-Determines if \fBgit\-gui\fR(1) should trust the file modification timestamp or not. By default the timestamps are not trusted.
-.TP
-gui.spellingdictionary
-Specifies the dictionary used for spell checking commit messages in the \fBgit\-gui\fR(1). When set to "none" spell checking is turned off.
-.TP
-help.browser
-Specify the browser that will be used to display help in the \fIweb\fR format. See \fBgit\-help\fR(1).
-.TP
-help.format
-Override the default help format used by \fBgit\-help\fR(1). Values \fIman\fR, \fIinfo\fR, \fIweb\fR and \fIhtml\fR are supported. \fIman\fR is the default. \fIweb\fR and \fIhtml\fR are the same.
-.TP
-http.proxy
-Override the HTTP proxy, normally configured using the \fIhttp_proxy\fR environment variable (see \fBcurl\fR(1)). This can be overridden on a per\-remote basis; see remote.<name>.proxy
-.TP
-http.sslVerify
-Whether to verify the SSL certificate when fetching or pushing over HTTPS. Can be overridden by the \fIGIT_SSL_NO_VERIFY\fR environment variable.
-.TP
-http.sslCert
-File containing the SSL certificate when fetching or pushing over HTTPS. Can be overridden by the \fIGIT_SSL_CERT\fR environment variable.
-.TP
-http.sslKey
-File containing the SSL private key when fetching or pushing over HTTPS. Can be overridden by the \fIGIT_SSL_KEY\fR environment variable.
-.TP
-http.sslCAInfo
-File containing the certificates to verify the peer with when fetching or pushing over HTTPS. Can be overridden by the \fIGIT_SSL_CAINFO\fR environment variable.
-.TP
-http.sslCAPath
-Path containing files with the CA certificates to verify the peer with when fetching or pushing over HTTPS. Can be overridden by the \fIGIT_SSL_CAPATH\fR environment variable.
-.TP
-http.maxRequests
-How many HTTP requests to launch in parallel. Can be overridden by the \fIGIT_HTTP_MAX_REQUESTS\fR environment variable. Default is 5.
-.TP
-http.lowSpeedLimit, http.lowSpeedTime
-If the HTTP transfer speed is less than \fIhttp.lowSpeedLimit\fR for longer than \fIhttp.lowSpeedTime\fR seconds, the transfer is aborted. Can be overridden by the \fIGIT_HTTP_LOW_SPEED_LIMIT\fR and \fIGIT_HTTP_LOW_SPEED_TIME\fR environment variables.
-.TP
-http.noEPSV
-A boolean which disables using of EPSV ftp command by curl. This can helpful with some "poor" ftp servers which don't support EPSV mode. Can be overridden by the \fIGIT_CURL_FTP_NO_EPSV\fR environment variable. Default is false (curl will use EPSV).
-.TP
-i18n.commitEncoding
-Character encoding the commit messages are stored in; git itself does not care per se, but this information is necessary e.g. when importing commits from emails or in the gitk graphical history browser (and possibly at other places in the future or in other porcelains). See e.g. \fBgit\-mailinfo\fR(1). Defaults to \fIutf\-8\fR.
-.TP
-i18n.logOutputEncoding
-Character encoding the commit messages are converted to when running git\-log and friends.
-.TP
-instaweb.browser
-Specify the program that will be used to browse your working repository in gitweb. See \fBgit\-instaweb\fR(1).
-.TP
-instaweb.httpd
-The HTTP daemon command\-line to start gitweb on your working repository. See \fBgit\-instaweb\fR(1).
-.TP
-instaweb.local
-If true the web server started by \fBgit\-instaweb\fR(1) will be bound to the local IP (127.0.0.1).
-.TP
-instaweb.modulepath
-The module path for an apache httpd used by \fBgit\-instaweb\fR(1).
-.TP
-instaweb.port
-The port number to bind the gitweb httpd to. See \fBgit\-instaweb\fR(1).
-.TP
-log.date
-Set default date\-time mode for the log command. Setting log.date value is similar to using git log's \-\-date option. The value is one of following alternatives: {relative,local,default,iso,rfc,short}. See \fBgit\-log\fR(1).
-.TP
-log.showroot
-If true, the initial commit will be shown as a big creation event. This is equivalent to a diff against an empty tree. Tools like \fBgit\-log\fR(1) or \fBgit\-whatchanged\fR(1), which normally hide the root commit will now show it. True by default.
-.TP
-man.viewer
-Specify the programs that may be used to display help in the \fIman\fR format. See \fBgit\-help\fR(1).
-.TP
-merge.stat
-Whether to print the diffstat berween ORIG_HEAD and merge result at the end of the merge. True by default.
-.TP
-merge.log
-Whether to include summaries of merged commits in newly created merge commit messages. False by default.
-.TP
-merge.renameLimit
-The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff.renameLimit.
-.TP
-merge.tool
-Controls which merge resolution program is used by \fBgit\-mergetool\fR(1). Valid built\-in values are: "kdiff3", "tkdiff", "meld", "xxdiff", "emerge", "vimdiff", "gvimdiff", and "opendiff". Any other value is treated is custom merge tool and there must be a corresponing mergetool.<tool>.cmd option.
-.TP
-merge.verbosity
-Controls the amount of output shown by the recursive merge strategy. Level 0 outputs nothing except a final error message if conflicts were detected. Level 1 outputs only conflicts, 2 outputs conflicts and file changes. Level 5 and above outputs debugging information. The default is level 2. Can be overridden by \fIGIT_MERGE_VERBOSITY\fR environment variable.
-.TP
-merge.<driver>.name
-Defines a human readable name for a custom low\-level merge driver. See \fBgitattributes\fR(5) for details.
-.TP
-merge.<driver>.driver
-Defines the command that implements a custom low\-level merge driver. See \fBgitattributes\fR(5) for details.
-.TP
-merge.<driver>.recursive
-Names a low\-level merge driver to be used when performing an internal merge between common ancestors. See \fBgitattributes\fR(5) for details.
-.TP
-man.<tool>.cmd
-Specify the command to invoke the specified man viewer. The specified command is evaluated in shell with the man page passed as argument. (See \fBgit\-help\fR(1).)
-.TP
-man.<tool>.path
-Override the path for the given tool that may be used to display help in the \fIman\fR format. See \fBgit\-help\fR(1).
-.TP
-mergetool.<tool>.path
-Override the path for the given tool. This is useful in case your tool is not in the PATH.
-.TP
-mergetool.<tool>.cmd
-Specify the command to invoke the specified merge tool. The specified command is evaluated in shell with the following variables available: \fIBASE\fR is the name of a temporary file containing the common base of the files to be merged, if available; \fILOCAL\fR is the name of a temporary file containing the contents of the file on the current branch; \fIREMOTE\fR is the name of a temporary file containing the contents of the file from the branch being merged; \fIMERGED\fR contains the name of the file to which the merge tool should write the results of a successful merge.
-.TP
-mergetool.<tool>.trustExitCode
-For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful. If this is not set to true then the merge target file timestamp is checked and the merge assumed to have been successful if the file has been updated, otherwise the user is prompted to indicate the success of the merge.
-.TP
-mergetool.keepBackup
-After performing a merge, the original file with conflict markers can be saved as a file with a .orig extension. If this variable is set to false then this file is not preserved. Defaults to true (i.e. keep the backup files).
-.TP
-pack.window
-The size of the window used by \fBgit\-pack\-objects\fR(1) when no window size is given on the command line. Defaults to 10.
-.TP
-pack.depth
-The maximum delta depth used by \fBgit\-pack\-objects\fR(1) when no maximum depth is given on the command line. Defaults to 50.
-.TP
-pack.windowMemory
-The window memory size limit used by \fBgit\-pack\-objects\fR(1) when no limit is given on the command line. The value can be suffixed with "k", "m", or "g". Defaults to 0, meaning no limit.
-.TP
-pack.compression
-An integer \-1..9, indicating the compression level for objects in a pack file. \-1 is the zlib default. 0 means no compression, and 1..9 are various speed/size tradeoffs, 9 being slowest. If not set, defaults to core.compression. If that is not set, defaults to \-1, the zlib default, which is "a default compromise between speed and compression (currently equivalent to level 6)."
-.TP
-pack.deltaCacheSize
-The maximum memory in bytes used for caching deltas in \fBgit\-pack\-objects\fR(1). A value of 0 means no limit. Defaults to 0.
-.TP
-pack.deltaCacheLimit
-The maximum size of a delta, that is cached in \fBgit\-pack\-objects\fR(1). Defaults to 1000.
-.TP
-pack.threads
-Specifies the number of threads to spawn when searching for best delta matches. This requires that \fBgit\-pack\-objects\fR(1) be compiled with pthreads otherwise this option is ignored with a warning. This is meant to reduce packing time on multiprocessor machines. The required amount of memory for the delta search window is however multiplied by the number of threads. Specifying 0 will cause git to auto\-detect the number of CPU's and set the number of threads accordingly.
-.TP
-pack.indexVersion
-Specify the default pack index version. Valid values are 1 for legacy pack index used by Git versions prior to 1.5.2, and 2 for the new pack index with capabilities for packs larger than 4 GB as well as proper protection against the repacking of corrupted packs. Version 2 is the default. Note that version 2 is enforced and this config option ignored whenever the corresponding pack is larger than 2 GB.
+Can be overridden by the \fIGIT_PROXY_COMMAND\fR environment variable (which always applies universally, without the special "for" handling)\.
+.RE
+.PP
+core\.ignoreStat
+.RS 4
+If true, commands which modify both the working tree and the index will mark the updated paths with the "assume unchanged" bit in the index\. These marked files are then assumed to stay unchanged in the working copy, until you mark them otherwise manually \- Git will not detect the file changes by lstat() calls\. This is useful on systems where those are very slow, such as Microsoft Windows\. See \fBgit-update-index\fR(1)\. False by default\.
+.RE
+.PP
+core\.preferSymlinkRefs
+.RS 4
+Instead of the default "symref" format for HEAD and other symbolic reference files, use symbolic links\. This is sometimes needed to work with old scripts that expect HEAD to be a symbolic link\.
+.RE
+.PP
+core\.bare
+.RS 4
+If true this repository is assumed to be \fIbare\fR and has no working directory associated with it\. If this is the case a number of commands that require a working directory will be disabled, such as \fBgit-add\fR(1) or \fBgit-merge\fR(1)\.
 
-If you have an old git that does not understand the version 2 *.idx file, cloning or fetching over a non native protocol (e.g. "http" and "rsync") that will copy both *.pack file and corresponding *.idx file from the other side may give you a repository that cannot be accessed with your older version of git. If the *.pack file is smaller than 2 GB, however, you can use \fBgit\-index\-pack\fR(1) on the *.pack file to regenerate the *.idx file.
-.TP
-pack.packSizeLimit
-The default maximum size of a pack. This setting only affects packing to a file, i.e. the git:// protocol is unaffected. It can be overridden by the \-\-max\-pack\-size option of \fBgit\-repack\fR(1).
-.TP
-pull.octopus
-The default merge strategy to use when pulling multiple branches at once.
-.TP
-pull.twohead
-The default merge strategy to use when pulling a single branch.
-.TP
-remote.<name>.url
-The URL of a remote repository. See \fBgit\-fetch\fR(1) or \fBgit\-push\fR(1).
-.TP
-remote.<name>.proxy
-For remotes that require curl (http, https and ftp), the URL to the proxy to use for that remote. Set to the empty string to disable proxying for that remote.
-.TP
-remote.<name>.fetch
-The default set of "refspec" for \fBgit\-fetch\fR(1). See \fBgit\-fetch\fR(1).
-.TP
-remote.<name>.push
-The default set of "refspec" for \fBgit\-push\fR(1). See \fBgit\-push\fR(1).
-.TP
-remote.<name>.mirror
-If true, pushing to this remote will automatically behave as if the \-\-mirror option was given on the command line.
-.TP
-remote.<name>.skipDefaultUpdate
-If true, this remote will be skipped by default when updating using the update subcommand of \fBgit\-remote\fR(1).
-.TP
-remote.<name>.receivepack
-The default program to execute on the remote side when pushing. See option \-\-receive\-pack of \fBgit\-push\fR(1).
-.TP
-remote.<name>.uploadpack
-The default program to execute on the remote side when fetching. See option \-\-upload\-pack of \fBgit\-fetch\-pack\fR(1).
-.TP
-remote.<name>.tagopt
+This setting is automatically guessed by \fBgit-clone\fR(1) or \fBgit-init\fR(1) when the repository was created\. By default a repository that ends in "/\.git" is assumed to be not bare (bare = false), while all other repositories are assumed to be bare (bare = true)\.
+.RE
+.PP
+core\.worktree
+.RS 4
+Set the path to the working tree\. The value will not be used in combination with repositories found automatically in a \.git directory (i\.e\. $GIT_DIR is not set)\. This can be overridden by the GIT_WORK_TREE environment variable and the \fI\-\-work\-tree\fR command line option\. It can be a absolute path or relative path to the directory specified by \-\-git\-dir or GIT_DIR\. Note: If \-\-git\-dir or GIT_DIR are specified but none of \-\-work\-tree, GIT_WORK_TREE and core\.worktree is specified, the current working directory is regarded as the top directory of your working tree\.
+.RE
+.PP
+core\.logAllRefUpdates
+.RS 4
+Enable the reflog\. Updates to a ref <ref> is logged to the file "$GIT_DIR/logs/<ref>", by appending the new and old SHA1, the date/time and the reason of the update, but only when the file exists\. If this configuration variable is set to true, missing "$GIT_DIR/logs/<ref>" file is automatically created for branch heads\.
+
+This information can be used to determine what commit was the tip of a branch "2 days ago"\.
+
+This value is true by default in a repository that has a working directory associated with it, and false by default in a bare repository\.
+.RE
+.PP
+core\.repositoryFormatVersion
+.RS 4
+Internal variable identifying the repository format and layout version\.
+.RE
+.PP
+core\.sharedRepository
+.RS 4
+When \fIgroup\fR (or \fItrue\fR), the repository is made shareable between several users in a group (making sure all the files and objects are group\-writable)\. When \fIall\fR (or \fIworld\fR or \fIeverybody\fR), the repository will be readable by all users, additionally to being group\-shareable\. When \fIumask\fR (or \fIfalse\fR), git will use permissions reported by umask(2)\. When \fI0xxx\fR, where \fI0xxx\fR is an octal number, files in the repository will have this mode value\. \fI0xxx\fR will override user\'s umask value, and thus, users with a safe umask (0077) can use this option\. Examples: \fI0660\fR is equivalent to \fIgroup\fR\. \fI0640\fR is a repository that is group\-readable but not group\-writable\. See \fBgit-init\fR(1)\. False by default\.
+.RE
+.PP
+core\.warnAmbiguousRefs
+.RS 4
+If true, git will warn you if the ref name you passed it is ambiguous and might match multiple refs in the \.git/refs/ tree\. True by default\.
+.RE
+.PP
+core\.compression
+.RS 4
+An integer \-1\.\.9, indicating a default compression level\. \-1 is the zlib default\. 0 means no compression, and 1\.\.9 are various speed/size tradeoffs, 9 being slowest\. If set, this provides a default to other compression variables, such as \fIcore\.loosecompression\fR and \fIpack\.compression\fR\.
+.RE
+.PP
+core\.loosecompression
+.RS 4
+An integer \-1\.\.9, indicating the compression level for objects that are not in a pack file\. \-1 is the zlib default\. 0 means no compression, and 1\.\.9 are various speed/size tradeoffs, 9 being slowest\. If not set, defaults to core\.compression\. If that is not set, defaults to 1 (best speed)\.
+.RE
+.PP
+core\.packedGitWindowSize
+.RS 4
+Number of bytes of a pack file to map into memory in a single mapping operation\. Larger window sizes may allow your system to process a smaller number of large pack files more quickly\. Smaller window sizes will negatively affect performance due to increased calls to the operating system\'s memory manager, but may improve performance when accessing a large number of large pack files\.
+
+Default is 1 MiB if NO_MMAP was set at compile time, otherwise 32 MiB on 32 bit platforms and 1 GiB on 64 bit platforms\. This should be reasonable for all users/operating systems\. You probably do not need to adjust this value\.
+
+Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported\.
+.RE
+.PP
+core\.packedGitLimit
+.RS 4
+Maximum number of bytes to map simultaneously into memory from pack files\. If Git needs to access more than this many bytes at once to complete an operation it will unmap existing regions to reclaim virtual address space within the process\.
+
+Default is 256 MiB on 32 bit platforms and 8 GiB on 64 bit platforms\. This should be reasonable for all users/operating systems, except on the largest projects\. You probably do not need to adjust this value\.
+
+Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported\.
+.RE
+.PP
+core\.deltaBaseCacheLimit
+.RS 4
+Maximum number of bytes to reserve for caching base objects that multiple deltafied objects reference\. By storing the entire decompressed base objects in a cache Git is able to avoid unpacking and decompressing frequently used base objects multiple times\.
+
+Default is 16 MiB on all platforms\. This should be reasonable for all users/operating systems, except on the largest projects\. You probably do not need to adjust this value\.
+
+Common unit suffixes of \fIk\fR, \fIm\fR, or \fIg\fR are supported\.
+.RE
+.PP
+core\.excludesfile
+.RS 4
+In addition to \fI\.gitignore\fR (per\-directory) and \fI\.git/info/exclude\fR, git looks into this file for patterns of files which are not meant to be tracked\. See \fBgitignore\fR(5)\.
+.RE
+.PP
+core\.editor
+.RS 4
+Commands such as commit and tag that lets you edit messages by launching an editor uses the value of this variable when it is set, and the environment variable GIT_EDITOR is not set\. The order of preference is GIT_EDITOR environment, core\.editor, VISUAL and EDITOR environment variables and then finally vi\.
+.RE
+.PP
+core\.pager
+.RS 4
+The command that git will use to paginate output\. Can be overridden with the GIT_PAGER environment variable\.
+.RE
+.PP
+core\.whitespace
+.RS 4
+A comma separated list of common whitespace problems to notice\. \fIgit\-diff\fR will use color\.diff\.whitespace to highlight them, and \fIgit\-apply \-\-whitespace=error\fR will consider them as errors:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'trailing\-space treats trailing whitespaces at the end of the line as an error (enabled by default)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'space\-before\-tab treats a space character that appears immediately before a tab character in the initial indent part of the line as an error (enabled by default)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'indent\-with\-non\-tab treats a line that is indented with 8 or more space characters as an error (not enabled by default)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'cr\-at\-eol treats a carriage\-return at the end of line as part of the line terminator, i\.e\. with it, trailing\-space does not trigger if the character before such a carriage\-return is not a whitespace (not enabled by default)\.
+.RE
+.RE
+.PP
+core\.fsyncobjectfiles
+.RS 4
+This boolean will enable \fIfsync()\fR when writing object files\.
+
+This is a total waste of time and effort on a filesystem that orders data writes properly, but can be useful for filesystems that do not use journalling (traditional UNIX filesystems) or that only journal metadata and not file contents (OS X\'s HFS+, or Linux ext3 with "data=writeback")\.
+.RE
+.PP
+alias\.*
+.RS 4
+Command aliases for the \fBgit\fR(1) command wrapper \- e\.g\. after defining "alias\.last = cat\-file commit HEAD", the invocation "git last" is equivalent to "git cat\-file commit HEAD"\. To avoid confusion and troubles with script usage, aliases that hide existing git commands are ignored\. Arguments are split by spaces, the usual shell quoting and escaping is supported\. quote pair and a backslash can be used to quote them\.
+
+If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command\. For example, defining "alias\.new = !gitk \-\-all \-\-not ORIG_HEAD", the invocation "git new" is equivalent to running the shell command "gitk \-\-all \-\-not ORIG_HEAD"\.
+.RE
+.PP
+apply\.whitespace
+.RS 4
+Tells \fIgit\-apply\fR how to handle whitespaces, in the same way as the \fI\-\-whitespace\fR option\. See \fBgit-apply\fR(1)\.
+.RE
+.PP
+branch\.autosetupmerge
+.RS 4
+Tells \fIgit\-branch\fR and \fIgit\-checkout\fR to setup new branches so that \fBgit-pull\fR(1) will appropriately merge from the starting point branch\. Note that even if this option is not set, this behavior can be chosen per\-branch using the \-\-track and \-\-no\-track options\. The valid settings are: false \(em no automatic setup is done; true \(em automatic setup is done when the starting point is a remote branch; always \(em automatic setup is done when the starting point is either a local branch or remote branch\. This option defaults to true\.
+.RE
+.PP
+branch\.autosetuprebase
+.RS 4
+When a new branch is created with \fIgit\-branch\fR or \fIgit\-checkout\fR that tracks another branch, this variable tells git to set up pull to rebase instead of merge (see "branch\.<name>\.rebase")\. When never, rebase is never automatically set to true\. When local, rebase is set to true for tracked branches of other local branches\. When remote, rebase is set to true for tracked branches of remote branches\. When always, rebase will be set to true for all tracking branches\. See "branch\.autosetupmerge" for details on how to set up a branch to track another branch\. This option defaults to never\.
+.RE
+.PP
+branch\.<name>\.remote
+.RS 4
+When in branch <name>, it tells \fIgit\-fetch\fR which remote to fetch\. If this option is not given, \fIgit\-fetch\fR defaults to remote "origin"\.
+.RE
+.PP
+branch\.<name>\.merge
+.RS 4
+When in branch <name>, it tells \fIgit\-fetch\fR the default refspec to be marked for merging in FETCH_HEAD\. The value is handled like the remote part of a refspec, and must match a ref which is fetched from the remote given by "branch\.<name>\.remote"\. The merge information is used by \fIgit\-pull\fR (which at first calls \fIgit\-fetch\fR) to lookup the default branch for merging\. Without this option, \fIgit\-pull\fR defaults to merge the first refspec fetched\. Specify multiple values to get an octopus merge\. If you wish to setup \fIgit\-pull\fR so that it merges into <name> from another branch in the local repository, you can point branch\.<name>\.merge to the desired branch, and use the special setting \. (a period) for branch\.<name>\.remote\.
+.RE
+.PP
+branch\.<name>\.mergeoptions
+.RS 4
+Sets default options for merging into branch <name>\. The syntax and supported options are equal to that of \fBgit-merge\fR(1), but option values containing whitespace characters are currently not supported\.
+.RE
+.PP
+branch\.<name>\.rebase
+.RS 4
+When true, rebase the branch <name> on top of the fetched branch, instead of merging the default branch from the default remote when "git pull" is run\. \fBNOTE\fR: this is a possibly dangerous operation; do \fBnot\fR use it unless you understand the implications (see \fBgit-rebase\fR(1) for details)\.
+.RE
+.PP
+browser\.<tool>\.cmd
+.RS 4
+Specify the command to invoke the specified browser\. The specified command is evaluated in shell with the URLs passed as arguments\. (See \fBgit-web--browse\fR(1)\.)
+.RE
+.PP
+browser\.<tool>\.path
+.RS 4
+Override the path for the given tool that may be used to browse HTML help (see \fI\-w\fR option in \fBgit-help\fR(1)) or a working repository in gitweb (see \fBgit-instaweb\fR(1))\.
+.RE
+.PP
+clean\.requireForce
+.RS 4
+A boolean to make git\-clean do nothing unless given \-f or \-n\. Defaults to true\.
+.RE
+.PP
+color\.branch
+.RS 4
+A boolean to enable/disable color in the output of \fBgit-branch\fR(1)\. May be set to always, false (or never) or auto (or true), in which case colors are used only when the output is to a terminal\. Defaults to false\.
+.RE
+.PP
+color\.branch\.<slot>
+.RS 4
+Use customized color for branch coloration\. <slot> is one of current (the current branch), local (a local branch), remote (a tracking branch in refs/remotes/), plain (other refs)\.
+
+The value for these configuration variables is a list of colors (at most two) and attributes (at most one), separated by spaces\. The colors accepted are normal, black, red, green, yellow, blue, magenta, cyan and white; the attributes are bold, dim, ul, blink and reverse\. The first color given is the foreground; the second is the background\. The position of the attribute, if any, doesn\'t matter\.
+.RE
+.PP
+color\.diff
+.RS 4
+When set to always, always use colors in patch\. When false (or never), never\. When set to true or auto, use colors only when the output is to the terminal\. Defaults to false\.
+.RE
+.PP
+color\.diff\.<slot>
+.RS 4
+Use customized color for diff colorization\. <slot> specifies which part of the patch to use the specified color, and is one of plain (context text), meta (metainformation), frag (hunk header), old (removed lines), new (added lines), commit (commit headers), or whitespace (highlighting whitespace errors)\. The values of these variables may be specified as in color\.branch\.<slot>\.
+.RE
+.PP
+color\.interactive
+.RS 4
+When set to always, always use colors for interactive prompts and displays (such as those used by "git\-add \-\-interactive")\. When false (or never), never\. When set to true or auto, use colors only when the output is to the terminal\. Defaults to false\.
+.RE
+.PP
+color\.interactive\.<slot>
+.RS 4
+Use customized color for \fIgit\-add \-\-interactive\fR output\. <slot> may be prompt, header, or help, for three distinct types of normal output from interactive programs\. The values of these variables may be specified as in color\.branch\.<slot>\.
+.RE
+.PP
+color\.pager
+.RS 4
+A boolean to enable/disable colored output when the pager is in use (default is true)\.
+.RE
+.PP
+color\.status
+.RS 4
+A boolean to enable/disable color in the output of \fBgit-status\fR(1)\. May be set to always, false (or never) or auto (or true), in which case colors are used only when the output is to a terminal\. Defaults to false\.
+.RE
+.PP
+color\.status\.<slot>
+.RS 4
+Use customized color for status colorization\. <slot> is one of header (the header text of the status message), added or updated (files which are added but not committed), changed (files which are changed but not added in the index), untracked (files which are not tracked by git), or nobranch (the color the \fIno branch\fR warning is shown in, defaulting to red)\. The values of these variables may be specified as in color\.branch\.<slot>\.
+.RE
+.PP
+commit\.template
+.RS 4
+Specify a file to use as the template for new commit messages\.
+.RE
+.PP
+color\.ui
+.RS 4
+When set to always, always use colors in all git commands which are capable of colored output\. When false (or never), never\. When set to true or auto, use colors only when the output is to the terminal\. When more specific variables of color\.* are set, they always take precedence over this setting\. Defaults to false\.
+.RE
+.PP
+diff\.autorefreshindex
+.RS 4
+When using \fIgit\-diff\fR to compare with work tree files, do not consider stat\-only change as changed\. Instead, silently run git update\-index \-\-refresh to update the cached stat information for paths whose contents in the work tree match the contents in the index\. This option defaults to true\. Note that this affects only \fIgit\-diff\fR Porcelain, and not lower level \fIdiff\fR commands, such as \fIgit\-diff\-files\fR\.
+.RE
+.PP
+diff\.external
+.RS 4
+If this config variable is set, diff generation is not performed using the internal diff machinery, but using the given command\. Note: if you want to use an external diff program only on a subset of your files, you might want to use \fBgitattributes\fR(5) instead\.
+.RE
+.PP
+diff\.renameLimit
+.RS 4
+The number of files to consider when performing the copy/rename detection; equivalent to the \fIgit\-diff\fR option \fI\-l\fR\.
+.RE
+.PP
+diff\.renames
+.RS 4
+Tells git to detect renames\. If set to any boolean value, it will enable basic rename detection\. If set to "copies" or "copy", it will detect copies, as well\.
+.RE
+.PP
+fetch\.unpackLimit
+.RS 4
+If the number of objects fetched over the git native transfer is below this limit, then the objects will be unpacked into loose object files\. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases\. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems\. If not set, the value of transfer\.unpackLimit is used instead\.
+.RE
+.PP
+format\.numbered
+.RS 4
+A boolean which can enable sequence numbers in patch subjects\. Setting this option to "auto" will enable it only if there is more than one patch\. See \-\-numbered option in \fBgit-format-patch\fR(1)\.
+.RE
+.PP
+format\.headers
+.RS 4
+Additional email headers to include in a patch to be submitted by mail\. See \fBgit-format-patch\fR(1)\.
+.RE
+.PP
+format\.suffix
+.RS 4
+The default for format\-patch is to output files with the suffix \.patch\. Use this variable to change that suffix (make sure to include the dot if you want it)\.
+.RE
+.PP
+format\.pretty
+.RS 4
+The default pretty format for log/show/whatchanged command, See \fBgit-log\fR(1), \fBgit-show\fR(1), \fBgit-whatchanged\fR(1)\.
+.RE
+.PP
+gc\.aggressiveWindow
+.RS 4
+The window size parameter used in the delta compression algorithm used by \fIgit\-gc \-\-aggressive\fR\. This defaults to 10\.
+.RE
+.PP
+gc\.auto
+.RS 4
+When there are approximately more than this many loose objects in the repository, git gc \-\-auto will pack them\. Some Porcelain commands use this command to perform a light\-weight garbage collection from time to time\. The default value is 6700\. Setting this to 0 disables it\.
+.RE
+.PP
+gc\.autopacklimit
+.RS 4
+When there are more than this many packs that are not marked with *\.keep file in the repository, git gc \-\-auto consolidates them into one larger pack\. The default value is 50\. Setting this to 0 disables it\.
+.RE
+.PP
+gc\.packrefs
+.RS 4
+\fIgit\-gc\fR does not run git pack\-refs in a bare repository by default so that older dumb\-transport clients can still fetch from the repository\. Setting this to true lets \fIgit\-gc\fR to run git pack\-refs\. Setting this to false tells \fIgit\-gc\fR never to run git pack\-refs\. The default setting is notbare\. Enable it only when you know you do not have to support such clients\. The default setting will change to true at some stage, and setting this to false will continue to prevent git pack\-refs from being run from \fIgit\-gc\fR\.
+.RE
+.PP
+gc\.pruneexpire
+.RS 4
+When \fIgit\-gc\fR is run, it will call \fIprune \-\-expire 2\.weeks\.ago\fR\. Override the grace period with this config variable\.
+.RE
+.PP
+gc\.reflogexpire
+.RS 4
+\fIgit\-reflog expire\fR removes reflog entries older than this time; defaults to 90 days\.
+.RE
+.PP
+gc\.reflogexpireunreachable
+.RS 4
+\fIgit\-reflog expire\fR removes reflog entries older than this time and are not reachable from the current tip; defaults to 30 days\.
+.RE
+.PP
+gc\.rerereresolved
+.RS 4
+Records of conflicted merge you resolved earlier are kept for this many days when \fIgit\-rerere gc\fR is run\. The default is 60 days\. See \fBgit-rerere\fR(1)\.
+.RE
+.PP
+gc\.rerereunresolved
+.RS 4
+Records of conflicted merge you have not resolved are kept for this many days when \fIgit\-rerere gc\fR is run\. The default is 15 days\. See \fBgit-rerere\fR(1)\.
+.RE
+.PP
+rerere\.enabled
+.RS 4
+Activate recording of resolved conflicts, so that identical conflict hunks can be resolved automatically, should they be encountered again\. \fBgit-rerere\fR(1) command is by default enabled if you create rr\-cache directory under $GIT_DIR, but can be disabled by setting this option to false\.
+.RE
+.PP
+gitcvs\.enabled
+.RS 4
+Whether the CVS server interface is enabled for this repository\. See \fBgit-cvsserver\fR(1)\.
+.RE
+.PP
+gitcvs\.logfile
+.RS 4
+Path to a log file where the CVS server interface well\&... logs various stuff\. See \fBgit-cvsserver\fR(1)\.
+.RE
+gitcvs\.usecrlfattr If true, the server will look up the crlf attribute for files to determine the \fI\-k\fR modes to use\. If crlf is set, the \fI\-k\fR mode will be left blank, so cvs clients will treat it as text\. If crlf is explicitly unset, the file will be set with \fI\-kb\fR mode, which supresses any newline munging the client might otherwise do\. If crlf is not specified, then \fIgitcvs\.allbinary\fR is used\. See \fBgitattribute\fR(5)\.
+.PP
+gitcvs\.allbinary
+.RS 4
+This is used if \fIgitcvs\.usecrlfattr\fR does not resolve the correct \fI\-kb\fR mode to use\. If true, all unresolved files are sent to the client in mode \fI\-kb\fR\. This causes the client to treat them as binary files, which suppresses any newline munging it otherwise might do\. Alternatively, if it is set to "guess", then the contents of the file are examined to decide if it is binary, similar to \fIcore\.autocrlf\fR\.
+.RE
+.PP
+gitcvs\.dbname
+.RS 4
+Database used by git\-cvsserver to cache revision information derived from the git repository\. The exact meaning depends on the used database driver, for SQLite (which is the default driver) this is a filename\. Supports variable substitution (see \fBgit-cvsserver\fR(1) for details)\. May not contain semicolons (;)\. Default: \fI%Ggitcvs\.%m\.sqlite\fR
+.RE
+.PP
+gitcvs\.dbdriver
+.RS 4
+Used Perl DBI driver\. You can specify any available driver for this here, but it might not work\. git\-cvsserver is tested with \fIDBD::SQLite\fR, reported to work with \fIDBD::Pg\fR, and reported \fBnot\fR to work with \fIDBD::mysql\fR\. Experimental feature\. May not contain double colons (:)\. Default: \fISQLite\fR\. See \fBgit-cvsserver\fR(1)\.
+.RE
+.PP
+gitcvs\.dbuser, gitcvs\.dbpass
+.RS 4
+Database user and password\. Only useful if setting \fIgitcvs\.dbdriver\fR, since SQLite has no concept of database users and/or passwords\. \fIgitcvs\.dbuser\fR supports variable substitution (see \fBgit-cvsserver\fR(1) for details)\.
+.RE
+.PP
+gitcvs\.dbTableNamePrefix
+.RS 4
+Database table name prefix\. Prepended to the names of any database tables used, allowing a single database to be used for several repositories\. Supports variable substitution (see \fBgit-cvsserver\fR(1) for details)\. Any non\-alphabetic characters will be replaced with underscores\.
+.RE
+All gitcvs variables except for \fIgitcvs\.usecrlfattr\fR and \fIgitcvs\.allbinary\fR can also be specified as \fIgitcvs\.<access_method>\.<varname>\fR (where \fIaccess_method\fR is one of "ext" and "pserver") to make them apply only for the given access method\.
+.PP
+gui\.commitmsgwidth
+.RS 4
+Defines how wide the commit message window is in the \fBgit-gui\fR(1)\. "75" is the default\.
+.RE
+.PP
+gui\.diffcontext
+.RS 4
+Specifies how many context lines should be used in calls to diff made by the \fBgit-gui\fR(1)\. The default is "5"\.
+.RE
+.PP
+gui\.matchtrackingbranch
+.RS 4
+Determines if new branches created with \fBgit-gui\fR(1) should default to tracking remote branches with matching names or not\. Default: "false"\.
+.RE
+.PP
+gui\.newbranchtemplate
+.RS 4
+Is used as suggested name when creating new branches using the \fBgit-gui\fR(1)\.
+.RE
+.PP
+gui\.pruneduringfetch
+.RS 4
+"true" if \fBgit-gui\fR(1) should prune tracking branches when performing a fetch\. The default value is "false"\.
+.RE
+.PP
+gui\.trustmtime
+.RS 4
+Determines if \fBgit-gui\fR(1) should trust the file modification timestamp or not\. By default the timestamps are not trusted\.
+.RE
+.PP
+gui\.spellingdictionary
+.RS 4
+Specifies the dictionary used for spell checking commit messages in the \fBgit-gui\fR(1)\. When set to "none" spell checking is turned off\.
+.RE
+.PP
+help\.browser
+.RS 4
+Specify the browser that will be used to display help in the \fIweb\fR format\. See \fBgit-help\fR(1)\.
+.RE
+.PP
+help\.format
+.RS 4
+Override the default help format used by \fBgit-help\fR(1)\. Values \fIman\fR, \fIinfo\fR, \fIweb\fR and \fIhtml\fR are supported\. \fIman\fR is the default\. \fIweb\fR and \fIhtml\fR are the same\.
+.RE
+.PP
+http\.proxy
+.RS 4
+Override the HTTP proxy, normally configured using the \fIhttp_proxy\fR environment variable (see \fBcurl\fR(1))\. This can be overridden on a per\-remote basis; see remote\.<name>\.proxy
+.RE
+.PP
+http\.sslVerify
+.RS 4
+Whether to verify the SSL certificate when fetching or pushing over HTTPS\. Can be overridden by the \fIGIT_SSL_NO_VERIFY\fR environment variable\.
+.RE
+.PP
+http\.sslCert
+.RS 4
+File containing the SSL certificate when fetching or pushing over HTTPS\. Can be overridden by the \fIGIT_SSL_CERT\fR environment variable\.
+.RE
+.PP
+http\.sslKey
+.RS 4
+File containing the SSL private key when fetching or pushing over HTTPS\. Can be overridden by the \fIGIT_SSL_KEY\fR environment variable\.
+.RE
+.PP
+http\.sslCAInfo
+.RS 4
+File containing the certificates to verify the peer with when fetching or pushing over HTTPS\. Can be overridden by the \fIGIT_SSL_CAINFO\fR environment variable\.
+.RE
+.PP
+http\.sslCAPath
+.RS 4
+Path containing files with the CA certificates to verify the peer with when fetching or pushing over HTTPS\. Can be overridden by the \fIGIT_SSL_CAPATH\fR environment variable\.
+.RE
+.PP
+http\.maxRequests
+.RS 4
+How many HTTP requests to launch in parallel\. Can be overridden by the \fIGIT_HTTP_MAX_REQUESTS\fR environment variable\. Default is 5\.
+.RE
+.PP
+http\.lowSpeedLimit, http\.lowSpeedTime
+.RS 4
+If the HTTP transfer speed is less than \fIhttp\.lowSpeedLimit\fR for longer than \fIhttp\.lowSpeedTime\fR seconds, the transfer is aborted\. Can be overridden by the \fIGIT_HTTP_LOW_SPEED_LIMIT\fR and \fIGIT_HTTP_LOW_SPEED_TIME\fR environment variables\.
+.RE
+.PP
+http\.noEPSV
+.RS 4
+A boolean which disables using of EPSV ftp command by curl\. This can helpful with some "poor" ftp servers which don\'t support EPSV mode\. Can be overridden by the \fIGIT_CURL_FTP_NO_EPSV\fR environment variable\. Default is false (curl will use EPSV)\.
+.RE
+.PP
+i18n\.commitEncoding
+.RS 4
+Character encoding the commit messages are stored in; git itself does not care per se, but this information is necessary e\.g\. when importing commits from emails or in the gitk graphical history browser (and possibly at other places in the future or in other porcelains)\. See e\.g\. \fBgit-mailinfo\fR(1)\. Defaults to \fIutf\-8\fR\.
+.RE
+.PP
+i18n\.logOutputEncoding
+.RS 4
+Character encoding the commit messages are converted to when running \fIgit\-log\fR and friends\.
+.RE
+.PP
+instaweb\.browser
+.RS 4
+Specify the program that will be used to browse your working repository in gitweb\. See \fBgit-instaweb\fR(1)\.
+.RE
+.PP
+instaweb\.httpd
+.RS 4
+The HTTP daemon command\-line to start gitweb on your working repository\. See \fBgit-instaweb\fR(1)\.
+.RE
+.PP
+instaweb\.local
+.RS 4
+If true the web server started by \fBgit-instaweb\fR(1) will be bound to the local IP (127\.0\.0\.1)\.
+.RE
+.PP
+instaweb\.modulepath
+.RS 4
+The module path for an apache httpd used by \fBgit-instaweb\fR(1)\.
+.RE
+.PP
+instaweb\.port
+.RS 4
+The port number to bind the gitweb httpd to\. See \fBgit-instaweb\fR(1)\.
+.RE
+.PP
+log\.date
+.RS 4
+Set default date\-time mode for the log command\. Setting log\.date value is similar to using \fIgit\-log\fR\'s \-\-date option\. The value is one of the following alternatives: {relative,local,default,iso,rfc,short}\. See \fBgit-log\fR(1)\.
+.RE
+.PP
+log\.showroot
+.RS 4
+If true, the initial commit will be shown as a big creation event\. This is equivalent to a diff against an empty tree\. Tools like \fBgit-log\fR(1) or \fBgit-whatchanged\fR(1), which normally hide the root commit will now show it\. True by default\.
+.RE
+.PP
+man\.viewer
+.RS 4
+Specify the programs that may be used to display help in the \fIman\fR format\. See \fBgit-help\fR(1)\.
+.RE
+.PP
+merge\.stat
+.RS 4
+Whether to print the diffstat berween ORIG_HEAD and merge result at the end of the merge\. True by default\.
+.RE
+.PP
+merge\.log
+.RS 4
+Whether to include summaries of merged commits in newly created merge commit messages\. False by default\.
+.RE
+.PP
+merge\.renameLimit
+.RS 4
+The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff\.renameLimit\.
+.RE
+.PP
+merge\.tool
+.RS 4
+Controls which merge resolution program is used by \fBgit-mergetool\fR(1)\. Valid built\-in values are: "kdiff3", "tkdiff", "meld", "xxdiff", "emerge", "vimdiff", "gvimdiff", and "opendiff"\. Any other value is treated is custom merge tool and there must be a corresponing mergetool\.<tool>\.cmd option\.
+.RE
+.PP
+merge\.verbosity
+.RS 4
+Controls the amount of output shown by the recursive merge strategy\. Level 0 outputs nothing except a final error message if conflicts were detected\. Level 1 outputs only conflicts, 2 outputs conflicts and file changes\. Level 5 and above outputs debugging information\. The default is level 2\. Can be overridden by \fIGIT_MERGE_VERBOSITY\fR environment variable\.
+.RE
+.PP
+merge\.<driver>\.name
+.RS 4
+Defines a human readable name for a custom low\-level merge driver\. See \fBgitattributes\fR(5) for details\.
+.RE
+.PP
+merge\.<driver>\.driver
+.RS 4
+Defines the command that implements a custom low\-level merge driver\. See \fBgitattributes\fR(5) for details\.
+.RE
+.PP
+merge\.<driver>\.recursive
+.RS 4
+Names a low\-level merge driver to be used when performing an internal merge between common ancestors\. See \fBgitattributes\fR(5) for details\.
+.RE
+.PP
+man\.<tool>\.cmd
+.RS 4
+Specify the command to invoke the specified man viewer\. The specified command is evaluated in shell with the man page passed as argument\. (See \fBgit-help\fR(1)\.)
+.RE
+.PP
+man\.<tool>\.path
+.RS 4
+Override the path for the given tool that may be used to display help in the \fIman\fR format\. See \fBgit-help\fR(1)\.
+.RE
+.PP
+mergetool\.<tool>\.path
+.RS 4
+Override the path for the given tool\. This is useful in case your tool is not in the PATH\.
+.RE
+.PP
+mergetool\.<tool>\.cmd
+.RS 4
+Specify the command to invoke the specified merge tool\. The specified command is evaluated in shell with the following variables available: \fIBASE\fR is the name of a temporary file containing the common base of the files to be merged, if available; \fILOCAL\fR is the name of a temporary file containing the contents of the file on the current branch; \fIREMOTE\fR is the name of a temporary file containing the contents of the file from the branch being merged; \fIMERGED\fR contains the name of the file to which the merge tool should write the results of a successful merge\.
+.RE
+.PP
+mergetool\.<tool>\.trustExitCode
+.RS 4
+For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful\. If this is not set to true then the merge target file timestamp is checked and the merge assumed to have been successful if the file has been updated, otherwise the user is prompted to indicate the success of the merge\.
+.RE
+.PP
+mergetool\.keepBackup
+.RS 4
+After performing a merge, the original file with conflict markers can be saved as a file with a \.orig extension\. If this variable is set to false then this file is not preserved\. Defaults to true (i\.e\. keep the backup files)\.
+.RE
+.PP
+pack\.window
+.RS 4
+The size of the window used by \fBgit-pack-objects\fR(1) when no window size is given on the command line\. Defaults to 10\.
+.RE
+.PP
+pack\.depth
+.RS 4
+The maximum delta depth used by \fBgit-pack-objects\fR(1) when no maximum depth is given on the command line\. Defaults to 50\.
+.RE
+.PP
+pack\.windowMemory
+.RS 4
+The window memory size limit used by \fBgit-pack-objects\fR(1) when no limit is given on the command line\. The value can be suffixed with "k", "m", or "g"\. Defaults to 0, meaning no limit\.
+.RE
+.PP
+pack\.compression
+.RS 4
+An integer \-1\.\.9, indicating the compression level for objects in a pack file\. \-1 is the zlib default\. 0 means no compression, and 1\.\.9 are various speed/size tradeoffs, 9 being slowest\. If not set, defaults to core\.compression\. If that is not set, defaults to \-1, the zlib default, which is "a default compromise between speed and compression (currently equivalent to level 6)\."
+.RE
+.PP
+pack\.deltaCacheSize
+.RS 4
+The maximum memory in bytes used for caching deltas in \fBgit-pack-objects\fR(1)\. A value of 0 means no limit\. Defaults to 0\.
+.RE
+.PP
+pack\.deltaCacheLimit
+.RS 4
+The maximum size of a delta, that is cached in \fBgit-pack-objects\fR(1)\. Defaults to 1000\.
+.RE
+.PP
+pack\.threads
+.RS 4
+Specifies the number of threads to spawn when searching for best delta matches\. This requires that \fBgit-pack-objects\fR(1) be compiled with pthreads otherwise this option is ignored with a warning\. This is meant to reduce packing time on multiprocessor machines\. The required amount of memory for the delta search window is however multiplied by the number of threads\. Specifying 0 will cause git to auto\-detect the number of CPU\'s and set the number of threads accordingly\.
+.RE
+.PP
+pack\.indexVersion
+.RS 4
+Specify the default pack index version\. Valid values are 1 for legacy pack index used by Git versions prior to 1\.5\.2, and 2 for the new pack index with capabilities for packs larger than 4 GB as well as proper protection against the repacking of corrupted packs\. Version 2 is the default\. Note that version 2 is enforced and this config option ignored whenever the corresponding pack is larger than 2 GB\.
+
+If you have an old git that does not understand the version 2 *\.idx file, cloning or fetching over a non native protocol (e\.g\. "http" and "rsync") that will copy both *\.pack file and corresponding *\.idx file from the other side may give you a repository that cannot be accessed with your older version of git\. If the *\.pack file is smaller than 2 GB, however, you can use \fBgit-index-pack\fR(1) on the *\.pack file to regenerate the *\.idx file\.
+.RE
+.PP
+pack\.packSizeLimit
+.RS 4
+The default maximum size of a pack\. This setting only affects packing to a file, i\.e\. the git:// protocol is unaffected\. It can be overridden by the \-\-max\-pack\-size option of \fBgit-repack\fR(1)\.
+.RE
+.PP
+pull\.octopus
+.RS 4
+The default merge strategy to use when pulling multiple branches at once\.
+.RE
+.PP
+pull\.twohead
+.RS 4
+The default merge strategy to use when pulling a single branch\.
+.RE
+.PP
+remote\.<name>\.url
+.RS 4
+The URL of a remote repository\. See \fBgit-fetch\fR(1) or \fBgit-push\fR(1)\.
+.RE
+.PP
+remote\.<name>\.proxy
+.RS 4
+For remotes that require curl (http, https and ftp), the URL to the proxy to use for that remote\. Set to the empty string to disable proxying for that remote\.
+.RE
+.PP
+remote\.<name>\.fetch
+.RS 4
+The default set of "refspec" for \fBgit-fetch\fR(1)\. See \fBgit-fetch\fR(1)\.
+.RE
+.PP
+remote\.<name>\.push
+.RS 4
+The default set of "refspec" for \fBgit-push\fR(1)\. See \fBgit-push\fR(1)\.
+.RE
+.PP
+remote\.<name>\.mirror
+.RS 4
+If true, pushing to this remote will automatically behave as if the \-\-mirror option was given on the command line\.
+.RE
+.PP
+remote\.<name>\.skipDefaultUpdate
+.RS 4
+If true, this remote will be skipped by default when updating using the update subcommand of \fBgit-remote\fR(1)\.
+.RE
+.PP
+remote\.<name>\.receivepack
+.RS 4
+The default program to execute on the remote side when pushing\. See option \-\-receive\-pack of \fBgit-push\fR(1)\.
+.RE
+.PP
+remote\.<name>\.uploadpack
+.RS 4
+The default program to execute on the remote side when fetching\. See option \-\-upload\-pack of \fBgit-fetch-pack\fR(1)\.
+.RE
+.PP
+remote\.<name>\.tagopt
+.RS 4
 Setting this value to \-\-no\-tags disables automatic tag following when fetching from remote <name>
-.TP
-remotes.<group>
-The list of remotes which are fetched by "git remote update <group>". See \fBgit\-remote\fR(1).
-.TP
-repack.usedeltabaseoffset
-By default, \fBgit\-repack\fR(1) creates packs that use delta\-base offset. If you need to share your repository with git older than version 1.4.4, either directly or via a dumb protocol such as http, then you need to set this option to "false" and repack. Access from old git versions over the native protocol are unaffected by this option.
-.TP
-showbranch.default
-The default set of branches for \fBgit\-show\-branch\fR(1). See \fBgit\-show\-branch\fR(1).
-.TP
-status.relativePaths
-By default, \fBgit\-status\fR(1) shows paths relative to the current directory. Setting this variable to false shows paths relative to the repository root (this was the default for git prior to v1.5.4).
-.TP
-status.showUntrackedFiles
-By default, \fBgit\-status\fR(1) and \fBgit\-commit\fR(1) show files which are not currently tracked by Git. Directories which contain only untracked files, are shown with the directory name only. Showing untracked files means that Git needs to lstat() all all the files in the whole repository, which might be slow on some systems. So, this variable controls how the commands displays the untracked files. Possible values are:
-.RS
-.TP 3
-\(bu
-\fIno\fR \- Show no untracked files
-.TP
-\(bu
-\fInormal\fR \- Shows untracked files and directories
-.TP
-\(bu
-\fIall\fR \- Shows also individual files in untracked directories.
 .RE
-.IP
-If this variable is not specified, it defaults to \fInormal\fR. This variable can be overridden with the \-u|\-\-untracked\-files option of \fBgit\-status\fR(1) and \fBgit\-commit\fR(1).
-.TP
-tar.umask
-This variable can be used to restrict the permission bits of tar archive entries. The default is 0002, which turns off the world write bit. The special value "user" indicates that the archiving user's umask will be used instead. See umask(2) and \fBgit\-archive\fR(1).
-.TP
-url.<base>.insteadOf
-Any URL that starts with this value will be rewritten to start, instead, with <base>. In cases where some site serves a large number of repositories, and serves them with multiple access methods, and some users need to use different access methods, this feature allows people to specify any of the equivalent URLs and have git automatically rewrite the URL to the best alternative for the particular user, even for a never\-before\-seen repository on the site. When more than one insteadOf strings match a given URL, the longest match is used.
-.TP
-user.email
-Your email address to be recorded in any newly created commits. Can be overridden by the \fIGIT_AUTHOR_EMAIL\fR, \fIGIT_COMMITTER_EMAIL\fR, and \fIEMAIL\fR environment variables. See \fBgit\-commit\-tree\fR(1).
-.TP
-user.name
-Your full name to be recorded in any newly created commits. Can be overridden by the \fIGIT_AUTHOR_NAME\fR and \fIGIT_COMMITTER_NAME\fR environment variables. See \fBgit\-commit\-tree\fR(1).
-.TP
-user.signingkey
-If \fBgit\-tag\fR(1) is not selecting the key you want it to automatically when creating a signed tag, you can override the default selection with this variable. This option is passed unchanged to gpg's \-\-local\-user parameter, so you may specify a key using any method that gpg supports.
-.TP
+.PP
+remotes\.<group>
+.RS 4
+The list of remotes which are fetched by "git remote update <group>"\. See \fBgit-remote\fR(1)\.
+.RE
+.PP
+repack\.usedeltabaseoffset
+.RS 4
+By default, \fBgit-repack\fR(1) creates packs that use delta\-base offset\. If you need to share your repository with git older than version 1\.4\.4, either directly or via a dumb protocol such as http, then you need to set this option to "false" and repack\. Access from old git versions over the native protocol are unaffected by this option\.
+.RE
+.PP
+showbranch\.default
+.RS 4
+The default set of branches for \fBgit-show-branch\fR(1)\. See \fBgit-show-branch\fR(1)\.
+.RE
+.PP
+status\.relativePaths
+.RS 4
+By default, \fBgit-status\fR(1) shows paths relative to the current directory\. Setting this variable to false shows paths relative to the repository root (this was the default for git prior to v1\.5\.4)\.
+.RE
+.PP
+status\.showUntrackedFiles
+.RS 4
+By default, \fBgit-status\fR(1) and \fBgit-commit\fR(1) show files which are not currently tracked by Git\. Directories which contain only untracked files, are shown with the directory name only\. Showing untracked files means that Git needs to lstat() all all the files in the whole repository, which might be slow on some systems\. So, this variable controls how the commands displays the untracked files\. Possible values are:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIno\fR \- Show no untracked files
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fInormal\fR \- Shows untracked files and directories
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIall\fR \- Shows also individual files in untracked directories\.
+.RE
+.IP "" 4
+If this variable is not specified, it defaults to \fInormal\fR\. This variable can be overridden with the \-u|\-\-untracked\-files option of \fBgit-status\fR(1) and \fBgit-commit\fR(1)\.
+.RE
+.PP
+tar\.umask
+.RS 4
+This variable can be used to restrict the permission bits of tar archive entries\. The default is 0002, which turns off the world write bit\. The special value "user" indicates that the archiving user\'s umask will be used instead\. See umask(2) and \fBgit-archive\fR(1)\.
+.RE
+.PP
+url\.<base>\.insteadOf
+.RS 4
+Any URL that starts with this value will be rewritten to start, instead, with <base>\. In cases where some site serves a large number of repositories, and serves them with multiple access methods, and some users need to use different access methods, this feature allows people to specify any of the equivalent URLs and have git automatically rewrite the URL to the best alternative for the particular user, even for a never\-before\-seen repository on the site\. When more than one insteadOf strings match a given URL, the longest match is used\.
+.RE
+.PP
+user\.email
+.RS 4
+Your email address to be recorded in any newly created commits\. Can be overridden by the \fIGIT_AUTHOR_EMAIL\fR, \fIGIT_COMMITTER_EMAIL\fR, and \fIEMAIL\fR environment variables\. See \fBgit-commit-tree\fR(1)\.
+.RE
+.PP
+user\.name
+.RS 4
+Your full name to be recorded in any newly created commits\. Can be overridden by the \fIGIT_AUTHOR_NAME\fR and \fIGIT_COMMITTER_NAME\fR environment variables\. See \fBgit-commit-tree\fR(1)\.
+.RE
+.PP
+user\.signingkey
+.RS 4
+If \fBgit-tag\fR(1) is not selecting the key you want it to automatically when creating a signed tag, you can override the default selection with this variable\. This option is passed unchanged to gpg\'s \-\-local\-user parameter, so you may specify a key using any method that gpg supports\.
+.RE
+.PP
 imap
-The configuration variables in the \fIimap\fR section are described in \fBgit\-imap\-send\fR(1).
-.TP
-receive.fsckObjects
-If it is set to true, git\-receive\-pack will check all received objects. It will abort in the case of a malformed object or a broken link. The result of an abort are only dangling objects. Defaults to false.
-.TP
-receive.unpackLimit
-If the number of objects received in a push is below this limit then the objects will be unpacked into loose object files. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems. If not set, the value of transfer.unpackLimit is used instead.
-.TP
-receive.denyNonFastForwards
-If set to true, git\-receive\-pack will deny a ref update which is not a fast forward. Use this to prevent such an update via a push, even if that push is forced. This configuration variable is set when initializing a shared repository.
-.TP
-transfer.unpackLimit
-When fetch.unpackLimit or receive.unpackLimit are not set, the value of this variable is used instead. The default value is 100.
-.TP
-web.browser
-Specify a web browser that may be used by some commands. Currently only \fBgit\-instaweb\fR(1) and \fBgit\-help\fR(1) may use it.
+.RS 4
+The configuration variables in the \fIimap\fR section are described in \fBgit-imap-send\fR(1)\.
+.RE
+.PP
+receive\.fsckObjects
+.RS 4
+If it is set to true, git\-receive\-pack will check all received objects\. It will abort in the case of a malformed object or a broken link\. The result of an abort are only dangling objects\. Defaults to false\.
+.RE
+.PP
+receive\.unpackLimit
+.RS 4
+If the number of objects received in a push is below this limit then the objects will be unpacked into loose object files\. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases\. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems\. If not set, the value of transfer\.unpackLimit is used instead\.
+.RE
+.PP
+receive\.denyNonFastForwards
+.RS 4
+If set to true, git\-receive\-pack will deny a ref update which is not a fast forward\. Use this to prevent such an update via a push, even if that push is forced\. This configuration variable is set when initializing a shared repository\.
+.RE
+.PP
+transfer\.unpackLimit
+.RS 4
+When fetch\.unpackLimit or receive\.unpackLimit are not set, the value of this variable is used instead\. The default value is 100\.
+.RE
+.PP
+web\.browser
+.RS 4
+Specify a web browser that may be used by some commands\. Currently only \fBgit-instaweb\fR(1) and \fBgit-help\fR(1) may use it\.
+.RE
 .SH "AUTHOR"
-Written by Johannes Schindelin <Johannes.Schindelin@gmx.de>
+Written by Johannes Schindelin <Johannes\.Schindelin@gmx\.de>
 .SH "DOCUMENTATION"
-Documentation by Johannes Schindelin, Petr Baudis and the git\-list <git@vger.kernel.org>.
+Documentation by Johannes Schindelin, Petr Baudis and the git\-list <git@vger\.kernel\.org>\.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 

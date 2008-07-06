@@ -1,106 +1,139 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FOR\-EACH\-REF" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-for-each-ref
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-FOR\-EACH\-REF" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-for\-each\-ref \- Output information on each ref
+git-for-each-ref - Output information on each ref
 .SH "SYNOPSIS"
 .sp
+.RS 4
 .nf
 \fIgit for\-each\-ref\fR [\-\-count=<count>] [\-\-shell|\-\-perl|\-\-python|\-\-tcl]
                    [\-\-sort=<key>]* [\-\-format=<format>] [<pattern>\&...]
 .fi
+.RE
 .SH "DESCRIPTION"
-Iterate over all refs that match <pattern> and show them according to the given <format>, after sorting them according to the given set of <key>. If <max> is given, stop after showing that many refs. The interpolated values in <format> can optionally be quoted as string literals in the specified host language allowing their direct evaluation in that language.
+Iterate over all refs that match <pattern> and show them according to the given <format>, after sorting them according to the given set of <key>\. If <max> is given, stop after showing that many refs\. The interpolated values in <format> can optionally be quoted as string literals in the specified host language allowing their direct evaluation in that language\.
 .SH "OPTIONS"
-.TP
+.PP
 <count>
-By default the command shows all refs that match <pattern>. This option makes it stop after showing that many refs.
-.TP
+.RS 4
+By default the command shows all refs that match <pattern>\. This option makes it stop after showing that many refs\.
+.RE
+.PP
 <key>
-A field name to sort on. Prefix \- to sort in descending order of the value. When unspecified, refname is used. You may use the \-\-sort=<key> option multiple times, in which case the last key becomes the primary key.
-.TP
+.RS 4
+A field name to sort on\. Prefix \- to sort in descending order of the value\. When unspecified, refname is used\. You may use the \-\-sort=<key> option multiple times, in which case the last key becomes the primary key\.
+.RE
+.PP
 <format>
-A string that interpolates %(fieldname) from the object pointed at by a ref being shown. If fieldname is prefixed with an asterisk (*) and the ref points at a tag object, the value for the field in the object tag refers is used. When unspecified, defaults to %(objectname) SPC %(objecttype) TAB %(refname). It also interpolates %% to %, and %xx where xx are hex digits interpolates to character with hex code xx; for example %00 interpolates to \\0 (NUL), %09 to \\t (TAB) and %0a to \\n (LF).
-.TP
+.RS 4
+A string that interpolates %(fieldname) from the object pointed at by a ref being shown\. If fieldname is prefixed with an asterisk (*) and the ref points at a tag object, the value for the field in the object tag refers is used\. When unspecified, defaults to %(objectname) SPC %(objecttype) TAB %(refname)\. It also interpolates %% to %, and %xx where xx are hex digits interpolates to character with hex code xx; for example %00 interpolates to \e0 (NUL), %09 to \et (TAB) and %0a to \en (LF)\.
+.RE
+.PP
 <pattern>
-If one or more patterns are given, only refs are shown that match againt at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash.
-.TP
-\-\-shell , \-\-perl , \-\-python , \-\-tcl
-If given, strings that substitute %(fieldname) placeholders are quoted as string literals suitable for the specified host language. This is meant to produce a scriptlet that can directly be `eval`ed.
+.RS 4
+If one or more patterns are given, only refs are shown that match againt at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash\.
+.RE
+.PP
+\-\-shell, \-\-perl, \-\-python, \-\-tcl
+.RS 4
+If given, strings that substitute %(fieldname) placeholders are quoted as string literals suitable for the specified host language\. This is meant to produce a scriptlet that can directly be `eval`ed\.
+.RE
 .SH "FIELD NAMES"
-Various values from structured fields in referenced objects can be used to interpolate into the resulting output, or as sort keys.
+Various values from structured fields in referenced objects can be used to interpolate into the resulting output, or as sort keys\.
 
 For all objects, the following names can be used:
-.TP
+.PP
 refname
-The name of the ref (the part after $GIT_DIR/).
-.TP
+.RS 4
+The name of the ref (the part after $GIT_DIR/)\.
+.RE
+.PP
 objecttype
-The type of the object (blob, tree, commit, tag).
-.TP
+.RS 4
+The type of the object (blob, tree, commit, tag)\.
+.RE
+.PP
 objectsize
-The size of the object (the same as git\-cat\-file \-s reports).
-.TP
+.RS 4
+The size of the object (the same as \fIgit\-cat\-file \-s\fR reports)\.
+.RE
+.PP
 objectname
-The object name (aka SHA\-1).
+.RS 4
+The object name (aka SHA\-1)\.
+.RE
+In addition to the above, for commit and tag objects, the header field names (tree, parent, object, type, and tag) can be used to specify the value in the header field\.
 
-In addition to the above, for commit and tag objects, the header field names (tree, parent, object, type, and tag) can be used to specify the value in the header field.
+Fields that have name\-email\-date tuple as its value (author, committer, and tagger) can be suffixed with name, email, and date to extract the named component\.
 
-Fields that have name\-email\-date tuple as its value (author, committer, and tagger) can be suffixed with name, email, and date to extract the named component.
+The first line of the message in a commit and tag object is subject, the remaining lines are body\. The whole message is contents\.
 
-The first line of the message in a commit and tag object is subject, the remaining lines are body. The whole message is contents.
+For sorting purposes, fields with numeric values sort in numeric order (objectsize, authordate, committerdate, taggerdate)\. All other fields are used to sort in their byte\-value order\.
 
-For sorting purposes, fields with numeric values sort in numeric order (objectsize, authordate, committerdate, taggerdate). All other fields are used to sort in their byte\-value order.
+In any case, a field name that refers to a field inapplicable to the object referred by the ref does not cause an error\. It returns an empty string instead\.
 
-In any case, a field name that refers to a field inapplicable to the object referred by the ref does not cause an error. It returns an empty string instead.
-
-As a special case for the date\-type fields, you may specify a format for the date by adding one of :default, :relative, :short, :local, :iso8601 or :rfc2822 to the end of the fieldname; e.g. %(taggerdate:relative).
+As a special case for the date\-type fields, you may specify a format for the date by adding one of :default, :relative, :short, :local, :iso8601 or :rfc2822 to the end of the fieldname; e\.g\. %(taggerdate:relative)\.
 .SH "EXAMPLES"
-An example directly producing formatted text. Show the most recent 3 tagged commits::
+An example directly producing formatted text\. Show the most recent 3 tagged commits::
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 #!/bin/sh
 
-git for\-each\-ref \-\-count=3 \-\-sort='\-*authordate' \\
-\-\-format='From: %(*authorname) %(*authoremail)
+git for\-each\-ref \-\-count=3 \-\-sort=\'\-*authordate\' \e
+\-\-format=\'From: %(*authorname) %(*authoremail)
 Subject: %(*subject)
 Date: %(*authordate)
 Ref: %(*refname)
 
 %(*body)
-\' 'refs/tags'
-.ft
+\' \'refs/tags\'
+\.ft
 
 .fi
-A simple example showing the use of shell eval on the output, demonstrating the use of \-\-shell. List the prefixes of all heads::
+.RE
+A simple example showing the use of shell eval on the output, demonstrating the use of \-\-shell\. List the prefixes of all heads::
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 #!/bin/sh
 
-git for\-each\-ref \-\-shell \-\-format="ref=%(refname)" refs/heads | \\
+git for\-each\-ref \-\-shell \-\-format="ref=%(refname)" refs/heads | \e
 while read entry
 do
         eval "$entry"
         echo `dirname $ref`
 done
-.ft
+\.ft
 
 .fi
+.RE
 A bit more elaborate report on tags, demonstrating that the format may be an entire script::
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 #!/bin/sh
 
-fmt='
+fmt=\'
         r=%(refname)
         t=%(*objecttype)
         T=${r#refs/tags/}
@@ -140,11 +173,12 @@ Its message reads as:
         fi
 \'
 
-eval=`git for\-each\-ref \-\-shell \-\-format="$fmt" \\
-        \-\-sort='*objecttype' \\
-        \-\-sort=\-taggerdate \\
+eval=`git for\-each\-ref \-\-shell \-\-format="$fmt" \e
+        \-\-sort=\'*objecttype\' \e
+        \-\-sort=\-taggerdate \e
         refs/tags`
 eval "$eval"
-.ft
+\.ft
 
 .fi
+.RE

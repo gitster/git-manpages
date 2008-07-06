@@ -1,61 +1,84 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REPACK" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-repack
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-REPACK" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-repack \- Pack unpacked objects in a repository
+git-repack - Pack unpacked objects in a repository
 .SH "SYNOPSIS"
 \fIgit repack\fR [\-a] [\-A] [\-d] [\-f] [\-l] [\-n] [\-q] [\-\-window=N] [\-\-depth=N]
 .SH "DESCRIPTION"
-This script is used to combine all objects that do not currently reside in a "pack", into a pack. It can also be used to re\-organize existing packs into a single, more efficient pack.
+This script is used to combine all objects that do not currently reside in a "pack", into a pack\. It can also be used to re\-organize existing packs into a single, more efficient pack\.
 
-A pack is a collection of objects, individually compressed, with delta compression applied, stored in a single file, with an associated index file.
+A pack is a collection of objects, individually compressed, with delta compression applied, stored in a single file, with an associated index file\.
 
-Packs are used to reduce the load on mirror systems, backup engines, disk storage, etc.
+Packs are used to reduce the load on mirror systems, backup engines, disk storage, etc\.
 .SH "OPTIONS"
-.TP
+.PP
 \-a
-Instead of incrementally packing the unpacked objects, pack everything referenced into a single pack. Especially useful when packing a repository that is used for private development and there is no need to worry about people fetching via dumb protocols from it. Use with \fI\-d\fR. This will clean up the objects that git prune leaves behind, but git fsck \-\-full shows as dangling.
-.TP
+.RS 4
+Instead of incrementally packing the unpacked objects, pack everything referenced into a single pack\. Especially useful when packing a repository that is used for private development and there is no need to worry about people fetching via dumb protocols from it\. Use with \fI\-d\fR\. This will clean up the objects that git prune leaves behind, but git fsck \-\-full shows as dangling\.
+.RE
+.PP
 \-A
-Same as \-a, but any unreachable objects in a previous pack become loose, unpacked objects, instead of being left in the old pack. Unreachable objects are never intentionally added to a pack, even when repacking. When used with \fI\-d\fR, this option prevents unreachable objects from being immediately deleted by way of being left in the old pack and then removed. Instead, the loose unreachable objects will be pruned according to normal expiry rules with the next git\-gc invocation. See \fBgit\-gc\fR(1).
-.TP
+.RS 4
+Same as \-a, but any unreachable objects in a previous pack become loose, unpacked objects, instead of being left in the old pack\. Unreachable objects are never intentionally added to a pack, even when repacking\. When used with \fI\-d\fR, this option prevents unreachable objects from being immediately deleted by way of being left in the old pack and then removed\. Instead, the loose unreachable objects will be pruned according to normal expiry rules with the next \fIgit\-gc\fR invocation\. See \fBgit-gc\fR(1)\.
+.RE
+.PP
 \-d
-After packing, if the newly created packs make some existing packs redundant, remove the redundant packs. Also run git\-prune\-packed to remove redundant loose object files.
-.TP
+.RS 4
+After packing, if the newly created packs make some existing packs redundant, remove the redundant packs\. Also run \fIgit\-prune\-packed\fR to remove redundant loose object files\.
+.RE
+.PP
 \-l
-Pass the \-\-local option to git\-pack\-objects. See \fBgit\-pack\-objects\fR(1).
-.TP
+.RS 4
+Pass the \-\-local option to \fIgit\-pack\-objects\fR\. See \fBgit-pack-objects\fR(1)\.
+.RE
+.PP
 \-f
-Pass the \-\-no\-reuse\-delta option to git\-pack\-objects. See \fBgit\-pack\-objects\fR(1).
-.TP
+.RS 4
+Pass the \-\-no\-reuse\-delta option to \fIgit\-pack\-objects\fR\. See \fBgit-pack-objects\fR(1)\.
+.RE
+.PP
 \-q
-Pass the \-q option to git\-pack\-objects. See \fBgit\-pack\-objects\fR(1).
-.TP
+.RS 4
+Pass the \-q option to \fIgit\-pack\-objects\fR\. See \fBgit-pack-objects\fR(1)\.
+.RE
+.PP
 \-n
-Do not update the server information with git\-update\-server\-info. This option skips updating local catalog files needed to publish this repository (or a direct copy of it) over HTTP or FTP. See .
-.TP
-\-\-window=[N] , \-\-depth=[N]
-These two options affect how the objects contained in the pack are stored using delta compression. The objects are first internally sorted by type, size and optionally names and compared against the other objects within \-\-window to see if using delta compression saves space. \-\-depth limits the maximum delta depth; making it too deep affects the performance on the unpacker side, because delta data needs to be applied that many times to get to the necessary object. The default value for \-\-window is 10 and \-\-depth is 50.
-.TP
+.RS 4
+Do not update the server information with \fIgit\-update\-server\-info\fR\. This option skips updating local catalog files needed to publish this repository (or a direct copy of it) over HTTP or FTP\. See \fBgit-update-server-info\fR(1)\.
+.RE
+.PP
+\-\-window=[N], \-\-depth=[N]
+.RS 4
+These two options affect how the objects contained in the pack are stored using delta compression\. The objects are first internally sorted by type, size and optionally names and compared against the other objects within \-\-window to see if using delta compression saves space\. \-\-depth limits the maximum delta depth; making it too deep affects the performance on the unpacker side, because delta data needs to be applied that many times to get to the necessary object\. The default value for \-\-window is 10 and \-\-depth is 50\.
+.RE
+.PP
 \-\-window\-memory=[N]
-This option provides an additional limit on top of \-\-window; the window size will dynamically scale down so as to not take up more than N bytes in memory. This is useful in repositories with a mix of large and small objects to not run out of memory with a large window, but still be able to take advantage of the large window for the smaller objects. The size can be suffixed with "k", "m", or "g". \-\-window\-memory=0 makes memory usage unlimited, which is the default.
-.TP
+.RS 4
+This option provides an additional limit on top of \-\-window; the window size will dynamically scale down so as to not take up more than N bytes in memory\. This is useful in repositories with a mix of large and small objects to not run out of memory with a large window, but still be able to take advantage of the large window for the smaller objects\. The size can be suffixed with "k", "m", or "g"\. \-\-window\-memory=0 makes memory usage unlimited, which is the default\.
+.RE
+.PP
 \-\-max\-pack\-size=<n>
-Maximum size of each output packfile, expressed in MiB. If specified, multiple packfiles may be created. The default is unlimited.
+.RS 4
+Maximum size of each output packfile, expressed in MiB\. If specified, multiple packfiles may be created\. The default is unlimited\.
+.RE
 .SH "CONFIGURATION"
-When configuration variable repack.UseDeltaBaseOffset is set for the repository, the command passes \-\-delta\-base\-offset option to git\-pack\-objects; this typically results in slightly smaller packs, but the generated packs are incompatible with versions of git older than (and including) v1.4.3; do not set the variable in a repository that older version of git needs to be able to read (this includes repositories from which packs can be copied out over http or rsync, and people who obtained packs that way can try to use older git with it).
+When configuration variable repack\.UseDeltaBaseOffset is set for the repository, the command passes \-\-delta\-base\-offset option to \fIgit\-pack\-objects\fR; this typically results in slightly smaller packs, but the generated packs are incompatible with versions of git older than (and including) v1\.4\.3; do not set the variable in a repository that older version of git needs to be able to read (this includes repositories from which packs can be copied out over http or rsync, and people who obtained packs that way can try to use older git with it)\.
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl.org>
+Written by Linus Torvalds <torvalds@osdl\.org>
 .SH "DOCUMENTATION"
-Documentation by Ryan Anderson <ryan@michonline.com>
+Documentation by Ryan Anderson <ryan@michonline\.com>
 .SH "SEE ALSO"
-\fBgit\-pack\-objects\fR(1) \fBgit\-prune\-packed\fR(1)
+\fBgit-pack-objects\fR(1) \fBgit-prune-packed\fR(1)
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 

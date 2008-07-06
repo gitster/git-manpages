@@ -1,177 +1,256 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-REV\-PARSE" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-rev-parse
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-REV\-PARSE" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-rev\-parse \- Pick out and massage parameters
+git-rev-parse - Pick out and massage parameters
 .SH "SYNOPSIS"
 \fIgit rev\-parse\fR [ \-\-option ] <args>\&...
 .SH "DESCRIPTION"
-Many git porcelainish commands take mixture of flags (i.e. parameters that begin with a dash \fI\-\fR) and parameters meant for the underlying git\-rev\-list command they use internally and flags and parameters for the other commands they use downstream of git\-rev\-list. This command is used to distinguish between them.
+Many git porcelainish commands take mixture of flags (i\.e\. parameters that begin with a dash \fI\-\fR) and parameters meant for the underlying \fIgit\-rev\-list\fR command they use internally and flags and parameters for the other commands they use downstream of \fIgit\-rev\-list\fR\. This command is used to distinguish between them\.
 .SH "OPTIONS"
-.TP
+.PP
 \-\-parseopt
-Use git\-rev\-parse in option parsing mode (see PARSEOPT section below).
-.TP
-\-\-keep\-dash\-dash
-Only meaningful in \-\-parseopt mode. Tells the option parser to echo out the first \-\- met instead of skipping it.
-.TP
-\-\-revs\-only
-Do not output flags and parameters not meant for git\-rev\-list command.
-.TP
-\-\-no\-revs
-Do not output flags and parameters meant for git\-rev\-list command.
-.TP
-\-\-flags
-Do not output non\-flag parameters.
-.TP
-\-\-no\-flags
-Do not output flag parameters.
-.TP
-\-\-default <arg>
-If there is no parameter given by the user, use <arg> instead.
-.TP
-\-\-verify
-The parameter given must be usable as a single, valid object name. Otherwise barf and abort.
-.TP
-\-q , \-\-quiet
-Only meaningful in \-\-verify mode. Do not output an error message if the first argument is not a valid object name; instead exit with non\-zero status silently.
-.TP
-\-\-sq
-Usually the output is made one line per flag and parameter. This option makes output a single line, properly quoted for consumption by shell. Useful when you expect your parameter to contain whitespaces and newlines (e.g. when using pickaxe \-S with git\-diff\-*).
-.TP
-\-\-not
-When showing object names, prefix them with \fI^\fR and strip \fI^\fR prefix from the object names that already have one.
-.TP
-\-\-symbolic
-Usually the object names are output in SHA1 form (with possible \fI^\fR prefix); this option makes them output in a form as close to the original input as possible.
-.TP
-\-\-symbolic\-full\-name
-This is similar to \-\-symbolic, but it omits input that are not refs (i.e. branch or tag names; or more explicitly disambiguating "heads/master" form, when you want to name the "master" branch when there is an unfortunately named tag "master"), and show them as full refnames (e.g. "refs/heads/master").
-.TP
-\-\-all
-Show all refs found in $GIT_DIR/refs.
-.TP
-\-\-branches
-Show branch refs found in $GIT_DIR/refs/heads.
-.TP
-\-\-tags
-Show tag refs found in $GIT_DIR/refs/tags.
-.TP
-\-\-remotes
-Show tag refs found in $GIT_DIR/refs/remotes.
-.TP
-\-\-show\-prefix
-When the command is invoked from a subdirectory, show the path of the current directory relative to the top\-level directory.
-.TP
-\-\-show\-cdup
-When the command is invoked from a subdirectory, show the path of the top\-level directory relative to the current directory (typically a sequence of "../", or an empty string).
-.TP
-\-\-git\-dir
-Show $GIT_DIR if defined else show the path to the .git directory.
-.TP
-\-\-is\-inside\-git\-dir
-When the current working directory is below the repository directory print "true", otherwise "false".
-.TP
-\-\-is\-inside\-work\-tree
-When the current working directory is inside the work tree of the repository print "true", otherwise "false".
-.TP
-\-\-is\-bare\-repository
-When the repository is bare print "true", otherwise "false".
-.TP
-\-\-short , \-\-short=number
-Instead of outputting the full SHA1 values of object names try to abbreviate them to a shorter unique name. When no length is specified 7 is used. The minimum length is 4.
-.TP
-\-\-since=datestring , \-\-after=datestring
-Parse the date string, and output the corresponding \-\-max\-age= parameter for git\-rev\-list.
-.TP
-\-\-until=datestring , \-\-before=datestring
-Parse the date string, and output the corresponding \-\-min\-age= parameter for git\-rev\-list.
-.TP
-<args>\&...
-Flags and parameters to be parsed.
-.SH "SPECIFYING REVISIONS"
-A revision parameter typically, but not necessarily, names a commit object. They use what is called an \fIextended SHA1\fR syntax. Here are various ways to spell object names. The ones listed near the end of this list are to name trees and blobs contained in a commit.
-.TP 3
-\(bu
-The full SHA1 object name (40\-byte hexadecimal string), or a substring of such that is unique within the repository. E.g. dae86e1950b1277e545cee180551750029cfe735 and dae86e both name the same commit object if there are no other object in your repository whose object name starts with dae86e.
-.TP
-\(bu
-An output from git\-describe; i.e. a closest tag, followed by a dash, a g, and an abbreviated object name.
-.TP
-\(bu
-A symbolic ref name. E.g. \fImaster\fR typically means the commit object referenced by $GIT_DIR/refs/heads/master. If you happen to have both heads/master and tags/master, you can explicitly say \fIheads/master\fR to tell git which one you mean. When ambiguous, a <name> is disambiguated by taking the first match in the following rules:
-.RS
-.TP 3
-1.
-if $GIT_DIR/<name> exists, that is what you mean (this is usually useful only for HEAD, FETCH_HEAD and MERGE_HEAD);
-.TP
-2.
-otherwise, $GIT_DIR/refs/<name> if exists;
-.TP
-3.
-otherwise, $GIT_DIR/refs/tags/<name> if exists;
-.TP
-4.
-otherwise, $GIT_DIR/refs/heads/<name> if exists;
-.TP
-5.
-otherwise, $GIT_DIR/refs/remotes/<name> if exists;
-.TP
-6.
-otherwise, $GIT_DIR/refs/remotes/<name>/HEAD if exists.
+.RS 4
+Use \fIgit\-rev\-parse\fR in option parsing mode (see PARSEOPT section below)\.
 .RE
-.TP
-\(bu
-A ref followed by the suffix \fI@\fR with a date specification enclosed in a brace pair (e.g. \fI{yesterday}\fR, \fI{1 month 2 weeks 3 days 1 hour 1 second ago}\fR or \fI{1979\-02\-26 18:30:00}\fR) to specify the value of the ref at a prior point in time. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>). Note that this looks up the state of your \fBlocal\fR ref at a given time; e.g., what was in your local master branch last week. If you want to look at commits made during certain times, see \-\-since and \-\-until.
-.TP
-\(bu
-A ref followed by the suffix \fI@\fR with an ordinal specification enclosed in a brace pair (e.g. \fI{1}\fR, \fI{15}\fR) to specify the n\-th prior value of that ref. For example \fImaster@{1}\fR is the immediate prior value of \fImaster\fR while \fImaster@{5}\fR is the 5th prior value of \fImaster\fR. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>).
-.TP
-\(bu
-You can use the \fI@\fR construct with an empty ref part to get at a reflog of the current branch. For example, if you are on the branch \fIblabla\fR, then \fI@{1}\fR means the same as \fIblabla@{1}\fR.
-.TP
-\(bu
-A suffix \fI^\fR to a revision parameter means the first parent of that commit object. \fI^<n>\fR means the <n>th parent (i.e. \fIrev^\fR is equivalent to \fIrev^1\fR). As a special rule, \fIrev^0\fR means the commit itself and is used when \fIrev\fR is the object name of a tag object that refers to a commit object.
-.TP
-\(bu
-A suffix \fI~<n>\fR to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parent. I.e. rev~3 is equivalent to rev^^^ which is equivalent to rev^1^1^1. See below for a illustration of the usage of this form.
-.TP
-\(bu
-A suffix \fI^\fR followed by an object type name enclosed in brace pair (e.g. v0.99.8^{commit}) means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf). rev^0 introduced earlier is a short\-hand for rev^{commit}.
-.TP
-\(bu
-A suffix \fI^\fR followed by an empty brace pair (e.g. v0.99.8^{}) means the object could be a tag, and dereference the tag recursively until a non\-tag object is found.
-.TP
-\(bu
-A colon, followed by a slash, followed by a text: this names a commit whose commit message starts with the specified text. This name returns the youngest matching commit which is reachable from any ref. If the commit message starts with a \fI!\fR, you have to repeat that; the special sequence \fI:/!\fR, followed by something else than \fI!\fR is reserved for now.
-.TP
-\(bu
-A suffix \fI:\fR followed by a path; this names the blob or tree at the given path in the tree\-ish object named by the part before the colon.
-.TP
-\(bu
-A colon, optionally followed by a stage number (0 to 3) and a colon, followed by a path; this names a blob object in the index at the given path. Missing stage number (and the colon that follows it) names a stage 0 entry. During a merge, stage 1 is the common ancestor, stage 2 is the target branch's version (typically the current branch), and stage 3 is the version from the branch being merged.
+.PP
+\-\-keep\-dash\-dash
+.RS 4
+Only meaningful in \-\-parseopt mode\. Tells the option parser to echo out the first \-\- met instead of skipping it\.
+.RE
+.PP
+\-\-revs\-only
+.RS 4
+Do not output flags and parameters not meant for \fIgit\-rev\-list\fR command\.
+.RE
+.PP
+\-\-no\-revs
+.RS 4
+Do not output flags and parameters meant for \fIgit\-rev\-list\fR command\.
+.RE
+.PP
+\-\-flags
+.RS 4
+Do not output non\-flag parameters\.
+.RE
+.PP
+\-\-no\-flags
+.RS 4
+Do not output flag parameters\.
+.RE
+.PP
+\-\-default <arg>
+.RS 4
+If there is no parameter given by the user, use <arg> instead\.
+.RE
+.PP
+\-\-verify
+.RS 4
+The parameter given must be usable as a single, valid object name\. Otherwise barf and abort\.
+.RE
+.PP
+\-q, \-\-quiet
+.RS 4
+Only meaningful in \-\-verify mode\. Do not output an error message if the first argument is not a valid object name; instead exit with non\-zero status silently\.
+.RE
+.PP
+\-\-sq
+.RS 4
+Usually the output is made one line per flag and parameter\. This option makes output a single line, properly quoted for consumption by shell\. Useful when you expect your parameter to contain whitespaces and newlines (e\.g\. when using pickaxe \-S with \fIgit\-diff\-*\fR)\.
+.RE
+.PP
+\-\-not
+.RS 4
+When showing object names, prefix them with \fI^\fR and strip \fI^\fR prefix from the object names that already have one\.
+.RE
+.PP
+\-\-symbolic
+.RS 4
+Usually the object names are output in SHA1 form (with possible \fI^\fR prefix); this option makes them output in a form as close to the original input as possible\.
+.RE
+.PP
+\-\-symbolic\-full\-name
+.RS 4
+This is similar to \-\-symbolic, but it omits input that are not refs (i\.e\. branch or tag names; or more explicitly disambiguating "heads/master" form, when you want to name the "master" branch when there is an unfortunately named tag "master"), and show them as full refnames (e\.g\. "refs/heads/master")\.
+.RE
+.PP
+\-\-all
+.RS 4
+Show all refs found in $GIT_DIR/refs\.
+.RE
+.PP
+\-\-branches
+.RS 4
+Show branch refs found in $GIT_DIR/refs/heads\.
+.RE
+.PP
+\-\-tags
+.RS 4
+Show tag refs found in $GIT_DIR/refs/tags\.
+.RE
+.PP
+\-\-remotes
+.RS 4
+Show tag refs found in $GIT_DIR/refs/remotes\.
+.RE
+.PP
+\-\-show\-prefix
+.RS 4
+When the command is invoked from a subdirectory, show the path of the current directory relative to the top\-level directory\.
+.RE
+.PP
+\-\-show\-cdup
+.RS 4
+When the command is invoked from a subdirectory, show the path of the top\-level directory relative to the current directory (typically a sequence of "\.\./", or an empty string)\.
+.RE
+.PP
+\-\-git\-dir
+.RS 4
+Show $GIT_DIR if defined else show the path to the \.git directory\.
+.RE
+.PP
+\-\-is\-inside\-git\-dir
+.RS 4
+When the current working directory is below the repository directory print "true", otherwise "false"\.
+.RE
+.PP
+\-\-is\-inside\-work\-tree
+.RS 4
+When the current working directory is inside the work tree of the repository print "true", otherwise "false"\.
+.RE
+.PP
+\-\-is\-bare\-repository
+.RS 4
+When the repository is bare print "true", otherwise "false"\.
+.RE
+.PP
+\-\-short, \-\-short=number
+.RS 4
+Instead of outputting the full SHA1 values of object names try to abbreviate them to a shorter unique name\. When no length is specified 7 is used\. The minimum length is 4\.
+.RE
+.PP
+\-\-since=datestring, \-\-after=datestring
+.RS 4
+Parse the date string, and output the corresponding \-\-max\-age= parameter for \fIgit\-rev\-list\fR\.
+.RE
+.PP
+\-\-until=datestring, \-\-before=datestring
+.RS 4
+Parse the date string, and output the corresponding \-\-min\-age= parameter for \fIgit\-rev\-list\fR\.
+.RE
+.PP
+<args>\&...
+.RS 4
+Flags and parameters to be parsed\.
+.RE
+.SH "SPECIFYING REVISIONS"
+A revision parameter typically, but not necessarily, names a commit object\. They use what is called an \fIextended SHA1\fR syntax\. Here are various ways to spell object names\. The ones listed near the end of this list are to name trees and blobs contained in a commit\.
 
-Here is an illustration, by Jon Loeliger. Both commit nodes B and C are parents of commit node A. Parent commits are ordered left\-to\-right.
 .sp
+.RS 4
+\h'-04'\(bu\h'+03'The full SHA1 object name (40\-byte hexadecimal string), or a substring of such that is unique within the repository\. E\.g\. dae86e1950b1277e545cee180551750029cfe735 and dae86e both name the same commit object if there are no other object in your repository whose object name starts with dae86e\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'An output from \fIgit\-describe\fR; i\.e\. a closest tag, followed by a dash, a g, and an abbreviated object name\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A symbolic ref name\. E\.g\. \fImaster\fR typically means the commit object referenced by $GIT_DIR/refs/heads/master\. If you happen to have both heads/master and tags/master, you can explicitly say \fIheads/master\fR to tell git which one you mean\. When ambiguous, a <name> is disambiguated by taking the first match in the following rules:
+
+.sp
+.RS 4
+\h'-04' 1.\h'+02'if $GIT_DIR/<name> exists, that is what you mean (this is usually useful only for HEAD, FETCH_HEAD and MERGE_HEAD);
+.RE
+.sp
+.RS 4
+\h'-04' 2.\h'+02'otherwise, $GIT_DIR/refs/<name> if exists;
+.RE
+.sp
+.RS 4
+\h'-04' 3.\h'+02'otherwise, $GIT_DIR/refs/tags/<name> if exists;
+.RE
+.sp
+.RS 4
+\h'-04' 4.\h'+02'otherwise, $GIT_DIR/refs/heads/<name> if exists;
+.RE
+.sp
+.RS 4
+\h'-04' 5.\h'+02'otherwise, $GIT_DIR/refs/remotes/<name> if exists;
+.RE
+.sp
+.RS 4
+\h'-04' 6.\h'+02'otherwise, $GIT_DIR/refs/remotes/<name>/HEAD if exists\.
+.RE
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A ref followed by the suffix \fI@\fR with a date specification enclosed in a brace pair (e\.g\. \fI{yesterday}\fR, \fI{1 month 2 weeks 3 days 1 hour 1 second ago}\fR or \fI{1979\-02\-26 18:30:00}\fR) to specify the value of the ref at a prior point in time\. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>)\. Note that this looks up the state of your \fBlocal\fR ref at a given time; e\.g\., what was in your local master branch last week\. If you want to look at commits made during certain times, see \-\-since and \-\-until\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A ref followed by the suffix \fI@\fR with an ordinal specification enclosed in a brace pair (e\.g\. \fI{1}\fR, \fI{15}\fR) to specify the n\-th prior value of that ref\. For example \fImaster@{1}\fR is the immediate prior value of \fImaster\fR while \fImaster@{5}\fR is the 5th prior value of \fImaster\fR\. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'You can use the \fI@\fR construct with an empty ref part to get at a reflog of the current branch\. For example, if you are on the branch \fIblabla\fR, then \fI@{1}\fR means the same as \fIblabla@{1}\fR\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A suffix \fI^\fR to a revision parameter means the first parent of that commit object\. \fI^<n>\fR means the <n>th parent (i\.e\. \fIrev^\fR is equivalent to \fIrev^1\fR)\. As a special rule, \fIrev^0\fR means the commit itself and is used when \fIrev\fR is the object name of a tag object that refers to a commit object\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A suffix \fI~<n>\fR to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parent\. I\.e\. rev~3 is equivalent to rev^^^ which is equivalent to rev^1^1^1\. See below for a illustration of the usage of this form\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A suffix \fI^\fR followed by an object type name enclosed in brace pair (e\.g\. v0\.99\.8^{commit}) means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf)\. rev^0 introduced earlier is a short\-hand for rev^{commit}\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A suffix \fI^\fR followed by an empty brace pair (e\.g\. v0\.99\.8^{}) means the object could be a tag, and dereference the tag recursively until a non\-tag object is found\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A colon, followed by a slash, followed by a text: this names a commit whose commit message starts with the specified text\. This name returns the youngest matching commit which is reachable from any ref\. If the commit message starts with a \fI!\fR, you have to repeat that; the special sequence \fI:/!\fR, followed by something else than \fI!\fR is reserved for now\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A suffix \fI:\fR followed by a path; this names the blob or tree at the given path in the tree\-ish object named by the part before the colon\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'A colon, optionally followed by a stage number (0 to 3) and a colon, followed by a path; this names a blob object in the index at the given path\. Missing stage number (and the colon that follows it) names a stage 0 entry\. During a merge, stage 1 is the common ancestor, stage 2 is the target branch\'s version (typically the current branch), and stage 3 is the version from the branch being merged\.
+.RE
+Here is an illustration, by Jon Loeliger\. Both commit nodes B and C are parents of commit node A\. Parent commits are ordered left\-to\-right\.
+
+.sp
+.RS 4
 .nf
 G   H   I   J
- \\ /     \\ /
+ \e /     \e /
   D   E   F
-   \\  |  / \\
-    \\ | /   |
-     \\|/    |
+   \e  |  / \e
+    \e | /   |
+     \e|/    |
       B     C
-       \\   /
-        \\ /
+       \e   /
+        \e /
          A
 .fi
+.RE
 .sp
+.RS 4
 .nf
 A =      = A^0
 B = A^   = A^1     = A~1
@@ -184,73 +263,90 @@ H = D^2  = B^^2    = A^^^2  = A~2^2
 I = F^   = B^3^    = A^^3^
 J = F^2  = B^3^2   = A^^3^2
 .fi
+.RE
 .SH "SPECIFYING RANGES"
-History traversing commands such as git\-log operate on a set of commits, not just a single commit. To these commands, specifying a single revision with the notation described in the previous section means the set of commits reachable from that commit, following the commit ancestry chain.
+History traversing commands such as \fIgit\-log\fR operate on a set of commits, not just a single commit\. To these commands, specifying a single revision with the notation described in the previous section means the set of commits reachable from that commit, following the commit ancestry chain\.
 
-To exclude commits reachable from a commit, a prefix ^ notation is used. E.g. "^r1 r2" means commits reachable from r2 but exclude the ones reachable from r1.
+To exclude commits reachable from a commit, a prefix ^ notation is used\. E\.g\. "^r1 r2" means commits reachable from r2 but exclude the ones reachable from r1\.
 
-This set operation appears so often that there is a shorthand for it. "r1..r2" is equivalent to "^r1 r2". It is the difference of two sets (subtract the set of commits reachable from r1 from the set of commits reachable from r2).
+This set operation appears so often that there is a shorthand for it\. "r1\.\.r2" is equivalent to "^r1 r2"\. It is the difference of two sets (subtract the set of commits reachable from r1 from the set of commits reachable from r2)\.
 
-A similar notation "r1...r2" is called symmetric difference of r1 and r2 and is defined as "r1 r2 \-\-not $(git merge\-base \-\-all r1 r2)". It is the set of commits that are reachable from either one of r1 or r2 but not from both.
+A similar notation "r1\.\.\.r2" is called symmetric difference of r1 and r2 and is defined as "r1 r2 \-\-not $(git merge\-base \-\-all r1 r2)"\. It is the set of commits that are reachable from either one of r1 or r2 but not from both\.
 
-Two other shorthands for naming a set that is formed by a commit and its parent commits exists. r1^@ notation means all parents of r1. r1^! includes commit r1 but excludes its all parents.
+Two other shorthands for naming a set that is formed by a commit and its parent commits exists\. r1^@ notation means all parents of r1\. r1^! includes commit r1 but excludes its all parents\.
 
 Here are a handful of examples:
+
 .sp
+.RS 4
 .nf
 D                G H D
 D F              G H I J D F
 ^G D             H D
 ^D B             E I J F B
-B...C            G H D E B C
+B\.\.\.C            G H D E B C
 ^D B C           E I J F B C
 C^@              I J F
 F^! D            G H D F
 .fi
+.RE
 .SH "PARSEOPT"
-In \-\-parseopt mode, git\-rev\-parse helps massaging options to bring to shell scripts the same facilities C builtins have. It works as an option normalizer (e.g. splits single switches aggregate values), a bit like getopt(1) does.
+In \-\-parseopt mode, \fIgit\-rev\-parse\fR helps massaging options to bring to shell scripts the same facilities C builtins have\. It works as an option normalizer (e\.g\. splits single switches aggregate values), a bit like getopt(1) does\.
 
-It takes on the standard input the specification of the options to parse and understand, and echoes on the standard output a line suitable for sh(1) eval to replace the arguments with normalized ones. In case of error, it outputs usage on the standard error stream, and exits with code 129.
+It takes on the standard input the specification of the options to parse and understand, and echoes on the standard output a line suitable for sh(1) eval to replace the arguments with normalized ones\. In case of error, it outputs usage on the standard error stream, and exits with code 129\.
 .SS "Input Format"
-git\-rev\-parse \-\-parseopt input format is fully text based. It has two parts, separated by a line that contains only \-\-. The lines before the separator (should be more than one) are used for the usage. The lines after the separator describe the options.
+\fIgit\-rev\-parse \-\-parseopt\fR input format is fully text based\. It has two parts, separated by a line that contains only \-\-\. The lines before the separator (should be more than one) are used for the usage\. The lines after the separator describe the options\.
 
 Each line of options has this format:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 <opt_spec><flags>* SP+ help LF
-.ft
+\.ft
 
 .fi
-.TP
-<opt_spec>
-its format is the short option character, then the long option name separated by a comma. Both parts are not required, though at least one is necessary. h,help, dry\-run and f are all three correct <opt_spec>.
-.TP
-<flags>
-<flags> are of *, =, ? or !.
-.RS
-.TP 3
-\(bu
-Use = if the option takes an argument.
-.TP
-\(bu
-Use ? to mean that the option is optional (though its use is discouraged).
-.TP
-\(bu
-Use * to mean that this option should not be listed in the usage generated for the \-h argument. It's shown for \-\-help\-all as documented in \fBgitcli\fR(7).
-.TP
-\(bu
-Use ! to not make the corresponding negated long option available.
 .RE
-The remainder of the line, after stripping the spaces, is used as the help associated to the option.
+.PP
+<opt_spec>
+.RS 4
+its format is the short option character, then the long option name separated by a comma\. Both parts are not required, though at least one is necessary\. h,help, dry\-run and f are all three correct <opt_spec>\.
+.RE
+.PP
+<flags>
+.RS 4
+<flags> are of *, =, ? or !\.
 
-Blank lines are ignored, and lines that don't match this specification are used as option group headers (start the line with a space to create such lines on purpose).
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Use = if the option takes an argument\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Use ? to mean that the option is optional (though its use is discouraged)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Use * to mean that this option should not be listed in the usage generated for the \-h argument\. It\'s shown for \-\-help\-all as documented in \fBgitcli\fR(7)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Use ! to not make the corresponding negated long option available\.
+.RE
+.RE
+The remainder of the line, after stripping the spaces, is used as the help associated to the option\.
+
+Blank lines are ignored, and lines that don\'t match this specification are used as option group headers (start the line with a space to create such lines on purpose)\.
 .SS "Example"
 .sp
+.RS 4
 .nf
-.ft C
-OPTS_SPEC="\\
-some\-command [options] <args>...
+
+\.ft C
+OPTS_SPEC="\e
+some\-command [options] <args>\.\.\.
 
 some\-command does foo and bar!
 \-\-
@@ -263,46 +359,62 @@ bar=      some cool option \-\-bar with an argument
 C?        option C with an optional argument"
 
 eval `echo "$OPTS_SPEC" | git rev\-parse \-\-parseopt \-\- "$@" || echo exit $?`
-.ft
+\.ft
 
 .fi
+.RE
 .SH "EXAMPLES"
-.TP 3
-\(bu
-Print the object name of the current commit:
 .sp
+.RS 4
+\h'-04'\(bu\h'+03'Print the object name of the current commit:
+
+.sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git rev\-parse \-\-verify HEAD
-.ft
+\.ft
 
 .fi
-.TP
-\(bu
-Print the commit object name from the revision in the $REV shell variable:
+.RE
+.RE
 .sp
+.RS 4
+\h'-04'\(bu\h'+03'Print the commit object name from the revision in the $REV shell variable:
+
+.sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git rev\-parse \-\-verify $REV
-.ft
+\.ft
 
 .fi
-This will error out if $REV is empty or not a valid revision.
-.TP
-\(bu
-Same as above:
+.RE
+This will error out if $REV is empty or not a valid revision\.
+.RE
 .sp
+.RS 4
+\h'-04'\(bu\h'+03'Same as above:
+
+.sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git rev\-parse \-\-default master \-\-verify $REV
-.ft
+\.ft
 
 .fi
-but if $REV is empty, the commit object name from master will be printed.
+.RE
+but if $REV is empty, the commit object name from master will be printed\.
+.RE
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl.org> . Junio C Hamano <junkio@cox.net> and Pierre Habouzit <madcoder@debian.org>
+Written by Linus Torvalds <torvalds@osdl\.org> \. Junio C Hamano <junkio@cox\.net> and Pierre Habouzit <madcoder@debian\.org>
 .SH "DOCUMENTATION"
-Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
+Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 

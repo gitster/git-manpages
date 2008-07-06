@@ -1,237 +1,314 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-BISECT" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-bisect
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-BISECT" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-bisect \- Find the change that introduced a bug by binary search
+git-bisect - Find the change that introduced a bug by binary search
 .SH "SYNOPSIS"
 \fIgit bisect\fR <subcommand> <options>
 .SH "DESCRIPTION"
 The command takes various subcommands, and different options depending on the subcommand:
+
 .sp
+.RS 4
 .nf
 git bisect help
-git bisect start [<bad> [<good>...]] [\-\-] [<paths>...]
+git bisect start [<bad> [<good>\.\.\.]] [\-\-] [<paths>\.\.\.]
 git bisect bad [<rev>]
-git bisect good [<rev>...]
-git bisect skip [<rev>...]
+git bisect good [<rev>\.\.\.]
+git bisect skip [<rev>\.\.\.]
 git bisect reset [<branch>]
 git bisect visualize
 git bisect replay <logfile>
 git bisect log
-git bisect run <cmd>...
+git bisect run <cmd>\.\.\.
 .fi
-This command uses git rev\-list \-\-bisect to help drive the binary search process to find which change introduced a bug, given an old "good" commit object name and a later "bad" commit object name.
+.RE
+This command uses \fIgit\-rev\-list \-\-bisect\fR to help drive the binary search process to find which change introduced a bug, given an old "good" commit object name and a later "bad" commit object name\.
 .SS "Getting help"
-Use "git bisect" to get a short usage description, and "git bisect help" or "git bisect \-h" to get a long usage description.
+Use "git bisect" to get a short usage description, and "git bisect help" or "git bisect \-h" to get a long usage description\.
 .SS "Basic bisect commands: start, bad, good"
 The way you use it is:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect start
 $ git bisect bad                 # Current version is bad
-$ git bisect good v2.6.13\-rc2    # v2.6.13\-rc2 was the last version
+$ git bisect good v2\.6\.13\-rc2    # v2\.6\.13\-rc2 was the last version
                                  # tested that was good
-.ft
+\.ft
 
 .fi
+.RE
 When you give at least one bad and one good versions, it will bisect the revision tree and say something like:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 Bisecting: 675 revisions left to test after this
-.ft
+\.ft
 
 .fi
-and check out the state in the middle. Now, compile that kernel, and boot it. Now, let's say that this booted kernel works fine, then just do
+.RE
+and check out the state in the middle\. Now, compile that kernel, and boot it\. Now, let\'s say that this booted kernel works fine, then just do
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect good                       # this one is good
-.ft
+\.ft
 
 .fi
+.RE
 which will now say
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 Bisecting: 337 revisions left to test after this
-.ft
+\.ft
 
 .fi
-and you continue along, compiling that one, testing it, and depending on whether it is good or bad, you say "git bisect good" or "git bisect bad", and ask for the next bisection.
+.RE
+and you continue along, compiling that one, testing it, and depending on whether it is good or bad, you say "git bisect good" or "git bisect bad", and ask for the next bisection\.
 
-Until you have no more left, and you'll have been left with the first bad kernel rev in "refs/bisect/bad".
+Until you have no more left, and you\'ll have been left with the first bad kernel rev in "refs/bisect/bad"\.
 .SS "Bisect reset"
 Oh, and then after you want to reset to the original head, do a
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect reset
-.ft
+\.ft
 
 .fi
-to get back to the original branch, instead of being on the bisection commit ("git bisect start" will do that for you too, actually: it will reset the bisection state).
+.RE
+to get back to the original branch, instead of being on the bisection commit ("git bisect start" will do that for you too, actually: it will reset the bisection state)\.
 .SS "Bisect visualize"
 During the bisection process, you can say
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect visualize
-.ft
+\.ft
 
 .fi
-to see the currently remaining suspects in gitk. visualize is a bit too long to type and view is provided as a synonym.
+.RE
+to see the currently remaining suspects in \fIgitk\fR\. visualize is a bit too long to type and view is provided as a synonym\.
 
-If DISPLAY environment variable is not set, git log is used instead. You can even give command line options such as \-p and \-\-stat.
+If \fIDISPLAY\fR environment variable is not set, \fIgit\-log\fR is used instead\. You can even give command line options such as \-p and \-\-stat\.
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect view \-\-stat
-.ft
+\.ft
 
 .fi
+.RE
 .SS "Bisect log and bisect replay"
 The good/bad input is logged, and
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect log
-.ft
+\.ft
 
 .fi
-shows what you have done so far. You can truncate its output somewhere and save it in a file, and run
+.RE
+shows what you have done so far\. You can truncate its output somewhere and save it in a file, and run
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect replay that\-file
-.ft
+\.ft
 
 .fi
-if you find later you made a mistake telling good/bad about a revision.
+.RE
+if you find later you made a mistake telling good/bad about a revision\.
 .SS "Avoiding to test a commit"
-If in a middle of bisect session, you know what the bisect suggested to try next is not a good one to test (e.g. the change the commit introduces is known not to work in your environment and you know it does not have anything to do with the bug you are chasing), you may want to find a near\-by commit and try that instead.
+If in a middle of bisect session, you know what the bisect suggested to try next is not a good one to test (e\.g\. the change the commit introduces is known not to work in your environment and you know it does not have anything to do with the bug you are chasing), you may want to find a near\-by commit and try that instead\.
 
 It goes something like this:
+
 .sp
+.RS 4
 .nf
-.ft C
-$ git bisect good/bad                   # previous round was good/bad.
+
+\.ft C
+$ git bisect good/bad                   # previous round was good/bad\.
 Bisecting: 337 revisions left to test after this
-$ git bisect visualize                  # oops, that is uninteresting.
+$ git bisect visualize                  # oops, that is uninteresting\.
 $ git reset \-\-hard HEAD~3               # try 3 revs before what
                                         # was suggested
-.ft
+\.ft
 
 .fi
-Then compile and test the one you chose to try. After that, tell bisect what the result was as usual.
+.RE
+Then compile and test the one you chose to try\. After that, tell bisect what the result was as usual\.
 .SS "Bisect skip"
 Instead of choosing by yourself a nearby commit, you may just want git to do it for you using:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect skip                 # Current version cannot be tested
-.ft
+\.ft
 
 .fi
-But computing the commit to test may be slower afterwards and git may eventually not be able to tell the first bad among a bad and one or more "skip"ped commits.
+.RE
+But computing the commit to test may be slower afterwards and git may eventually not be able to tell the first bad among a bad and one or more "skip"ped commits\.
 .SS "Cutting down bisection by giving more parameters to bisect start"
 You can further cut down the number of trials if you know what part of the tree is involved in the problem you are tracking down, by giving paths parameters when you say bisect start, like this:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect start \-\- arch/i386 include/asm\-i386
-.ft
+\.ft
 
 .fi
-If you know beforehand more than one good commits, you can narrow the bisect space down without doing the whole tree checkout every time you give good commits. You give the bad revision immediately after start and then you give all the good revisions you have:
+.RE
+If you know beforehand more than one good commits, you can narrow the bisect space down without doing the whole tree checkout every time you give good commits\. You give the bad revision immediately after start and then you give all the good revisions you have:
+
 .sp
+.RS 4
 .nf
-.ft C
-$ git bisect start v2.6.20\-rc6 v2.6.20\-rc4 v2.6.20\-rc1 \-\-
-                   # v2.6.20\-rc6 is bad
-                   # v2.6.20\-rc4 and v2.6.20\-rc1 are good
-.ft
+
+\.ft C
+$ git bisect start v2\.6\.20\-rc6 v2\.6\.20\-rc4 v2\.6\.20\-rc1 \-\-
+                   # v2\.6\.20\-rc6 is bad
+                   # v2\.6\.20\-rc4 and v2\.6\.20\-rc1 are good
+\.ft
 
 .fi
+.RE
 .SS "Bisect run"
 If you have a script that can tell if the current source code is good or bad, you can automatically bisect using:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git bisect run my_script
-.ft
+\.ft
 
 .fi
-Note that the "run" script (my_script in the above example) should exit with code 0 in case the current source code is good. Exit with a code between 1 and 127 (inclusive), except 125, if the current source code is bad.
+.RE
+Note that the "run" script (my_script in the above example) should exit with code 0 in case the current source code is good\. Exit with a code between 1 and 127 (inclusive), except 125, if the current source code is bad\.
 
-Any other exit code will abort the automatic bisect process. (A program that does "exit(\-1)" leaves $? = 255, see exit(3) manual page, the value is chopped with "& 0377".)
+Any other exit code will abort the automatic bisect process\. (A program that does "exit(\-1)" leaves $? = 255, see exit(3) manual page, the value is chopped with "& 0377"\.)
 
-The special exit code 125 should be used when the current source code cannot be tested. If the "run" script exits with this code, the current revision will be skipped, see git bisect skip above.
+The special exit code 125 should be used when the current source code cannot be tested\. If the "run" script exits with this code, the current revision will be skipped, see git bisect skip above\.
 
-You may often find that during bisect you want to have near\-constant tweaks (e.g., s/#define DEBUG 0/#define DEBUG 1/ in a header file, or "revision that does not have this commit needs this patch applied to work around other problem this bisection is not interested in") applied to the revision being tested.
+You may often find that during bisect you want to have near\-constant tweaks (e\.g\., s/#define DEBUG 0/#define DEBUG 1/ in a header file, or "revision that does not have this commit needs this patch applied to work around other problem this bisection is not interested in") applied to the revision being tested\.
 
-To cope with such a situation, after the inner git\-bisect finds the next revision to test, with the "run" script, you can apply that tweak before compiling, run the real test, and after the test decides if the revision (possibly with the needed tweaks) passed the test, rewind the tree to the pristine state. Finally the "run" script can exit with the status of the real test to let the "git bisect run" command loop to determine the outcome.
+To cope with such a situation, after the inner \fIgit\-bisect\fR finds the next revision to test, with the "run" script, you can apply that tweak before compiling, run the real test, and after the test decides if the revision (possibly with the needed tweaks) passed the test, rewind the tree to the pristine state\. Finally the "run" script can exit with the status of the real test to let the "git bisect run" command loop to determine the outcome\.
 .SH "EXAMPLES"
-.TP 3
-\(bu
-Automatically bisect a broken build between v1.2 and HEAD:
 .sp
+.RS 4
+\h'-04'\(bu\h'+03'Automatically bisect a broken build between v1\.2 and HEAD:
+
+.sp
+.RS 4
 .nf
-.ft C
-$ git bisect start HEAD v1.2 \-\-      # HEAD is bad, v1.2 is good
+
+\.ft C
+$ git bisect start HEAD v1\.2 \-\-      # HEAD is bad, v1\.2 is good
 $ git bisect run make                # "make" builds the app
-.ft
+\.ft
 
 .fi
-.TP
-\(bu
-Automatically bisect a broken test suite:
+.RE
+.RE
 .sp
+.RS 4
+\h'-04'\(bu\h'+03'Automatically bisect a broken test suite:
+
+.sp
+.RS 4
 .nf
-.ft C
-$ cat ~/test.sh
+
+\.ft C
+$ cat ~/test\.sh
 #!/bin/sh
 make || exit 125                   # this "skip"s broken builds
 make test                          # "make test" runs the test suite
-$ git bisect start v1.3 v1.1 \-\-    # v1.3 is bad, v1.1 is good
-$ git bisect run ~/test.sh
-.ft
+$ git bisect start v1\.3 v1\.1 \-\-    # v1\.3 is bad, v1\.1 is good
+$ git bisect run ~/test\.sh
+\.ft
 
 .fi
-Here we use a "test.sh" custom script. In this script, if "make" fails, we "skip" the current commit.
+.RE
+Here we use a "test\.sh" custom script\. In this script, if "make" fails, we "skip" the current commit\.
 
-It's safer to use a custom script outside the repo to prevent interactions between the bisect, make and test processes and the script.
+It\'s safer to use a custom script outside the repo to prevent interactions between the bisect, make and test processes and the script\.
 
-And "make test" should "exit 0", if the test suite passes, and "exit 1" (for example) otherwise.
-.TP
-\(bu
-Automatically bisect a broken test case:
+And "make test" should "exit 0", if the test suite passes, and "exit 1" (for example) otherwise\.
+.RE
 .sp
+.RS 4
+\h'-04'\(bu\h'+03'Automatically bisect a broken test case:
+
+.sp
+.RS 4
 .nf
-.ft C
-$ cat ~/test.sh
+
+\.ft C
+$ cat ~/test\.sh
 #!/bin/sh
 make || exit 125                     # this "skip"s broken builds
-~/check_test_case.sh                 # does the test case passes ?
+~/check_test_case\.sh                 # does the test case passes ?
 $ git bisect start HEAD HEAD~10 \-\-   # culprit is among the last 10
-$ git bisect run ~/test.sh
-.ft
+$ git bisect run ~/test\.sh
+\.ft
 
 .fi
-Here "check_test_case.sh" should "exit 0", if the test case passes, and "exit 1" (for example) otherwise.
+.RE
+Here "check_test_case\.sh" should "exit 0", if the test case passes, and "exit 1" (for example) otherwise\.
 
-It's safer if both "test.sh" and "check_test_case.sh" scripts are outside the repo to prevent interactions between the bisect, make and test processes and the scripts.
+It\'s safer if both "test\.sh" and "check_test_case\.sh" scripts are outside the repo to prevent interactions between the bisect, make and test processes and the scripts\.
+.RE
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl.org>
+Written by Linus Torvalds <torvalds@osdl\.org>
 .SH "DOCUMENTATION"
-Documentation by Junio C Hamano and the git\-list <git@vger.kernel.org>.
+Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 

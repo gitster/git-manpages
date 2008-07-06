@@ -1,64 +1,82 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-FAST\-EXPORT" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-fast-export
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-FAST\-EXPORT" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-fast\-export \- Git data exporter
+git-fast-export - Git data exporter
 .SH "SYNOPSIS"
 \fIgit fast\-export [options]\fR | \fIgit fast\-import\fR
 .SH "DESCRIPTION"
-This program dumps the given revisions in a form suitable to be piped into git\-fast\-import.
+This program dumps the given revisions in a form suitable to be piped into \fIgit\-fast\-import\fR\.
 
-You can use it as a human readable bundle replacement (see \fBgit\-bundle\fR(1)), or as a kind of an interactive git\-filter\-branch.
+You can use it as a human readable bundle replacement (see \fBgit-bundle\fR(1)), or as a kind of an interactive \fIgit\-filter\-branch\fR\.
 .SH "OPTIONS"
-.TP
+.PP
 \-\-progress=<n>
-Insert \fIprogress\fR statements every <n> objects, to be shown by git\-fast\-import during import.
-.TP
+.RS 4
+Insert \fIprogress\fR statements every <n> objects, to be shown by \fIgit\-fast\-import\fR during import\.
+.RE
+.PP
 \-\-signed\-tags=(verbatim|warn|strip|abort)
-Specify how to handle signed tags. Since any transformation after the export can change the tag names (which can also happen when excluding revisions) the signatures will not match.
+.RS 4
+Specify how to handle signed tags\. Since any transformation after the export can change the tag names (which can also happen when excluding revisions) the signatures will not match\.
 
-When asking to \fIabort\fR (which is the default), this program will die when encountering a signed tag. With \fIstrip\fR, the tags will be made unsigned, with \fIverbatim\fR, they will be silently exported and with \fIwarn\fR, they will be exported, but you will see a warning.
-.TP
+When asking to \fIabort\fR (which is the default), this program will die when encountering a signed tag\. With \fIstrip\fR, the tags will be made unsigned, with \fIverbatim\fR, they will be silently exported and with \fIwarn\fR, they will be exported, but you will see a warning\.
+.RE
+.PP
 \-\-export\-marks=<file>
-Dumps the internal marks table to <file> when complete. Marks are written one per line as :markid SHA\-1. Only marks for revisions are dumped; marks for blobs are ignored. Backends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs. As <file> is only opened and truncated at completion, the same path can also be safely given to \-\-import\-marks.
-.TP
+.RS 4
+Dumps the internal marks table to <file> when complete\. Marks are written one per line as :markid SHA\-1\. Only marks for revisions are dumped; marks for blobs are ignored\. Backends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs\. As <file> is only opened and truncated at completion, the same path can also be safely given to \-\-import\-marks\.
+.RE
+.PP
 \-\-import\-marks=<file>
-Before processing any input, load the marks specified in <file>. The input file must exist, must be readable, and must use the same format as produced by \-\-export\-marks.
+.RS 4
+Before processing any input, load the marks specified in <file>\. The input file must exist, must be readable, and must use the same format as produced by \-\-export\-marks\.
 
-Any commits that have already been marked will not be exported again. If the backend uses a similar \-\-import\-marks file, this allows for incremental bidirectional exporting of the repository by keeping the marks the same across runs.
+Any commits that have already been marked will not be exported again\. If the backend uses a similar \-\-import\-marks file, this allows for incremental bidirectional exporting of the repository by keeping the marks the same across runs\.
+.RE
 .SH "EXAMPLES"
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 $ git fast\-export \-\-all | (cd /empty/repository && git fast\-import)
-.ft
+\.ft
 
 .fi
-This will export the whole repository and import it into the existing empty repository. Except for reencoding commits that are not in UTF\-8, it would be a one\-to\-one mirror.
+.RE
+This will export the whole repository and import it into the existing empty repository\. Except for reencoding commits that are not in UTF\-8, it would be a one\-to\-one mirror\.
+
 .sp
+.RS 4
 .nf
-.ft C
-$ git fast\-export master~5..master |
+
+\.ft C
+$ git fast\-export master~5\.\.master |
         sed "s|refs/heads/master|refs/heads/other|" |
         git fast\-import
-.ft
+\.ft
 
 .fi
-This makes a new branch called \fIother\fR from \fImaster~5..master\fR (i.e. if \fImaster\fR has linear history, it will take the last 5 commits).
+.RE
+This makes a new branch called \fIother\fR from \fImaster~5\.\.master\fR (i\.e\. if \fImaster\fR has linear history, it will take the last 5 commits)\.
 
-Note that this assumes that none of the blobs and commit messages referenced by that revision range contains the string \fIrefs/heads/master\fR.
+Note that this assumes that none of the blobs and commit messages referenced by that revision range contains the string \fIrefs/heads/master\fR\.
 .SH "LIMITATIONS"
-Since git\-fast\-import cannot tag trees, you will not be able to export the linux\-2.6.git repository completely, as it contains a tag referencing a tree instead of a commit.
+Since \fIgit\-fast\-import\fR cannot tag trees, you will not be able to export the linux\-2\.6\.git repository completely, as it contains a tag referencing a tree instead of a commit\.
 .SH "AUTHOR"
-Written by Johannes E. Schindelin <johannes.schindelin@gmx.de>.
+Written by Johannes E\. Schindelin <johannes\.schindelin@gmx\.de>\.
 .SH "DOCUMENTATION"
-Documentation by Johannes E. Schindelin <johannes.schindelin@gmx.de>.
+Documentation by Johannes E\. Schindelin <johannes\.schindelin@gmx\.de>\.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 

@@ -1,285 +1,393 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SVN" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-svn
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-SVN" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-svn \- Bidirectional operation between a single Subversion branch and git
+git-svn - Bidirectional operation between a single Subversion branch and git
 .SH "SYNOPSIS"
 \fIgit svn\fR <command> [options] [arguments]
 .SH "DESCRIPTION"
-git\-svn is a simple conduit for changesets between Subversion and git. It is not to be confused with \fBgit\-svnimport\fR(1), which is read\-only.
+\fIgit\-svn\fR is a simple conduit for changesets between Subversion and git\. It is not to be confused with \fBgit-svnimport\fR(1), which is read\-only\.
 
-git\-svn was originally designed for an individual developer who wants a bidirectional flow of changesets between a single branch in Subversion and an arbitrary number of branches in git. Since its inception, git\-svn has gained the ability to track multiple branches in a manner similar to git\-svnimport.
+\fIgit\-svn\fR was originally designed for an individual developer who wants a bidirectional flow of changesets between a single branch in Subversion and an arbitrary number of branches in git\. Since its inception, \fIgit\-svn\fR has gained the ability to track multiple branches in a manner similar to \fIgit\-svnimport\fR\.
 
-git\-svn is especially useful when it comes to tracking repositories not organized in the way Subversion developers recommend (trunk, branches, tags directories).
+\fIgit\-svn\fR is especially useful when it comes to tracking repositories not organized in the way Subversion developers recommend (trunk, branches, tags directories)\.
 .SH "COMMANDS"
-.TP
+.PP
 \fIinit\fR
-Initializes an empty git repository with additional metadata directories for git\-svn. The Subversion URL may be specified as a command\-line argument, or as full URL arguments to \-T/\-t/\-b. Optionally, the target directory to operate on can be specified as a second argument. Normally this command initializes the current directory.
-.RS
-.TP
-\-T<trunk_subdir> , \-\-trunk=<trunk_subdir> , \-t<tags_subdir> , \-\-tags=<tags_subdir> , \-b<branches_subdir> , \-\-branches=<branches_subdir> , \-s , \-\-stdlayout
-These are optional command\-line options for init. Each of these flags can point to a relative repository path (\-\-tags=project/tags') or a full url (\-\-tags=https://foo.org/project/tags). The option \-\-stdlayout is a shorthand way of setting trunk,tags,branches as the relative paths, which is the Subversion default. If any of the other options are given as well, they take precedence.
-.TP
+.RS 4
+Initializes an empty git repository with additional metadata directories for \fIgit\-svn\fR\. The Subversion URL may be specified as a command\-line argument, or as full URL arguments to \-T/\-t/\-b\. Optionally, the target directory to operate on can be specified as a second argument\. Normally this command initializes the current directory\.
+.PP
+\-T<trunk_subdir>, \-\-trunk=<trunk_subdir>, \-t<tags_subdir>, \-\-tags=<tags_subdir>, \-b<branches_subdir>, \-\-branches=<branches_subdir>, \-s, \-\-stdlayout
+.RS 4
+These are optional command\-line options for init\. Each of these flags can point to a relative repository path (\-\-tags=project/tags\') or a full url (\-\-tags=https://foo\.org/project/tags)\. The option \-\-stdlayout is a shorthand way of setting trunk,tags,branches as the relative paths, which is the Subversion default\. If any of the other options are given as well, they take precedence\.
+.RE
+.PP
 \-\-no\-metadata
-Set the \fInoMetadata\fR option in the [svn\-remote] config.
-.TP
+.RS 4
+Set the \fInoMetadata\fR option in the [svn\-remote] config\.
+.RE
+.PP
 \-\-use\-svm\-props
-Set the \fIuseSvmProps\fR option in the [svn\-remote] config.
-.TP
+.RS 4
+Set the \fIuseSvmProps\fR option in the [svn\-remote] config\.
+.RE
+.PP
 \-\-use\-svnsync\-props
-Set the \fIuseSvnsyncProps\fR option in the [svn\-remote] config.
-.TP
+.RS 4
+Set the \fIuseSvnsyncProps\fR option in the [svn\-remote] config\.
+.RE
+.PP
 \-\-rewrite\-root=<URL>
-Set the \fIrewriteRoot\fR option in the [svn\-remote] config.
-.TP
+.RS 4
+Set the \fIrewriteRoot\fR option in the [svn\-remote] config\.
+.RE
+.PP
 \-\-use\-log\-author
-When retrieving svn commits into git (as part of fetch, rebase, or dcommit operations), look for the first From: or Signed\-off\-by: line in the log message and use that as the author string.
-.TP
+.RS 4
+When retrieving svn commits into git (as part of fetch, rebase, or dcommit operations), look for the first From: or Signed\-off\-by: line in the log message and use that as the author string\.
+.RE
+.PP
 \-\-add\-author\-from
-When committing to svn from git (as part of commit or dcommit operations), if the existing log message doesn't already have a From: or Signed\-off\-by: line, append a From: line based on the git commit's author string. If you use this, then \-\-use\-log\-author will retrieve a valid author string for all commits.
-.TP
+.RS 4
+When committing to svn from git (as part of commit or dcommit operations), if the existing log message doesn\'t already have a From: or Signed\-off\-by: line, append a From: line based on the git commit\'s author string\. If you use this, then \-\-use\-log\-author will retrieve a valid author string for all commits\.
+.RE
+.PP
 \-\-username=<USER>
-For transports that SVN handles authentication for (http, https, and plain svn), specify the username. For other transports (eg svn+ssh://), you must include the username in the URL, eg svn+ssh://foo@svn.bar.com/project
-.TP
+.RS 4
+For transports that SVN handles authentication for (http, https, and plain svn), specify the username\. For other transports (eg svn+ssh://), you must include the username in the URL, eg svn+ssh://foo@svn\.bar\.com/project
+.RE
+.PP
 \-\-prefix=<prefix>
-This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want. If \-\-branches/\-b is specified, the prefix must include a trailing slash. Setting a prefix is useful if you wish to track multiple projects that share a common repository.
+.RS 4
+This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified\. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want\. If \-\-branches/\-b is specified, the prefix must include a trailing slash\. Setting a prefix is useful if you wish to track multiple projects that share a common repository\.
 .RE
-.TP
+.RE
+.PP
 \fIfetch\fR
-Fetch unfetched revisions from the Subversion remote we are tracking. The name of the [svn\-remote "\&..."] section in the .git/config file may be specified as an optional command\-line argument.
-.TP
+.RS 4
+Fetch unfetched revisions from the Subversion remote we are tracking\. The name of the [svn\-remote "\&..."] section in the \.git/config file may be specified as an optional command\-line argument\.
+.RE
+.PP
 \fIclone\fR
-Runs \fIinit\fR and \fIfetch\fR. It will automatically create a directory based on the basename of the URL passed to it; or if a second argument is passed; it will create a directory and work within that. It accepts all arguments that the \fIinit\fR and \fIfetch\fR commands accept; with the exception of \fI\-\-fetch\-all\fR. After a repository is cloned, the \fIfetch\fR command will be able to update revisions without affecting the working tree; and the \fIrebase\fR command will be able to update the working tree with the latest changes.
-.TP
+.RS 4
+Runs \fIinit\fR and \fIfetch\fR\. It will automatically create a directory based on the basename of the URL passed to it; or if a second argument is passed; it will create a directory and work within that\. It accepts all arguments that the \fIinit\fR and \fIfetch\fR commands accept; with the exception of \fI\-\-fetch\-all\fR\. After a repository is cloned, the \fIfetch\fR command will be able to update revisions without affecting the working tree; and the \fIrebase\fR command will be able to update the working tree with the latest changes\.
+.RE
+.PP
 \fIrebase\fR
-This fetches revisions from the SVN parent of the current HEAD and rebases the current (uncommitted to SVN) work against it.
+.RS 4
+This fetches revisions from the SVN parent of the current HEAD and rebases the current (uncommitted to SVN) work against it\.
 
-This works similarly to svn update or git\-pull except that it preserves linear history with git\-rebase instead of git\-merge for ease of dcommiting with git\-svn.
+This works similarly to svn update or \fIgit\-pull\fR except that it preserves linear history with \fIgit\-rebase\fR instead of \fIgit\-merge\fR for ease of dcommiting with \fIgit\-svn\fR\.
 
-This accepts all options that git\-svn fetch and git\-rebase accept. However, \fI\-\-fetch\-all\fR only fetches from the current [svn\-remote], and not all [svn\-remote] definitions.
+This accepts all options that \fIgit\-svn fetch\fR and \fIgit\-rebase\fR accept\. However, \fI\-\-fetch\-all\fR only fetches from the current [svn\-remote], and not all [svn\-remote] definitions\.
 
-Like git\-rebase; this requires that the working tree be clean and have no uncommitted changes.
-.RS
-.TP
-\-l , \-\-local
-Do not fetch remotely; only run git\-rebase against the last fetched commit from the upstream SVN.
+Like \fIgit\-rebase\fR; this requires that the working tree be clean and have no uncommitted changes\.
+.PP
+\-l, \-\-local
+.RS 4
+Do not fetch remotely; only run \fIgit\-rebase\fR against the last fetched commit from the upstream SVN\.
 .RE
-.TP
+.RE
+.PP
 \fIdcommit\fR
-Commit each diff from a specified head directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head). This will create a revision in SVN for each commit in git. It is recommended that you run git\-svn fetch and rebase (not pull or merge) your commits against the latest changes in the SVN repository. An optional command\-line argument may be specified as an alternative to HEAD. This is advantageous over \fIset\-tree\fR (below) because it produces cleaner, more linear history.
-.RS
-.TP
+.RS 4
+Commit each diff from a specified head directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head)\. This will create a revision in SVN for each commit in git\. It is recommended that you run \fIgit\-svn\fR fetch and rebase (not pull or merge) your commits against the latest changes in the SVN repository\. An optional command\-line argument may be specified as an alternative to HEAD\. This is advantageous over \fIset\-tree\fR (below) because it produces cleaner, more linear history\.
+.PP
 \-\-no\-rebase
-After committing, do not rebase or reset.
+.RS 4
+After committing, do not rebase or reset\.
 .RE
-.TP
+.RE
+.PP
 \fIlog\fR
-This should make it easy to look up svn log messages when svn users refer to \-r/\-\-revision numbers.
+.RS 4
+This should make it easy to look up svn log messages when svn users refer to \-r/\-\-revision numbers\.
 
-The following features from `svn log' are supported:
-.RS
-.TP
+The following features from `svn log\' are supported:
+.PP
 \-\-revision=<n>[:<n>]
+.RS 4
 is supported, non\-numeric args are not: HEAD, NEXT, BASE, PREV, etc \&...
-.TP
+.RE
+.PP
 \-v/\-\-verbose
-it's not completely compatible with the \-\-verbose output in svn log, but reasonably close.
-.TP
+.RS 4
+it\'s not completely compatible with the \-\-verbose output in svn log, but reasonably close\.
+.RE
+.PP
 \-\-limit=<n>
-is NOT the same as \-\-max\-count, doesn't count merged/excluded commits
-.TP
+.RS 4
+is NOT the same as \-\-max\-count, doesn\'t count merged/excluded commits
+.RE
+.PP
 \-\-incremental
+.RS 4
 supported
 .RE
-.IP
+.sp
 New features:
-.RS
-.TP
+.PP
 \-\-show\-commit
+.RS 4
 shows the git commit sha1, as well
-.TP
+.RE
+.PP
 \-\-oneline
+.RS 4
 our version of \-\-pretty=oneline
 .RE
-.IP
+.sp
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
-\fBNote\fR
-SVN itself only stores times in UTC and nothing else. The regular svn client converts the UTC time to the local time (or based on the TZ= environment). This command has the same behaviour.
+Note
+SVN itself only stores times in UTC and nothing else\. The regular svn client converts the UTC time to the local time (or based on the TZ= environment)\. This command has the same behaviour\.
 
-Any other arguments are passed directly to git\-log
-.TP
-\fIblame\fR
-Show what revision and author last modified each line of a file. The output of this mode is format\-compatible with the output of svn blame' by default. Like the SVN blame command, local uncommitted changes in the working copy are ignored; the version of the file in the HEAD revision is annotated. Unknown arguments are passed directly to `git\-blame.
-.RS
-.TP
-\-\-git\-format
-Produce output in the same format as git\-blame, but with SVN revision numbers instead of git commit hashes. In this mode, changes that haven't been committed to SVN (including local working\-copy edits) are shown as revision 0.
+
+Any other arguments are passed directly to \fIgit\-log\fR
 .RE
-.TP
+.PP
+\fIblame\fR
+.RS 4
+Show what revision and author last modified each line of a file\. The output of this mode is format\-compatible with the output of `svn blame\' by default\. Like the SVN blame command, local uncommitted changes in the working copy are ignored; the version of the file in the HEAD revision is annotated\. Unknown arguments are passed directly to \fIgit\-blame\fR\.
+.PP
+\-\-git\-format
+.RS 4
+Produce output in the same format as \fIgit\-blame\fR, but with SVN revision numbers instead of git commit hashes\. In this mode, changes that haven\'t been committed to SVN (including local working\-copy edits) are shown as revision 0\.
+.RE
+.RE
+.PP
 \fIfind\-rev\fR
-When given an SVN revision number of the form \fIrN\fR, returns the corresponding git commit hash (this can optionally be followed by a tree\-ish to specify which branch should be searched). When given a tree\-ish, returns the corresponding SVN revision number.
-.TP
+.RS 4
+When given an SVN revision number of the form \fIrN\fR, returns the corresponding git commit hash (this can optionally be followed by a tree\-ish to specify which branch should be searched)\. When given a tree\-ish, returns the corresponding SVN revision number\.
+.RE
+.PP
 \fIset\-tree\fR
-You should consider using \fIdcommit\fR instead of this command. Commit specified commit or tree objects to SVN. This relies on your imported fetch data being up\-to\-date. This makes absolutely no attempts to do patching when committing to SVN, it simply overwrites files with those specified in the tree or commit. All merging is assumed to have taken place independently of git\-svn functions.
-.TP
+.RS 4
+You should consider using \fIdcommit\fR instead of this command\. Commit specified commit or tree objects to SVN\. This relies on your imported fetch data being up\-to\-date\. This makes absolutely no attempts to do patching when committing to SVN, it simply overwrites files with those specified in the tree or commit\. All merging is assumed to have taken place independently of \fIgit\-svn\fR functions\.
+.RE
+.PP
 \fIcreate\-ignore\fR
-Recursively finds the svn:ignore property on directories and creates matching .gitignore files. The resulting files are staged to be committed, but are not committed. Use \-r/\-\-revision to refer to a specfic revision.
-.TP
+.RS 4
+Recursively finds the svn:ignore property on directories and creates matching \.gitignore files\. The resulting files are staged to be committed, but are not committed\. Use \-r/\-\-revision to refer to a specfic revision\.
+.RE
+.PP
 \fIshow\-ignore\fR
-Recursively finds and lists the svn:ignore property on directories. The output is suitable for appending to the $GIT_DIR/info/exclude file.
-.TP
+.RS 4
+Recursively finds and lists the svn:ignore property on directories\. The output is suitable for appending to the $GIT_DIR/info/exclude file\.
+.RE
+.PP
 \fIcommit\-diff\fR
-Commits the diff of two tree\-ish arguments from the command\-line. This command is intended for interoperability with git\-svnimport and does not rely on being inside an git\-svn init\-ed repository. This command takes three arguments, (a) the original tree to diff against, (b) the new tree result, (c) the URL of the target Subversion repository. The final argument (URL) may be omitted if you are working from a git\-svn\-aware repository (that has been init\-ed with git\-svn). The \-r<revision> option is required for this.
-.TP
+.RS 4
+Commits the diff of two tree\-ish arguments from the command\-line\. This command is intended for interoperability with \fIgit\-svnimport\fR and does not rely on being inside an git\-svn init\-ed repository\. This command takes three arguments, (a) the original tree to diff against, (b) the new tree result, (c) the URL of the target Subversion repository\. The final argument (URL) may be omitted if you are working from a \fIgit\-svn\fR\-aware repository (that has been init\-ed with \fIgit\-svn\fR)\. The \-r<revision> option is required for this\.
+.RE
+.PP
 \fIinfo\fR
-Shows information about a file or directory similar to what `svn info' provides. Does not currently support a \-r/\-\-revision argument. Use the \-\-url option to output only the value of the \fIURL:\fR field.
-.TP
+.RS 4
+Shows information about a file or directory similar to what `svn info\' provides\. Does not currently support a \-r/\-\-revision argument\. Use the \-\-url option to output only the value of the \fIURL:\fR field\.
+.RE
+.PP
 \fIproplist\fR
-Lists the properties stored in the Subversion repository about a given file or directory. Use \-r/\-\-revision to refer to a specific Subversion revision.
-.TP
+.RS 4
+Lists the properties stored in the Subversion repository about a given file or directory\. Use \-r/\-\-revision to refer to a specific Subversion revision\.
+.RE
+.PP
 \fIpropget\fR
-Gets the Subversion property given as the first argument, for a file. A specific revision can be specified with \-r/\-\-revision.
-.TP
+.RS 4
+Gets the Subversion property given as the first argument, for a file\. A specific revision can be specified with \-r/\-\-revision\.
+.RE
+.PP
 \fIshow\-externals\fR
-Shows the Subversion externals. Use \-r/\-\-revision to specify a specific revision.
+.RS 4
+Shows the Subversion externals\. Use \-r/\-\-revision to specify a specific revision\.
+.RE
 .SH "OPTIONS"
-.TP
-\-\-shared[={false|true|umask|group|all|world|everybody}] , \-\-template=<template_directory>
-Only used with the \fIinit\fR command. These are passed directly to git\-init.
-.TP
-\-r <ARG> , \-\-revision <ARG>
-Used with the \fIfetch\fR command.
+.PP
+\-\-shared[={false|true|umask|group|all|world|everybody}], \-\-template=<template_directory>
+.RS 4
+Only used with the \fIinit\fR command\. These are passed directly to \fIgit\-init\fR\.
+.RE
+.PP
+\-r <ARG>, \-\-revision <ARG>
+.RS 4
+Used with the \fIfetch\fR command\.
 
-This allows revision ranges for partial/cauterized history to be supported. $NUMBER, $NUMBER1:$NUMBER2 (numeric ranges), $NUMBER:HEAD, and BASE:$NUMBER are all supported.
+This allows revision ranges for partial/cauterized history to be supported\. $NUMBER, $NUMBER1:$NUMBER2 (numeric ranges), $NUMBER:HEAD, and BASE:$NUMBER are all supported\.
 
-This can allow you to make partial mirrors when running fetch; but is generally not recommended because history will be skipped and lost.
-.TP
-\- , \-\-stdin
-Only used with the \fIset\-tree\fR command.
+This can allow you to make partial mirrors when running fetch; but is generally not recommended because history will be skipped and lost\.
+.RE
+.PP
+\-, \-\-stdin
+.RS 4
+Only used with the \fIset\-tree\fR command\.
 
-Read a list of commits from stdin and commit them in reverse order. Only the leading sha1 is read from each line, so git\-rev\-list \-\-pretty=oneline output can be used.
-.TP
+Read a list of commits from stdin and commit them in reverse order\. Only the leading sha1 is read from each line, so \fIgit\-rev\-list \-\-pretty=oneline\fR output can be used\.
+.RE
+.PP
 \-\-rmdir
-Only used with the \fIdcommit\fR, \fIset\-tree\fR and \fIcommit\-diff\fR commands.
+.RS 4
+Only used with the \fIdcommit\fR, \fIset\-tree\fR and \fIcommit\-diff\fR commands\.
 
-Remove directories from the SVN tree if there are no files left behind. SVN can version empty directories, and they are not removed by default if there are no files left in them. git cannot version empty directories. Enabling this flag will make the commit to SVN act like git.
+Remove directories from the SVN tree if there are no files left behind\. SVN can version empty directories, and they are not removed by default if there are no files left in them\. git cannot version empty directories\. Enabling this flag will make the commit to SVN act like git\.
 
-config key: svn.rmdir
-.TP
-\-e , \-\-edit
-Only used with the \fIdcommit\fR, \fIset\-tree\fR and \fIcommit\-diff\fR commands.
+config key: svn\.rmdir
+.RE
+.PP
+\-e, \-\-edit
+.RS 4
+Only used with the \fIdcommit\fR, \fIset\-tree\fR and \fIcommit\-diff\fR commands\.
 
-Edit the commit message before committing to SVN. This is off by default for objects that are commits, and forced on when committing tree objects.
+Edit the commit message before committing to SVN\. This is off by default for objects that are commits, and forced on when committing tree objects\.
 
-config key: svn.edit
-.TP
-\-l<num> , \-\-find\-copies\-harder
-Only used with the \fIdcommit\fR, \fIset\-tree\fR and \fIcommit\-diff\fR commands.
+config key: svn\.edit
+.RE
+.PP
+\-l<num>, \-\-find\-copies\-harder
+.RS 4
+Only used with the \fIdcommit\fR, \fIset\-tree\fR and \fIcommit\-diff\fR commands\.
 
-They are both passed directly to git\-diff\-tree; see \fBgit\-diff\-tree\fR(1) for more information.
+They are both passed directly to \fIgit\-diff\-tree\fR; see \fBgit-diff-tree\fR(1) for more information\.
+
 .sp
+.RS 4
 .nf
-config key: svn.l
-config key: svn.findcopiesharder
+config key: svn\.l
+config key: svn\.findcopiesharder
 .fi
-.TP
-\-A<filename> , \-\-authors\-file=<filename>
-Syntax is compatible with the files used by git\-svnimport and git\-cvsimport:
+.RE
+.RE
+.PP
+\-A<filename>, \-\-authors\-file=<filename>
+.RS 4
+Syntax is compatible with the files used by \fIgit\-svnimport\fR and \fIgit\-cvsimport\fR:
+
 .sp
+.RS 4
 .nf
-.ft C
-        loginname = Joe User <user@example.com>
-.ft
+
+\.ft C
+        loginname = Joe User <user@example\.com>
+\.ft
 
 .fi
-If this option is specified and git\-svn encounters an SVN committer name that does not exist in the authors\-file, git\-svn will abort operation. The user will then have to add the appropriate entry. Re\-running the previous git\-svn command after the authors\-file is modified should continue operation.
+.RE
+If this option is specified and \fIgit\-svn\fR encounters an SVN committer name that does not exist in the authors\-file, \fIgit\-svn\fR will abort operation\. The user will then have to add the appropriate entry\. Re\-running the previous \fIgit\-svn\fR command after the authors\-file is modified should continue operation\.
 
-config key: svn.authorsfile
-.TP
-\-q , \-\-quiet
-Make git\-svn less verbose.
-.TP
-\-\-repack[=<n>] , \-\-repack\-flags=<flags>
-These should help keep disk usage sane for large fetches with many revisions.
+config key: svn\.authorsfile
+.RE
+.PP
+\-q, \-\-quiet
+.RS 4
+Make \fIgit\-svn\fR less verbose\.
+.RE
+.PP
+\-\-repack[=<n>], \-\-repack\-flags=<flags>
+.RS 4
+These should help keep disk usage sane for large fetches with many revisions\.
 
-\-\-repack takes an optional argument for the number of revisions to fetch before repacking. This defaults to repacking every 1000 commits fetched if no argument is specified.
+\-\-repack takes an optional argument for the number of revisions to fetch before repacking\. This defaults to repacking every 1000 commits fetched if no argument is specified\.
 
-\-\-repack\-flags are passed directly to git\-repack.
+\-\-repack\-flags are passed directly to \fIgit\-repack\fR\.
+
 .sp
+.RS 4
 .nf
-config key: svn.repack
-config key: svn.repackflags
+config key: svn\.repack
+config key: svn\.repackflags
 .fi
-.TP
-\-m , \-\-merge , \-s<strategy> , \-\-strategy=<strategy>
-These are only used with the \fIdcommit\fR and \fIrebase\fR commands.
+.RE
+.RE
+.PP
+\-m, \-\-merge, \-s<strategy>, \-\-strategy=<strategy>
+.RS 4
+These are only used with the \fIdcommit\fR and \fIrebase\fR commands\.
 
-Passed directly to git\-rebase when using \fIdcommit\fR if a git\-reset cannot be used (see \fIdcommit\fR).
-.TP
-\-n , \-\-dry\-run
-This can be used with the \fIdcommit\fR and \fIrebase\fR commands.
+Passed directly to \fIgit\-rebase\fR when using \fIdcommit\fR if a \fIgit\-reset\fR cannot be used (see \fIdcommit\fR)\.
+.RE
+.PP
+\-n, \-\-dry\-run
+.RS 4
+This can be used with the \fIdcommit\fR and \fIrebase\fR commands\.
 
-For \fIdcommit\fR, print out the series of git arguments that would show which diffs would be committed to SVN.
+For \fIdcommit\fR, print out the series of git arguments that would show which diffs would be committed to SVN\.
 
-For \fIrebase\fR, display the local branch associated with the upstream svn repository associated with the current branch and the URL of svn repository that will be fetched from.
+For \fIrebase\fR, display the local branch associated with the upstream svn repository associated with the current branch and the URL of svn repository that will be fetched from\.
+.RE
 .SH "ADVANCED OPTIONS"
-.TP
-\-i<GIT_SVN_ID> , \-\-id <GIT_SVN_ID>
-This sets GIT_SVN_ID (instead of using the environment). This allows the user to override the default refname to fetch from when tracking a single URL. The \fIlog\fR and \fIdcommit\fR commands no longer require this switch as an argument.
-.TP
-\-R<remote name> , \-\-svn\-remote <remote name>
-Specify the [svn\-remote "<remote name>"] section to use, this allows SVN multiple repositories to be tracked. Default: "svn"
-.TP
+.PP
+\-i<GIT_SVN_ID>, \-\-id <GIT_SVN_ID>
+.RS 4
+This sets GIT_SVN_ID (instead of using the environment)\. This allows the user to override the default refname to fetch from when tracking a single URL\. The \fIlog\fR and \fIdcommit\fR commands no longer require this switch as an argument\.
+.RE
+.PP
+\-R<remote name>, \-\-svn\-remote <remote name>
+.RS 4
+Specify the [svn\-remote "<remote name>"] section to use, this allows SVN multiple repositories to be tracked\. Default: "svn"
+.RE
+.PP
 \-\-follow\-parent
-This is especially helpful when we're tracking a directory that has been moved around within the repository, or if we started tracking a branch and never tracked the trunk it was descended from. This feature is enabled by default, use \-\-no\-follow\-parent to disable it.
+.RS 4
+This is especially helpful when we\'re tracking a directory that has been moved around within the repository, or if we started tracking a branch and never tracked the trunk it was descended from\. This feature is enabled by default, use \-\-no\-follow\-parent to disable it\.
 
-config key: svn.followparent
-.SH "CONFIG FILE\-ONLY OPTIONS"
-.TP
-svn.noMetadata , svn\-remote.<name>.noMetadata
-This gets rid of the \fIgit\-svn\-id:\fR lines at the end of every commit.
+config key: svn\.followparent
+.RE
+.SH "CONFIG FILE-ONLY OPTIONS"
+.PP
+svn\.noMetadata, svn\-remote\.<name>\.noMetadata
+.RS 4
+This gets rid of the \fIgit\-svn\-id:\fR lines at the end of every commit\.
 
-If you lose your .git/svn/git\-svn/.rev_db file, git\-svn will not be able to rebuild it and you won't be able to fetch again, either. This is fine for one\-shot imports.
+If you lose your \.git/svn/git\-svn/\.rev_db file, \fIgit\-svn\fR will not be able to rebuild it and you won\'t be able to fetch again, either\. This is fine for one\-shot imports\.
 
-The git\-svn log command will not work on repositories using this, either. Using this conflicts with the \fIuseSvmProps\fR option for (hopefully) obvious reasons.
-.TP
-svn.useSvmProps , svn\-remote.<name>.useSvmProps
-This allows git\-svn to re\-map repository URLs and UUIDs from mirrors created using SVN::Mirror (or svk) for metadata.
+The \fIgit\-svn log\fR command will not work on repositories using this, either\. Using this conflicts with the \fIuseSvmProps\fR option for (hopefully) obvious reasons\.
+.RE
+.PP
+svn\.useSvmProps, svn\-remote\.<name>\.useSvmProps
+.RS 4
+This allows \fIgit\-svn\fR to re\-map repository URLs and UUIDs from mirrors created using SVN::Mirror (or svk) for metadata\.
 
-If an SVN revision has a property, "svm:headrev", it is likely that the revision was created by SVN::Mirror (also used by SVK). The property contains a repository UUID and a revision. We want to make it look like we are mirroring the original URL, so introduce a helper function that returns the original identity URL and UUID, and use it when generating metadata in commit messages.
-.TP
-svn.useSvnsyncProps , svn\-remote.<name>.useSvnsyncprops
-Similar to the useSvmProps option; this is for users of the svnsync(1) command distributed with SVN 1.4.x and later.
-.TP
-svn\-remote.<name>.rewriteRoot
-This allows users to create repositories from alternate URLs. For example, an administrator could run git\-svn on the server locally (accessing via file://) but wish to distribute the repository with a public http:// or svn:// URL in the metadata so users of it will see the public URL.
+If an SVN revision has a property, "svm:headrev", it is likely that the revision was created by SVN::Mirror (also used by SVK)\. The property contains a repository UUID and a revision\. We want to make it look like we are mirroring the original URL, so introduce a helper function that returns the original identity URL and UUID, and use it when generating metadata in commit messages\.
+.RE
+.PP
+svn\.useSvnsyncProps, svn\-remote\.<name>\.useSvnsyncprops
+.RS 4
+Similar to the useSvmProps option; this is for users of the svnsync(1) command distributed with SVN 1\.4\.x and later\.
+.RE
+.PP
+svn\-remote\.<name>\.rewriteRoot
+.RS 4
+This allows users to create repositories from alternate URLs\. For example, an administrator could run \fIgit\-svn\fR on the server locally (accessing via file://) but wish to distribute the repository with a public http:// or svn:// URL in the metadata so users of it will see the public URL\.
+.RE
+Since the noMetadata, rewriteRoot, useSvnsyncProps and useSvmProps options all affect the metadata generated and used by \fIgit\-svn\fR; they \fBmust\fR be set in the configuration file before any history is imported and these settings should never be changed once they are set\.
 
-Since the noMetadata, rewriteRoot, useSvnsyncProps and useSvmProps options all affect the metadata generated and used by git\-svn; they \fBmust\fR be set in the configuration file before any history is imported and these settings should never be changed once they are set.
-
-Additionally, only one of these four options can be used per\-svn\-remote section because they affect the \fIgit\-svn\-id:\fR metadata line.
+Additionally, only one of these four options can be used per\-svn\-remote section because they affect the \fIgit\-svn\-id:\fR metadata line\.
 .SH "BASIC EXAMPLES"
 Tracking and contributing to the trunk of a Subversion\-managed project:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 # Clone a repo (like git clone):
-        git svn clone http://svn.foo.org/project/trunk
+        git svn clone http://svn\.foo\.org/project/trunk
 # Enter the newly cloned directory:
         cd trunk
 # You should be on master branch, double\-check with git\-branch
         git branch
 # Do some work and commit locally to git:
-        git commit ...
+        git commit \.\.\.
 # Something is committed to SVN, rebase your local changes against the
 # latest changes in SVN:
         git svn rebase
@@ -287,84 +395,97 @@ Tracking and contributing to the trunk of a Subversion\-managed project:
 # as well as automatically updating your working HEAD:
         git svn dcommit
 # Append svn:ignore settings to the default git exclude file:
-        git svn show\-ignore >> .git/info/exclude
-.ft
+        git svn show\-ignore >> \.git/info/exclude
+\.ft
 
 .fi
+.RE
 Tracking and contributing to an entire Subversion\-managed project (complete with a trunk, tags and branches):
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 # Clone a repo (like git clone):
-        git svn clone http://svn.foo.org/project \-T trunk \-b branches \-t tags
+        git svn clone http://svn\.foo\.org/project \-T trunk \-b branches \-t tags
 # View all branches and tags you have cloned:
         git branch \-r
-# Reset your master to trunk (or any other branch, replacing 'trunk'
+# Reset your master to trunk (or any other branch, replacing \'trunk\'
 # with the appropriate name):
         git reset \-\-hard remotes/trunk
-# You may only dcommit to one branch/tag/trunk at a time.  The usage
-# of dcommit/rebase/show\-ignore should be the same as above.
-.ft
+# You may only dcommit to one branch/tag/trunk at a time\.  The usage
+# of dcommit/rebase/show\-ignore should be the same as above\.
+\.ft
 
 .fi
-The initial git\-svn clone can be quite time\-consuming (especially for large Subversion repositories). If multiple people (or one person with multiple machines) want to use git\-svn to interact with the same Subversion repository, you can do the initial git\-svn clone to a repository on a server and have each person clone that repository with git\-clone:
+.RE
+The initial \fIgit\-svn clone\fR can be quite time\-consuming (especially for large Subversion repositories)\. If multiple people (or one person with multiple machines) want to use \fIgit\-svn\fR to interact with the same Subversion repository, you can do the initial \fIgit\-svn clone\fR to a repository on a server and have each person clone that repository with \fIgit\-clone\fR:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 # Do the initial import on a server
-        ssh server "cd /pub && git svn clone http://svn.foo.org/project
+        ssh server "cd /pub && git svn clone http://svn\.foo\.org/project
 # Clone locally \- make sure the refs/remotes/ space matches the server
         mkdir project
         cd project
         git init
         git remote add origin server:/pub/project
-        git config \-\-add remote.origin.fetch '+refs/remotes/*:refs/remotes/*'
+        git config \-\-add remote\.origin\.fetch \'+refs/remotes/*:refs/remotes/*\'
         git fetch
 # Initialize git\-svn locally (be sure to use the same URL and \-T/\-b/\-t options as were used on server)
-        git svn init http://svn.foo.org/project
+        git svn init http://svn\.foo\.org/project
 # Pull the latest changes from Subversion
         git svn rebase
-.ft
+\.ft
 
 .fi
+.RE
 .SH "REBASE VS. PULL/MERGE"
-Originally, git\-svn recommended that the \fIremotes/git\-svn\fR branch be pulled or merged from. This is because the author favored git svn set\-tree B to commit a single head rather than the git svn set\-tree A..B notation to commit multiple commits.
+Originally, \fIgit\-svn\fR recommended that the \fIremotes/git\-svn\fR branch be pulled or merged from\. This is because the author favored git svn set\-tree B to commit a single head rather than the git svn set\-tree A\.\.B notation to commit multiple commits\.
 
-If you use git svn set\-tree A..B to commit several diffs and you do not have the latest remotes/git\-svn merged into my\-branch, you should use git svn rebase to update your work branch instead of git pull or git merge. pull/`merge' can cause non\-linear history to be flattened when committing into SVN, which can lead to merge commits reversing previous commits in SVN.
+If you use git svn set\-tree A\.\.B to commit several diffs and you do not have the latest remotes/git\-svn merged into my\-branch, you should use git svn rebase to update your work branch instead of git pull or git merge\. pull/`merge\' can cause non\-linear history to be flattened when committing into SVN, which can lead to merge commits reversing previous commits in SVN\.
 .SH "DESIGN PHILOSOPHY"
-Merge tracking in Subversion is lacking and doing branched development with Subversion can be cumbersome as a result. While git\-svn can track copy history (including branches and tags) for repositories adopting a standard layout, it cannot yet represent merge history that happened inside git back upstream to SVN users. Therefore it is advised that users keep history as linear as possible inside git to ease compatibility with SVN (see the CAVEATS section below).
+Merge tracking in Subversion is lacking and doing branched development with Subversion can be cumbersome as a result\. While \fIgit\-svn\fR can track copy history (including branches and tags) for repositories adopting a standard layout, it cannot yet represent merge history that happened inside git back upstream to SVN users\. Therefore it is advised that users keep history as linear as possible inside git to ease compatibility with SVN (see the CAVEATS section below)\.
 .SH "CAVEATS"
-For the sake of simplicity and interoperating with a less\-capable system (SVN), it is recommended that all git\-svn users clone, fetch and dcommit directly from the SVN server, and avoid all git\-clone/pull/merge/push operations between git repositories and branches. The recommended method of exchanging code between git branches and users is git\-format\-patch and git\-am, or just 'dcommit'ing to the SVN repository.
+For the sake of simplicity and interoperating with a less\-capable system (SVN), it is recommended that all \fIgit\-svn\fR users clone, fetch and dcommit directly from the SVN server, and avoid all \fIgit\-clone\fR/\fIpull\fR/\fImerge\fR/\fIpush\fR operations between git repositories and branches\. The recommended method of exchanging code between git branches and users is \fIgit\-format\-patch\fR and \fIgit\-am\fR, or just \'dcommit\'ing to the SVN repository\.
 
-Running git\-merge or git\-pull is NOT recommended on a branch you plan to \fIdcommit\fR from. Subversion does not represent merges in any reasonable or useful fashion; so users using Subversion cannot see any merges you've made. Furthermore, if you merge or pull from a git branch that is a mirror of an SVN branch, \fIdcommit\fR may commit to the wrong branch.
+Running \fIgit\-merge\fR or \fIgit\-pull\fR is NOT recommended on a branch you plan to \fIdcommit\fR from\. Subversion does not represent merges in any reasonable or useful fashion; so users using Subversion cannot see any merges you\'ve made\. Furthermore, if you merge or pull from a git branch that is a mirror of an SVN branch, \fIdcommit\fR may commit to the wrong branch\.
 
-git\-clone does not clone branches under the refs/remotes/ hierarchy or any git\-svn metadata, or config. So repositories created and managed with using git\-svn should use rsync for cloning, if cloning is to be done at all.
+\fIgit\-clone\fR does not clone branches under the refs/remotes/ hierarchy or any \fIgit\-svn\fR metadata, or config\. So repositories created and managed with using \fIgit\-svn\fR should use \fIrsync\fR for cloning, if cloning is to be done at all\.
 
-Since \fIdcommit\fR uses rebase internally, any git branches you git\-push to before \fIdcommit\fR on will require forcing an overwrite of the existing ref on the remote repository. This is generally considered bad practice, see the \fBgit\-push\fR(1) documentation for details.
+Since \fIdcommit\fR uses rebase internally, any git branches you \fIgit\-push\fR to before \fIdcommit\fR on will require forcing an overwrite of the existing ref on the remote repository\. This is generally considered bad practice, see the \fBgit-push\fR(1) documentation for details\.
 
-Do not use the \-\-amend option of \fBgit\-commit\fR(1) on a change you've already dcommitted. It is considered bad practice to \-\-amend commits you've already pushed to a remote repository for other users, and dcommit with SVN is analogous to that.
+Do not use the \-\-amend option of \fBgit-commit\fR(1) on a change you\'ve already dcommitted\. It is considered bad practice to \-\-amend commits you\'ve already pushed to a remote repository for other users, and dcommit with SVN is analogous to that\.
 .SH "BUGS"
-We ignore all SVN properties except svn:executable. Any unhandled properties are logged to $GIT_DIR/svn/<refname>/unhandled.log
+We ignore all SVN properties except svn:executable\. Any unhandled properties are logged to $GIT_DIR/svn/<refname>/unhandled\.log
 
-Renamed and copied directories are not detected by git and hence not tracked when committing to SVN. I do not plan on adding support for this as it's quite difficult and time\-consuming to get working for all the possible corner cases (git doesn't do it, either). Committing renamed and copied files are fully supported if they're similar enough for git to detect them.
+Renamed and copied directories are not detected by git and hence not tracked when committing to SVN\. I do not plan on adding support for this as it\'s quite difficult and time\-consuming to get working for all the possible corner cases (git doesn\'t do it, either)\. Committing renamed and copied files are fully supported if they\'re similar enough for git to detect them\.
 .SH "CONFIGURATION"
-git\-svn stores [svn\-remote] configuration information in the repository .git/config file. It is similar the core git [remote] sections except \fIfetch\fR keys do not accept glob arguments; but they are instead handled by the \fIbranches\fR and \fItags\fR keys. Since some SVN repositories are oddly configured with multiple projects glob expansions such those listed below are allowed:
+\fIgit\-svn\fR stores [svn\-remote] configuration information in the repository \.git/config file\. It is similar the core git [remote] sections except \fIfetch\fR keys do not accept glob arguments; but they are instead handled by the \fIbranches\fR and \fItags\fR keys\. Since some SVN repositories are oddly configured with multiple projects glob expansions such those listed below are allowed:
+
 .sp
+.RS 4
 .nf
-.ft C
+
+\.ft C
 [svn\-remote "project\-a"]
-        url = http://server.org/svn
+        url = http://server\.org/svn
         branches = branches/*/project\-a:refs/remotes/project\-a/branches/*
         tags = tags/*/project\-a:refs/remotes/project\-a/tags/*
         trunk = trunk/project\-a:refs/remotes/project\-a/trunk
-.ft
+\.ft
 
 .fi
-Keep in mind that the \fI\fR\fI (asterisk) wildcard of the local ref (right of the \fR\fI\fI:\fR\fR\fI) *must\fR be the farthest right path component; however the remote wildcard may be anywhere as long as it's own independent path component (surrounded by \fI/\fR or EOL). This type of configuration is not automatically created by \fIinit\fR and should be manually entered with a text\-editor or using git\-config.
+.RE
+Keep in mind that the \fI\fR\fI (asterisk) wildcard of the local ref (right of the \fR\fI\fI:\fR\fR\fI) *must\fR be the farthest right path component; however the remote wildcard may be anywhere as long as it\'s own independent path component (surrounded by \fI/\fR or EOL)\. This type of configuration is not automatically created by \fIinit\fR and should be manually entered with a text\-editor or using \fIgit\-config\fR\.
 .SH "SEE ALSO"
-\fBgit\-rebase\fR(1)
+\fBgit-rebase\fR(1)
 .SH "AUTHOR"
-Written by Eric Wong <normalperson@yhbt.net>.
+Written by Eric Wong <normalperson@yhbt\.net>\.
 .SH "DOCUMENTATION"
-Written by Eric Wong <normalperson@yhbt.net>.
+Written by Eric Wong <normalperson@yhbt\.net>\.
 

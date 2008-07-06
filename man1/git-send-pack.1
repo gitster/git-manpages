@@ -1,87 +1,115 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-SEND\-PACK" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-send-pack
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GIT\-SEND\-PACK" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-send\-pack \- Push objects over git protocol to another repository
+git-send-pack - Push objects over git protocol to another repository
 .SH "SYNOPSIS"
 \fIgit send\-pack\fR [\-\-all] [\-\-dry\-run] [\-\-force] [\-\-receive\-pack=<git\-receive\-pack>] [\-\-verbose] [\-\-thin] [<host>:]<directory> [<ref>\&...]
 .SH "DESCRIPTION"
-Usually you would want to use git\-push, which is a higher\-level wrapper of this command, instead. See \fBgit\-push\fR(1).
+Usually you would want to use \fIgit\-push\fR, which is a higher\-level wrapper of this command, instead\. See \fBgit-push\fR(1)\.
 
-Invokes git\-receive\-pack on a possibly remote repository, and updates it from the current repository, sending named refs.
+Invokes \fIgit\-receive\-pack\fR on a possibly remote repository, and updates it from the current repository, sending named refs\.
 .SH "OPTIONS"
-.TP
+.PP
 \-\-receive\-pack=<git\-receive\-pack>
-Path to the git\-receive\-pack program on the remote end. Sometimes useful when pushing to a remote repository over ssh, and you do not have the program in a directory on the default $PATH.
-.TP
-\-\-exec=<git\-receive\-pack>
-Same as \-\-receive\-pack=<git\-receive\-pack>.
-.TP
-\-\-all
-Instead of explicitly specifying which refs to update, update all heads that locally exist.
-.TP
-\-\-dry\-run
-Do everything except actually send the updates.
-.TP
-\-\-force
-Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it. This flag disables the check. What this means is that the remote repository can lose commits; use it with care.
-.TP
-\-\-verbose
-Run verbosely.
-.TP
-\-\-thin
-Spend extra cycles to minimize the number of objects to be sent. Use it on slower connection.
-.TP
-<host>
-A remote host to house the repository. When this part is specified, git\-receive\-pack is invoked via ssh.
-.TP
-<directory>
-The repository to update.
-.TP
-<ref>\&...
-The remote refs to update.
-.SH "SPECIFYING THE REFS"
-There are three ways to specify which refs to update on the remote end.
-
-With \fI\-\-all\fR flag, all refs that exist locally are transferred to the remote side. You cannot specify any \fI<ref>\fR if you use this flag.
-
-Without \fI\-\-all\fR and without any \fI<ref>\fR, the heads that exist both on the local side and on the remote side are updated.
-
-When one or more \fI<ref>\fR are specified explicitly, it can be either a single pattern, or a pair of such pattern separated by a colon ":" (this means that a ref name cannot have a colon in it). A single pattern \fI<name>\fR is just a shorthand for \fI<name>:<name>\fR.
-
-Each pattern pair consists of the source side (before the colon) and the destination side (after the colon). The ref to be pushed is determined by finding a match that matches the source side, and where it is pushed is determined by using the destination side. The rules used to match a ref are the same rules used by git\-rev\-parse to resolve a symbolic ref name. See \fBgit\-rev\-parse\fR(1).
-.TP 3
-\(bu
-It is an error if <src> does not match exactly one of the local refs.
-.TP
-\(bu
-It is an error if <dst> matches more than one remote refs.
-.TP
-\(bu
-If <dst> does not match any remote ref, either
-.RS
-.TP 3
-\(bu
-it has to start with "refs/"; <dst> is used as the destination literally in this case.
-.TP
-\(bu
-<src> == <dst> and the ref that matched the <src> must not exist in the set of remote refs; the ref matched <src> locally is used as the name of the destination.
+.RS 4
+Path to the \fIgit\-receive\-pack\fR program on the remote end\. Sometimes useful when pushing to a remote repository over ssh, and you do not have the program in a directory on the default $PATH\.
 .RE
-Without \fI\-\-force\fR, the <src> ref is stored at the remote only if <dst> does not exist, or <dst> is a proper subset (i.e. an ancestor) of <src>. This check, known as "fast forward check", is performed in order to avoid accidentally overwriting the remote ref and lose other peoples' commits from there.
+.PP
+\-\-exec=<git\-receive\-pack>
+.RS 4
+Same as \-\-receive\-pack=<git\-receive\-pack>\.
+.RE
+.PP
+\-\-all
+.RS 4
+Instead of explicitly specifying which refs to update, update all heads that locally exist\.
+.RE
+.PP
+\-\-dry\-run
+.RS 4
+Do everything except actually send the updates\.
+.RE
+.PP
+\-\-force
+.RS 4
+Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it\. This flag disables the check\. What this means is that the remote repository can lose commits; use it with care\.
+.RE
+.PP
+\-\-verbose
+.RS 4
+Run verbosely\.
+.RE
+.PP
+\-\-thin
+.RS 4
+Spend extra cycles to minimize the number of objects to be sent\. Use it on slower connection\.
+.RE
+.PP
+<host>
+.RS 4
+A remote host to house the repository\. When this part is specified, \fIgit\-receive\-pack\fR is invoked via ssh\.
+.RE
+.PP
+<directory>
+.RS 4
+The repository to update\.
+.RE
+.PP
+<ref>\&...
+.RS 4
+The remote refs to update\.
+.RE
+.SH "SPECIFYING THE REFS"
+There are three ways to specify which refs to update on the remote end\.
 
-With \fI\-\-force\fR, the fast forward check is disabled for all refs.
+With \fI\-\-all\fR flag, all refs that exist locally are transferred to the remote side\. You cannot specify any \fI<ref>\fR if you use this flag\.
 
-Optionally, a <ref> parameter can be prefixed with a plus \fI+\fR sign to disable the fast\-forward check only on that ref.
+Without \fI\-\-all\fR and without any \fI<ref>\fR, the heads that exist both on the local side and on the remote side are updated\.
+
+When one or more \fI<ref>\fR are specified explicitly, it can be either a single pattern, or a pair of such pattern separated by a colon ":" (this means that a ref name cannot have a colon in it)\. A single pattern \fI<name>\fR is just a shorthand for \fI<name>:<name>\fR\.
+
+Each pattern pair consists of the source side (before the colon) and the destination side (after the colon)\. The ref to be pushed is determined by finding a match that matches the source side, and where it is pushed is determined by using the destination side\. The rules used to match a ref are the same rules used by \fIgit\-rev\-parse\fR to resolve a symbolic ref name\. See \fBgit-rev-parse\fR(1)\.
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It is an error if <src> does not match exactly one of the local refs\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'It is an error if <dst> matches more than one remote refs\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'If <dst> does not match any remote ref, either
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'it has to start with "refs/"; <dst> is used as the destination literally in this case\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'<src> == <dst> and the ref that matched the <src> must not exist in the set of remote refs; the ref matched <src> locally is used as the name of the destination\.
+.RE
+.RE
+Without \fI\-\-force\fR, the <src> ref is stored at the remote only if <dst> does not exist, or <dst> is a proper subset (i\.e\. an ancestor) of <src>\. This check, known as "fast forward check", is performed in order to avoid accidentally overwriting the remote ref and lose other peoples\' commits from there\.
+
+With \fI\-\-force\fR, the fast forward check is disabled for all refs\.
+
+Optionally, a <ref> parameter can be prefixed with a plus \fI+\fR sign to disable the fast\-forward check only on that ref\.
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl.org>
+Written by Linus Torvalds <torvalds@osdl\.org>
 .SH "DOCUMENTATION"
-Documentation by Junio C Hamano.
+Documentation by Junio C Hamano\.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 

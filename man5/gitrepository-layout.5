@@ -1,111 +1,168 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GITREPOSITORY\-LAYOUT" "5" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: gitrepository-layout
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 07/06/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.5.6.2.212.g08b5
+.\"
+.TH "GITREPOSITORY\-LAYOU" "5" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-gitrepository\-layout \- Git Repository Layout
+gitrepository-layout - Git Repository Layout
 .SH "SYNOPSIS"
 $GIT_DIR/*
 .SH "DESCRIPTION"
-You may find these things in your git repository (.git directory for a repository associated with your working tree, or <project>.git directory for a public \fIbare\fR repository. It is also possible to have a working tree where .git is a plain ascii file containing gitdir: <path>, i.e. the path to the real git repository).
-.TP
+You may find these things in your git repository (\.git directory for a repository associated with your working tree, or <project>\.git directory for a public \fIbare\fR repository\. It is also possible to have a working tree where \.git is a plain ascii file containing gitdir: <path>, i\.e\. the path to the real git repository)\.
+.PP
 objects
-Object store associated with this repository. Usually an object store is self sufficient (i.e. all the objects that are referred to by an object found in it are also found in it), but there are couple of ways to violate it.
-.RS
-.TP 3
-1.
-You could populate the repository by running a commit walker without \-a option. Depending on which options are given, you could have only commit objects without associated blobs and trees this way, for example. A repository with this kind of incomplete object store is not suitable to be published to the outside world but sometimes useful for private repository.
-.TP
-2.
-You also could have an incomplete but locally usable repository by cloning shallowly. See \fBgit\-clone\fR(1).
-.TP
-3.
-You can be using objects/info/alternates mechanism, or $GIT_ALTERNATE_OBJECT_DIRECTORIES mechanism to \fIborrow\fR objects from other object stores. A repository with this kind of incomplete object store is not suitable to be published for use with dumb transports but otherwise is OK as long as objects/info/alternates points at the right object stores it borrows from.
-.RE
-.TP
-objects/[0\-9a\-f][0\-9a\-f]
-Traditionally, each object is stored in its own file. They are split into 256 subdirectories using the first two letters from its object name to keep the number of directory entries objects directory itself needs to hold. Objects found here are often called \fIunpacked\fR (or \fIloose\fR) objects.
-.TP
-objects/pack
-Packs (files that store many object in compressed form, along with index files to allow them to be randomly accessed) are found in this directory.
-.TP
-objects/info
-Additional information about the object store is recorded in this directory.
-.TP
-objects/info/packs
-This file is to help dumb transports discover what packs are available in this object store. Whenever a pack is added or removed, git update\-server\-info should be run to keep this file up\-to\-date if the repository is published for dumb transports. git\-repack does this by default.
-.TP
-objects/info/alternates
-This file records paths to alternate object stores that this object store borrows objects from, one pathname per line. Note that not only native Git tools use it locally, but the HTTP fetcher also tries to use it remotely; this will usually work if you have relative paths (relative to the object database, not to the repository!) in your alternates file, but it will not work if you use absolute paths unless the absolute path in filesystem and web URL is the same. See also \fIobjects/info/http\-alternates\fR.
-.TP
-objects/info/http\-alternates
-This file records URLs to alternate object stores that this object store borrows objects from, to be used when the repository is fetched over HTTP.
-.TP
-refs
-References are stored in subdirectories of this directory. The git\-prune command knows to keep objects reachable from refs found in this directory and its subdirectories.
-.TP
-refs/heads/name
-records tip\-of\-the\-tree commit objects of branch name
-.TP
-refs/tags/name
-records any object name (not necessarily a commit object, or a tag object that points at a commit object).
-.TP
-refs/remotes/name
-records tip\-of\-the\-tree commit objects of branches copied from a remote repository.
-.TP
-packed\-refs
-records the same information as refs/heads/, refs/tags/, and friends record in a more efficient way. See \fBgit\-pack\-refs\fR(1).
-.TP
-HEAD
-A symref (see glossary) to the refs/heads/ namespace describing the currently active branch. It does not mean much if the repository is not associated with any working tree (i.e. a \fIbare\fR repository), but a valid git repository \fBmust\fR have the HEAD file; some porcelains may use it to guess the designated "default" branch of the repository (usually \fImaster\fR). It is legal if the named branch \fIname\fR does not (yet) exist. In some legacy setups, it is a symbolic link instead of a symref that points at the current branch.
+.RS 4
+Object store associated with this repository\. Usually an object store is self sufficient (i\.e\. all the objects that are referred to by an object found in it are also found in it), but there are couple of ways to violate it\.
 
-HEAD can also record a specific commit directly, instead of being a symref to point at the current branch. Such a state is often called \fIdetached HEAD\fR, and almost all commands work identically as normal. See \fBgit\-checkout\fR(1) for details.
-.TP
+.sp
+.RS 4
+\h'-04' 1.\h'+02'You could populate the repository by running a commit walker without \-a option\. Depending on which options are given, you could have only commit objects without associated blobs and trees this way, for example\. A repository with this kind of incomplete object store is not suitable to be published to the outside world but sometimes useful for private repository\.
+.RE
+.sp
+.RS 4
+\h'-04' 2.\h'+02'You also could have an incomplete but locally usable repository by cloning shallowly\. See \fBgit-clone\fR(1)\.
+.RE
+.sp
+.RS 4
+\h'-04' 3.\h'+02'You can be using objects/info/alternates mechanism, or $GIT_ALTERNATE_OBJECT_DIRECTORIES mechanism to \fIborrow\fR objects from other object stores\. A repository with this kind of incomplete object store is not suitable to be published for use with dumb transports but otherwise is OK as long as objects/info/alternates points at the right object stores it borrows from\.
+.RE
+.RE
+.PP
+objects/[0\-9a\-f][0\-9a\-f]
+.RS 4
+Traditionally, each object is stored in its own file\. They are split into 256 subdirectories using the first two letters from its object name to keep the number of directory entries objects directory itself needs to hold\. Objects found here are often called \fIunpacked\fR (or \fIloose\fR) objects\.
+.RE
+.PP
+objects/pack
+.RS 4
+Packs (files that store many object in compressed form, along with index files to allow them to be randomly accessed) are found in this directory\.
+.RE
+.PP
+objects/info
+.RS 4
+Additional information about the object store is recorded in this directory\.
+.RE
+.PP
+objects/info/packs
+.RS 4
+This file is to help dumb transports discover what packs are available in this object store\. Whenever a pack is added or removed, git update\-server\-info should be run to keep this file up\-to\-date if the repository is published for dumb transports\. \fIgit\-repack\fR does this by default\.
+.RE
+.PP
+objects/info/alternates
+.RS 4
+This file records paths to alternate object stores that this object store borrows objects from, one pathname per line\. Note that not only native Git tools use it locally, but the HTTP fetcher also tries to use it remotely; this will usually work if you have relative paths (relative to the object database, not to the repository!) in your alternates file, but it will not work if you use absolute paths unless the absolute path in filesystem and web URL is the same\. See also \fIobjects/info/http\-alternates\fR\.
+.RE
+.PP
+objects/info/http\-alternates
+.RS 4
+This file records URLs to alternate object stores that this object store borrows objects from, to be used when the repository is fetched over HTTP\.
+.RE
+.PP
+refs
+.RS 4
+References are stored in subdirectories of this directory\. The \fIgit\-prune\fR command knows to keep objects reachable from refs found in this directory and its subdirectories\.
+.RE
+.PP
+refs/heads/name
+.RS 4
+records tip\-of\-the\-tree commit objects of branch name
+.RE
+.PP
+refs/tags/name
+.RS 4
+records any object name (not necessarily a commit object, or a tag object that points at a commit object)\.
+.RE
+.PP
+refs/remotes/name
+.RS 4
+records tip\-of\-the\-tree commit objects of branches copied from a remote repository\.
+.RE
+.PP
+packed\-refs
+.RS 4
+records the same information as refs/heads/, refs/tags/, and friends record in a more efficient way\. See \fBgit-pack-refs\fR(1)\.
+.RE
+.PP
+HEAD
+.RS 4
+A symref (see glossary) to the refs/heads/ namespace describing the currently active branch\. It does not mean much if the repository is not associated with any working tree (i\.e\. a \fIbare\fR repository), but a valid git repository \fBmust\fR have the HEAD file; some porcelains may use it to guess the designated "default" branch of the repository (usually \fImaster\fR)\. It is legal if the named branch \fIname\fR does not (yet) exist\. In some legacy setups, it is a symbolic link instead of a symref that points at the current branch\.
+
+HEAD can also record a specific commit directly, instead of being a symref to point at the current branch\. Such a state is often called \fIdetached HEAD\fR, and almost all commands work identically as normal\. See \fBgit-checkout\fR(1) for details\.
+.RE
+.PP
 branches
-A slightly deprecated way to store shorthands to be used to specify URL to git\-fetch, git\-pull and git\-push commands is to store a file in branches/<name> and give \fIname\fR to these commands in place of \fIrepository\fR argument.
-.TP
+.RS 4
+A slightly deprecated way to store shorthands to be used to specify URL to \fIgit\-fetch\fR, \fIgit\-pull\fR and \fIgit\-push\fR commands is to store a file in branches/<name> and give \fIname\fR to these commands in place of \fIrepository\fR argument\.
+.RE
+.PP
 hooks
-Hooks are customization scripts used by various git commands. A handful of sample hooks are installed when git\-init is run, but all of them are disabled by default. To enable, they need to be made executable. Read \fBgithooks\fR(5) for more details about each hook.
-.TP
+.RS 4
+Hooks are customization scripts used by various git commands\. A handful of sample hooks are installed when \fIgit\-init\fR is run, but all of them are disabled by default\. To enable, they need to be made executable\. Read \fBgithooks\fR(5) for more details about each hook\.
+.RE
+.PP
 index
-The current index file for the repository. It is usually not found in a bare repository.
-.TP
+.RS 4
+The current index file for the repository\. It is usually not found in a bare repository\.
+.RE
+.PP
 info
-Additional information about the repository is recorded in this directory.
-.TP
+.RS 4
+Additional information about the repository is recorded in this directory\.
+.RE
+.PP
 info/refs
-This file helps dumb transports discover what refs are available in this repository. If the repository is published for dumb transports, this file should be regenerated by git\-update\-server\-info every time a tag or branch is created or modified. This is normally done from the hooks/update hook, which is run by the git\-receive\-pack command when you git\-push into the repository.
-.TP
+.RS 4
+This file helps dumb transports discover what refs are available in this repository\. If the repository is published for dumb transports, this file should be regenerated by \fIgit\-update\-server\-info\fR every time a tag or branch is created or modified\. This is normally done from the hooks/update hook, which is run by the \fIgit\-receive\-pack\fR command when you \fIgit\-push\fR into the repository\.
+.RE
+.PP
 info/grafts
-This file records fake commit ancestry information, to pretend the set of parents a commit has is different from how the commit was actually created. One record per line describes a commit and its fake parents by listing their 40\-byte hexadecimal object names separated by a space and terminated by a newline.
-.TP
+.RS 4
+This file records fake commit ancestry information, to pretend the set of parents a commit has is different from how the commit was actually created\. One record per line describes a commit and its fake parents by listing their 40\-byte hexadecimal object names separated by a space and terminated by a newline\.
+.RE
+.PP
 info/exclude
-This file, by convention among Porcelains, stores the exclude pattern list. .gitignore is the per\-directory ignore file. git\-status, git\-add, git\-rm and git\-clean look at it but the core git commands do not look at it. See also: \fBgitignore\fR(5).
-.TP
+.RS 4
+This file, by convention among Porcelains, stores the exclude pattern list\. \.gitignore is the per\-directory ignore file\. \fIgit\-status\fR, \fIgit\-add\fR, \fIgit\-rm\fR and \fIgit\-clean\fR look at it but the core git commands do not look at it\. See also: \fBgitignore\fR(5)\.
+.RE
+.PP
 remotes
-Stores shorthands to be used to give URL and default refnames to interact with remote repository to git\-fetch, git\-pull and git\-push commands.
-.TP
+.RS 4
+Stores shorthands to be used to give URL and default refnames to interact with remote repository to \fIgit\-fetch\fR, \fIgit\-pull\fR and \fIgit\-push\fR commands\.
+.RE
+.PP
 logs
-Records of changes made to refs are stored in this directory. See \fBgit\-update\-ref\fR(1) for more information.
-.TP
+.RS 4
+Records of changes made to refs are stored in this directory\. See \fBgit-update-ref\fR(1) for more information\.
+.RE
+.PP
 logs/refs/heads/name
-Records all changes made to the branch tip named name.
-.TP
+.RS 4
+Records all changes made to the branch tip named name\.
+.RE
+.PP
 logs/refs/tags/name
-Records all changes made to the tag named name.
-.TP
+.RS 4
+Records all changes made to the tag named name\.
+.RE
+.PP
 shallow
-This is similar to info/grafts but is internally used and maintained by shallow clone mechanism. See \-\-depth option to \fBgit\-clone\fR(1) and \fBgit\-fetch\fR(1).
+.RS 4
+This is similar to info/grafts but is internally used and maintained by shallow clone mechanism\. See \-\-depth option to \fBgit-clone\fR(1) and \fBgit-fetch\fR(1)\.
+.RE
 .SH "SEE ALSO"
-\fBgit\-init\fR(1), \fBgit\-clone\fR(1), \fBgit\-fetch\fR(1), \fBgit\-pack\-refs\fR(1), \fBgit\-gc\fR(1), \fBgit\-checkout\fR(1), \fBgitglossary\fR(7), [1]\&\fIThe Git User's Manual\fR
+\fBgit-init\fR(1), \fBgit-clone\fR(1), \fBgit-fetch\fR(1), \fBgit-pack-refs\fR(1), \fBgit-gc\fR(1), \fBgit-checkout\fR(1), \fBgitglossary\fR(7), \fIThe Git User\'s Manual\fR\&[1]
 .SH "GIT"
-Part of the \fBgit\fR(1) suite.
-.SH "REFERENCES"
-.TP 3
-1.\ The Git User's Manual
-\%user\-manual.html
+Part of the \fBgit\fR(1) suite\.
+.SH "NOTES"
+.IP " 1." 4
+The Git User's Manual
+.RS 4
+\%user-manual.html
+.RE
