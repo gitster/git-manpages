@@ -1,11 +1,11 @@
 .\"     Title: git-rev-parse
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/07/2008
+.\"      Date: 07/09/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.5.6.2.247.g923712
+.\"    Source: Git 1.5.6.2.276.gbb29
 .\"
-.TH "GIT\-REV\-PARSE" "1" "07/07/2008" "Git 1\.5\.6\.2\.247\.g923712" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "07/09/2008" "Git 1\.5\.6\.2\.276\.gbb29" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -169,7 +169,7 @@ A revision parameter typically, but not necessarily, names a commit object\. The
 
 .sp
 .RS 4
-\h'-04' 1.\h'+02'if $GIT_DIR/<name> exists, that is what you mean (this is usually useful only for HEAD, FETCH_HEAD and MERGE_HEAD);
+\h'-04' 1.\h'+02'if $GIT_DIR/<name> exists, that is what you mean (this is usually useful only for HEAD, FETCH_HEAD, ORIG_HEAD and MERGE_HEAD);
 .RE
 .sp
 .RS 4
@@ -190,6 +190,8 @@ A revision parameter typically, but not necessarily, names a commit object\. The
 .sp
 .RS 4
 \h'-04' 6.\h'+02'otherwise, $GIT_DIR/refs/remotes/<name>/HEAD if exists\.
+
+HEAD names the commit your changes in the working tree is based on\. FETCH_HEAD records the branch you fetched from a remote repository with your last \fIgit\-fetch\fR invocation\. ORIG_HEAD is created by commands that moves your HEAD in a drastic way, to record the position of the HEAD before their operation, so that you can change the tip of the branch back to the state before you ran them easily\. MERGE_HEAD records the commit(s) you are merging into your branch when you run \fIgit\-merge\fR\.
 .RE
 .RE
 .sp
@@ -269,7 +271,7 @@ History traversing commands such as \fIgit\-log\fR operate on a set of commits, 
 
 To exclude commits reachable from a commit, a prefix ^ notation is used\. E\.g\. "^r1 r2" means commits reachable from r2 but exclude the ones reachable from r1\.
 
-This set operation appears so often that there is a shorthand for it\. "r1\.\.r2" is equivalent to "^r1 r2"\. It is the difference of two sets (subtract the set of commits reachable from r1 from the set of commits reachable from r2)\.
+This set operation appears so often that there is a shorthand for it\. When you have two commits r1 and r2 (named according to the syntax explained in SPECIFYING REVISIONS above), you can ask for commits that are reachable from r2 excluding those that are reachable from r1 by "^r1 r2" and it can be written as "r1\.\.r2"\.
 
 A similar notation "r1\.\.\.r2" is called symmetric difference of r1 and r2 and is defined as "r1 r2 \-\-not $(git merge\-base \-\-all r1 r2)"\. It is the set of commits that are reachable from either one of r1 or r2 but not from both\.
 
