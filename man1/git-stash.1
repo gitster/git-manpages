@@ -1,11 +1,11 @@
 .\"     Title: git-stash
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/06/2008
+.\"      Date: 07/14/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.5.6.2.212.g08b5
+.\"    Source: Git 1.5.6.3.315.g10ce0
 .\"
-.TH "GIT\-STASH" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
+.TH "GIT\-STASH" "1" "07/14/2008" "Git 1\.5\.6\.3\.315\.g10ce0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,8 +16,11 @@ git-stash - Stash the changes in a dirty working directory away
 .sp
 .RS 4
 .nf
-\fIgit stash\fR (list | show [<stash>] | apply [<stash>] | clear | drop [<stash>] | pop [<stash>])
+\fIgit stash\fR list
+\fIgit stash\fR (show | apply | drop | pop ) [<stash>]
+\fIgit stash\fR branch <branchname> [<stash>]
 \fIgit stash\fR [save [<message>]]
+\fIgit stash\fR clear
 .fi
 .RE
 .SH "DESCRIPTION"
@@ -28,9 +31,11 @@ The modifications stashed away by this command can be listed with git stash list
 The latest stash you created is stored in $GIT_DIR/refs/stash; older stashes are found in the reflog of this reference and can be named using the usual reflog syntax (e\.g\. stash@{0} is the most recently created stash, stash@{1} is the one before it, stash@{2\.hours\.ago} is also possible)\.
 .SH "OPTIONS"
 .PP
-save [<message>]
+save [\-\-keep\-index] [<message>]
 .RS 4
 Save your local modifications to a new \fIstash\fR, and run git reset \-\-hard to revert them\. This is the default action when no subcommand is given\. The <message> part is optional and gives the description along with the stashed state\.
+
+If the \-\-keep\-index option is used, all changes already added to the index are left intact\.
 .RE
 .PP
 list [<options>]
@@ -63,6 +68,13 @@ Restore the changes recorded in the stash on top of the current working tree sta
 This operation can fail with conflicts; you need to resolve them by hand in the working tree\.
 
 If the \-\-index option is used, then tries to reinstate not only the working tree\'s changes, but also the index\'s ones\. However, this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally)\.
+.RE
+.PP
+branch <branchname> [<stash>]
+.RS 4
+Creates and checks out a new branch named <branchname> starting from the commit at which the <stash> was originally created, applies the changes recorded in <stash> to the new working tree and index, then drops the <stash> if that completes successfully\. When no <stash> is given, applies the latest one\.
+
+This is useful if the branch on which you ran git stash save has changed enough that git stash apply fails due to conflicts\. Since the stash is applied on top of the commit that was HEAD at the time git stash was run, it restores the originally stashed state with no conflicts\.
 .RE
 .PP
 clear
@@ -151,6 +163,30 @@ $ edit emergency fix
 $ git commit \-a \-m "Fix in a hurry"
 $ git stash apply
 \.\.\. continue hacking \.\.\.
+\.ft
+
+.fi
+.RE
+.RE
+.PP
+Testing partial commits
+.RS 4
+You can use git stash save \-\-keep\-index when you want to make two or more commits out of the changes in the work tree, and you want to test each change before committing:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+\.\.\. hack hack hack \.\.\.
+$ git add \-\-patch foo            # add just first part to the index
+$ git stash save \-\-keep\-index    # save all other changes to the stash
+$ edit/build/test first part
+$ git commit foo \-m \'First part\' # commit fully tested change
+$ git stash pop                  # prepare to work on all other changes
+\.\.\. repeat above five steps until one commit remains \.\.\.
+$ edit/build/test remaining parts
+$ git commit foo \-m \'Remaining parts\'
 \.ft
 
 .fi
