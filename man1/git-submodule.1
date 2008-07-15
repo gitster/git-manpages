@@ -1,11 +1,11 @@
 .\"     Title: git-submodule
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/06/2008
+.\"      Date: 07/15/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.5.6.2.212.g08b5
+.\"    Source: Git 1.5.6.3.350.g6c11a
 .\"
-.TH "GIT\-SUBMODULE" "1" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "07/15/2008" "Git 1\.5\.6\.3\.350\.g6c11a" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,7 +16,7 @@ git-submodule - Initialize, update or inspect submodules
 .sp
 .RS 4
 .nf
-\fIgit submodule\fR [\-\-quiet] add [\-b branch] [\-\-] <repository> [<path>]
+\fIgit submodule\fR [\-\-quiet] add [\-b branch] [\-\-] <repository> <path>
 \fIgit submodule\fR [\-\-quiet] status [\-\-cached] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-\-] [<path>\&...]
@@ -27,7 +27,15 @@ git-submodule - Initialize, update or inspect submodules
 .PP
 add
 .RS 4
-Add the given repository as a submodule at the given path to the changeset to be committed next\. If path is a valid repository within the project, it is added as is\. Otherwise, repository is cloned at the specified path\. path is added to the changeset and registered in \.gitmodules\. If no path is specified, the path is deduced from the repository specification\. If the repository url begins with \./ or \.\./, it is stored as given but resolved as a relative path from the main project\'s url when cloning\.
+Add the given repository as a submodule at the given path to the changeset to be committed next to the current project: the current project is termed termed the "superproject"\.
+
+This requires two arguments: <repository> and <path>\.
+
+<repository> is the URL of the new submodule\'s origin repository\. This may be either an absolute URL, or (if it begins with \./ or \.\./), the location relative to the superproject\'s origin repository\.
+
+<path> is the relative location for the cloned submodule to exist in the superproject\. If <path> does not exist, then the submodule is created by cloning from the named URL\. If <path> does exist and is already a valid git repository, then this is added to the changeset without cloning\. This second form is provided to ease creating a new submodule from scratch, and presumes the user will later push the submodule to the given URL\.
+
+In either case, the given URL is recorded into \.gitmodules for use by subsequent users cloning the superproject\. If the URL is given relative to the superproject\'s repository, the presumption is the superproject and submodule repositories will be kept together in the same relative location, and only the superproject\'s URL need be provided: git\-submodule will correctly locate the submodule using the relative URL in \.gitmodules\.
 .RE
 .PP
 status
@@ -75,7 +83,7 @@ This option is only valid for the summary command\. Limit the summary size (numb
 .PP
 <path>
 .RS 4
-Path to submodule(s)\. When specified this will restrict the command to only operate on the submodules found at the specified paths\.
+Path to submodule(s)\. When specified this will restrict the command to only operate on the submodules found at the specified paths\. (This argument is required with add)\.
 .RE
 .SH "FILES"
 When initializing submodules, a \.gitmodules file in the top\-level directory of the containing repository is used to find the url of each submodule\. This file should be formatted in the same way as $GIT_DIR/config\. The key to each submodule url is "submodule\.$name\.url"\. See \fBgitmodules\fR(5) for details\.

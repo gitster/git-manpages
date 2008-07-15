@@ -1,11 +1,11 @@
 .\"     Title: gittutorial
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/06/2008
+.\"      Date: 07/15/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.5.6.2.212.g08b5
+.\"    Source: Git 1.5.6.3.350.g6c11a
 .\"
-.TH "GITTUTORIAL" "7" "07/06/2008" "Git 1\.5\.6\.2\.212\.g08b5" "Git Manual"
+.TH "GITTUTORIAL" "7" "07/15/2008" "Git 1\.5\.6\.3\.350\.g6c11a" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -377,7 +377,7 @@ Bob begins with:
 .nf
 
 \.ft C
-$ git clone /home/alice/project myrepo
+bob$ git clone /home/alice/project myrepo
 \.ft
 
 .fi
@@ -392,7 +392,7 @@ Bob then makes some changes and commits them:
 
 \.ft C
 (edit files)
-$ git commit \-a
+bob$ git commit \-a
 (repeat as necessary)
 \.ft
 
@@ -405,8 +405,8 @@ When he\'s ready, he tells Alice to pull changes from the repository at /home/bo
 .nf
 
 \.ft C
-$ cd /home/alice/project
-$ git pull /home/bob/myrepo master
+alice$ cd /home/alice/project
+alice$ git pull /home/bob/myrepo master
 \.ft
 
 .fi
@@ -415,6 +415,25 @@ This merges the changes from Bob\'s "master" branch into Alice\'s current branch
 
 The "pull" command thus performs two operations: it fetches changes from a remote branch, then merges them into the current branch\.
 
+Note that in general, Alice would want her local changes committed before initiating this "pull"\. If Bob\'s work conflicts with what Alice did since their histories forked, Alice will use her working tree and the index to resolve conflicts, and existing local changes will interfere with the conflict resolution process (git will still perform the fetch but will refuse to merge \-\-\- Alice will have to get rid of her local changes in some way and pull again when this happens)\.
+
+Alice can peek at what Bob did without merging first, using the "fetch" command; this allows Alice to inspect what Bob did, using a special symbol "FETCH_HEAD", in order to determine if he has anything worth pulling, like this:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+alice$ git fetch /home/bob/myrepo master
+alice$ git log \-p \.\.FETCH_HEAD
+\.ft
+
+.fi
+.RE
+This operation is safe even if Alice has uncommitted local changes\.
+
+After inspecting what Bob did, if there is nothing urgent, Alice may decide to continue working without pulling from Bob\. If Bob\'s history does have something Alice would immediately need, Alice may choose to stash her work\-in\-progress first, do a "pull", and then finally unstash her work\-in\-progress on top of the resulting history\.
+
 When you are working in a small closely knit group, it is not unusual to interact with the same repository over and over again\. By defining \fIremote\fR repository shorthand, you can make it easier:
 
 .sp
@@ -422,19 +441,19 @@ When you are working in a small closely knit group, it is not unusual to interac
 .nf
 
 \.ft C
-$ git remote add bob /home/bob/myrepo
+alice$ git remote add bob /home/bob/myrepo
 \.ft
 
 .fi
 .RE
-With this, Alice can perform the first operation alone using the \fIgit\-fetch\fR command without merging them with her own branch, using:
+With this, Alice can perform the first part of the "pull" operation alone using the \fIgit\-fetch\fR command without merging them with her own branch, using:
 
 .sp
 .RS 4
 .nf
 
 \.ft C
-$ git fetch bob
+alice$ git fetch bob
 \.ft
 
 .fi
@@ -446,7 +465,7 @@ Unlike the longhand form, when Alice fetches from Bob using a remote repository 
 .nf
 
 \.ft C
-$ git log \-p master\.\.bob/master
+alice$ git log \-p master\.\.bob/master
 \.ft
 
 .fi
@@ -460,7 +479,7 @@ After examining those changes, Alice could merge the changes into her master bra
 .nf
 
 \.ft C
-$ git merge bob/master
+alice$ git merge bob/master
 \.ft
 
 .fi
@@ -472,7 +491,7 @@ This merge can also be done by \fIpulling from her own remote tracking branch\fR
 .nf
 
 \.ft C
-$ git pull \. remotes/bob/master
+alice$ git pull \. remotes/bob/master
 \.ft
 
 .fi
@@ -486,7 +505,7 @@ Later, Bob can update his repo with Alice\'s latest changes using
 .nf
 
 \.ft C
-$ git pull
+bob$ git pull
 \.ft
 
 .fi
@@ -498,7 +517,7 @@ Note that he doesn\'t need to give the path to Alice\'s repository; when Bob clo
 .nf
 
 \.ft C
-$ git config \-\-get remote\.origin\.url
+bob$ git config \-\-get remote\.origin\.url
 /home/alice/project
 \.ft
 
@@ -513,7 +532,7 @@ Git also keeps a pristine copy of Alice\'s master branch under the name "origin/
 .nf
 
 \.ft C
-$ git branch \-r
+bob$ git branch \-r
   origin/master
 \.ft
 
@@ -526,7 +545,7 @@ If Bob later decides to work from a different host, he can still perform clones 
 .nf
 
 \.ft C
-$ git clone alice\.org:/home/alice/project myrepo
+bob$ git clone alice\.org:/home/alice/project myrepo
 \.ft
 
 .fi
