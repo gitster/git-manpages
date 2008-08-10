@@ -1,11 +1,11 @@
 .\"     Title: git-filter-branch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/31/2008
+.\"      Date: 08/10/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.rc1.34.g0fe8c
+.\"    Source: Git 1.6.0.rc2.22.g71b9
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "07/31/2008" "Git 1\.6\.0\.rc1\.34\.g0fe8c" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "08/10/2008" "Git 1\.6\.0\.rc2\.22\.g71b9" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -21,7 +21,7 @@ git-filter-branch - Rewrite branches
         [\-\-msg\-filter <command>] [\-\-commit\-filter <command>]
         [\-\-tag\-name\-filter <command>] [\-\-subdirectory\-filter <directory>]
         [\-\-original <namespace>] [\-d <directory>] [\-f | \-\-force]
-        [<rev\-list options>\&...]
+        [\-\-] [<rev\-list options>\&...]
 .fi
 .RE
 .SH "DESCRIPTION"
@@ -105,7 +105,7 @@ Use this option to set the path to the temporary directory used for rewriting\. 
 .PP
 <rev\-list options>\&...
 .RS 4
-When options are given after the new branch name, they will be passed to \fIgit\-rev\-list\fR\. Only commits in the resulting output will be filtered, although the filtered commits can still reference parents which are outside of that set\.
+Arguments for \fIgit\-rev\-list\fR\. All positive refs included by these options are rewritten\. You may also specify options such as \fI\-\-all\fR, but you must use \fI\-\-\fR to separate them from the \fIgit\-filter\-branch\fR options\.
 .RE
 .SH "EXAMPLES"
 Suppose you want to remove a file (containing confidential information or copyright violation) from all commits:
@@ -135,6 +135,20 @@ git filter\-branch \-\-index\-filter \'git rm \-\-cached filename\' HEAD
 .fi
 .RE
 Now, you will get the rewritten history saved in HEAD\.
+
+To rewrite the repository to look as if foodir/ had been its project root, and discard all other history:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+git filter\-branch \-\-subdirectory\-filter foodir \-\- \-\-all
+\.ft
+
+.fi
+.RE
+Thus you can, e\.g\., turn a library subdirectory into a repository of its own\. Note the \-\- that separates \fIfilter\-branch\fR options from revision options, and the \-\-all to rewrite all branches and tags\.
 
 To set a commit (which typically is at the tip of another history) to be the parent of the current initial commit, in order to paste the other history behind the current history:
 
