@@ -1,11 +1,11 @@
 .\"     Title: git-checkout
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/26/2008
+.\"      Date: 08/20/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.rc0.79.gb0320
+.\"    Source: Git 1.6.0.36.g3814c
 .\"
-.TH "GIT\-CHECKOUT" "1" "07/26/2008" "Git 1\.6\.0\.rc0\.79\.gb0320" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "08/20/2008" "Git 1\.6\.0\.36\.g3814c" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,12 +16,14 @@ git-checkout - Checkout a branch or paths to the working tree
 .sp
 .RS 4
 .nf
-\fIgit checkout\fR [\-q] [\-f] [[\-\-track | \-\-no\-track] \-b <new_branch> [\-l]] [\-m] [<branch>]
+\fIgit checkout\fR [\-q] [\-f] [\-\-track | \-\-no\-track] [\-b <new_branch> [\-l]] [\-m] [<branch>]
 \fIgit checkout\fR [<tree\-ish>] [\-\-] <paths>\&...
 .fi
 .RE
 .SH "DESCRIPTION"
 When <paths> are not given, this command switches branches by updating the index and working tree to reflect the specified branch, <branch>, and updating HEAD to be <branch> or, if specified, <new_branch>\. Using \-b will cause <new_branch> to be created; in this case you can use the \-\-track or \-\-no\-track options, which will be passed to git branch\.
+
+As a convenience, \-\-track will default to create a branch whose name is constructed from the specified branch name by stripping the first namespace level\.
 
 When <paths> are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file (i\.e\. it runs git checkout\-index \-f \-u), or from a named commit\. In this case, the \-f and \-b options are meaningless and giving either of them results in an error\. <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
 .SH "OPTIONS"
@@ -44,6 +46,8 @@ Create a new branch named <new_branch> and start it at <branch>\. The new branch
 \-t, \-\-track
 .RS 4
 When creating a new branch, set up configuration so that \fIgit\-pull\fR will automatically retrieve data from the start point, which must be a branch\. Use this if you always pull from the same upstream branch into the new branch, and if you don\'t want to use "git pull <repository> <refspec>" explicitly\. This behavior is the default when the start point is a remote branch\. Set the branch\.autosetupmerge configuration variable to false if you want \fIgit\-checkout\fR and \fIgit\-branch\fR to always behave as if \fI\-\-no\-track\fR were given\. Set it to always if you want this behavior when the start\-point is either a local or remote branch\.
+
+If no \fI\-b\fR option was given, a name will be made up for you, by stripping the part up to the first slash of the tracked branch\. For example, if you called \fIgit checkout \-\-track origin/next\fR, the branch name will be \fInext\fR\.
 .RE
 .PP
 \-\-no\-track

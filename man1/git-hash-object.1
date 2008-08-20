@@ -1,11 +1,11 @@
 .\"     Title: git-hash-object
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/22/2008
+.\"      Date: 08/20/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.rc0.14.g95f8
+.\"    Source: Git 1.6.0.36.g3814c
 .\"
-.TH "GIT\-HASH\-OBJECT" "1" "07/22/2008" "Git 1\.6\.0\.rc0\.14\.g95f8" "Git Manual"
+.TH "GIT\-HASH\-OBJECT" "1" "08/20/2008" "Git 1\.6\.0\.36\.g3814c" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,7 +13,13 @@
 .SH "NAME"
 git-hash-object - Compute object ID and optionally creates a blob from a file
 .SH "SYNOPSIS"
-\fIgit hash\-object\fR [\-t <type>] [\-w] [\-\-stdin | \-\-stdin\-paths] [\-\-] <file>\&...
+.sp
+.RS 4
+.nf
+\fIgit hash\-object\fR [\-t <type>] [\-w] [\-\-path=<file>|\-\-no\-filters] [\-\-stdin] [\-\-] <file>\&...
+\fIgit hash\-object\fR [\-t <type>] [\-w] \-\-stdin\-paths < <list\-of\-paths>
+.fi
+.RE
 .SH "DESCRIPTION"
 Computes the object ID value for an object with specified type with the contents of the named file (which can be outside of the work tree), and optionally writes the resulting object into the object database\. Reports its object ID to its standard output\. This is used by \fIgit\-cvsimport\fR to update the index without modifying files in the work tree\. When <type> is not specified, it defaults to "blob"\.
 .SH "OPTIONS"
@@ -36,6 +42,16 @@ Read the object from standard input instead of from a file\.
 \-\-stdin\-paths
 .RS 4
 Read file names from stdin instead of from the command\-line\.
+.RE
+.PP
+\-\-path
+.RS 4
+Hash object as it were located at the given path\. The location of file does not directly influence on the hash value, but path is used to determine what git filters should be applied to the object before it can be placed to the object database, and, as result of applying filters, the actual blob put into the object database may differ from the given file\. This option is mainly useful for hashing temporary files located outside of the working directory or files read from stdin\.
+.RE
+.PP
+\-\-no\-filters
+.RS 4
+Hash the contents as is, ignoring any input filter that would have been chosen by the attributes mechanism, including crlf conversion\. If the file is read from standard input then this is always implied, unless the \-\-path option is given\.
 .RE
 .SH "AUTHOR"
 Written by Junio C Hamano <gitster@pobox\.com>
