@@ -1,11 +1,11 @@
 .\"     Title: git-submodule
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/31/2008
+.\"      Date: 08/21/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.rc1.34.g0fe8c
+.\"    Source: Git 1.6.0.90.g436ed
 .\"
-.TH "GIT\-SUBMODULE" "1" "07/31/2008" "Git 1\.6\.0\.rc1\.34\.g0fe8c" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "08/21/2008" "Git 1\.6\.0\.90\.g436ed" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -21,6 +21,7 @@ git-submodule - Initialize, update or inspect submodules
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] summary [\-\-summary\-limit <n>] [commit] [\-\-] [<path>\&...]
+\fIgit submodule\fR [\-\-quiet] foreach <command>
 .fi
 .RE
 .SH "DESCRIPTION"
@@ -66,6 +67,13 @@ If the submodule is not yet initialized, and you just want to use the setting as
 summary
 .RS 4
 Show commit summary between the given commit (defaults to HEAD) and working tree/index\. For a submodule in question, a series of commits in the submodule between the given super project commit and the index or working tree (switched by \-\-cached) are shown\.
+.RE
+.PP
+foreach
+.RS 4
+Evaluates an arbitrary shell command in each checked out submodule\. The command has access to the variables $path and $sha1: $path is the name of the submodule directory relative to the superproject, and $sha1 is the commit as recorded in the superproject\. Any submodules defined in the superproject but not checked out are ignored by this command\. Unless given \-\-quiet, foreach prints the name of each submodule before evaluating the command\. A non\-zero return from the command in any submodule causes the processing to terminate\. This can be overridden by adding \fI|| :\fR to the end of the command\.
+
+As an example, "git submodule foreach \fIecho $path \fR\fIgit rev\-parse HEAD\fR will show the path and currently checked out commit for each submodule\.
 .RE
 .SH "OPTIONS"
 .PP
