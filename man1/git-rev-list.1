@@ -1,11 +1,11 @@
 .\"     Title: git-rev-list
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/29/2008
+.\"      Date: 09/03/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.1.141.g445ca
+.\"    Source: Git 1.6.0.1.196.g0191
 .\"
-.TH "GIT\-REV\-LIST" "1" "08/29/2008" "Git 1\.6\.0\.1\.141\.g445ca" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "09/03/2008" "Git 1\.6\.0\.1\.196\.g0191" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -443,6 +443,54 @@ Commits that are walked are included if they are not TREESAME to any parent\.
 All commits that are walked are included\.
 
 Note that without \fI\-\-full\-history\fR, this still simplifies merges: if one of the parents is TREESAME, we follow only that one, so the other sides of the merge are never walked\.
+.RE
+Finally, there is a fourth simplification mode available:
+.PP
+\-\-simplify\-merges
+.RS 4
+First, build a history graph in the same way that \fI\-\-full\-history\fR with parent rewriting does (see above)\.
+
+Then simplify each commit C to its replacement C\' in the final history according to the following rules:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Set C\' to C\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Replace each parent P of C\' with its simplification P\'\. In the process, drop parents that are ancestors of other parents, and remove duplicates\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'If after this parent rewriting, C\' is a root or merge commit (has zero or >1 parents), a boundary commit, or !TREESAME, it remains\. Otherwise, it is replaced with its only parent\.
+.RE
+.IP "" 4
+The effect of this is best shown by way of comparing to \fI\-\-full\-history\fR with parent rewriting\. The example turns into:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+          \.\-A\-\-\-M\-\-\-N\-\-\-O
+         /     /       /
+        I     B       D
+         \e   /       /
+          `\-\-\-\-\-\-\-\-\-\'
+\.ft
+
+.fi
+.RE
+Note the major differences in N and P over \fI\-\-full\-history\fR:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'N\'s parent list had I removed, because it is an ancestor of the other parent M\. Still, N remained because it is !TREESAME\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'P\'s parent list similarly had I removed\. P was then removed completely, because it had one parent and is TREESAME\.
+.RE
 .RE
 .SS "Bisection Helpers"
 .PP
