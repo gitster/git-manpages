@@ -1,58 +1,69 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "GIT\-UPDATE\-REF" "1" "07/02/2008" "Git 1.5.6.1.156.ge903b" "Git Manual"
+.\"     Title: git-update-ref
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 09/19/2008
+.\"    Manual: Git Manual
+.\"    Source: Git 1.6.0.2.287.g3791f
+.\"
+.TH "GIT\-UPDATE\-REF" "1" "09/19/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git\-update\-ref \- Update the object name stored in a ref safely
+git-update-ref - Update the object name stored in a ref safely
 .SH "SYNOPSIS"
 \fIgit update\-ref\fR [\-m <reason>] (\-d <ref> [<oldvalue>] | [\-\-no\-deref] <ref> <newvalue> [<oldvalue>])
 .SH "DESCRIPTION"
-Given two arguments, stores the <newvalue> in the <ref>, possibly dereferencing the symbolic refs. E.g. git update\-ref HEAD <newvalue> updates the current branch head to the new object.
+Given two arguments, stores the <newvalue> in the <ref>, possibly dereferencing the symbolic refs\. E\.g\. git update\-ref HEAD <newvalue> updates the current branch head to the new object\.
 
-Given three arguments, stores the <newvalue> in the <ref>, possibly dereferencing the symbolic refs, after verifying that the current value of the <ref> matches <oldvalue>. E.g. git update\-ref refs/heads/master <newvalue> <oldvalue> updates the master branch head to <newvalue> only if its current value is <oldvalue>. You can specify 40 "0" or an empty string as <oldvalue> to make sure that the ref you are creating does not exist.
+Given three arguments, stores the <newvalue> in the <ref>, possibly dereferencing the symbolic refs, after verifying that the current value of the <ref> matches <oldvalue>\. E\.g\. git update\-ref refs/heads/master <newvalue> <oldvalue> updates the master branch head to <newvalue> only if its current value is <oldvalue>\. You can specify 40 "0" or an empty string as <oldvalue> to make sure that the ref you are creating does not exist\.
 
-It also allows a "ref" file to be a symbolic pointer to another ref file by starting with the four\-byte header sequence of "ref:".
+It also allows a "ref" file to be a symbolic pointer to another ref file by starting with the four\-byte header sequence of "ref:"\.
 
-More importantly, it allows the update of a ref file to follow these symbolic pointers, whether they are symlinks or these "regular file symbolic refs". It follows \fBreal\fR symlinks only if they start with "refs/": otherwise it will just try to read them and update them as a regular file (i.e. it will allow the filesystem to follow them, but will overwrite such a symlink to somewhere else with a regular filename).
+More importantly, it allows the update of a ref file to follow these symbolic pointers, whether they are symlinks or these "regular file symbolic refs"\. It follows \fBreal\fR symlinks only if they start with "refs/": otherwise it will just try to read them and update them as a regular file (i\.e\. it will allow the filesystem to follow them, but will overwrite such a symlink to somewhere else with a regular filename)\.
 
-If \-\-no\-deref is given, <ref> itself is overwritten, rather than the result of following the symbolic pointers.
+If \-\-no\-deref is given, <ref> itself is overwritten, rather than the result of following the symbolic pointers\.
 
 In general, using
+
 .sp
+.RS 4
 .nf
 git update\-ref HEAD "$head"
 .fi
+.RE
 should be a _lot_ safer than doing
+
 .sp
+.RS 4
 .nf
 echo "$head" > "$GIT_DIR/HEAD"
 .fi
-both from a symlink following standpoint \fBand\fR an error checking standpoint. The "refs/" rule for symlinks means that symlinks that point to "outside" the tree are safe: they'll be followed for reading but not for writing (so we'll never write through a ref symlink to some other tree, if you have copied a whole archive by creating a symlink tree).
+.RE
+both from a symlink following standpoint \fBand\fR an error checking standpoint\. The "refs/" rule for symlinks means that symlinks that point to "outside" the tree are safe: they\'ll be followed for reading but not for writing (so we\'ll never write through a ref symlink to some other tree, if you have copied a whole archive by creating a symlink tree)\.
 
-With \-d flag, it deletes the named <ref> after verifying it still contains <oldvalue>.
+With \-d flag, it deletes the named <ref> after verifying it still contains <oldvalue>\.
 .SH "LOGGING UPDATES"
-If config parameter "core.logAllRefUpdates" is true or the file "$GIT_DIR/logs/<ref>" exists then git update\-ref will append a line to the log file "$GIT_DIR/logs/<ref>" (dereferencing all symbolic refs before creating the log name) describing the change in ref value. Log lines are formatted as:
-.TP 3
-1.
-oldsha1 SP newsha1 SP committer LF
+If config parameter "core\.logAllRefUpdates" is true or the file "$GIT_DIR/logs/<ref>" exists then git update\-ref will append a line to the log file "$GIT_DIR/logs/<ref>" (dereferencing all symbolic refs before creating the log name) describing the change in ref value\. Log lines are formatted as:
 
-Where "oldsha1" is the 40 character hexadecimal value previously stored in <ref>, "newsha1" is the 40 character hexadecimal value of <newvalue> and "committer" is the committer's name, email address and date in the standard GIT committer ident format.
+.sp
+.RS 4
+\h'-04' 1.\h'+02'oldsha1 SP newsha1 SP committer LF
 
+Where "oldsha1" is the 40 character hexadecimal value previously stored in <ref>, "newsha1" is the 40 character hexadecimal value of <newvalue> and "committer" is the committer\'s name, email address and date in the standard GIT committer ident format\.
+.RE
 Optionally with \-m:
-.TP 3
-1.
-oldsha1 SP newsha1 SP committer TAB message LF
 
-Where all fields are as described above and "message" is the value supplied to the \-m option.
+.sp
+.RS 4
+\h'-04' 1.\h'+02'oldsha1 SP newsha1 SP committer TAB message LF
 
-An update will fail (without changing <ref>) if the current user is unable to create a new log file, append to the existing log file or does not have committer information available.
+Where all fields are as described above and "message" is the value supplied to the \-m option\.
+.RE
+An update will fail (without changing <ref>) if the current user is unable to create a new log file, append to the existing log file or does not have committer information available\.
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl.org>.
+Written by Linus Torvalds <torvalds@osdl\.org>\.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 
