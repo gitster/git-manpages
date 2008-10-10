@@ -1,11 +1,11 @@
 .\"     Title: git-checkout
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 09/19/2008
+.\"      Date: 10/10/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.0.2.514.g23abd3
 .\"
-.TH "GIT\-CHECKOUT" "1" "09/19/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "10/10/2008" "Git 1\.6\.0\.2\.514\.g23abd3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,7 +17,7 @@ git-checkout - Checkout a branch or paths to the working tree
 .RS 4
 .nf
 \fIgit checkout\fR [\-q] [\-f] [\-\-track | \-\-no\-track] [\-b <new_branch> [\-l]] [\-m] [<branch>]
-\fIgit checkout\fR [<tree\-ish>] [\-\-] <paths>\&...
+\fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <paths>\&...
 .fi
 .RE
 .SH "DESCRIPTION"
@@ -25,7 +25,9 @@ When <paths> are not given, this command switches branches by updating the index
 
 As a convenience, \-\-track will default to create a branch whose name is constructed from the specified branch name by stripping the first namespace level\.
 
-When <paths> are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file (i\.e\. it runs git checkout\-index \-f \-u), or from a named commit\. In this case, the \-f and \-b options are meaningless and giving either of them results in an error\. <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
+When <paths> are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file, or from a named commit\. In this case, the \-b options is meaningless and giving either of them results in an error\. <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
+
+The index may contain unmerged entries after a failed merge\. By default, if you try to check out such an entry from the index, the checkout operation will fail and nothing will be checked out\. Using \-f will ignore these unmerged entries\. The contents from a specific side of the merge can be checked out of the index by using \-\-ours or \-\-theirs\. With \-m, changes made to the working tree file can be discarded to recreate the original conflicted merge result\.
 .SH "OPTIONS"
 .PP
 \-q
@@ -35,7 +37,14 @@ Quiet, suppress feedback messages\.
 .PP
 \-f
 .RS 4
-Proceed even if the index or the working tree differs from HEAD\. This is used to throw away local changes\.
+When switching branches, proceed even if the index or the working tree differs from HEAD\. This is used to throw away local changes\.
+
+When checking out paths from the index, do not fail upon unmerged entries; instead, unmerged entries are ignored\.
+.RE
+.PP
+\-\-ours, \-\-theirs
+.RS 4
+When checking out paths from the index, check out stage #2 (\fIours\fR) or #3 (\fItheirs\fR) for unmerged paths\.
 .RE
 .PP
 \-b
@@ -60,11 +69,18 @@ Ignore the branch\.autosetupmerge configuration variable\.
 Create the new branch\'s reflog\. This activates recording of all changes made to the branch ref, enabling use of date based sha1 expressions such as "<branchname>@{yesterday}"\.
 .RE
 .PP
-\-m
+\-m, \-\-merge
 .RS 4
-If you have local modifications to one or more files that are different between the current branch and the branch to which you are switching, the command refuses to switch branches in order to preserve your modifications in context\. However, with this option, a three\-way merge between the current branch, your working tree contents, and the new branch is done, and you will be on the new branch\.
+When switching branches, if you have local modifications to one or more files that are different between the current branch and the branch to which you are switching, the command refuses to switch branches in order to preserve your modifications in context\. However, with this option, a three\-way merge between the current branch, your working tree contents, and the new branch is done, and you will be on the new branch\.
 
 When a merge conflict happens, the index entries for conflicting paths are left unmerged, and you need to resolve the conflicts and mark the resolved paths with git add (or git rm if the merge should result in deletion of the path)\.
+
+When checking out paths from the index, this option lets you recreate the conflicted merge in the specified paths\.
+.RE
+.PP
+\-\-conflict=<style>
+.RS 4
+The same as \-\-merge option above, but changes the way the conflicting hunks are presented, overriding the merge\.conflictstyle configuration variable\. Possible values are "merge" (default) and "diff3" (in addition to what is shown by "merge" style, shows the original contents)\.
 .RE
 .PP
 <new_branch>

@@ -1,11 +1,11 @@
 .\"     Title: git-svn
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 09/19/2008
+.\"      Date: 10/10/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.0.2.514.g23abd3
 .\"
-.TH "GIT\-SVN" "1" "09/19/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-SVN" "1" "10/10/2008" "Git 1\.6\.0\.2\.514\.g23abd3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -119,6 +119,26 @@ is very strongly discouraged\.
 .fi
 .RE
 .RE
+.RE
+.PP
+\fIbranch\fR
+.RS 4
+Create a branch in the SVN repository\.
+.PP
+\-m, \-\-message
+.RS 4
+Allows to specify the commit message\.
+.RE
+.PP
+\-t, \-\-tag
+.RS 4
+Create a tag by using the tags_subdir instead of the branches_subdir specified during git svn init\.
+.RE
+.RE
+.PP
+\fItag\fR
+.RS 4
+Create a tag in the SVN repository\. This is a shorthand for \fIbranch \-t\fR\.
 .RE
 .PP
 \fIlog\fR
@@ -331,11 +351,13 @@ Passed directly to \fIgit\-rebase\fR when using \fIdcommit\fR if a \fIgit\-reset
 .PP
 \-n, \-\-dry\-run
 .RS 4
-This can be used with the \fIdcommit\fR and \fIrebase\fR commands\.
+This can be used with the \fIdcommit\fR, \fIrebase\fR, \fIbranch\fR and \fItag\fR commands\.
 
 For \fIdcommit\fR, print out the series of git arguments that would show which diffs would be committed to SVN\.
 
 For \fIrebase\fR, display the local branch associated with the upstream svn repository associated with the current branch and the URL of svn repository that will be fetched from\.
+
+For \fIbranch\fR and \fItag\fR, display the urls that will be used for copying when creating the branch or tag\.
 .RE
 .SH "ADVANCED OPTIONS"
 .PP
@@ -394,7 +416,7 @@ Tracking and contributing to the trunk of a Subversion\-managed project:
 
 \.ft C
 # Clone a repo (like git clone):
-        git svn clone http://svn\.foo\.org/project/trunk
+        git svn clone http://svn\.example\.com/project/trunk
 # Enter the newly cloned directory:
         cd trunk
 # You should be on master branch, double\-check with git\-branch
@@ -421,9 +443,11 @@ Tracking and contributing to an entire Subversion\-managed project (complete wit
 
 \.ft C
 # Clone a repo (like git clone):
-        git svn clone http://svn\.foo\.org/project \-T trunk \-b branches \-t tags
+        git svn clone http://svn\.example\.com/project \-T trunk \-b branches \-t tags
 # View all branches and tags you have cloned:
         git branch \-r
+# Create a new branch in SVN
+    git svn branch waldo
 # Reset your master to trunk (or any other branch, replacing \'trunk\'
 # with the appropriate name):
         git reset \-\-hard remotes/trunk
@@ -441,7 +465,7 @@ The initial \fIgit\-svn clone\fR can be quite time\-consuming (especially for la
 
 \.ft C
 # Do the initial import on a server
-        ssh server "cd /pub && git svn clone http://svn\.foo\.org/project
+        ssh server "cd /pub && git svn clone http://svn\.example\.com/project
 # Clone locally \- make sure the refs/remotes/ space matches the server
         mkdir project
         cd project
@@ -450,7 +474,7 @@ The initial \fIgit\-svn clone\fR can be quite time\-consuming (especially for la
         git config \-\-add remote\.origin\.fetch \'+refs/remotes/*:refs/remotes/*\'
         git fetch
 # Initialize git\-svn locally (be sure to use the same URL and \-T/\-b/\-t options as were used on server)
-        git svn init http://svn\.foo\.org/project
+        git svn init http://svn\.example\.com/project
 # Pull the latest changes from Subversion
         git svn rebase
 \.ft

@@ -1,11 +1,11 @@
 .\"     Title: git-push
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 09/19/2008
+.\"      Date: 10/10/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.0.2.514.g23abd3
 .\"
-.TH "GIT\-PUSH" "1" "09/19/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-PUSH" "1" "10/10/2008" "Git 1\.6\.0\.2\.514\.g23abd3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,8 +16,8 @@ git-push - Update remote refs along with associated objects
 .sp
 .RS 4
 .nf
-\fIgit push\fR [\-\-all] [\-\-dry\-run] [\-\-tags] [\-\-receive\-pack=<git\-receive\-pack>]
-           [\-\-repo=all] [\-f | \-\-force] [\-v | \-\-verbose]
+\fIgit push\fR [\-\-all | \-\-mirror] [\-\-dry\-run] [\-\-tags] [\-\-receive\-pack=<git\-receive\-pack>]
+           [\-\-repo=<repository>] [\-f | \-\-force] [\-v | \-\-verbose]
            [<repository> <refspec>\&...]
 .fi
 .RE
@@ -84,9 +84,22 @@ Same as \-\-receive\-pack=<git\-receive\-pack>\.
 Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it\. This flag disables the check\. This can cause the remote repository to lose commits; use it with care\.
 .RE
 .PP
-\-\-repo=<repo>
+\-\-repo=<repository>
 .RS 4
-When no repository is specified the command defaults to "origin"; this overrides it\.
+This option is only relevant if no <repository> argument is passed in the invocation\. In this case, \fIgit\-push\fR derives the remote name from the current branch: If it tracks a remote branch, then that remote repository is pushed to\. Otherwise, the name "origin" is used\. For this latter case, this option can be used to override the name "origin"\. In other words, the difference between these two commands
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+git push public         #1
+git push \-\-repo=public  #2
+\.ft
+
+.fi
+.RE
+is that #1 always pushes to "public" whereas #2 pushes to "public" only if the current branch does not track a remote branch\. This is useful if you write an alias or script around \fIgit\-push\fR\.
 .RE
 .PP
 \-\-thin, \-\-no\-thin

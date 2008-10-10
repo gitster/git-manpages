@@ -1,11 +1,11 @@
 .\"     Title: git-merge
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 09/19/2008
+.\"      Date: 10/10/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.0.2.514.g23abd3
 .\"
-.TH "GIT\-MERGE" "1" "09/19/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-MERGE" "1" "10/10/2008" "Git 1\.6\.0\.2\.514\.g23abd3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -224,6 +224,57 @@ When there are conflicts, these things happen:
 .RS 4
 \h'-04' 4.\h'+02'No other changes are done\. In particular, the local modifications you had before you started merge will stay the same and the index entries for them stay as they were, i\.e\. matching HEAD\.
 .RE
+.SH "HOW CONFLICTS ARE PRESENTED"
+During a merge, the working tree files are updated to reflect the result of the merge\. Among the changes made to the common ancestor\'s version, non\-overlapping ones (that is, you changed an area of the file while the other side left that area intact, or vice versa) are incorporated in the final result verbatim\. When both sides made changes to the same area, however, git cannot randomly pick one side over the other, and asks you to resolve it by leaving what both sides did to that area\.
+
+By default, git uses the same style as that is used by "merge" program from the RCS suite to present such a conflicted hunk, like this:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+Here are lines that are either unchanged from the common
+ancestor, or cleanly resolved because only one side changed\.
+<<<<<<< yours:sample\.txt
+Conflict resolution is hard;
+let\'s go shopping\.
+=======
+Git makes conflict resolution easy\.
+>>>>>>> theirs:sample\.txt
+And here is another line that is cleanly resolved or unmodified\.
+\.ft
+
+.fi
+.RE
+The area a pair of conflicting changes happened is marked with markers "<<<<<<<", "=======", and ">>>>>>>"\. The part before the "=======" is typically your side, and the part after it is typically their side\.
+
+The default format does not show what the original said in the conflicted area\. You cannot tell how many lines are deleted and replaced with the Barbie\'s remark by your side\. The only thing you can tell is that your side wants to say it is hard and you\'d prefer to go shopping, while the other side wants to claim it is easy\.
+
+An alternative style can be used by setting the "merge\.conflictstyle" configuration variable to "diff3"\. In "diff3" style, the above conflict may look like this:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+Here are lines that are either unchanged from the common
+ancestor, or cleanly resolved because only one side changed\.
+<<<<<<< yours:sample\.txt
+Conflict resolution is hard;
+let\'s go shopping\.
+|||||||
+Conflict resolution is hard\.
+=======
+Git makes conflict resolution easy\.
+>>>>>>> theirs:sample\.txt
+And here is another line that is cleanly resolved or unmodified\.
+\.ft
+
+.fi
+.RE
+In addition to the "<<<<<<<", "=======", and ">>>>>>>" markers, it uses another "|||||||" marker that is followed by the original text\. You can tell that the original just stated a fact, and your side simply gave in to that statement and gave up, while the other side tried to have a more positive attitude\. You can sometimes come up with a better resolution by viewing the original\.
+.SH "HOW TO RESOLVE CONFLICTS"
 After seeing a conflict, you can do two things:
 
 .sp

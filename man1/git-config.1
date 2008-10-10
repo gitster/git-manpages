@@ -1,11 +1,11 @@
 .\"     Title: git-config
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 09/19/2008
+.\"      Date: 10/10/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.0.2.514.g23abd3
 .\"
-.TH "GIT\-CONFIG" "1" "09/19/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/10/2008" "Git 1\.6\.0\.2\.514\.g23abd3" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -472,6 +472,11 @@ core\.fileMode
 If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT\. See \fBgit-update-index\fR(1)\. True by default\.
 .RE
 .PP
+core\.ignoreCygwinFSTricks
+.RS 4
+This option is only used by Cygwin implementation of Git\. If false, the Cygwin stat() and lstat() functions are used\. This may be useful if your repository consists of a few separate directories joined in one hierarchy using Cygwin mount\. If true, Git uses native Win32 API whenever it is possible and falls back to Cygwin functions only to handle symbol links\. The native mode is more than twice faster than normal Cygwin l/stat() functions\. True by default\.
+.RE
+.PP
 core\.trustctime
 .RS 4
 If false, the ctime differences between the index and the working copy are ignored; useful when the inode change time is regularly modified by something outside Git (file system crawlers and some backup systems)\. See \fBgit-update-index\fR(1)\. True by default\.
@@ -607,7 +612,7 @@ Commands such as commit and tag that lets you edit messages by launching an edit
 .PP
 core\.pager
 .RS 4
-The command that git will use to paginate output\. Can be overridden with the GIT_PAGER environment variable\. Note that git sets the LESS environment variable to FRSX if it is unset when it runs the pager\. One can change these settings by setting the LESS variable to some other value or by giving the core\.pager option a value such as "less \-+FRSX"\.
+The command that git will use to paginate output\. Can be overridden with the GIT_PAGER environment variable\. Note that git sets the LESS environment variable to FRSX if it is unset when it runs the pager\. One can change these settings by setting the LESS variable to some other value\. Alternately, these settings can be overridden on a project or global basis by setting the core\.pager option\. Setting core\.pager has no affect on the LESS environment variable behaviour above, so if you want to override git\'s default settings this way, you need to be explicit\. For example, to disable the S option in a backward compatible manner, set core\.pager to "less \-+$LESS \-FRX"\. This will be passed to the shell by git, which will translate the final command to "LESS=FRSX less \-+FRSX \-FRX"\.
 .RE
 .PP
 core\.whitespace
@@ -1122,6 +1127,11 @@ Specify the command to invoke the specified man viewer\. The specified command i
 man\.<tool>\.path
 .RS 4
 Override the path for the given tool that may be used to display help in the \fIman\fR format\. See \fBgit-help\fR(1)\.
+.RE
+.PP
+merge\.conflictstyle
+.RS 4
+Specify the style in which conflicted hunks are written out to working tree files upon merge\. The default is "merge", which shows <<<<<<< conflict marker, change made by one side, ======= marker, change made by the other side, and then >>>>>>> marker\. An alternate style, "diff3", adds ||||||| marker and the original text before ======= marker\.
 .RE
 .PP
 mergetool\.<tool>\.path
