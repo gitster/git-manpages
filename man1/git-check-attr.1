@@ -1,11 +1,11 @@
 .\"     Title: git-check-attr
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 09/19/2008
+.\"      Date: 10/17/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.0.2.541.g46dc1
 .\"
-.TH "GIT\-CHECK\-ATTR" "1" "09/19/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-CHECK\-ATTR" "1" "10/17/2008" "Git 1\.6\.0\.2\.541\.g46dc1" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -21,6 +21,116 @@ For every pathname, this command will list if each attr is \fIunspecified\fR, \f
 \-\-
 .RS 4
 Interpret all preceding arguments as attributes, and all following arguments as path names\. If not supplied, only the first argument will be treated as an attribute\.
+.RE
+.SH "OUTPUT"
+The output is of the form: <path> COLON SP <attribute> COLON SP <info> LF
+
+Where <path> is the path of a file being queried, <attribute> is an attribute being queried and <info> can be either:
+.TS
+tab(:);
+lt lt
+lt lt
+lt lt
+lt lt.
+T{
+\fIunspecified\fR
+T}:T{
+when the attribute is not defined for the path\.
+T}
+T{
+\fIunset\fR
+T}:T{
+when the attribute is defined to false\.
+T}
+T{
+\fIset\fR
+T}:T{
+when the attribute is defined to true\.
+T}
+T{
+<value>
+T}:T{
+when a value has been assigned to the attribute\.
+T}
+.TE
+.sp
+.SH "EXAMPLES"
+In the examples, the following \fI\.gitattributes\fR file is used:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+*\.java diff=java \-crlf myAttr
+NoMyAttr\.java !myAttr
+README caveat=unspecified
+\.ft
+
+.fi
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Listing a single attribute:
+.RE
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git check\-attr diff org/example/MyClass\.java
+org/example/MyClass\.java: diff: java
+\.ft
+
+.fi
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Listing multiple attributes for a file:
+.RE
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git check\-attr crlf diff myAttr \-\- org/example/MyClass\.java
+org/example/MyClass\.java: crlf: unset
+org/example/MyClass\.java: diff: java
+org/example/MyClass\.java: myAttr: set
+\.ft
+
+.fi
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Listing attribute for multiple files:
+.RE
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git check\-attr myAttr \-\- org/example/MyClass\.java org/example/NoMyAttr\.java
+org/example/MyClass\.java: myAttr: set
+org/example/NoMyAttr\.java: myAttr: unspecified
+\.ft
+
+.fi
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Not all values are equally unambiguous:
+.RE
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git check\-attr caveat README
+README: caveat: unspecified
+\.ft
+
+.fi
 .RE
 .SH "SEE ALSO"
 \fBgitattributes\fR(5)\.
