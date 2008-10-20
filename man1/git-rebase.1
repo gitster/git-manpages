@@ -1,11 +1,11 @@
 .\"     Title: git-rebase
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 10/10/2008
+.\"      Date: 10/20/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.514.g23abd3
+.\"    Source: Git 1.6.0.2.588.g3102
 .\"
-.TH "GIT\-REBASE" "1" "10/10/2008" "Git 1\.6\.0\.2\.514\.g23abd3" "Git Manual"
+.TH "GIT\-REBASE" "1" "10/20/2008" "Git 1\.6\.0\.2\.588\.g3102" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,7 +17,7 @@ git-rebase - Forward-port local commits to the updated upstream head
 .RS 4
 .nf
 \fIgit rebase\fR [\-i | \-\-interactive] [\-v | \-\-verbose] [\-m | \-\-merge]
-        [\-s <strategy> | \-\-strategy=<strategy>]
+        [\-s <strategy> | \-\-strategy=<strategy>] [\-\-no\-verify]
         [\-C<n>] [ \-\-whitespace=<option>] [\-p | \-\-preserve\-merges]
         [\-\-onto <newbase>] <upstream> [<branch>]
 \fIgit rebase\fR \-\-continue | \-\-skip | \-\-abort
@@ -290,6 +290,11 @@ Use the given merge strategy; can be supplied more than once to specify them in 
 Display a diffstat of what changed upstream since the last rebase\.
 .RE
 .PP
+\-\-no\-verify
+.RS 4
+This option bypasses the pre\-rebase hook\. See also \fBgithooks\fR(5)\.
+.RE
+.PP
 \-C<n>
 .RS 4
 Ensure at least <n> lines of surrounding context match before and after each change\. When fewer lines of surrounding context exist they all must match\. By default no context is ever ignored\.
@@ -307,7 +312,7 @@ Make a list of the commits which are about to be rebased\. Let the user edit tha
 .PP
 \-p, \-\-preserve\-merges
 .RS 4
-Instead of ignoring merges, try to recreate them\. This option only works in interactive mode\.
+Instead of ignoring merges, try to recreate them\.
 .RE
 .SH "MERGE STRATEGIES"
 .PP
@@ -336,7 +341,7 @@ subtree
 This is a modified recursive strategy\. When merging trees A and B, if B corresponds to a subtree of A, B is first adjusted to match the tree structure of A, instead of reading the trees at the same level\. This adjustment is also done to the common ancestor tree\.
 .RE
 .SH "NOTES"
-When you rebase a branch, you are changing its history in a way that will cause problems for anyone who already has a copy of the branch in their repository and tries to pull updates from you\. You should understand the implications of using \fIgit\-rebase\fR on a repository that you share\.
+You should understand the implications of using \fIgit\-rebase\fR on a repository that you share\. See also RECOVERING FROM UPSTREAM REBASE below\.
 
 When the git\-rebase command is run, it will first execute a "pre\-rebase" hook if one exists\. You can use this hook to do sanity checks and reject the rebase if it isn\'t appropriate\. Please see the template pre\-rebase hook script for an example\.
 
@@ -500,6 +505,135 @@ In interactive mode, you can mark commits with the action "edit"\. However, this
 \h'-04'\(bu\h'+03'Continue the rebase with git rebase \-\-continue\.
 .RE
 If you are not absolutely sure that the intermediate revisions are consistent (they compile, pass the testsuite, etc\.) you should use \fIgit\-stash\fR to stash away the not\-yet\-committed changes after each commit, test, and amend the commit if fixes are necessary\.
+.SH "RECOVERING FROM UPSTREAM REBASE"
+Rebasing (or any other form of rewriting) a branch that others have based work on is a bad idea: anyone downstream of it is forced to manually fix their history\. This section explains how to do the fix from the downstream\'s point of view\. The real fix, however, would be to avoid rebasing the upstream in the first place\.
+
+To illustrate, suppose you are in a situation where someone develops a \fIsubsystem\fR branch, and you are working on a \fItopic\fR that is dependent on this \fIsubsystem\fR\. You might end up with a history like the following:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+    o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
+         \e
+          o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  subsystem
+                           \e
+                            *\-\-\-*\-\-\-*  topic
+\.ft
+
+.fi
+.RE
+If \fIsubsystem\fR is rebased against \fImaster\fR, the following happens:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+    o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
+         \e                       \e
+          o\-\-\-o\-\-\-o\-\-\-o\-\-\-o       o\'\-\-o\'\-\-o\'\-\-o\'\-\-o\'  subsystem
+                           \e
+                            *\-\-\-*\-\-\-*  topic
+\.ft
+
+.fi
+.RE
+If you now continue development as usual, and eventually merge \fItopic\fR to \fIsubsystem\fR, the commits from \fIsubsystem\fR will remain duplicated forever:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+    o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
+         \e                       \e
+          o\-\-\-o\-\-\-o\-\-\-o\-\-\-o       o\'\-\-o\'\-\-o\'\-\-o\'\-\-o\'\-\-M  subsystem
+                           \e                         /
+                            *\-\-\-*\-\-\-*\-\.\.\.\.\.\.\.\.\.\.\-*\-\-*  topic
+\.ft
+
+.fi
+.RE
+Such duplicates are generally frowned upon because they clutter up history, making it harder to follow\. To clean things up, you need to transplant the commits on \fItopic\fR to the new \fIsubsystem\fR tip, i\.e\., rebase \fItopic\fR\. This becomes a ripple effect: anyone downstream from \fItopic\fR is forced to rebase too, and so on!
+
+There are two kinds of fixes, discussed in the following subsections:
+.PP
+Easy case: The changes are literally the same\.
+.RS 4
+This happens if the \fIsubsystem\fR rebase was a simple rebase and had no conflicts\.
+.RE
+.PP
+Hard case: The changes are not the same\.
+.RS 4
+This happens if the \fIsubsystem\fR rebase had conflicts, or used \-\-interactive to omit, edit, or squash commits; or if the upstream used one of commit \-\-amend, reset, or filter\-branch\.
+.RE
+.SS "The easy case"
+Only works if the changes (patch IDs based on the diff contents) on \fIsubsystem\fR are literally the same before and after the rebase \fIsubsystem\fR did\.
+
+In that case, the fix is easy because \fIgit\-rebase\fR knows to skip changes that are already present in the new upstream\. So if you say (assuming you\'re on \fItopic\fR)
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+    $ git rebase subsystem
+\.ft
+
+.fi
+.RE
+you will end up with the fixed history
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+    o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o\-\-\-o  master
+                                 \e
+                                  o\'\-\-o\'\-\-o\'\-\-o\'\-\-o\'  subsystem
+                                                   \e
+                                                    *\-\-\-*\-\-\-*  topic
+\.ft
+
+.fi
+.RE
+.SS "The hard case"
+Things get more complicated if the \fIsubsystem\fR changes do not exactly correspond to the ones before the rebase\.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+Note
+While an "easy case recovery" sometimes appears to be successful even in the hard case, it may have unintended consequences\. For example, a commit that was removed via git rebase \-\-interactive will be \fB*resurrected\fR*!
+
+
+The idea is to manually tell \fIgit\-rebase\fR "where the old \fIsubsystem\fR ended and your \fItopic\fR began", that is, what the old merge\-base between them was\. You will have to find a way to name the last commit of the old \fIsubsystem\fR, for example:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'With the \fIsubsystem\fR reflog: after \fIgit\-fetch\fR, the old tip of \fIsubsystem\fR is at subsystem@{1}\. Subsequent fetches will increase the number\. (See \fBgit-reflog\fR(1)\.)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Relative to the tip of \fItopic\fR: knowing that your \fItopic\fR has three commits, the old tip of \fIsubsystem\fR must be topic~3\.
+.RE
+You can then transplant the old subsystem\.\.topic to the new tip by saying (for the reflog case, and assuming you are on \fItopic\fR already):
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+    $ git rebase \-\-onto subsystem subsystem@{1}
+\.ft
+
+.fi
+.RE
+The ripple effect of a "hard case" recovery is especially bad: \fIeveryone\fR downstream from \fItopic\fR will now have to perform a "hard case" recovery too!
 .SH "AUTHORS"
 Written by Junio C Hamano <gitster@pobox\.com> and Johannes E\. Schindelin <johannes\.schindelin@gmx\.de>
 .SH "DOCUMENTATION"
