@@ -1,11 +1,11 @@
 .\"     Title: git-log
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/10/2008
+.\"      Date: 11/14/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.4.608.ga9645
+.\"    Source: Git 1.6.0.4.724.ga0d3a
 .\"
-.TH "GIT\-LOG" "1" "11/10/2008" "Git 1\.6\.0\.4\.608\.ga9645" "Git Manual"
+.TH "GIT\-LOG" "1" "11/14/2008" "Git 1\.6\.0\.4\.724\.ga0d3a" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -291,6 +291,11 @@ Show only commits between the named two commits\. When either <since> or <until>
 Print out the ref names of any commits that are shown\.
 .RE
 .PP
+\-\-source
+.RS 4
+Print out the ref name given on the command line by which each commit was reached\.
+.RE
+.PP
 \-\-full\-diff
 .RS 4
 Without this flag, "git log \-p <path>\&..." shows commits that touch the specified paths, and diffs about the same specified paths\. With this, the full diff is shown for commits that touch the specified paths; this means that "<path>\&..." limits only commits, and doesn\'t limit diff for those commits\.
@@ -530,7 +535,48 @@ After a failed merge, show refs that touch files having a conflict and don\'t ex
 Output uninteresting commits at the boundary, which are usually not shown\.
 .RE
 .SS "History Simplification"
-When optional paths are given, \fIgit rev\-list\fR simplifies commits with various strategies, according to the options you have selected\.
+Sometimes you are only interested in parts of the history, for example the commits modifying a particular <path>\. But there are two parts of \fIHistory Simplification\fR, one part is selecting the commits and the other is how to do it, as there are various strategies to simplify the history\.
+
+The following options select the commits to be shown:
+.PP
+<paths>
+.RS 4
+Commits modifying the given <paths> are selected\.
+.RE
+.PP
+\-\-simplify\-by\-decoration
+.RS 4
+Commits that are referred by some branch or tag are selected\.
+.RE
+Note that extra commits can be shown to give a meaningful history\.
+
+The following options affect the way the simplification is performed:
+.PP
+Default mode
+.RS 4
+Simplifies the history to the simplest history explaining the final state of the tree\. Simplest because it prunes some side branches if the end result is the same (i\.e\. merging branches with the same content)
+.RE
+.PP
+\-\-full\-history
+.RS 4
+As the default mode but does not prune some history\.
+.RE
+.PP
+\-\-dense
+.RS 4
+Only the selected commits are shown, plus some to have a meaningful history\.
+.RE
+.PP
+\-\-sparse
+.RS 4
+All commits in the simplified history are shown\.
+.RE
+.PP
+\-\-simplify\-merges
+.RS 4
+Additional option to \fI\-\-full\-history\fR to remove some needless merges from the resulting history, as there are no selected commits contributing to this merge\.
+.RE
+A more detailed explanation follows\.
 
 Suppose you specified foo as the <paths>\. We shall call commits that modify foo !TREESAME, and the rest TREESAME\. (In a diff filtered for foo, they look different and equal, respectively\.)
 
@@ -703,6 +749,7 @@ Note the major differences in N and P over \fI\-\-full\-history\fR:
 \h'-04'\(bu\h'+03'P\'s parent list similarly had I removed\. P was then removed completely, because it had one parent and is TREESAME\.
 .RE
 .RE
+The \fI\-\-simplify\-by\-decoration\fR option allows you to view only the big picture of the topology of the history, by omitting commits that are not referenced by tags\. Commits are marked as !TREESAME (in other words, kept after history simplification rules described above) if (1) they are referenced by tags, or (2) they change the contents of the paths given on the command line\. All other commits are marked as TREESAME (subject to be simplified away)\.
 .SS "Commit Ordering"
 By default, the commits are shown in reverse chronological order\.
 .PP
