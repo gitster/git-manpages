@@ -1,11 +1,11 @@
 .\"     Title: git-config
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/15/2008
+.\"      Date: 11/26/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.4.735.gea4f
+.\"    Source: Git 1.6.0.4.790.gaa14a
 .\"
-.TH "GIT\-CONFIG" "1" "11/15/2008" "Git 1\.6\.0\.4\.735\.gea4f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "11/26/2008" "Git 1\.6\.0\.4\.790\.gaa14a" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -748,14 +748,14 @@ color\.status\.<slot>
 Use customized color for status colorization\. <slot> is one of header (the header text of the status message), added or updated (files which are added but not committed), changed (files which are changed but not added in the index), untracked (files which are not tracked by git), or nobranch (the color the \fIno branch\fR warning is shown in, defaulting to red)\. The values of these variables may be specified as in color\.branch\.<slot>\.
 .RE
 .PP
-commit\.template
-.RS 4
-Specify a file to use as the template for new commit messages\.
-.RE
-.PP
 color\.ui
 .RS 4
 When set to always, always use colors in all git commands which are capable of colored output\. When false (or never), never\. When set to true or auto, use colors only when the output is to the terminal\. When more specific variables of color\.* are set, they always take precedence over this setting\. Defaults to false\.
+.RE
+.PP
+commit\.template
+.RS 4
+Specify a file to use as the template for new commit messages\.
 .RE
 .PP
 diff\.autorefreshindex
@@ -881,16 +881,6 @@ Records of conflicted merge you resolved earlier are kept for this many days whe
 gc\.rerereunresolved
 .RS 4
 Records of conflicted merge you have not resolved are kept for this many days when \fIgit\-rerere gc\fR is run\. The default is 15 days\. See \fBgit-rerere\fR(1)\.
-.RE
-.PP
-rerere\.autoupdate
-.RS 4
-When set to true, git\-rerere updates the index with the resulting contents after it cleanly resolves conflicts using previously recorded resolution\. Defaults to false\.
-.RE
-.PP
-rerere\.enabled
-.RS 4
-Activate recording of resolved conflicts, so that identical conflict hunks can be resolved automatically, should they be encountered again\. \fBgit-rerere\fR(1) command is by default enabled if you create rr\-cache directory under $GIT_DIR, but can be disabled by setting this option to false\.
 .RE
 .PP
 gitcvs\.enabled
@@ -1059,6 +1049,11 @@ i18n\.logOutputEncoding
 Character encoding the commit messages are converted to when running \fIgit\-log\fR and friends\.
 .RE
 .PP
+imap
+.RS 4
+The configuration variables in the \fIimap\fR section are described in \fBgit-imap-send\fR(1)\.
+.RE
+.PP
 instaweb\.browser
 .RS 4
 Specify the program that will be used to browse your working repository in gitweb\. See \fBgit-instaweb\fR(1)\.
@@ -1099,9 +1094,19 @@ man\.viewer
 Specify the programs that may be used to display help in the \fIman\fR format\. See \fBgit-help\fR(1)\.
 .RE
 .PP
-merge\.stat
+man\.<tool>\.cmd
 .RS 4
-Whether to print the diffstat between ORIG_HEAD and the merge result at the end of the merge\. True by default\.
+Specify the command to invoke the specified man viewer\. The specified command is evaluated in shell with the man page passed as argument\. (See \fBgit-help\fR(1)\.)
+.RE
+.PP
+man\.<tool>\.path
+.RS 4
+Override the path for the given tool that may be used to display help in the \fIman\fR format\. See \fBgit-help\fR(1)\.
+.RE
+.PP
+merge\.conflictstyle
+.RS 4
+Specify the style in which conflicted hunks are written out to working tree files upon merge\. The default is "merge", which shows <<<<<<< conflict marker, change made by one side, ======= marker, change made by the other side, and then >>>>>>> marker\. An alternate style, "diff3", adds ||||||| marker and the original text before ======= marker\.
 .RE
 .PP
 merge\.log
@@ -1112,6 +1117,11 @@ Whether to include summaries of merged commits in newly created merge commit mes
 merge\.renameLimit
 .RS 4
 The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff\.renameLimit\.
+.RE
+.PP
+merge\.stat
+.RS 4
+Whether to print the diffstat between ORIG_HEAD and the merge result at the end of the merge\. True by default\.
 .RE
 .PP
 merge\.tool
@@ -1137,21 +1147,6 @@ Defines the command that implements a custom low\-level merge driver\. See \fBgi
 merge\.<driver>\.recursive
 .RS 4
 Names a low\-level merge driver to be used when performing an internal merge between common ancestors\. See \fBgitattributes\fR(5) for details\.
-.RE
-.PP
-man\.<tool>\.cmd
-.RS 4
-Specify the command to invoke the specified man viewer\. The specified command is evaluated in shell with the man page passed as argument\. (See \fBgit-help\fR(1)\.)
-.RE
-.PP
-man\.<tool>\.path
-.RS 4
-Override the path for the given tool that may be used to display help in the \fIman\fR format\. See \fBgit-help\fR(1)\.
-.RE
-.PP
-merge\.conflictstyle
-.RS 4
-Specify the style in which conflicted hunks are written out to working tree files upon merge\. The default is "merge", which shows <<<<<<< conflict marker, change made by one side, ======= marker, change made by the other side, and then >>>>>>> marker\. An alternate style, "diff3", adds ||||||| marker and the original text before ======= marker\.
 .RE
 .PP
 mergetool\.<tool>\.path
@@ -1236,6 +1231,31 @@ pull\.twohead
 The default merge strategy to use when pulling a single branch\.
 .RE
 .PP
+receive\.fsckObjects
+.RS 4
+If it is set to true, git\-receive\-pack will check all received objects\. It will abort in the case of a malformed object or a broken link\. The result of an abort are only dangling objects\. Defaults to false\.
+.RE
+.PP
+receive\.unpackLimit
+.RS 4
+If the number of objects received in a push is below this limit then the objects will be unpacked into loose object files\. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases\. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems\. If not set, the value of transfer\.unpackLimit is used instead\.
+.RE
+.PP
+receive\.denyDeletes
+.RS 4
+If set to true, git\-receive\-pack will deny a ref update that deletes the ref\. Use this to prevent such a ref deletion via a push\.
+.RE
+.PP
+receive\.denyCurrentBranch
+.RS 4
+If set to true or "refuse", receive\-pack will deny a ref update to the currently checked out branch of a non\-bare repository\. Such a push is potentially dangerous because it brings the HEAD out of sync with the index and working tree\. If set to "warn", print a warning of such a push to stderr, but allow the push to proceed\. If set to false or "ignore", allow such pushes with no message\. Defaults to "warn"\.
+.RE
+.PP
+receive\.denyNonFastForwards
+.RS 4
+If set to true, git\-receive\-pack will deny a ref update which is not a fast forward\. Use this to prevent such an update via a push, even if that push is forced\. This configuration variable is set when initializing a shared repository\.
+.RE
+.PP
 remote\.<name>\.url
 .RS 4
 The URL of a remote repository\. See \fBgit-fetch\fR(1) or \fBgit-push\fR(1)\.
@@ -1291,6 +1311,16 @@ repack\.usedeltabaseoffset
 By default, \fBgit-repack\fR(1) creates packs that use delta\-base offset\. If you need to share your repository with git older than version 1\.4\.4, either directly or via a dumb protocol such as http, then you need to set this option to "false" and repack\. Access from old git versions over the native protocol are unaffected by this option\.
 .RE
 .PP
+rerere\.autoupdate
+.RS 4
+When set to true, git\-rerere updates the index with the resulting contents after it cleanly resolves conflicts using previously recorded resolution\. Defaults to false\.
+.RE
+.PP
+rerere\.enabled
+.RS 4
+Activate recording of resolved conflicts, so that identical conflict hunks can be resolved automatically, should they be encountered again\. \fBgit-rerere\fR(1) command is by default enabled if you create rr\-cache directory under $GIT_DIR, but can be disabled by setting this option to false\.
+.RE
+.PP
 showbranch\.default
 .RS 4
 The default set of branches for \fBgit-show-branch\fR(1)\. See \fBgit-show-branch\fR(1)\.
@@ -1326,6 +1356,11 @@ tar\.umask
 This variable can be used to restrict the permission bits of tar archive entries\. The default is 0002, which turns off the world write bit\. The special value "user" indicates that the archiving user\'s umask will be used instead\. See umask(2) and \fBgit-archive\fR(1)\.
 .RE
 .PP
+transfer\.unpackLimit
+.RS 4
+When fetch\.unpackLimit or receive\.unpackLimit are not set, the value of this variable is used instead\. The default value is 100\.
+.RE
+.PP
 url\.<base>\.insteadOf
 .RS 4
 Any URL that starts with this value will be rewritten to start, instead, with <base>\. In cases where some site serves a large number of repositories, and serves them with multiple access methods, and some users need to use different access methods, this feature allows people to specify any of the equivalent URLs and have git automatically rewrite the URL to the best alternative for the particular user, even for a never\-before\-seen repository on the site\. When more than one insteadOf strings match a given URL, the longest match is used\.
@@ -1344,41 +1379,6 @@ Your full name to be recorded in any newly created commits\. Can be overridden b
 user\.signingkey
 .RS 4
 If \fBgit-tag\fR(1) is not selecting the key you want it to automatically when creating a signed tag, you can override the default selection with this variable\. This option is passed unchanged to gpg\'s \-\-local\-user parameter, so you may specify a key using any method that gpg supports\.
-.RE
-.PP
-imap
-.RS 4
-The configuration variables in the \fIimap\fR section are described in \fBgit-imap-send\fR(1)\.
-.RE
-.PP
-receive\.fsckObjects
-.RS 4
-If it is set to true, git\-receive\-pack will check all received objects\. It will abort in the case of a malformed object or a broken link\. The result of an abort are only dangling objects\. Defaults to false\.
-.RE
-.PP
-receive\.unpackLimit
-.RS 4
-If the number of objects received in a push is below this limit then the objects will be unpacked into loose object files\. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases\. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems\. If not set, the value of transfer\.unpackLimit is used instead\.
-.RE
-.PP
-receive\.denyDeletes
-.RS 4
-If set to true, git\-receive\-pack will deny a ref update that deletes the ref\. Use this to prevent such a ref deletion via a push\.
-.RE
-.PP
-receive\.denyNonFastForwards
-.RS 4
-If set to true, git\-receive\-pack will deny a ref update which is not a fast forward\. Use this to prevent such an update via a push, even if that push is forced\. This configuration variable is set when initializing a shared repository\.
-.RE
-.PP
-receive\.denyCurrentBranch
-.RS 4
-If set to true or "refuse", receive\-pack will deny a ref update to the currently checked out branch of a non\-bare repository\. Such a push is potentially dangerous because it brings the HEAD out of sync with the index and working tree\. If set to "warn", print a warning of such a push to stderr, but allow the push to proceed\. If set to false or "ignore", allow such pushes with no message\. Defaults to "warn"\.
-.RE
-.PP
-transfer\.unpackLimit
-.RS 4
-When fetch\.unpackLimit or receive\.unpackLimit are not set, the value of this variable is used instead\. The default value is 100\.
 .RE
 .PP
 web\.browser
