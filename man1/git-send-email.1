@@ -1,11 +1,11 @@
 .\"     Title: git-send-email
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 10/31/2008
+.\"      Date: 11/28/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.514.g23abd3
+.\"    Source: Git 1.6.0.4.836.gd5cb
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "10/31/2008" "Git 1\.6\.0\.2\.514\.g23abd3" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "11/28/2008" "Git 1\.6\.0\.4\.836\.gd5cb" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,7 +13,7 @@
 .SH "NAME"
 git-send-email - Send a collection of patches as emails
 .SH "SYNOPSIS"
-\fIgit send\-email\fR [options] <file|directory> [\&... file|directory]
+\fIgit send\-email\fR [options] <file|directory|rev\-list options>\&...
 .SH "DESCRIPTION"
 Takes the patches given on the command line and emails them out\.
 
@@ -35,9 +35,18 @@ Specify a starting "Cc:" value for each email\.
 The \-\-cc option must be repeated for each user you want on the cc list\.
 .RE
 .PP
+\-\-annotate
+.RS 4
+Review each patch you\'re about to send in an editor\. The setting \fIsendemail\.multiedit\fR defines if this will spawn one editor per patch or one for all of them at once\.
+.RE
+.PP
 \-\-compose
 .RS 4
 Use $GIT_EDITOR, core\.editor, $VISUAL, or $EDITOR to edit an introductory message for the patch series\.
+
+When compose is in used, git send\-email gets less interactive will use the values of the headers you set there\. If the body of the email (what you type after the headers and a blank line) only contains blank (or GIT: prefixed) lines, the summary won\'t be sent, but git\-send\-email will still use the Headers values if you don\'t removed them\.
+
+If it wasn\'t able to see a header in the summary it will ask you about it interactively after quitting your editor\.
 .RE
 .PP
 \-\-from
@@ -150,6 +159,11 @@ Make git\-send\-email less verbose\. One line per email should be all that is ou
 \-\-[no\-]validate
 .RS 4
 Perform sanity checks on patches\. Currently, validation means the following:
+.RE
+.PP
+\-\-[no\-]format\-patch
+.RS 4
+When an argument may be understood either as a reference or as a file name, choose to understand it as a format\-patch argument (\fI\-\-format\-patch\fR) or as a file name (\fI\-\-no\-format\-patch\fR)\. By default, when such a conflict occurs, git send\-email will fail\.
 
 .sp
 .RS 4
@@ -168,6 +182,11 @@ To avoid typing long email addresses, point this to one or more email aliases fi
 sendemail\.aliasfiletype
 .RS 4
 Format of the file(s) specified in sendemail\.aliasesfile\. Must be one of \fImutt\fR, \fImailrc\fR, \fIpine\fR, or \fIgnus\fR\.
+.RE
+.PP
+sendemail\.multiedit
+.RS 4
+If true (default), a single editor instance will be spawned to edit files you have to edit (patches when \fI\-\-annotate\fR is used, and the summary when \fI\-\-compose\fR is used)\. If false, files will be edited one after the other, spawning a new editor each time\.
 .RE
 .SH "AUTHOR"
 Written by Ryan Anderson <ryan@michonline\.com>
