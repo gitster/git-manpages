@@ -1,11 +1,11 @@
 .\"     Title: git-merge
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/28/2008
+.\"      Date: 12/10/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.4.836.gd5cb
+.\"    Source: Git 1.6.1.rc2.14.g5363d
 .\"
-.TH "GIT\-MERGE" "1" "11/28/2008" "Git 1\.6\.0\.4\.836\.gd5cb" "Git Manual"
+.TH "GIT\-MERGE" "1" "12/10/2008" "Git 1\.6\.1\.rc2\.14\.g5363d" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -44,7 +44,7 @@ Show a diffstat at the end of the merge\. The diffstat is also controlled by the
 .PP
 \-n, \-\-no\-stat
 .RS 4
-Do not show diffstat at the end of the merge\.
+Do not show a diffstat at the end of the merge\.
 .RE
 .PP
 \-\-summary, \-\-no\-summary
@@ -137,7 +137,7 @@ If you tried a merge which resulted in a complex conflicts and would want to sta
 .PP
 merge\.conflictstyle
 .RS 4
-Specify the style in which conflicted hunks are written out to working tree files upon merge\. The default is "merge", which shows <<<<<<< conflict marker, change made by one side, ======= marker, change made by the other side, and then >>>>>>> marker\. An alternate style, "diff3", adds ||||||| marker and the original text before ======= marker\.
+Specify the style in which conflicted hunks are written out to working tree files upon merge\. The default is "merge", which shows a <<<<<<< conflict marker, changes made by one side, a ======= marker, changes made by the other side, and then a >>>>>>> marker\. An alternate style, "diff3", adds a ||||||| marker and the original text before the ======= marker\.
 .RE
 .PP
 merge\.log
@@ -162,12 +162,12 @@ Controls which merge resolution program is used by \fBgit-mergetool\fR(1)\. Vali
 .PP
 merge\.verbosity
 .RS 4
-Controls the amount of output shown by the recursive merge strategy\. Level 0 outputs nothing except a final error message if conflicts were detected\. Level 1 outputs only conflicts, 2 outputs conflicts and file changes\. Level 5 and above outputs debugging information\. The default is level 2\. Can be overridden by \fIGIT_MERGE_VERBOSITY\fR environment variable\.
+Controls the amount of output shown by the recursive merge strategy\. Level 0 outputs nothing except a final error message if conflicts were detected\. Level 1 outputs only conflicts, 2 outputs conflicts and file changes\. Level 5 and above outputs debugging information\. The default is level 2\. Can be overridden by the \fIGIT_MERGE_VERBOSITY\fR environment variable\.
 .RE
 .PP
 merge\.<driver>\.name
 .RS 4
-Defines a human readable name for a custom low\-level merge driver\. See \fBgitattributes\fR(5) for details\.
+Defines a human\-readable name for a custom low\-level merge driver\. See \fBgitattributes\fR(5) for details\.
 .RE
 .PP
 merge\.<driver>\.driver
@@ -195,13 +195,13 @@ Three kinds of merge can happen:
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'HEAD is already contained in the merged commit\. This is the most common case especially when involved through \fIgit pull\fR: you are tracking an upstream repository, committed no local changes and now you want to update to a newer upstream revision\. Your HEAD (and the index) is updated to at point the merged commit, without creating an extra merge commit\. This is called "Fast\-forward"\.
+\h'-04'\(bu\h'+03'HEAD is already contained in the merged commit\. This is the most common case especially when invoked from \fIgit pull\fR: you are tracking an upstream repository, have committed no local changes and now you want to update to a newer upstream revision\. Your HEAD (and the index) is updated to point at the merged commit, without creating an extra merge commit\. This is called "Fast\-forward"\.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Both the merged commit and HEAD are independent and must be tied together by a merge commit that has them both as its parents\. The rest of this section describes this "True merge" case\.
+\h'-04'\(bu\h'+03'Both the merged commit and HEAD are independent and must be tied together by a merge commit that has both of them as its parents\. The rest of this section describes this "True merge" case\.
 .RE
-The chosen merge strategy merges the two commits into a single new source tree\. When things cleanly merge, these things happen:
+The chosen merge strategy merges the two commits into a single new source tree\. When things merge cleanly, this is what happens:
 
 .sp
 .RS 4
@@ -219,9 +219,9 @@ The chosen merge strategy merges the two commits into a single new source tree\.
 .RS 4
 \h'-04' 4.\h'+02'The HEAD pointer gets advanced\.
 .RE
-Because of 2\., we require that the original state of the index file to match exactly the current HEAD commit; otherwise we will write out your local changes already registered in your index file along with the merge result, which is not good\. Because 1\. involves only the paths different between your branch and the remote branch you are pulling from during the merge (which is typically a fraction of the whole tree), you can have local modifications in your working tree as long as they do not overlap with what the merge updates\.
+Because of 2\., we require that the original state of the index file matches exactly the current HEAD commit; otherwise we will write out your local changes already registered in your index file along with the merge result, which is not good\. Because 1\. involves only those paths differing between your branch and the remote branch you are pulling from during the merge (which is typically a fraction of the whole tree), you can have local modifications in your working tree as long as they do not overlap with what the merge updates\.
 
-When there are conflicts, these things happen:
+When there are conflicts, the following happens:
 
 .sp
 .RS 4
@@ -233,7 +233,7 @@ When there are conflicts, these things happen:
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'For conflicting paths, the index file records up to three versions; stage1 stores the version from the common ancestor, stage2 from HEAD, and stage3 from the remote branch (you can inspect the stages with git ls\-files \-u)\. The working tree files have the result of "merge" program; i\.e\. 3\-way merge result with familiar conflict markers <<< === >>>\.
+\h'-04' 3.\h'+02'For conflicting paths, the index file records up to three versions; stage1 stores the version from the common ancestor, stage2 from HEAD, and stage3 from the remote branch (you can inspect the stages with git ls\-files \-u)\. The working tree files contain the result of the "merge" program; i\.e\. 3\-way merge results with familiar conflict markers <<< === >>>\.
 .RE
 .sp
 .RS 4
@@ -262,9 +262,9 @@ And here is another line that is cleanly resolved or unmodified\.
 
 .fi
 .RE
-The area a pair of conflicting changes happened is marked with markers "<<<<<<<", "=======", and ">>>>>>>"\. The part before the "=======" is typically your side, and the part after it is typically their side\.
+The area where a pair of conflicting changes happened is marked with markers "<<<<<<<", "=======", and ">>>>>>>"\. The part before the "=======" is typically your side, and the part afterwards is typically their side\.
 
-The default format does not show what the original said in the conflicted area\. You cannot tell how many lines are deleted and replaced with the Barbie\'s remark by your side\. The only thing you can tell is that your side wants to say it is hard and you\'d prefer to go shopping, while the other side wants to claim it is easy\.
+The default format does not show what the original said in the conflicting area\. You cannot tell how many lines are deleted and replaced with Barbie\'s remark on your side\. The only thing you can tell is that your side wants to say it is hard and you\'d prefer to go shopping, while the other side wants to claim it is easy\.
 
 An alternative style can be used by setting the "merge\.conflictstyle" configuration variable to "diff3"\. In "diff3" style, the above conflict may look like this:
 
@@ -294,11 +294,11 @@ After seeing a conflict, you can do two things:
 
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Decide not to merge\. The only clean\-up you need are to reset the index file to the HEAD commit to reverse 2\. and to clean up working tree changes made by 2\. and 3\.; \fIgit\-reset \-\-hard\fR can be used for this\.
+\h'-04'\(bu\h'+03'Decide not to merge\. The only clean\-ups you need are to reset the index file to the HEAD commit to reverse 2\. and to clean up working tree changes made by 2\. and 3\.; \fIgit\-reset \-\-hard\fR can be used for this\.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Resolve the conflicts\. Git will mark the conflicts in the working tree\. Edit the files into shape and \fIgit\-add\fR to the index\. \fIgit\-commit\fR to seal the deal\.
+\h'-04'\(bu\h'+03'Resolve the conflicts\. Git will mark the conflicts in the working tree\. Edit the files into shape and \fIgit\-add\fR them to the index\. Use \fIgit\-commit\fR to seal the deal\.
 .RE
 You can work through the conflict with a number of tools:
 
