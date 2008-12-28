@@ -1,11 +1,11 @@
 .\"     Title: git-shortlog
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 12/10/2008
+.\"      Date: 12/28/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.1.15.g159c88
 .\"
-.TH "GIT\-SHORTLOG" "1" "12/10/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-SHORTLOG" "1" "12/28/2008" "Git 1\.6\.1\.15\.g159c88" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -51,16 +51,39 @@ Show the email address of each author\.
 Linewrap the output by wrapping each line at width\. The first line of each entry is indented by indent1 spaces, and the second and subsequent lines are indented by indent2 spaces\. width, indent1, and indent2 default to 76, 6 and 9 respectively\.
 .RE
 .SH "FILES"
-If the file \.mailmap exists, it will be used for mapping author email addresses to a real author name\. One mapping per line, first the author name followed by the email address enclosed by \fI<\fR and \fI>\fR\. Use hash \fI#\fR for comments\. Example:
+If a file \.mailmap exists at the toplevel of the repository, it is used to map an author email address to a canonical real name\. This can be used to coalesce together commits by the same person where their name was spelled differently (whether with the same email address or not)\.
+
+Each line in the file consists, in this order, of the canonical real name of an author, whitespace, and an email address (enclosed by \fI<\fR and \fI>\fR) to map to the name\. Use hash \fI#\fR for comments, either on their own line, or after the email address\.
+
+A canonical name may appear in more than one line, associated with different email addresses, but it doesn\'t make sense for a given address to appear more than once (if that happens, a later line overrides the earlier ones)\.
+
+So, for example, if your history contains commits by two authors, Jane and Joe, whose names appear in the repository under several forms:
 
 .sp
 .RS 4
 .nf
 
 \.ft C
-# Keep alphabetized
-Adam Morrow <adam@localhost\.localdomain>
-Eve Jones <eve@laptop\.(none)>
+Joe Developer <joe@example\.com>
+Joe R\. Developer <joe@example\.com>
+Jane Doe <jane@example\.com>
+Jane Doe <jane@laptop\.(none)>
+Jane D\. <jane@desktop\.(none)>
+\.ft
+
+.fi
+.RE
+Then, supposing Joe wants his middle name initial used, and Jane prefers her family name fully spelled out, a proper \.mailmap file would look like:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+# Note how we don\'t need an entry for <jane@laptop\.(none)>, because the
+# real name of that author is correct already, and coalesced directly\.
+Jane Doe <jane@desktop\.(none)>
+Joe R\. Developer <joe@random\.com>
 \.ft
 
 .fi
