@@ -1,11 +1,11 @@
 .\"     Title: git-reset
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 12/19/2008
+.\"      Date: 12/29/2008
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.1.rc3.38.gec9f0
+.\"    Source: Git 1.6.1.28.gc32f76
 .\"
-.TH "GIT\-RESET" "1" "12/19/2008" "Git 1\.6\.1\.rc3\.38\.gec9f0" "Git Manual"
+.TH "GIT\-RESET" "1" "12/29/2008" "Git 1\.6\.1\.28\.gc32f76" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,7 +16,7 @@ git-reset - Reset current HEAD to the specified state
 .sp
 .RS 4
 .nf
-\fIgit reset\fR [\-\-mixed | \-\-soft | \-\-hard] [\-q] [<commit>]
+\fIgit reset\fR [\-\-mixed | \-\-soft | \-\-hard | \-\-merge] [\-q] [<commit>]
 \fIgit reset\fR [\-q] [<commit>] [\-\-] <paths>\&...
 .fi
 .RE
@@ -43,6 +43,11 @@ Does not touch the index file nor the working tree at all, but requires them to 
 \-\-hard
 .RS 4
 Matches the working tree and index to that of the tree being switched to\. Any changes to tracked files in the working tree since <commit> are lost\.
+.RE
+.PP
+\-\-merge
+.RS 4
+Resets the index to match the tree recorded by the named commit, and updates the files that are different between the named commit and the current commit in the working tree\.
 .RE
 .PP
 \-q
@@ -178,6 +183,30 @@ $ git reset \-\-hard ORIG_HEAD       \fB(4)\fR
 \fB3. \fRMerge a topic branch into the current branch, which resulted in a fast forward\.
 .br
 \fB4. \fRBut you decided that the topic branch is not ready for public consumption yet\. "pull" or "merge" always leaves the original tip of the current branch in ORIG_HEAD, so resetting hard to it brings your index file and the working tree back to that state, and resets the tip of the branch to that commit\.
+.br
+.RE
+.PP
+Undo a merge or pull inside a dirty work tree
+.RS 4
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git pull                         \fB(1)\fR
+Auto\-merging nitfol
+Merge made by recursive\.
+ nitfol                |   20 +++++\-\-\-\-
+ \.\.\.
+$ git reset \-\-merge ORIG_HEAD      \fB(2)\fR
+\.ft
+
+.fi
+.RE
+.sp
+\fB1. \fREven if you may have local modifications in your working tree, you can safely say "git pull" when you know that the change in the other branch does not overlap with them\.
+.br
+\fB2. \fRAfter inspecting the result of the merge, you may find that the change in the other branch is unsatisfactory\. Running "git reset \-\-hard ORIG_HEAD" will let you go back to where you were, but it will discard your local changes, which you do not want\. "git reset \-\-merge" keeps your local changes\.
 .br
 .RE
 .PP
