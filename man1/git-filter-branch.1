@@ -1,11 +1,11 @@
 .\"     Title: git-filter-branch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 12/10/2008
+.\"      Date: 01/11/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.588.g3102
+.\"    Source: Git 1.6.1.80.g7eb5
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "12/10/2008" "Git 1\.6\.0\.2\.588\.g3102" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "01/11/2009" "Git 1\.6\.1\.80\.g7eb5" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -72,6 +72,8 @@ This is the filter for performing the commit\. If this filter is specified, it w
 As a special extension, the commit filter may emit multiple commit ids; in that case, the rewritten children of the original commit will have all of them as parents\.
 
 You can use the \fImap\fR convenience function in this filter, and other convenience functions, too\. For example, calling \fIskip_commit "$@"\fR will leave out the current commit (but not its changes! If you want that, use \fIgit\-rebase\fR instead)\.
+
+You can also use the \fIgit_commit_non_empty_tree "$@"\fR instead of \fIgit commit\-tree "$@"\fR if you don\'t wish to keep commits with a single parent and that makes no change to the tree\.
 .RE
 .PP
 \-\-tag\-name\-filter <command>
@@ -86,6 +88,11 @@ Nearly proper rewriting of tag objects is supported\. If the tag has a message a
 \-\-subdirectory\-filter <directory>
 .RS 4
 Only look at the history which touches the given subdirectory\. The result will contain that directory (and only that) as its project root\.
+.RE
+.PP
+\-\-prune\-empty
+.RS 4
+Some kind of filters will generate empty commits, that left the tree untouched\. This switch allow git\-filter\-branch to ignore such commits\. Though, this switch only applies for commits that have one and only one parent, it will hence keep merges points\. Also, this option is not compatible with the use of \fI\-\-commit\-filter\fR\. Though you just need to use the function \fIgit_commit_non_empty_tree "$@"\fR instead of the \fIgit commit\-tree "$@"\fR idiom in your commit filter to make that happen\.
 .RE
 .PP
 \-\-original <namespace>
