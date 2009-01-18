@@ -1,11 +1,11 @@
 .\"     Title: git-rebase
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 12/10/2008
+.\"      Date: 01/18/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.588.g3102
+.\"    Source: Git 1.6.1.203.ga83c8
 .\"
-.TH "GIT\-REBASE" "1" "12/10/2008" "Git 1\.6\.0\.2\.588\.g3102" "Git Manual"
+.TH "GIT\-REBASE" "1" "01/18/2009" "Git 1\.6\.1\.203\.ga83c8" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,17 +16,17 @@ git-rebase - Forward-port local commits to the updated upstream head
 .sp
 .RS 4
 .nf
-\fIgit rebase\fR [\-i | \-\-interactive] [\-v | \-\-verbose] [\-m | \-\-merge]
-        [\-s <strategy> | \-\-strategy=<strategy>] [\-\-no\-verify]
-        [\-C<n>] [ \-\-whitespace=<option>] [\-p | \-\-preserve\-merges]
-        [\-\-onto <newbase>] <upstream> [<branch>]
-\fIgit rebase\fR \-\-continue | \-\-skip | \-\-abort
+\fIgit rebase\fR [\-i | \-\-interactive] [options] [\-\-onto <newbase>]
+        <upstream> [<branch>]
+\fIgit rebase\fR [\-i | \-\-interactive] [options] \-\-onto <newbase>
+        \-\-root [<branch>]
 .fi
 .RE
+\fIgit rebase\fR \-\-continue | \-\-skip | \-\-abort
 .SH "DESCRIPTION"
 If <branch> is specified, \fIgit\-rebase\fR will perform an automatic git checkout <branch> before doing anything else\. Otherwise it remains on the current branch\.
 
-All changes made by commits in the current branch but that are not in <upstream> are saved to a temporary area\. This is the same set of commits that would be shown by git log <upstream>\.\.HEAD\.
+All changes made by commits in the current branch but that are not in <upstream> are saved to a temporary area\. This is the same set of commits that would be shown by git log <upstream>\.\.HEAD (or git log HEAD, if \-\-root is specified)\.
 
 The current branch is reset to <upstream>, or <newbase> if the \-\-onto option was supplied\. This has the exact same effect as git reset \-\-hard <upstream> (or <newbase>)\. ORIG_HEAD is set to point at the tip of the branch before the reset\.
 
@@ -313,6 +313,11 @@ Make a list of the commits which are about to be rebased\. Let the user edit tha
 \-p, \-\-preserve\-merges
 .RS 4
 Instead of ignoring merges, try to recreate them\.
+.RE
+.PP
+\-\-root
+.RS 4
+Rebase all commits reachable from <branch>, instead of limiting them with an <upstream>\. This allows you to rebase the root commit(s) on a branch\. Must be used with \-\-onto, and will skip changes already contained in <newbase> (instead of <upstream>)\. When used together with \-\-preserve\-merges, \fIall\fR root commits will be rewritten to have <newbase> as parent instead\.
 .RE
 .SH "MERGE STRATEGIES"
 .PP
