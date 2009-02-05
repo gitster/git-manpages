@@ -1,11 +1,11 @@
 .\"     Title: git-bundle
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 12/10/2008
+.\"      Date: 02/05/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.0.2.287.g3791f
+.\"    Source: Git 1.6.1.2.350.g88cc
 .\"
-.TH "GIT\-BUNDLE" "1" "12/10/2008" "Git 1\.6\.0\.2\.287\.g3791f" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "02/05/2009" "Git 1\.6\.1\.2\.350\.g88cc" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -56,90 +56,120 @@ A list of arguments, acceptable to \fIgit\-rev\-parse\fR and \fIgit\-rev\-list\f
 A list of references used to limit the references reported as available\. This is principally of use to \fIgit\-fetch\fR, which expects to receive only those references asked for and not necessarily everything in the pack (in this case, \fIgit\-bundle\fR is acting like \fIgit\-fetch\-pack\fR)\.
 .RE
 .SH "SPECIFYING REFERENCES"
-\fIgit\-bundle\fR will only package references that are shown by \fIgit\-show\-ref\fR: this includes heads, tags, and remote heads\. References such as master~1 cannot be packaged, but are perfectly suitable for defining the basis\. More than one reference may be packaged, and more than one basis can be specified\. The objects packaged are those not contained in the union of the given bases\. Each basis can be specified explicitly (e\.g\., ^master~10), or implicitly (e\.g\., master~10\.\.master, master \-\-since=10\.days\.ago)\.
+\fIgit\-bundle\fR will only package references that are shown by \fIgit\-show\-ref\fR: this includes heads, tags, and remote heads\. References such as master~1 cannot be packaged, but are perfectly suitable for defining the basis\. More than one reference may be packaged, and more than one basis can be specified\. The objects packaged are those not contained in the union of the given bases\. Each basis can be specified explicitly (e\.g\., ^master~10), or implicitly (e\.g\., master~10\.\.master, \-\-since=10\.days\.ago master)\.
 
 It is very important that the basis used be held by the destination\. It is okay to err on the side of conservatism, causing the bundle file to contain objects already in the destination as these are ignored when unpacking at the destination\.
 .SH "EXAMPLE"
-Assume two repositories exist as R1 on machine A, and R2 on machine B\. For whatever reason, direct connection between A and B is not allowed, but we can move data from A to B via some mechanism (CD, email, etc)\. We want to update R2 with developments made on branch master in R1\.
+Assume you want to transfer the history from a repository R1 on machine A to another repository R2 on machine B\. For whatever reason, direct connection between A and B is not allowed, but we can move data from A to B via some mechanism (CD, email, etc)\. We want to update R2 with developments made on branch master in R1\.
 
-To create the bundle you have to specify the basis\. You have some options:
+To bootstrap the process, you can first create a bundle that doesn\'t have any basis\. You can use a tag to remember up to what commit you sent out in order to make it easy to later update the other repository with incremental bundle,
 
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'Without basis\.
-
-This is useful when sending the whole history\.
-.RE
 .sp
 .RS 4
 .nf
 
 \.ft C
-$ git bundle create mybundle master
+machineA$ cd R1
+machineA$ git bundle create file\.bdl master
+machineA$ git tag \-f lastR2bundle master
 \.ft
 
 .fi
 .RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'Using temporally tags\.
+Then you sneakernet file\.bdl to the target machine B\. Because you don\'t have to have any object to extract objects from such a bundle, not only you can fetch/pull from a bundle, you can clone from it as if it was a remote repository\.
 
-We set a tag in R1 (lastR2bundle) after the previous such transport, and move it afterwards to help build the bundle\.
-.RE
 .sp
 .RS 4
 .nf
 
 \.ft C
-$ git bundle create mybundle master ^lastR2bundle
-$ git tag \-f lastR2bundle master
+machineB$ git clone /home/me/tmp/file\.bdl R2
 \.ft
 
 .fi
 .RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'Using a tag present in both repositories
-.RE
+This will define a remote called "origin" in the resulting repository that lets you fetch and pull from the bundle\. $GIT_DIR/config file in R2 may have an entry like this:
+
 .sp
 .RS 4
 .nf
 
 \.ft C
-$ git bundle create mybundle master ^v1\.0\.0
+[remote "origin"]
+    url = /home/me/tmp/file\.bdl
+    fetch = refs/heads/*:refs/remotes/origin/*
 \.ft
 
 .fi
 .RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'A basis based on time\.
-.RE
+You can fetch/pull to update the resulting mine\.git repository after replacing the bundle you store at /home/me/tmp/file\.bdl with incremental updates from here on\.
+
+After working more in the original repository, you can create an incremental bundle to update the other:
+
 .sp
 .RS 4
 .nf
 
 \.ft C
-$ git bundle create mybundle master \-\-since=10\.days\.ago
+machineA$ cd R1
+machineA$ git bundle create file\.bdl lastR2bundle\.\.master
+machineA$ git tag \-f lastR2bundle master
 \.ft
 
 .fi
 .RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'With a limit on the number of commits
-.RE
+and sneakernet it to the other machine to replace /home/me/tmp/file\.bdl, and pull from it\.
+
 .sp
 .RS 4
 .nf
 
 \.ft C
-$ git bundle create mybundle master \-n 10
+machineB$ cd R2
+machineB$ git pull
 \.ft
 
 .fi
 .RE
-Then you move mybundle from A to B, and in R2 on B:
+If you know up to what commit the intended recipient repository should have the necessary objects for, you can use that knowledge to specify the basis, giving a cut\-off point to limit the revisions and objects that go in the resulting bundle\. The previous example used lastR2bundle tag for this purpose, but you can use other options you would give to the \fBgit-log\fR(1) command\. Here are more examples:
+
+You can use a tag that is present in both\.
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git bundle create mybundle v1\.0\.0\.\.master
+\.ft
+
+.fi
+.RE
+You can use a basis based on time\.
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git bundle create mybundle \-\-since=10\.days master
+\.ft
+
+.fi
+.RE
+Or you can use the number of commits\.
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git bundle create mybundle \-10 master
+\.ft
+
+.fi
+.RE
+You can run git\-bundle verify to see if you can extract from a bundle that was created with a basis\.
 
 .sp
 .RS 4
@@ -147,40 +177,36 @@ Then you move mybundle from A to B, and in R2 on B:
 
 \.ft C
 $ git bundle verify mybundle
+\.ft
+
+.fi
+.RE
+This will list what commits you must have in order to extract from the bundle and will error out if you don\'t have them\.
+
+A bundle from a recipient repository\'s point of view is just like a regular repository it fetches/pulls from\. You can for example map refs, like this example, when fetching:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
 $ git fetch mybundle master:localRef
 \.ft
 
 .fi
 .RE
-With something like this in the config in R2:
+Or see what refs it offers\.
 
 .sp
 .RS 4
 .nf
 
 \.ft C
-[remote "bundle"]
-    url = /home/me/tmp/file\.bdl
-    fetch = refs/heads/*:refs/remotes/origin/*
+$ git ls\-remote mybundle
 \.ft
 
 .fi
 .RE
-You can first sneakernet the bundle file to ~/tmp/file\.bdl and then these commands on machine B:
-
-.sp
-.RS 4
-.nf
-
-\.ft C
-$ git ls\-remote bundle
-$ git fetch bundle
-$ git pull bundle
-\.ft
-
-.fi
-.RE
-would treat it as if it is talking with a remote side over the network\.
 .SH "AUTHOR"
 Written by Mark Levedahl <mdl123@verizon\.net>
 .SH "GIT"
