@@ -1,11 +1,11 @@
 .\"     Title: git-blame
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 02/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.2.rc0.90.g0753
 .\"
-.TH "GIT\-BLAME" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-BLAME" "1" "02/15/2009" "Git 1\.6\.2\.rc0\.90\.g0753" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -288,6 +288,108 @@ Note
 For people who do parsing: to make it more robust, just ignore any lines in between the first and last one ("<sha1>" and "filename" lines) where you don\'t recognize the tag\-words (or care about that particular one) at the beginning of the "extended information" lines\. That way, if there is ever added information (like the commit encoding or extended commit commentary), a blame viewer won\'t ever care\.
 
 .RE
+.SH "MAPPING AUTHORS"
+If the file \.mailmap exists at the toplevel of the repository, or at the location pointed to by the mailmap\.file configuration option, it is used to map author and committer names and email addresses to canonical real names and email addresses\.
+
+In the simple form, each line in the file consists of the canonical real name of an author, whitespace, and an email address used in the commit (enclosed by \fI<\fR and \fI>\fR) to map to the name\. Thus, looks like this
+
+.sp
+.RS 4
+.nf
+Proper Name <commit@email\.xx>
+.fi
+.RE
+The more complex forms are
+
+.sp
+.RS 4
+.nf
+<proper@email\.xx> <commit@email\.xx>
+.fi
+.RE
+which allows mailmap to replace only the email part of a commit, and
+
+.sp
+.RS 4
+.nf
+Proper Name <proper@email\.xx> <commit@email\.xx>
+.fi
+.RE
+which allows mailmap to replace both the name and the email of a commit matching the specified commit email address, and
+
+.sp
+.RS 4
+.nf
+Proper Name <proper@email\.xx> Commit Name <commit@email\.xx>
+.fi
+.RE
+which allows mailmap to replace both the name and the email of a commit matching both the specified commit name and email address\.
+
+Example 1: Your history contains commits by two authors, Jane and Joe, whose names appear in the repository under several forms:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+Joe Developer <joe@example\.com>
+Joe R\. Developer <joe@example\.com>
+Jane Doe <jane@example\.com>
+Jane Doe <jane@laptop\.(none)>
+Jane D\. <jane@desktop\.(none)>
+\.ft
+
+.fi
+.RE
+Now suppose that Joe wants his middle name initial used, and Jane prefers her family name fully spelled out\. A proper \.mailmap file would look like:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+Jane Doe         <jane@desktop\.(none)>
+Joe R\. Developer <joe@example\.com>
+\.ft
+
+.fi
+.RE
+Note how we don\'t need an entry for <jane@laptop\.(none)>, because the real name of that author is correct already\.
+
+Example 2: Your repository contains commits from the following authors:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+nick1 <bugs@company\.xx>
+nick2 <bugs@company\.xx>
+nick2 <nick2@company\.xx>
+santa <me@company\.xx>
+claus <me@company\.xx>
+CTO <cto@coompany\.xx>
+\.ft
+
+.fi
+.RE
+Then, you might want a \.mailmap file looking like:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+<cto@company\.xx>                       <cto@coompany\.xx>
+Some Dude <some@dude\.xx>         nick1 <bugs@company\.xx>
+Other Author <other@author\.xx>   nick2 <bugs@company\.xx>
+Other Author <other@author\.xx>         <nick2@company\.xx>
+Santa Claus <santa\.claus@northpole\.xx> <me@company\.xx>
+\.ft
+
+.fi
+.RE
+Use hash \fI#\fR for comments that are either on their own line, or after the email address\.
 .SH "SEE ALSO"
 \fBgit-annotate\fR(1)
 .SH "AUTHOR"

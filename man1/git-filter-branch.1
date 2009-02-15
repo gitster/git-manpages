@@ -1,11 +1,11 @@
 .\"     Title: git-filter-branch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 02/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.2.rc0.90.g0753
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "02/15/2009" "Git 1\.6\.2\.rc0\.90\.g0753" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -310,6 +310,37 @@ git filter\-branch \-\-index\-filter \e
 \.ft
 
 .fi
+.RE
+.SH "CHECKLIST FOR SHRINKING A REPOSITORY"
+git\-filter\-branch is often used to get rid of a subset of files, usually with some combination of \-\-index\-filter and \-\-subdirectory\-filter\. People expect the resulting repository to be smaller than the original, but you need a few more steps to actually make it smaller, because git tries hard not to lose your objects until you tell it to\. First make sure that:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'You really removed all variants of a filename, if a blob was moved over its lifetime\. git log \-\-name\-only \-\-follow \-\-all \-\- filename can help you find renames\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'You really filtered all refs: use \-\-tag\-name\-filter cat \-\- \-\-all when calling git\-filter\-branch\.
+.RE
+Then there are two ways to get a smaller repository\. A safer way is to clone, that keeps your original intact\.
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Clone it with git clone file:///path/to/repo\. The clone will not have the removed objects\. See \fBgit-clone\fR(1)\. (Note that cloning with a plain path just hardlinks everything!)
+.RE
+If you really don\'t want to clone it, for whatever reasons, check the following points instead (in this order)\. This is a very destructive approach, so \fBmake a backup\fR or go back to cloning it\. You have been warned\.
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Remove the original refs backed up by git\-filter\-branch: say git for\-each\-ref \-\-format="%(refname)" refs/original/ | xargs \-n 1 git update\-ref \-d\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Expire all reflogs with git reflog expire \-\-expire=now \-\-all\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Garbage collect all unreferenced objects with git gc \-\-prune=now (or if your git\-gc is not new enough to support arguments to \-\-prune, use git repack \-ad; git prune instead)\.
 .RE
 .SH "AUTHOR"
 Written by Petr "Pasky" Baudis <pasky@suse\.cz>, and the git list <git@vger\.kernel\.org>
