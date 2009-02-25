@@ -1,11 +1,11 @@
 .\"     Title: git-push
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/19/2009
+.\"      Date: 02/25/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc1.13.g25487f
+.\"    Source: Git 1.6.2.rc1.41.g3f74c
 .\"
-.TH "GIT\-PUSH" "1" "02/19/2009" "Git 1\.6\.2\.rc1\.13\.g25487f" "Git Manual"
+.TH "GIT\-PUSH" "1" "02/25/2009" "Git 1\.6\.2\.rc1\.41\.g3f74c" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -40,7 +40,7 @@ The <src> is often the name of the branch you would want to push, but it can be 
 
 The <dst> tells which ref on the remote side is updated with this push\. Arbitrary expressions cannot be used here, an actual ref must be named\. If :<dst> is omitted, the same ref as <src> will be updated\.
 
-The object referenced by <src> is used to fast forward the ref <dst> on the remote side\. If the optional leading plus + is used, the remote ref is updated even if it does not result in a fast forward update\.
+The object referenced by <src> is used to update the <dst> reference on the remote side, but by default this is only allowed if the update can fast forward <dst>\. By having the optional leading +, you can tell git to update the <dst> ref even when the update is not a fast forward\. This does \fBnot\fR attempt to merge <src> into <dst>\. See EXAMPLES below for details\.
 
 tag <tag> means the same as refs/tags/<tag>:refs/tags/<tag>\.
 
@@ -359,6 +359,39 @@ Create the branch experimental in the origin repository by copying the current m
 git push origin :experimental
 .RS 4
 Find a ref that matches experimental in the origin repository (e\.g\. refs/heads/experimental), and delete it\.
+.RE
+.PP
+git push origin +dev:master
+.RS 4
+Update the origin repository\'s master branch with the dev branch, allowing non\-fast forward updates\. \fBThis can leave unreferenced commits dangling in the origin repository\.\fR Consider the following situation, where a fast forward is not possible:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+            o\-\-\-o\-\-\-o\-\-\-A\-\-\-B  origin/master
+                     \e
+                      X\-\-\-Y\-\-\-Z  dev
+\.ft
+
+.fi
+.RE
+The above command would change the origin repository to
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+                      A\-\-\-B  (unnamed branch)
+                     /
+            o\-\-\-o\-\-\-o\-\-\-X\-\-\-Y\-\-\-Z  master
+\.ft
+
+.fi
+.RE
+Commits A and B would no longer belong to a branch with a symbolic name, and so would be unreachable\. As such, these commits would be removed by a git gc command on the origin repository\.
 .RE
 .SH "AUTHOR"
 Written by Junio C Hamano <gitster@pobox\.com>, later rewritten in C by Linus Torvalds <torvalds@osdl\.org>
