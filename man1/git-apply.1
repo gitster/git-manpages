@@ -1,11 +1,11 @@
 .\"     Title: git-apply
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 03/01/2009
+.\"      Date: 03/03/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc2.16.gf474c
+.\"    Source: Git 1.6.2.rc2.22.g1d035
 .\"
-.TH "GIT\-APPLY" "1" "03/01/2009" "Git 1\.6\.2\.rc2\.16\.gf474c" "Git Manual"
+.TH "GIT\-APPLY" "1" "03/03/2009" "Git 1\.6\.2\.rc2\.22\.g1d035" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -31,7 +31,7 @@ Reads supplied \fIdiff\fR output and applies it on a git index file and a work t
 .PP
 <patch>\&...
 .RS 4
-The files to read patch from\. \fI\-\fR can be used to read from the standard input\.
+The files to read the patch from\. \fI\-\fR can be used to read from the standard input\.
 .RE
 .PP
 \-\-stat
@@ -41,7 +41,7 @@ Instead of applying the patch, output diffstat for the input\. Turns off "apply"
 .PP
 \-\-numstat
 .RS 4
-Similar to \-\-stat, but shows number of added and deleted lines in decimal notation and pathname without abbreviation, to make it more machine friendly\. For binary files, outputs two \- instead of saying 0 0\. Turns off "apply"\.
+Similar to \-\-stat, but shows the number of added and deleted lines in decimal notation and the pathname without abbreviation, to make it more machine friendly\. For binary files, outputs two \- instead of saying 0 0\. Turns off "apply"\.
 .RE
 .PP
 \-\-summary
@@ -61,12 +61,12 @@ When \-\-check is in effect, or when applying the patch (which is the default wh
 .PP
 \-\-cached
 .RS 4
-Apply a patch without touching the working tree\. Instead, take the cached data, apply the patch, and store the result in the index, without using the working tree\. This implies \fI\-\-index\fR\.
+Apply a patch without touching the working tree\. Instead take the cached data, apply the patch, and store the result in the index without using the working tree\. This implies \fI\-\-index\fR\.
 .RE
 .PP
 \-\-build\-fake\-ancestor=<file>
 .RS 4
-Newer \fIgit\-diff\fR output has embedded \fIindex information\fR for each blob to help identify the original version that the patch applies to\. When this flag is given, and if the original versions of the blobs is available locally, builds a temporary index containing those blobs\.
+Newer \fIgit\-diff\fR output has embedded \fIindex information\fR for each blob to help identify the original version that the patch applies to\. When this flag is given, and if the original versions of the blobs are available locally, builds a temporary index containing those blobs\.
 
 When a pure mode change is encountered (which has no index information), the information is read from the current index instead\.
 .RE
@@ -100,17 +100,17 @@ Ensure at least <n> lines of surrounding context match before and after each cha
 .RS 4
 By default, \fIgit\-apply\fR expects that the patch being applied is a unified diff with at least one line of context\. This provides good safety measures, but breaks down when applying a diff generated with \-\-unified=0\. To bypass these checks use \fI\-\-unidiff\-zero\fR\.
 
-Note, for the reasons stated above usage of context\-free patches are discouraged\.
+Note, for the reasons stated above usage of context\-free patches is discouraged\.
 .RE
 .PP
 \-\-apply
 .RS 4
-If you use any of the options marked "Turns off \fIapply\fR" above, \fIgit\-apply\fR reads and outputs the information you asked without actually applying the patch\. Give this flag after those flags to also apply the patch\.
+If you use any of the options marked "Turns off \fIapply\fR" above, \fIgit\-apply\fR reads and outputs the requested information without actually applying the patch\. Give this flag after those flags to also apply the patch\.
 .RE
 .PP
 \-\-no\-add
 .RS 4
-When applying a patch, ignore additions made by the patch\. This can be used to extract the common part between two files by first running \fIdiff\fR on them and applying the result with this option, which would apply the deletion part but not addition part\.
+When applying a patch, ignore additions made by the patch\. This can be used to extract the common part between two files by first running \fIdiff\fR on them and applying the result with this option, which would apply the deletion part but not the addition part\.
 .RE
 .PP
 \-\-allow\-binary\-replacement, \-\-binary
@@ -136,7 +136,7 @@ When applying a patch, detect a new or modified line that has whitespace errors\
 
 By default, the command outputs warning messages but applies the patch\. When git\-apply is used for statistics and not applying a patch, it defaults to nowarn\.
 
-You can use different <action> to control this behavior:
+You can use different <action> values to control this behavior:
 
 .sp
 .RS 4
@@ -148,7 +148,7 @@ You can use different <action> to control this behavior:
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'fix outputs warnings for a few such errors, and applies the patch after fixing them (strip is a synonym \-\-\- the tool used to consider only trailing whitespaces as errors, and the fix involved \fIstripping\fR them, but modern gits do more)\.
+\h'-04'\(bu\h'+03'fix outputs warnings for a few such errors, and applies the patch after fixing them (strip is a synonym \-\-\- the tool used to consider only trailing whitespace characters as errors, and the fix involved \fIstripping\fR them, but modern gits do more)\.
 .RE
 .sp
 .RS 4
@@ -177,7 +177,7 @@ Do not trust the line counts in the hunk headers, but infer them by inspecting t
 .PP
 \-\-directory=<root>
 .RS 4
-Prepend <root> to all filenames\. If a "\-p" argument was passed, too, it is applied before prepending the new root\.
+Prepend <root> to all filenames\. If a "\-p" argument was also passed, it is applied before prepending the new root\.
 
 For example, a patch that talks about updating a/git\-gui\.sh to b/git\-gui\.sh can be applied to the file in the working tree modules/git\-gui/git\-gui\.sh by running git apply \-\-directory=modules/git\-gui\.
 .RE
@@ -192,7 +192,7 @@ If the patch contains any changes to submodules then \fIgit\-apply\fR treats the
 
 If \-\-index is specified (explicitly or implicitly), then the submodule commits must match the index exactly for the patch to apply\. If any of the submodules are checked\-out, then these check\-outs are completely ignored, i\.e\., they are not required to be up\-to\-date or clean and they are not updated\.
 
-If \-\-index is not specified, then the submodule commits in the patch are ignored and only the absence of presence of the corresponding subdirectory is checked and (if possible) updated\.
+If \-\-index is not specified, then the submodule commits in the patch are ignored and only the absence or presence of the corresponding subdirectory is checked and (if possible) updated\.
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl\.org>
 .SH "DOCUMENTATION"
