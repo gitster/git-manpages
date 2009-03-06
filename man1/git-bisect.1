@@ -1,11 +1,11 @@
 .\"     Title: git-bisect
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 03/06/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.2.77.g8cc3f
 .\"
-.TH "GIT\-BISECT" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-BISECT" "1" "03/06/2009" "Git 1\.6\.2\.77\.g8cc3f" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -254,7 +254,7 @@ If you have a script that can tell if the current source code is good or bad, yo
 .nf
 
 \.ft C
-$ git bisect run my_script
+$ git bisect run my_script arguments
 \.ft
 
 .fi
@@ -280,6 +280,22 @@ To cope with such a situation, after the inner \fIgit bisect\fR finds the next r
 \.ft C
 $ git bisect start HEAD v1\.2 \-\-      # HEAD is bad, v1\.2 is good
 $ git bisect run make                # "make" builds the app
+\.ft
+
+.fi
+.RE
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Automatically bisect a test failure between origin and HEAD:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git bisect start HEAD origin \-\-    # HEAD is bad, origin is good
+$ git bisect run make test           # "make test" builds and tests
 \.ft
 
 .fi
@@ -332,6 +348,23 @@ $ git bisect run ~/test\.sh
 Here "check_test_case\.sh" should "exit 0", if the test case passes, and "exit 1" (for example) otherwise\.
 
 It\'s safer if both "test\.sh" and "check_test_case\.sh" scripts are outside the repo to prevent interactions between the bisect, make and test processes and the scripts\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Automatically bisect a broken test suite:
+
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git bisect start HEAD HEAD~10 \-\-   # culprit is among the last 10
+$ git bisect run sh \-c "make || exit 125; ~/check_test_case\.sh"
+\.ft
+
+.fi
+.RE
+Does the same as the previous example, but on a single line\.
 .RE
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl\.org>

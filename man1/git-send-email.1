@@ -1,11 +1,11 @@
 .\"     Title: git-send-email
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/20/2009
+.\"      Date: 03/06/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc1.20.g8c5b
+.\"    Source: Git 1.6.2.77.g8cc3f
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "02/20/2009" "Git 1\.6\.2\.rc1\.20\.g8c5b" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "03/06/2009" "Git 1\.6\.2\.77\.g8cc3f" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -147,7 +147,42 @@ If this is set, add emails found in Signed\-off\-by: or Cc: lines to the cc list
 .PP
 \-\-suppress\-cc
 .RS 4
-Specify an additional category of recipients to suppress the auto\-cc of\. \fIself\fR will avoid including the sender, \fIauthor\fR will avoid including the patch author, \fIcc\fR will avoid including anyone mentioned in Cc lines in the patch, \fIsob\fR will avoid including anyone mentioned in Signed\-off\-by lines, and \fIcccmd\fR will avoid running the \-\-cc\-cmd\. \fIall\fR will suppress all auto cc values\. Default is the value of \fIsendemail\.suppresscc\fR configuration value; if that is unspecified, default to \fIself\fR if \-\-suppress\-from is specified, as well as \fIsob\fR if \-\-no\-signed\-off\-cc is specified\.
+Specify an additional category of recipients to suppress the auto\-cc of:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIauthor\fR will avoid including the patch author
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIself\fR will avoid including the sender
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIcc\fR will avoid including anyone mentioned in Cc lines in the patch header except for self (use \fIself\fR for that)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIccbody\fR will avoid including anyone mentioned in Cc lines in the patch body (commit message) except for self (use \fIself\fR for that)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIsob\fR will avoid including anyone mentioned in Signed\-off\-by lines except for self (use \fIself\fR for that)\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIcccmd\fR will avoid running the \-\-cc\-cmd\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIbody\fR is equivalent to \fIsob\fR + \fIccbody\fR
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIall\fR will suppress all auto cc values\.
+.RE
+.IP "" 4
+Default is the value of \fIsendemail\.suppresscc\fR configuration value; if that is unspecified, default to \fIself\fR if \-\-suppress\-from is specified, as well as \fIbody\fR if \-\-no\-signed\-off\-cc is specified\.
 .RE
 .PP
 \-\-[no\-]suppress\-from
@@ -160,6 +195,34 @@ If this is set, do not add the From: address to the cc: list\. Default is the va
 If this is set, the In\-Reply\-To header will be set on each email sent\. If disabled with "\-\-no\-thread", no emails will have the In\-Reply\-To header set\. Default is the value of the \fIsendemail\.thread\fR configuration value; if that is unspecified, default to \-\-thread\.
 .RE
 .SS "Administering"
+.PP
+\-\-confirm
+.RS 4
+Confirm just before sending:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIalways\fR will always confirm before sending
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fInever\fR will never confirm before sending
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIcc\fR will confirm before sending when send\-email has automatically added addresses from the patch to the Cc list
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIcompose\fR will confirm before sending the first message when using \-\-compose\.
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'\fIauto\fR is equivalent to \fIcc\fR + \fIcompose\fR
+.RE
+.IP "" 4
+Default is the value of \fIsendemail\.confirm\fR configuration value; if that is unspecified, default to \fIauto\fR unless any of the suppress options have been specified, in which case default to \fIcompose\fR\.
+.RE
 .PP
 \-\-dry\-run
 .RS 4
@@ -202,6 +265,11 @@ Format of the file(s) specified in sendemail\.aliasesfile\. Must be one of \fImu
 sendemail\.multiedit
 .RS 4
 If true (default), a single editor instance will be spawned to edit files you have to edit (patches when \fI\-\-annotate\fR is used, and the summary when \fI\-\-compose\fR is used)\. If false, files will be edited one after the other, spawning a new editor each time\.
+.RE
+.PP
+sendemail\.confirm
+.RS 4
+Sets the default for whether to confirm before sending\. Must be one of \fIalways\fR, \fInever\fR, \fIcc\fR, \fIcompose\fR, or \fIauto\fR\. See \fI\-\-confirm\fR in the previous section for the meaning of these values\.
 .RE
 .SH "AUTHOR"
 Written by Ryan Anderson <ryan@michonline\.com>
