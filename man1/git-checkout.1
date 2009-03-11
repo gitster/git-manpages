@@ -1,11 +1,11 @@
 .\"     Title: git-checkout
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 03/11/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.2.107.ge47ee
 .\"
-.TH "GIT\-CHECKOUT" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "03/11/2009" "Git 1\.6\.2\.107\.ge47ee" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,16 +16,16 @@ git-checkout - Checkout a branch or paths to the working tree
 .sp
 .RS 4
 .nf
-\fIgit checkout\fR [\-q] [\-f] [\-\-track | \-\-no\-track] [\-b <new_branch> [\-l]] [\-m] [<branch>]
+\fIgit checkout\fR [\-q] [\-f] [\-t | \-\-track | \-\-no\-track] [\-b <new_branch> [\-l]] [\-m] [<branch>]
 \fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <paths>\&...
 .fi
 .RE
 .SH "DESCRIPTION"
 When <paths> are not given, this command switches branches by updating the index and working tree to reflect the specified branch, <branch>, and updating HEAD to be <branch> or, if specified, <new_branch>\. Using \-b will cause <new_branch> to be created; in this case you can use the \-\-track or \-\-no\-track options, which will be passed to git branch\.
 
-As a convenience, \-\-track will default to create a branch whose name is constructed from the specified branch name by stripping the first namespace level\.
+As a convenience, \-\-track will default to creating a branch whose name is constructed from the specified branch name by stripping the first namespace level\.
 
-When <paths> are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file, or from a named <tree\-ish> (most often a commit)\. In this case, the \-b options is meaningless and giving either of them results in an error\. <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
+When <paths> are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file, or from a named <tree\-ish> (most often a commit)\. In this case, the \-b and \-\-track options are meaningless and giving either of them results in an error\. The <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
 
 The index may contain unmerged entries after a failed merge\. By default, if you try to check out such an entry from the index, the checkout operation will fail and nothing will be checked out\. Using \-f will ignore these unmerged entries\. The contents from a specific side of the merge can be checked out of the index by using \-\-ours or \-\-theirs\. With \-m, changes made to the working tree file can be discarded to recreate the original conflicted merge result\.
 .SH "OPTIONS"
@@ -54,9 +54,9 @@ Create a new branch named <new_branch> and start it at <branch>\. The new branch
 .PP
 \-t, \-\-track
 .RS 4
-When creating a new branch, set up configuration so that \fIgit\-pull\fR will automatically retrieve data from the start point, which must be a branch\. Use this if you always pull from the same upstream branch into the new branch, and if you don\'t want to use "git pull <repository> <refspec>" explicitly\. This behavior is the default when the start point is a remote branch\. Set the branch\.autosetupmerge configuration variable to false if you want \fIgit\-checkout\fR and \fIgit\-branch\fR to always behave as if \fI\-\-no\-track\fR were given\. Set it to always if you want this behavior when the start\-point is either a local or remote branch\.
+When creating a new branch, set up configuration so that \fIgit\-pull\fR will automatically retrieve data from the start point, which must be a branch\. Use this if you always pull from the same upstream branch into the new branch, and if you don\'t want to use "git pull <repository> <refspec>" explicitly\. This behavior is the default when the start point is a remote branch\. Set the branch\.autosetupmerge configuration variable to false if you want \fIgit checkout\fR and \fIgit branch\fR to always behave as if \fI\-\-no\-track\fR were given\. Set it to always if you want this behavior when the start point is either a local or remote branch\.
 
-If no \fI\-b\fR option was given, the name of the new branch will be derived from the remote branch, by attempting to guess the name of the branch on remote system\. If "remotes/" or "refs/remotes/" are prefixed, it is stripped away, and then the part up to the next slash (which would be the nickname of the remote) is removed\. This would tell us to use "hack" as the local branch when branching off of "origin/hack" (or "remotes/origin/hack", or even "refs/remotes/origin/hack")\. If the given name has no slash, or the above guessing results in an empty name, the guessing is aborted\. You can explicitly give a name with \fI\-b\fR in such a case\.
+If no \fI\-b\fR option is given, the name of the new branch will be derived from the remote branch\. If "remotes/" or "refs/remotes/" is prefixed it is stripped away, and then the part up to the next slash (which would be the nickname of the remote) is removed\. This would tell us to use "hack" as the local branch when branching off of "origin/hack" (or "remotes/origin/hack", or even "refs/remotes/origin/hack")\. If the given name has no slash, or the above guessing results in an empty name, the guessing is aborted\. You can explicitly give a name with \fI\-b\fR in such a case\.
 .RE
 .PP
 \-\-no\-track
@@ -109,9 +109,9 @@ $ git checkout v2\.6\.18
 
 .fi
 .RE
-Earlier versions of git did not allow this and asked you to create a temporary branch using \-b option, but starting from version 1\.5\.0, the above command \fIdetaches\fR your HEAD from the current branch and directly point at the commit named by the tag (v2\.6\.18 in the above example)\.
+Earlier versions of git did not allow this and asked you to create a temporary branch using the \-b option, but starting from version 1\.5\.0, the above command \fIdetaches\fR your HEAD from the current branch and directly points at the commit named by the tag (v2\.6\.18 in the example above)\.
 
-You can use usual git commands while in this state\. You can use git reset \-\-hard $othercommit to further move around, for example\. You can make changes and create a new commit on top of a detached HEAD\. You can even create a merge by using git merge $othercommit\.
+You can use all git commands while in this state\. You can use git reset \-\-hard $othercommit to further move around, for example\. You can make changes and create a new commit on top of a detached HEAD\. You can even create a merge by using git merge $othercommit\.
 
 The state you are in while your HEAD is detached is not recorded by any branch (which is natural \-\-\- you are not on any branch)\. What this means is that you can discard your temporary commits and merges by switching back to an existing branch (e\.g\. git checkout master), and a later git prune or git gc would garbage\-collect them\. If you did this by mistake, you can ask the reflog for HEAD where you were, e\.g\.
 
@@ -146,7 +146,7 @@ $ git checkout hello\.c            \fB(3)\fR
 .sp
 \fB1. \fRswitch branch
 .br
-\fB2. \fRtake out a file out of other commit
+\fB2. \fRtake a file out of another commit
 .br
 \fB3. \fRrestore hello\.c from HEAD of current branch
 
@@ -166,7 +166,7 @@ $ git checkout \-\- hello\.c
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'After working in a wrong branch, switching to the correct branch would be done using:
+\h'-04' 2.\h'+02'After working in the wrong branch, switching to the correct branch would be done using:
 
 .sp
 .RS 4
@@ -178,7 +178,7 @@ $ git checkout mytopic
 
 .fi
 .RE
-However, your "wrong" branch and correct "mytopic" branch may differ in files that you have locally modified, in which case, the above checkout would fail like this:
+However, your "wrong" branch and correct "mytopic" branch may differ in files that you have modified locally, in which case the above checkout would fail like this:
 
 .sp
 .RS 4
