@@ -1,11 +1,11 @@
 .\"     Title: git-filter-branch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/15/2009
+.\"      Date: 03/13/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.90.g0753
+.\"    Source: Git 1.6.2.169.g92418
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "02/15/2009" "Git 1\.6\.2\.rc0\.90\.g0753" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "03/13/2009" "Git 1\.6\.2\.169\.g92418" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -52,7 +52,7 @@ This is the filter for rewriting the tree and its contents\. The argument is eva
 .PP
 \-\-index\-filter <command>
 .RS 4
-This is the filter for rewriting the index\. It is similar to the tree filter but does not check out the tree, which makes it much faster\. For hairy cases, see \fBgit-update-index\fR(1)\.
+This is the filter for rewriting the index\. It is similar to the tree filter but does not check out the tree, which makes it much faster\. Frequently used with git rm \-\-cached \-\-ignore\-unmatch \&..., see EXAMPLES below\. For hairy cases, see \fBgit-update-index\fR(1)\.
 .RE
 .PP
 \-\-parent\-filter <command>
@@ -129,21 +129,19 @@ git filter\-branch \-\-tree\-filter \'rm filename\' HEAD
 .RE
 However, if the file is absent from the tree of some commit, a simple rm filename will fail for that tree and commit\. Thus you may instead want to use rm \-f filename as the script\.
 
-A significantly faster version:
+Using \-\-index\-filter with \fIgit\-rm\fR yields a significantly faster version\. Like with using rm filename, git rm \-\-cached filename will fail if the file is absent from the tree of a commit\. If you want to "completely forget" a file, it does not matter when it entered history, so we also add \-\-ignore\-unmatch:
 
 .sp
 .RS 4
 .nf
 
 \.ft C
-git filter\-branch \-\-index\-filter \'git rm \-\-cached filename\' HEAD
+git filter\-branch \-\-index\-filter \'git rm \-\-cached \-\-ignore\-unmatch filename\' HEAD
 \.ft
 
 .fi
 .RE
 Now, you will get the rewritten history saved in HEAD\.
-
-As with using rm filename, git rm \-\-cached filename will fail if the file is absent from the tree of a commit\. If it is not important whether the file is already absent from the tree, you can use git rm \-\-cached \-\-ignore\-unmatch filename instead\.
 
 To rewrite the repository to look as if foodir/ had been its project root, and discard all other history:
 
