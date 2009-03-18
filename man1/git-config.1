@@ -1,11 +1,11 @@
 .\"     Title: git-config
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 03/11/2009
+.\"      Date: 03/18/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.149.g6462
+.\"    Source: Git 1.6.2.1.147.g642d0
 .\"
-.TH "GIT\-CONFIG" "1" "03/11/2009" "Git 1\.6\.2\.149\.g6462" "Git Manual"
+.TH "GIT\-CONFIG" "1" "03/18/2009" "Git 1\.6\.2\.1\.147\.g642d0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -407,7 +407,7 @@ They can be used by both the git plumbing and the porcelains\. The variables are
 .SS "Syntax"
 The syntax is fairly flexible and permissive; whitespaces are mostly ignored\. The \fI#\fR and \fI;\fR characters begin comments to the end of line, blank lines are ignored\.
 
-The file consists of sections and variables\. A section begins with the name of the section in square brackets and continues until the next section begins\. Section names are not case sensitive\. Only alphanumeric characters, \fI\-\fR and \fI\.\fR are allowed in section names\. Each variable must belong to some section, which means that there must be section header before first setting of a variable\.
+The file consists of sections and variables\. A section begins with the name of the section in square brackets and continues until the next section begins\. Section names are not case sensitive\. Only alphanumeric characters, \- and \. are allowed in section names\. Each variable must belong to some section, which means that there must be section header before first setting of a variable\.
 
 Sections can be further divided into subsections\. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in example below:
 
@@ -422,21 +422,21 @@ Sections can be further divided into subsections\. To begin a subsection put its
 
 .fi
 .RE
-Subsection names can contain any characters except newline (doublequote \fI"\fR and backslash have to be escaped as \fI\e"\fR and \fI\e\e\fR, respectively) and are case sensitive\. Section header cannot span multiple lines\. Variables may belong directly to a section or to a given subsection\. You can have [section] if you have [section "subsection"], but you don\'t need to\.
+Subsection names can contain any characters except newline (doublequote " and backslash have to be escaped as \e" and \e\e, respectively) and are case sensitive\. Section header cannot span multiple lines\. Variables may belong directly to a section or to a given subsection\. You can have [section] if you have [section "subsection"], but you don\'t need to\.
 
 There is also (case insensitive) alternative [section\.subsection] syntax\. In this syntax subsection names follow the same restrictions as for section name\.
 
-All the other lines are recognized as setting variables, in the form \fIname = value\fR\. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true"\. The variable names are case\-insensitive and only alphanumeric characters and \fI\-\fR are allowed\. There can be more than one value for a given variable; we say then that variable is multivalued\.
+All the other lines are recognized as setting variables, in the form \fIname = value\fR\. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true"\. The variable names are case\-insensitive and only alphanumeric characters and \- are allowed\. There can be more than one value for a given variable; we say then that variable is multivalued\.
 
 Leading and trailing whitespace in a variable value is discarded\. Internal whitespace within a variable value is retained verbatim\.
 
 The values following the equals sign in variable assign are all either a string, an integer, or a boolean\. Boolean values may be given as yes/no, 0/1 or true/false\. Case is not significant in boolean values, when converting value to the canonical form using \fI\-\-bool\fR type specifier; \fIgit\-config\fR will ensure that the output is "true" or "false"\.
 
-String values may be entirely or partially enclosed in double quotes\. You need to enclose variable value in double quotes if you want to preserve leading or trailing whitespace, or if variable value contains beginning of comment characters (if it contains \fI#\fR or \fI;\fR)\. Double quote \fI"\fR and backslash \fI\e\fR characters in variable value must be escaped: use \fI\e"\fR for \fI"\fR and \fI\e\e\fR for \fI\e\fR\.
+String values may be entirely or partially enclosed in double quotes\. You need to enclose variable value in double quotes if you want to preserve leading or trailing whitespace, or if variable value contains beginning of comment characters (if it contains \fI#\fR or \fI;\fR)\. Double quote " and backslash \e characters in variable value must be escaped: use \e" for " and \e\e for \e\.
 
-The following escape sequences (beside \fI\e"\fR and \fI\e\e\fR) are recognized: \fI\en\fR for newline character (NL), \fI\et\fR for horizontal tabulation (HT, TAB) and \fI\eb\fR for backspace (BS)\. No other char escape sequence, nor octal char sequences are valid\.
+The following escape sequences (beside \e" and \e\e) are recognized: \en for newline character (NL), \et for horizontal tabulation (HT, TAB) and \eb for backspace (BS)\. No other char escape sequence, nor octal char sequences are valid\.
 
-Variable value ending in a \fI\e\fR is continued on the next line in the customary UNIX fashion\.
+Variable value ending in a \e is continued on the next line in the customary UNIX fashion\.
 
 Some variables may require special value format\.
 .SS "Example"
@@ -526,6 +526,8 @@ core\.gitProxy
 A "proxy command" to execute (as \fIcommand host port\fR) instead of establishing direct connection to the remote server when using the git protocol for fetching\. If the variable value is in the "COMMAND for DOMAIN" format, the command is applied only on hostnames ending with the specified domain string\. This variable may be set multiple times and is matched in the given order; the first match wins\.
 
 Can be overridden by the \fIGIT_PROXY_COMMAND\fR environment variable (which always applies universally, without the special "for" handling)\.
+
+The special string none can be used as the proxy command to specify that no proxy be used for a given domain pattern\. This is useful for excluding servers inside a firewall from proxy use, while defaulting to a common proxy for external domains\.
 .RE
 .PP
 core\.ignoreStat
@@ -623,7 +625,7 @@ Commands such as commit and tag that lets you edit messages by launching an edit
 .PP
 core\.pager
 .RS 4
-The command that git will use to paginate output\. Can be overridden with the GIT_PAGER environment variable\. Note that git sets the LESS environment variable to FRSX if it is unset when it runs the pager\. One can change these settings by setting the LESS variable to some other value\. Alternately, these settings can be overridden on a project or global basis by setting the core\.pager option\. Setting core\.pager has no affect on the LESS environment variable behaviour above, so if you want to override git\'s default settings this way, you need to be explicit\. For example, to disable the S option in a backward compatible manner, set core\.pager to "less \-+$LESS \-FRX"\. This will be passed to the shell by git, which will translate the final command to "LESS=FRSX less \-+FRSX \-FRX"\.
+The command that git will use to paginate output\. Can be overridden with the GIT_PAGER environment variable\. Note that git sets the LESS environment variable to FRSX if it is unset when it runs the pager\. One can change these settings by setting the LESS variable to some other value\. Alternately, these settings can be overridden on a project or global basis by setting the core\.pager option\. Setting core\.pager has no affect on the LESS environment variable behaviour above, so if you want to override git\'s default settings this way, you need to be explicit\. For example, to disable the S option in a backward compatible manner, set core\.pager to less \-+$LESS \-FRX\. This will be passed to the shell by git, which will translate the final command to LESS=FRSX less \-+FRSX \-FRX\.
 .RE
 .PP
 core\.whitespace
@@ -1321,7 +1323,7 @@ The default maximum size of a pack\. This setting only affects packing to a file
 .PP
 pager\.<cmd>
 .RS 4
-Allows turning on or off pagination of the output of a particular git subcommand when writing to a tty\. If \-\-paginate or \-\-no\-pager is specified on the command line, it takes precedence over this option\. To disable pagination for all commands, set core\.pager or \fIGIT_PAGER\fR to "cat"\.
+Allows turning on or off pagination of the output of a particular git subcommand when writing to a tty\. If \-\-paginate or \-\-no\-pager is specified on the command line, it takes precedence over this option\. To disable pagination for all commands, set core\.pager or GIT_PAGER to cat\.
 .RE
 .PP
 pull\.octopus
