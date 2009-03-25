@@ -1,11 +1,11 @@
 .\"     Title: git-cvsimport
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 03/25/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.2.1.345.g89fb
 .\"
-.TH "GIT\-CVSIMPORT" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-CVSIMPORT" "1" "03/25/2009" "Git 1\.6\.2\.1\.345\.g89fb" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -27,6 +27,8 @@ git-cvsimport - Salvage your data out of another SCM people love to hate
 Imports a CVS repository into git\. It will either create a new repository, or incrementally import into an existing one\.
 
 Splitting the CVS log into patch sets is done by \fIcvsps\fR\. At least version 2\.1 is required\.
+
+\fBWARNING:\fR for certain situations the import leads to incorrect results\. Please see the section ISSUES for further reference\.
 
 You should \fBnever\fR do any work of your own on the branches that are created by \fIgit\-cvsimport\fR\. By default initial import will create and populate a "master" branch from the CVS repository\'s main branch which you\'re free to work with; after that, you need to \fIgit\-merge\fR incremental imports, or any CVS branches, yourself\. It is advisable to specify a named remote via \-r to separate and protect the incoming branches\.
 
@@ -162,6 +164,51 @@ Print a short usage message and exit\.
 If \fI\-v\fR is specified, the script reports what it is doing\.
 
 Otherwise, success is indicated the Unix way, i\.e\. by simply exiting with a zero exit status\.
+.SH "ISSUES"
+Problems related to timestamps:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'If timestamps of commits in the cvs repository are not stable enough to be used for ordering commits
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'If any files were ever "cvs import"ed more than once (e\.g\., import of more than one vendor release)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'If the timestamp order of different files cross the revision order within the commit matching time window
+.RE
+Problems related to branches:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Branches on which no commits have been made are not imported
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'All files from the branching point are added to a branch even if never added in cvs
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'files added to the source branch \fBafter\fR a daughter branch was created: If previously no commit was made on the daugther branch they will erroneously be added to the daughter branch in git
+.RE
+Problems related to tags:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Multiple tags on the same revision are not imported
+.RE
+If you suspect that any of these issues may apply to the repository you want to import consider using these alternative tools which proved to be more stable in practise:
+
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'cvs2git (part of cvs2svn), http://cvs2svn\.tigris\.org
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'parsecvs, http://cgit\.freedesktop\.org/~keithp/parsecvs
+.RE
 .SH "AUTHOR"
 Written by Matthias Urlichs <smurf@smurf\.noris\.de>, with help from various participants of the git\-list <git@vger\.kernel\.org>\.
 .SH "DOCUMENTATION"
