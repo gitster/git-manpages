@@ -1,11 +1,11 @@
 .\"     Title: git-init
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
 .\"    Source: Git 1.6.2.rc0.64.ge9cc0
 .\"
-.TH "GIT\-INIT" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-INIT" "1" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,6 +14,7 @@
 git-init - Create an empty git repository or reinitialize an existing one
 .SH "SYNOPSIS"
 \fIgit init\fR [\-q | \-\-quiet] [\-\-bare] [\-\-template=<template_directory>] [\-\-shared[=<permissions>]]
+.sp
 .SH "OPTIONS"
 .PP
 \-q, \-\-quiet
@@ -28,46 +29,81 @@ Create a bare repository\. If GIT_DIR environment is not set, it is set to the c
 .PP
 \-\-template=<template_directory>
 .RS 4
-Provide the directory from which templates will be used\. The default template directory is /usr/share/git\-core/templates\.
-
-When specified, <template_directory> is used as the source of the template files rather than the default\. The template files include some directory structure, some suggested "exclude patterns", and copies of non\-executing "hook" files\. The suggested patterns and hook files are all modifiable and extensible\.
+Provide the directory from which templates will be used\. The default template directory is
+/usr/share/git\-core/templates\.
+.sp
+When specified,
+<template_directory>
+is used as the source of the template files rather than the default\. The template files include some directory structure, some suggested "exclude patterns", and copies of non\-executing "hook" files\. The suggested patterns and hook files are all modifiable and extensible\.
 .RE
 .PP
 \-\-shared[={false|true|umask|group|all|world|everybody|0xxx}]
 .RS 4
-Specify that the git repository is to be shared amongst several users\. This allows users belonging to the same group to push into that repository\. When specified, the config variable "core\.sharedRepository" is set so that files and directories under $GIT_DIR are created with the requested permissions\. When not specified, git will use permissions reported by umask(2)\.
-
-The option can have the following values, defaulting to \fIgroup\fR if no value is given:
-
+Specify that the git repository is to be shared amongst several users\. This allows users belonging to the same group to push into that repository\. When specified, the config variable "core\.sharedRepository" is set so that files and directories under
+$GIT_DIR
+are created with the requested permissions\. When not specified, git will use permissions reported by umask(2)\.
+.sp
+The option can have the following values, defaulting to
+\fIgroup\fR
+if no value is given:
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'\fIumask\fR (or \fIfalse\fR): Use permissions reported by umask(2)\. The default, when \-\-shared is not specified\.
+\h'-04'\(bu\h'+03'
+\fIumask\fR
+(or
+\fIfalse\fR): Use permissions reported by umask(2)\. The default, when
+\-\-shared
+is not specified\.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'\fIgroup\fR (or \fItrue\fR): Make the repository group\-writable, (and g+sx, since the git group may be not the primary group of all users)\.
+\h'-04'\(bu\h'+03'
+\fIgroup\fR
+(or
+\fItrue\fR): Make the repository group\-writable, (and g+sx, since the git group may be not the primary group of all users)\.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'\fIall\fR (or \fIworld\fR or \fIeverybody\fR): Same as \fIgroup\fR, but make the repository readable by all users\.
+\h'-04'\(bu\h'+03'
+\fIall\fR
+(or
+\fIworld\fR
+or
+\fIeverybody\fR): Same as
+\fIgroup\fR, but make the repository readable by all users\.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'\fI0xxx\fR: \fI0xxx\fR is an octal number and each file will have mode \fI0xxx\fR Any option except \fIumask\fR can be set using this option\. \fI0xxx\fR will override users umask(2) value, and thus, users with a safe umask (0077) can use this option\. \fI0640\fR will create a repository which is group\-readable but not writable\. \fI0660\fR is equivalent to \fIgroup\fR\.
-
+\h'-04'\(bu\h'+03'
+\fI0xxx\fR:
+\fI0xxx\fR
+is an octal number and each file will have mode
+\fI0xxx\fR
+Any option except
+\fIumask\fR
+can be set using this option\.
+\fI0xxx\fR
+will override users umask(2) value, and thus, users with a safe umask (0077) can use this option\.
+\fI0640\fR
+will create a repository which is group\-readable but not writable\.
+\fI0660\fR
+is equivalent to
+\fIgroup\fR\.
+.sp
 By default, the configuration flag receive\.denyNonFastForwards is enabled in shared repositories, so that you cannot force a non fast\-forwarding push into it\.
 .RE
 .RE
 .SH "DESCRIPTION"
 This command creates an empty git repository \- basically a \.git directory with subdirectories for objects, refs/heads, refs/tags, and template files\. An initial HEAD file that references the HEAD of the master branch is also created\.
-
+.sp
 If the $GIT_DIR environment variable is set then it specifies a path to use instead of \./\.git for the base of the repository\.
-
+.sp
 If the object storage directory is specified via the $GIT_OBJECT_DIRECTORY environment variable then the sha1 directories are created underneath \- otherwise the default $GIT_DIR/objects directory is used\.
-
+.sp
 Running \fIgit\-init\fR in an existing repository is safe\. It will not overwrite things that are already there\. The primary reason for rerunning \fIgit\-init\fR is to pick up newly added templates\.
-
+.sp
 Note that \fIgit\-init\fR is the same as \fIgit\-init\-db\fR\. The command was primarily meant to initialize the object database, but over time it has become responsible for setting up the other aspects of the repository, such as installing the default hooks and setting the configuration variables\. The old name is retained for backward compatibility reasons\.
+.sp
 .SH "EXAMPLES"
 .PP
 Start a new git repository for an existing code base
@@ -92,8 +128,10 @@ $ git add \.     \fB(2)\fR
 .RE
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl\.org>
+.sp
 .SH "DOCUMENTATION"
 Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
-
+.sp

@@ -1,11 +1,11 @@
 .\"     Title: gittutorial-2
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
 .\"    Source: Git 1.6.2.rc0.64.ge9cc0
 .\"
-.TH "GITTUTORIAL\-2" "7" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GITTUTORIAL\-2" "7" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,13 +14,15 @@
 gittutorial-2 - A tutorial introduction to git: part two
 .SH "SYNOPSIS"
 git *
+.sp
 .SH "DESCRIPTION"
 You should work through \fBgittutorial\fR(7) before reading this tutorial\.
-
+.sp
 The goal of this tutorial is to introduce two fundamental pieces of git\'s architecture\-\-the object database and the index file\-\-and to provide the reader with everything necessary to understand the rest of the git documentation\.
+.sp
 .SH "THE GIT OBJECT DATABASE"
 Let\'s start a new project and create a small amount of history:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -45,13 +47,13 @@ $ git commit \-a \-m "add emphasis"
 .fi
 .RE
 What are the 7 digits of hex that git responded to the commit with?
-
+.sp
 We saw in part one of the tutorial that commits have names like this\. It turns out that every object in the git history is stored under a 40\-digit hex name\. That name is the SHA1 hash of the object\'s contents; among other things, this ensures that git will never store the same data twice (since identical data is given an identical SHA1 name), and that the contents of a git object will never change (since that would change the object\'s name as well)\. The 7 char hex strings here are simply the abbreviation of such 40 character long strings\. Abbreviations can be used everywhere where the 40 character strings can be used, so long as they are unambiguous\.
-
+.sp
 It is expected that the content of the commit object you created while following the example above generates a different SHA1 hash than the one shown above because the commit object records the time when it was created and the name of the person performing the commit\.
-
+.sp
 We can ask git about this particular object with the cat\-file command\. Don\'t copy the 40 hex digits from this example but use those from your own version\. Note that you can shorten it to only a few characters to save yourself typing all 40 hex digits:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -70,7 +72,7 @@ initial commit
 .fi
 .RE
 A tree can refer to one or more "blob" objects, each corresponding to a file\. In addition, a tree can also refer to other tree objects, thus creating a directory hierarchy\. You can examine the contents of any tree using ls\-tree (remember that a long enough initial portion of the SHA1 will also work):
-
+.sp
 .sp
 .RS 4
 .nf
@@ -83,7 +85,7 @@ $ git ls\-tree 92b8b694
 .fi
 .RE
 Thus we see that this tree has one file in it\. The SHA1 hash is a reference to that file\'s data:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -96,7 +98,7 @@ blob
 .fi
 .RE
 A "blob" is just file data, which we can also examine with cat\-file:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -109,9 +111,9 @@ hello world
 .fi
 .RE
 Note that this is the old file data; so the object that git named in its response to the initial tree was a tree with a snapshot of the directory state that was recorded by the first commit\.
-
+.sp
 All of these objects are stored under their SHA1 names inside the git directory:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -138,9 +140,9 @@ $ find \.git/objects/
 .fi
 .RE
 and the contents of these files is just the compressed data plus a header identifying their length and their type\. The type is either a blob, a tree, a commit, or a tag\.
-
+.sp
 The simplest commit to find is the HEAD commit, which we can find from \.git/HEAD:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -153,7 +155,7 @@ ref: refs/heads/master
 .fi
 .RE
 As you can see, this tells us which branch we\'re currently on, and it tells us this by naming a file under the \.git directory, which itself contains a SHA1 name referring to a commit object, which we can examine with cat\-file:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -175,7 +177,7 @@ add emphasis
 .fi
 .RE
 The "tree" object here refers to the new state of the tree:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -190,7 +192,7 @@ hello world!
 .fi
 .RE
 and the "parent" object refers to the previous commit:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -207,13 +209,13 @@ initial commit
 .fi
 .RE
 The tree object is the tree we examined first, and this commit is unusual in that it lacks any parent\.
-
+.sp
 Most commits have only one parent, but it is also common for a commit to have multiple parents\. In that case the commit represents a merge, with the parent references pointing to the heads of the merged branches\.
-
+.sp
 Besides blobs, trees, and commits, the only remaining type of object is a "tag", which we won\'t discuss here; refer to \fBgit-tag\fR(1) for details\.
-
+.sp
 So now we know how git uses the object database to represent a project\'s history:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'"commit" objects refer to "tree" objects representing the snapshot of a directory tree at a particular point in the history, and refer to "parent" commits to show how they\'re connected into the project history\.
@@ -235,15 +237,16 @@ So now we know how git uses the object database to represent a project\'s histor
 \h'-04'\(bu\h'+03'The name of the current branch is stored in \.git/HEAD\.
 .RE
 Note, by the way, that lots of commands take a tree as an argument\. But as we can see above, a tree can be referred to in many different ways\-\-by the SHA1 name for that tree, by the name of a commit that refers to the tree, by the name of a branch whose head refers to that tree, etc\.\-\-and most such commands can accept any of these names\.
-
+.sp
 In command synopses, the word "tree\-ish" is sometimes used to designate such an argument\.
+.sp
 .SH "THE INDEX FILE"
 The primary tool we\'ve been using to create commits is git\-commit \-a, which creates a commit including every change you\'ve made to your working tree\. But what if you want to commit changes only to certain files? Or only certain changes to certain files?
-
+.sp
 If we look at the way commits are created under the cover, we\'ll see that there are more flexible ways creating commits\.
-
+.sp
 Continuing with our test\-project, let\'s modify file\.txt again:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -255,7 +258,7 @@ $ echo "hello world, again" >>file\.txt
 .fi
 .RE
 but this time instead of immediately making the commit, let\'s take an intermediate step, and ask for diffs along the way to keep track of what\'s happening:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -274,7 +277,7 @@ $ git diff
 .fi
 .RE
 The last diff is empty, but no new commits have been made, and the head still doesn\'t contain the new line:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -293,7 +296,7 @@ index a042389\.\.513feba 100644
 .fi
 .RE
 So \fIgit\-diff\fR is comparing against something other than the head\. The thing that it\'s comparing against is actually the index file, which is stored in \.git/index in a binary format, but whose contents we can examine with ls\-files:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -311,7 +314,7 @@ hello world, again
 .fi
 .RE
 So what our \fIgit\-add\fR did was store a new blob and then put a reference to it in the index file\. If we modify the file again, we\'ll see that the new modifications are reflected in the \fIgit\-diff\fR output:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -331,7 +334,7 @@ index 513feba\.\.ba3da7b 100644
 .fi
 .RE
 With the right arguments, \fIgit\-diff\fR can also show us the difference between the working directory and the last commit, or between the index and the last commit:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -359,7 +362,7 @@ index a042389\.\.513feba 100644
 .fi
 .RE
 At any time, we can create a new commit using \fIgit\-commit\fR (without the "\-a" option), and verify that the state committed only includes the changes stored in the index file, not the additional change that is still only in our working tree:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -380,9 +383,9 @@ index 513feba\.\.ba3da7b 100644
 .fi
 .RE
 So by default \fIgit\-commit\fR uses the index to create the commit, not the working tree; the "\-a" option to commit tells it to first update the index with all changes in the working tree\.
-
+.sp
 Finally, it\'s worth looking at the effect of \fIgit\-add\fR on the index file:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -395,7 +398,7 @@ $ git add closing\.txt
 .fi
 .RE
 The effect of the \fIgit\-add\fR was to add one entry to the index file:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -409,7 +412,7 @@ $ git ls\-files \-\-stage
 .fi
 .RE
 And, as you can see with cat\-file, this new entry refers to the current contents of the file:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -422,7 +425,7 @@ goodbye, world
 .fi
 .RE
 The "status" command is a useful way to get a quick summary of the situation:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -445,24 +448,28 @@ $ git status
 .fi
 .RE
 Since the current state of closing\.txt is cached in the index file, it is listed as "Changes to be committed"\. Since file\.txt has changes in the working directory that aren\'t reflected in the index, it is marked "changed but not updated"\. At this point, running "git commit" would create a commit that added closing\.txt (with its new contents), but that didn\'t modify file\.txt\.
-
+.sp
 Also, note that a bare git diff shows the changes to file\.txt, but not the addition of closing\.txt, because the version of closing\.txt in the index file is identical to the one in the working directory\.
-
+.sp
 In addition to being the staging area for new commits, the index file is also populated from the object database when checking out a branch, and is used to hold the trees involved in a merge operation\. See \fBgitcore-tutorial\fR(7) and the relevant man pages for details\.
+.sp
 .SH "WHAT NEXT?"
 At this point you should know everything necessary to read the man pages for any of the git commands; one good place to start would be with the commands mentioned in \fIEveryday git\fR\&[1]\. You should be able to find any unknown jargon in \fBgitglossary\fR(7)\.
-
+.sp
 The \fIGit User\'s Manual\fR\&[2] provides a more comprehensive introduction to git\.
-
+.sp
 \fBgitcvs-migration\fR(7) explains how to import a CVS repository into git, and shows how to use git in a CVS\-like way\.
-
+.sp
 For some interesting examples of git use, see the \fIhowtos\fR\&[3]\.
-
+.sp
 For git developers, \fBgitcore-tutorial\fR(7) goes into detail on the lower\-level git mechanisms involved in, for example, creating a new commit\.
+.sp
 .SH "SEE ALSO"
 \fBgittutorial\fR(7), \fBgitcvs-migration\fR(7), \fBgitcore-tutorial\fR(7), \fBgitglossary\fR(7), \fBgit-help\fR(1), \fIEveryday git\fR\&[1], \fIThe Git User\'s Manual\fR\&[2]
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite\.
+.sp
 .SH "NOTES"
 .IP " 1." 4
 Everyday git

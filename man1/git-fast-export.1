@@ -1,11 +1,11 @@
 .\"     Title: git-fast-export
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
 .\"    Source: Git 1.6.2.rc0.64.ge9cc0
 .\"
-.TH "GIT\-FAST\-EXPORT" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-FAST\-EXPORT" "1" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,40 +14,54 @@
 git-fast-export - Git data exporter
 .SH "SYNOPSIS"
 \fIgit fast\-export [options]\fR | \fIgit fast\-import\fR
+.sp
 .SH "DESCRIPTION"
 This program dumps the given revisions in a form suitable to be piped into \fIgit\-fast\-import\fR\.
-
+.sp
 You can use it as a human\-readable bundle replacement (see \fBgit-bundle\fR(1)), or as a kind of an interactive \fIgit\-filter\-branch\fR\.
+.sp
 .SH "OPTIONS"
 .PP
 \-\-progress=<n>
 .RS 4
-Insert \fIprogress\fR statements every <n> objects, to be shown by \fIgit\-fast\-import\fR during import\.
+Insert
+\fIprogress\fR
+statements every <n> objects, to be shown by
+\fIgit\-fast\-import\fR
+during import\.
 .RE
 .PP
 \-\-signed\-tags=(verbatim|warn|strip|abort)
 .RS 4
 Specify how to handle signed tags\. Since any transformation after the export can change the tag names (which can also happen when excluding revisions) the signatures will not match\.
-
-When asking to \fIabort\fR (which is the default), this program will die when encountering a signed tag\. With \fIstrip\fR, the tags will be made unsigned, with \fIverbatim\fR, they will be silently exported and with \fIwarn\fR, they will be exported, but you will see a warning\.
+.sp
+When asking to
+\fIabort\fR
+(which is the default), this program will die when encountering a signed tag\. With
+\fIstrip\fR, the tags will be made unsigned, with
+\fIverbatim\fR, they will be silently exported and with
+\fIwarn\fR, they will be exported, but you will see a warning\.
 .RE
 .PP
 \-M, \-C
 .RS 4
-Perform move and/or copy detection, as described in the \fBgit-diff\fR(1) manual page, and use it to generate rename and copy commands in the output dump\.
-
+Perform move and/or copy detection, as described in the
+\fBgit-diff\fR(1)
+manual page, and use it to generate rename and copy commands in the output dump\.
+.sp
 Note that earlier versions of this command did not complain and produced incorrect results if you gave these options\.
 .RE
 .PP
 \-\-export\-marks=<file>
 .RS 4
-Dumps the internal marks table to <file> when complete\. Marks are written one per line as :markid SHA\-1\. Only marks for revisions are dumped; marks for blobs are ignored\. Backends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs\. As <file> is only opened and truncated at completion, the same path can also be safely given to \-\-import\-marks\.
+Dumps the internal marks table to <file> when complete\. Marks are written one per line as
+:markid SHA\-1\. Only marks for revisions are dumped; marks for blobs are ignored\. Backends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs\. As <file> is only opened and truncated at completion, the same path can also be safely given to \-\-import\-marks\.
 .RE
 .PP
 \-\-import\-marks=<file>
 .RS 4
 Before processing any input, load the marks specified in <file>\. The input file must exist, must be readable, and must use the same format as produced by \-\-export\-marks\.
-
+.sp
 Any commits that have already been marked will not be exported again\. If the backend uses a similar \-\-import\-marks file, this allows for incremental bidirectional exporting of the repository by keeping the marks the same across runs\.
 .RE
 .PP
@@ -67,7 +81,7 @@ $ git fast\-export \-\-all | (cd /empty/repository && git fast\-import)
 .fi
 .RE
 This will export the whole repository and import it into the existing empty repository\. Except for reencoding commits that are not in UTF\-8, it would be a one\-to\-one mirror\.
-
+.sp
 .sp
 .RS 4
 .nf
@@ -81,14 +95,18 @@ $ git fast\-export master~5\.\.master |
 .fi
 .RE
 This makes a new branch called \fIother\fR from \fImaster~5\.\.master\fR (i\.e\. if \fImaster\fR has linear history, it will take the last 5 commits)\.
-
+.sp
 Note that this assumes that none of the blobs and commit messages referenced by that revision range contains the string \fIrefs/heads/master\fR\.
+.sp
 .SH "LIMITATIONS"
 Since \fIgit\-fast\-import\fR cannot tag trees, you will not be able to export the linux\-2\.6\.git repository completely, as it contains a tag referencing a tree instead of a commit\.
+.sp
 .SH "AUTHOR"
 Written by Johannes E\. Schindelin <johannes\.schindelin@gmx\.de>\.
+.sp
 .SH "DOCUMENTATION"
 Documentation by Johannes E\. Schindelin <johannes\.schindelin@gmx\.de>\.
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
-
+.sp

@@ -1,11 +1,11 @@
 .\"     Title: git-format-patch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 03/22/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.1.299.g88f78
+.\"    Source: Git 1.6.2.1.469.gdffc
 .\"
-.TH "GIT\-FORMAT\-PATCH" "1" "03/22/2009" "Git 1\.6\.2\.1\.299\.g88f78" "Git Manual"
+.TH "GIT\-FORMAT\-PATCH" "1" "04/02/2009" "Git 1\.6\.2\.1\.469\.gdffc" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -32,26 +32,28 @@ git-format-patch - Prepare patches for e-mail submission
 .RE
 .SH "DESCRIPTION"
 Prepare each commit with its patch in one file per commit, formatted to resemble UNIX mailbox format\. The output of this command is convenient for e\-mail submission or for use with \fIgit\-am\fR\.
-
+.sp
 There are two ways to specify which commits to operate on\.
-
+.sp
 .sp
 .RS 4
 \h'-04' 1.\h'+02'A single commit, <since>, specifies that the commits leading to the tip of the current branch that are not in the history that leads to the <since> to be output\.
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'Generic <revision range> expression (see "SPECIFYING REVISIONS" section in \fBgit-rev-parse\fR(1)) means the commits in the specified range\.
+\h'-04' 2.\h'+02'Generic <revision range> expression (see "SPECIFYING REVISIONS" section in
+\fBgit-rev-parse\fR(1)) means the commits in the specified range\.
 .RE
-A single commit, when interpreted as a <revision range> expression, means "everything that leads to that commit", but if you write \fIgit format\-patch <commit>\fR, the previous rule applies to that command line and you do not get "everything since the beginning of the time"\. If you want to format everything since project inception to one commit, say "git format\-patch \-\-root <commit>" to make it clear that it is the latter case\. If you want to format a single commit, you can do this with "git format\-patch \-1 <commit>"\.
-
+The first rule takes precedence in the case of a single <commit>\. To apply the second rule, i\.e\., format everything since the beginning of history up until <commit>, use the \fI\-\-root\fR option: "git format\-patch \-\-root <commit>"\. If you want to format only <commit> itself, you can do this with "git format\-patch \-1 <commit>"\.
+.sp
 By default, each output file is numbered sequentially from 1, and uses the first line of the commit message (massaged for pathname safety) as the filename\. With the \-\-numbered\-files option, the output file names will only be numbers, without the first line of the commit appended\. The names of the output files are printed to standard output, unless the \-\-stdout option is specified\.
-
+.sp
 If \-o is specified, output files are created in <dir>\. Otherwise they are created in the current working directory\.
-
+.sp
 By default, the subject of a single patch is "[PATCH] First Line" and the subject when multiple patches are output is "[PATCH n/m] First Line"\. To force 1/1 to be added for a single patch, use \-n\. To omit patch numbers from the subject, use \-N
-
+.sp
 If given \-\-thread, \fIgit\-format\-patch\fR will generate In\-Reply\-To and References headers to make the second and subsequent patch mails appear as replies to the first mail; this also generates a Message\-Id header to reference\.
+.sp
 .SH "OPTIONS"
 .PP
 \-p
@@ -86,7 +88,10 @@ Generate a diffstat\. You can override the default output width for 80\-column t
 .PP
 \-\-numstat
 .RS 4
-Similar to \-\-stat, but shows number of added and deleted lines in decimal notation and pathname without abbreviation, to make it more machine friendly\. For binary files, outputs two \- instead of saying 0 0\.
+Similar to \-\-stat, but shows number of added and deleted lines in decimal notation and pathname without abbreviation, to make it more machine friendly\. For binary files, outputs two
+\-
+instead of saying
+0 0\.
 .RE
 .PP
 \-\-shortstat
@@ -126,7 +131,9 @@ Show only names of changed files\.
 .PP
 \-\-name\-status
 .RS 4
-Show only names and status of changed files\. See the description of the \-\-diff\-filter option on what the status letters mean\.
+Show only names and status of changed files\. See the description of the
+\-\-diff\-filter
+option on what the status letters mean\.
 .RE
 .PP
 \-\-color
@@ -142,10 +149,15 @@ Turn off colored diff, even when the configuration file gives the default to col
 \-\-color\-words[=<regex>]
 .RS 4
 Show colored word diff, i\.e\., color words which have changed\. By default, words are separated by whitespace\.
-
-When a <regex> is specified, every non\-overlapping match of the <regex> is considered a word\. Anything between these matches is considered whitespace and ignored(!) for the purposes of finding differences\. You may want to append |[^[:space:]] to your regular expression to make sure that it matches all non\-whitespace characters\. A match that contains a newline is silently truncated(!) at the newline\.
-
-The regex can also be set via a diff driver or configuration option, see \fBgitattributes\fR(1) or \fBgit-config\fR(1)\. Giving it explicitly overrides any diff driver or configuration setting\. Diff drivers override configuration settings\.
+.sp
+When a <regex> is specified, every non\-overlapping match of the <regex> is considered a word\. Anything between these matches is considered whitespace and ignored(!) for the purposes of finding differences\. You may want to append
+|[^[:space:]]
+to your regular expression to make sure that it matches all non\-whitespace characters\. A match that contains a newline is silently truncated(!) at the newline\.
+.sp
+The regex can also be set via a diff driver or configuration option, see
+\fBgitattributes\fR(1)
+or
+\fBgit-config\fR(1)\. Giving it explicitly overrides any diff driver or configuration setting\. Diff drivers override configuration settings\.
 .RE
 .PP
 \-\-no\-renames
@@ -185,17 +197,24 @@ Detect renames\.
 .PP
 \-C
 .RS 4
-Detect copies as well as renames\. See also \-\-find\-copies\-harder\.
+Detect copies as well as renames\. See also
+\-\-find\-copies\-harder\.
 .RE
 .PP
 \-\-diff\-filter=[ACDMRTUXB*]
 .RS 4
-Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), have their type (i\.e\. regular file, symlink, submodule, \&...) changed (T), are Unmerged (U), are Unknown (X), or have had their pairing Broken (B)\. Any combination of the filter characters may be used\. When * (All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected\.
+Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), have their type (i\.e\. regular file, symlink, submodule, \&...) changed (T), are Unmerged (U), are Unknown (X), or have had their pairing Broken (B)\. Any combination of the filter characters may be used\. When
+*
+(All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected\.
 .RE
 .PP
 \-\-find\-copies\-harder
 .RS 4
-For performance reasons, by default, \-C option finds copies only if the original file of the copy was modified in the same changeset\. This flag makes the command inspect unmodified files as candidates for the source of copy\. This is a very expensive operation for large projects, so use it with caution\. Giving more than one \-C option has the same effect\.
+For performance reasons, by default,
+\-C
+option finds copies only if the original file of the copy was modified in the same changeset\. This flag makes the command inspect unmodified files as candidates for the source of copy\. This is a very expensive operation for large projects, so use it with caution\. Giving more than one
+\-C
+option has the same effect\.
 .RE
 .PP
 \-l<num>
@@ -205,7 +224,11 @@ For performance reasons, by default, \-C option finds copies only if the origina
 .PP
 \-S<string>
 .RS 4
-Look for differences that introduce or remove an instance of <string>\. Note that this is different than the string simply appearing in diff output; see the \fIpickaxe\fR entry in \fBgitdiffcore\fR(7) for more details\.
+Look for differences that introduce or remove an instance of <string>\. Note that this is different than the string simply appearing in diff output; see the
+\fIpickaxe\fR
+entry in
+\fBgitdiffcore\fR(7)
+for more details\.
 .RE
 .PP
 \-\-pickaxe\-all
@@ -270,7 +293,10 @@ Disable all output of the program\. Implies \-\-exit\-code\.
 .PP
 \-\-ext\-diff
 .RS 4
-Allow an external diff helper to be executed\. If you set an external diff driver with \fBgitattributes\fR(5), you need to use this option with \fBgit-log\fR(1) and friends\.
+Allow an external diff helper to be executed\. If you set an external diff driver with
+\fBgitattributes\fR(5), you need to use this option with
+\fBgit-log\fR(1)
+and friends\.
 .RE
 .PP
 \-\-no\-ext\-diff
@@ -311,12 +337,16 @@ Use <dir> to store the resulting files, instead of the current working directory
 .PP
 \-n, \-\-numbered
 .RS 4
-Name output in \fI[PATCH n/m]\fR format, even with a single patch\.
+Name output in
+\fI[PATCH n/m]\fR
+format, even with a single patch\.
 .RE
 .PP
 \-N, \-\-no\-numbered
 .RS 4
-Name output in \fI[PATCH]\fR format\.
+Name output in
+\fI[PATCH]\fR
+format\.
 .RE
 .PP
 \-\-start\-number <n>
@@ -331,12 +361,16 @@ Output file names will be a simple number sequence without the default first lin
 .PP
 \-k, \-\-keep\-subject
 .RS 4
-Do not strip/add \fI[PATCH]\fR from the first line of the commit log message\.
+Do not strip/add
+\fI[PATCH]\fR
+from the first line of the commit log message\.
 .RE
 .PP
 \-s, \-\-signoff
 .RS 4
-Add Signed\-off\-by: line to the commit message, using the committer identity of yourself\.
+Add
+Signed\-off\-by:
+line to the commit message, using the committer identity of yourself\.
 .RE
 .PP
 \-\-stdout
@@ -362,8 +396,20 @@ Create multipart/mixed attachment, the first part of which is the commit message
 \-\-thread[=<style>]
 .RS 4
 Add In\-Reply\-To and References headers to make the second and subsequent mails appear as replies to the first\. Also generates the Message\-Id header to reference\.
-
-The optional <style> argument can be either shallow or deep\. \fIShallow\fR threading makes every mail a reply to the head of the series, where the head is chosen from the cover letter, the \-\-in\-reply\-to, and the first patch mail, in this order\. \fIDeep\fR threading makes every mail a reply to the previous one\. If not specified, defaults to the \fIformat\.thread\fR configuration, or shallow if that is not set\.
+.sp
+The optional <style> argument can be either
+shallow
+or
+deep\.
+\fIShallow\fR
+threading makes every mail a reply to the head of the series, where the head is chosen from the cover letter, the
+\-\-in\-reply\-to, and the first patch mail, in this order\.
+\fIDeep\fR
+threading makes every mail a reply to the previous one\. If not specified, defaults to the
+\fIformat\.thread\fR
+configuration, or
+shallow
+if that is not set\.
 .RE
 .PP
 \-\-in\-reply\-to=Message\-Id
@@ -378,12 +424,20 @@ Do not include a patch that matches a commit in <until>\.\.<since>\. This will e
 .PP
 \-\-subject\-prefix=<Subject\-Prefix>
 .RS 4
-Instead of the standard \fI[PATCH]\fR prefix in the subject line, instead use \fI[<Subject\-Prefix>]\fR\. This allows for useful naming of a patch series, and can be combined with the \-\-numbered option\.
+Instead of the standard
+\fI[PATCH]\fR
+prefix in the subject line, instead use
+\fI[<Subject\-Prefix>]\fR\. This allows for useful naming of a patch series, and can be combined with the \-\-numbered option\.
 .RE
 .PP
 \-\-cc=<email>
 .RS 4
 Add a "Cc:" header to the email headers\. This is in addition to any configured headers, and may be used multiple times\.
+.RE
+.PP
+\-\-add\-header=<header>
+.RS 4
+Add an arbitrary header to the email headers\. This is in addition to any configured headers, and may be used multiple times\. For example, \-\-add\-header="Organization: git\-foo"
 .RE
 .PP
 \-\-cover\-letter
@@ -393,18 +447,29 @@ In addition to the patches, generate a cover letter file containing the shortlog
 .PP
 \-\-suffix=\.<sfx>
 .RS 4
-Instead of using \.patch as the suffix for generated filenames, use specified suffix\. A common alternative is \-\-suffix=\.txt\.
-
-Note that you would need to include the leading dot \. if you want a filename like 0001\-description\-of\-my\-change\.patch, and the first letter does not have to be a dot\. Leaving it empty would not add any suffix\.
+Instead of using
+\.patch
+as the suffix for generated filenames, use specified suffix\. A common alternative is
+\-\-suffix=\.txt\.
+.sp
+Note that you would need to include the leading dot
+\.
+if you want a filename like
+0001\-description\-of\-my\-change\.patch, and the first letter does not have to be a dot\. Leaving it empty would not add any suffix\.
 .RE
 .PP
 \-\-no\-binary
 .RS 4
 Don\'t output contents of changes in binary files, just take note that they differ\. Note that this disable the patch to be properly applied\. By default the contents of changes in those files are encoded in the patch\.
 .RE
+.PP
+\-\-root
+.RS 4
+Treat the revision argument as a <revision range>, even if it is just a single commit (that would normally be treated as a <since>)\. Note that root commits included in the specified range are always formatted as creation patches, independently of this flag\.
+.RE
 .SH "CONFIGURATION"
 You can specify extra mail header lines to be added to each message in the repository configuration, new defaults for the subject prefix and file suffix, control attachements, and number patches when outputting more than one\.
-
+.sp
 .sp
 .RS 4
 .nf
@@ -424,8 +489,9 @@ You can specify extra mail header lines to be added to each message in the repos
 .SH "EXAMPLES"
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Extract commits between revisions R1 and R2, and apply them on top of the current branch using \fIgit\-am\fR to cherry\-pick them:
-
+\h'-04'\(bu\h'+03'Extract commits between revisions R1 and R2, and apply them on top of the current branch using
+\fIgit\-am\fR
+to cherry\-pick them:
 .sp
 .RS 4
 .nf
@@ -440,7 +506,6 @@ $ git format\-patch \-k \-\-stdout R1\.\.R2 | git am \-3 \-k
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'Extract all commits which are in the current branch but not in the origin branch:
-
 .sp
 .RS 4
 .nf
@@ -455,8 +520,9 @@ For each commit a separate file is created in the current directory\.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Extract all commits that lead to \fIorigin\fR since the inception of the project:
-
+\h'-04'\(bu\h'+03'Extract all commits that lead to
+\fIorigin\fR
+since the inception of the project:
 .sp
 .RS 4
 .nf
@@ -471,7 +537,6 @@ $ git format\-patch \-\-root origin
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'The same as the previous one:
-
 .sp
 .RS 4
 .nf
@@ -487,7 +552,6 @@ Additionally, it detects and handles renames and complete rewrites intelligently
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'Extract three topmost commits from the current branch and format them as e\-mailable patches:
-
 .sp
 .RS 4
 .nf
@@ -501,10 +565,13 @@ $ git format\-patch \-3
 .RE
 .SH "SEE ALSO"
 \fBgit-am\fR(1), \fBgit-send-email\fR(1)
+.sp
 .SH "AUTHOR"
 Written by Junio C Hamano <gitster@pobox\.com>
+.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
-
+.sp

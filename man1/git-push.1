@@ -1,11 +1,11 @@
 .\"     Title: git-push
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 03/18/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
 .\"    Source: Git 1.6.2.1.147.g642d0
 .\"
-.TH "GIT\-PUSH" "1" "03/18/2009" "Git 1\.6\.2\.1\.147\.g642d0" "Git Manual"
+.TH "GIT\-PUSH" "1" "04/02/2009" "Git 1\.6\.2\.1\.147\.g642d0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -23,40 +23,71 @@ git-push - Update remote refs along with associated objects
 .RE
 .SH "DESCRIPTION"
 Updates remote refs using local refs, while sending objects necessary to complete the given refs\.
-
+.sp
 You can make interesting things happen to a repository every time you push into it, by setting up \fIhooks\fR there\. See documentation for \fBgit-receive-pack\fR(1)\.
+.sp
 .SH "OPTIONS"
 .PP
 <repository>
 .RS 4
-The "remote" repository that is destination of a push operation\. This parameter can be either a URL (see the section GIT URLS below) or the name of a remote (see the section REMOTES below)\.
+The "remote" repository that is destination of a push operation\. This parameter can be either a URL (see the section
+GIT URLS
+below) or the name of a remote (see the section
+REMOTES
+below)\.
 .RE
 .PP
 <refspec>\&...
 .RS 4
-The format of a <refspec> parameter is an optional plus +, followed by the source ref <src>, followed by a colon :, followed by the destination ref <dst>\. It is used to specify with what <src> object the <dst> ref in the remote repository is to be updated\.
-
-The <src> is often the name of the branch you would want to push, but it can be any arbitrary "SHA\-1 expression", such as master~4 or HEAD (see \fBgit-rev-parse\fR(1))\.
-
-The <dst> tells which ref on the remote side is updated with this push\. Arbitrary expressions cannot be used here, an actual ref must be named\. If :<dst> is omitted, the same ref as <src> will be updated\.
-
-The object referenced by <src> is used to update the <dst> reference on the remote side, but by default this is only allowed if the update can fast forward <dst>\. By having the optional leading +, you can tell git to update the <dst> ref even when the update is not a fast forward\. This does \fBnot\fR attempt to merge <src> into <dst>\. See EXAMPLES below for details\.
-
-tag <tag> means the same as refs/tags/<tag>:refs/tags/<tag>\.
-
+The format of a <refspec> parameter is an optional plus
++, followed by the source ref <src>, followed by a colon
+:, followed by the destination ref <dst>\. It is used to specify with what <src> object the <dst> ref in the remote repository is to be updated\.
+.sp
+The <src> is often the name of the branch you would want to push, but it can be any arbitrary "SHA\-1 expression", such as
+master~4
+or
+HEAD
+(see
+\fBgit-rev-parse\fR(1))\.
+.sp
+The <dst> tells which ref on the remote side is updated with this push\. Arbitrary expressions cannot be used here, an actual ref must be named\. If
+:<dst> is omitted, the same ref as <src> will be updated\.
+.sp
+The object referenced by <src> is used to update the <dst> reference on the remote side, but by default this is only allowed if the update can fast forward <dst>\. By having the optional leading
++, you can tell git to update the <dst> ref even when the update is not a fast forward\. This does
+\fBnot\fR
+attempt to merge <src> into <dst>\. See EXAMPLES below for details\.
+.sp
+tag <tag>
+means the same as
+refs/tags/<tag>:refs/tags/<tag>\.
+.sp
 Pushing an empty <src> allows you to delete the <dst> ref from the remote repository\.
-
-The special refspec : (or +: to allow non\-fast forward updates) directs git to push "matching" branches: for every branch that exists on the local side, the remote side is updated if a branch of the same name already exists on the remote side\. This is the default operation mode if no explicit refspec is found (that is neither on the command line nor in any Push line of the corresponding remotes file\-\-\-see below)\.
+.sp
+The special refspec
+:
+(or
++:
+to allow non\-fast forward updates) directs git to push "matching" branches: for every branch that exists on the local side, the remote side is updated if a branch of the same name already exists on the remote side\. This is the default operation mode if no explicit refspec is found (that is neither on the command line nor in any Push line of the corresponding remotes file\-\-\-see below)\.
 .RE
 .PP
 \-\-all
 .RS 4
-Instead of naming each ref to push, specifies that all refs under $GIT_DIR/refs/heads/ be pushed\.
+Instead of naming each ref to push, specifies that all refs under
+$GIT_DIR/refs/heads/
+be pushed\.
 .RE
 .PP
 \-\-mirror
 .RS 4
-Instead of naming each ref to push, specifies that all refs under $GIT_DIR/refs/ (which includes but is not limited to refs/heads/, refs/remotes/, and refs/tags/) be mirrored to the remote repository\. Newly created local refs will be pushed to the remote end, locally updated refs will be force updated on the remote end, and deleted refs will be removed from the remote end\. This is the default if the configuration option remote\.<remote>\.mirror is set\.
+Instead of naming each ref to push, specifies that all refs under
+$GIT_DIR/refs/
+(which includes but is not limited to
+refs/heads/,
+refs/remotes/, and
+refs/tags/) be mirrored to the remote repository\. Newly created local refs will be pushed to the remote end, locally updated refs will be force updated on the remote end, and deleted refs will be removed from the remote end\. This is the default if the configuration option
+remote\.<remote>\.mirror
+is set\.
 .RE
 .PP
 \-\-dry\-run
@@ -66,12 +97,16 @@ Do everything except actually send the updates\.
 .PP
 \-\-tags
 .RS 4
-All refs under $GIT_DIR/refs/tags are pushed, in addition to refspecs explicitly listed on the command line\.
+All refs under
+$GIT_DIR/refs/tags
+are pushed, in addition to refspecs explicitly listed on the command line\.
 .RE
 .PP
 \-\-receive\-pack=<git\-receive\-pack>, \-\-exec=<git\-receive\-pack>
 .RS 4
-Path to the \fIgit\-receive\-pack\fR program on the remote end\. Sometimes useful when pushing to a remote repository over ssh, and you do not have the program in a directory on the default $PATH\.
+Path to the
+\fIgit\-receive\-pack\fR
+program on the remote end\. Sometimes useful when pushing to a remote repository over ssh, and you do not have the program in a directory on the default $PATH\.
 .RE
 .PP
 \-f, \-\-force
@@ -81,8 +116,9 @@ Usually, the command refuses to update a remote ref that is not an ancestor of t
 .PP
 \-\-repo=<repository>
 .RS 4
-This option is only relevant if no <repository> argument is passed in the invocation\. In this case, \fIgit\-push\fR derives the remote name from the current branch: If it tracks a remote branch, then that remote repository is pushed to\. Otherwise, the name "origin" is used\. For this latter case, this option can be used to override the name "origin"\. In other words, the difference between these two commands
-
+This option is only relevant if no <repository> argument is passed in the invocation\. In this case,
+\fIgit\-push\fR
+derives the remote name from the current branch: If it tracks a remote branch, then that remote repository is pushed to\. Otherwise, the name "origin" is used\. For this latter case, this option can be used to override the name "origin"\. In other words, the difference between these two commands
 .sp
 .RS 4
 .nf
@@ -94,12 +130,14 @@ git push \-\-repo=public  #2
 
 .fi
 .RE
-is that #1 always pushes to "public" whereas #2 pushes to "public" only if the current branch does not track a remote branch\. This is useful if you write an alias or script around \fIgit\-push\fR\.
+is that #1 always pushes to "public" whereas #2 pushes to "public" only if the current branch does not track a remote branch\. This is useful if you write an alias or script around
+\fIgit\-push\fR\.
 .RE
 .PP
 \-\-thin, \-\-no\-thin
 .RS 4
-These options are passed to \fIgit\-send\-pack\fR\. Thin transfer spends extra cycles to minimize the number of objects to be sent and meant to be used on slower connection\.
+These options are passed to
+\fIgit\-send\-pack\fR\. Thin transfer spends extra cycles to minimize the number of objects to be sent and meant to be used on slower connection\.
 .RE
 .PP
 \-v, \-\-verbose
@@ -108,7 +146,7 @@ Run verbosely\.
 .RE
 .SH "GIT URLS"
 One of the following notations can be used to name the remote repository:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'rsync://host\.xz/path/to/repo\.git/
@@ -146,7 +184,7 @@ One of the following notations can be used to name the remote repository:
 \h'-04'\(bu\h'+03'ssh://[user@]host\.xz/~/path/to/repo\.git
 .RE
 SSH is the default transport protocol over the network\. You can optionally specify which user to log\-in as, and an alternate, scp\-like syntax is also supported\. Both syntaxes support username expansion, as does the native git protocol, but only the former supports port specification\. The following three are identical to the last three above, respectively:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'[user@]host\.xz:/path/to/repo\.git/
@@ -160,7 +198,7 @@ SSH is the default transport protocol over the network\. You can optionally spec
 \h'-04'\(bu\h'+03'[user@]host\.xz:path/to/repo\.git
 .RE
 To sync with a local directory, you can use:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'/path/to/repo\.git/
@@ -170,9 +208,9 @@ To sync with a local directory, you can use:
 \h'-04'\(bu\h'+03'file:///path/to/repo\.git/
 .RE
 They are mostly equivalent, except when cloning\. See \fBgit-clone\fR(1) for details\.
-
+.sp
 If there are a large number of similarly\-named remote repositories and you want to use a different format for them (such that the URLs you use will be rewritten into URLs that work), you can create a configuration section of the form:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -185,7 +223,7 @@ If there are a large number of similarly\-named remote repositories and you want
 .fi
 .RE
 For example, with this:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -199,25 +237,32 @@ For example, with this:
 .fi
 .RE
 a URL like "work:repo\.git" or like "host\.xz:/path/to/repo\.git" will be rewritten in any context that takes a URL to be "git://git\.host\.xz/repo\.git"\.
+.sp
 .SH "REMOTES"
 The name of one of the following can be used instead of a URL as <repository> argument:
-
+.sp
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'a remote in the git configuration file: $GIT_DIR/config,
+\h'-04'\(bu\h'+03'a remote in the git configuration file:
+$GIT_DIR/config,
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'a file in the $GIT_DIR/remotes directory, or
+\h'-04'\(bu\h'+03'a file in the
+$GIT_DIR/remotes
+directory, or
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'a file in the $GIT_DIR/branches directory\.
+\h'-04'\(bu\h'+03'a file in the
+$GIT_DIR/branches
+directory\.
 .RE
 All of these also allow you to omit the refspec from the command line because they each contain a refspec which git will use by default\.
+.sp
 .SS "Named remote in configuration file"
 You can choose to provide the name of a remote which you had previously configured using \fBgit-remote\fR(1), \fBgit-config\fR(1) or even by a manual edit to the $GIT_DIR/config file\. The URL of this remote will be used to access the repository\. The refspec of this remote will be used by default when you do not provide a refspec on the command line\. The entry in the config file would appear like this:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -233,7 +278,7 @@ You can choose to provide the name of a remote which you had previously configur
 .RE
 .SS "Named file in $GIT_DIR/remotes"
 You can choose to provide the name of a file in $GIT_DIR/remotes\. The URL in this file will be used to access the repository\. The refspec in this file will be used as default when you do not provide a refspec on the command line\. This file should have the following format:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -248,9 +293,10 @@ You can choose to provide the name of a file in $GIT_DIR/remotes\. The URL in th
 .fi
 .RE
 Push: lines are used by \fIgit\-push\fR and Pull: lines are used by \fIgit\-pull\fR and \fIgit\-fetch\fR\. Multiple Push: and Pull: lines may be specified for additional branch mappings\.
+.sp
 .SS "Named file in $GIT_DIR/branches"
 You can choose to provide the name of a file in $GIT_DIR/branches\. The URL in this file will be used to access the repository\. This file should have the following format:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -262,11 +308,11 @@ You can choose to provide the name of a file in $GIT_DIR/branches\. The URL in t
 .fi
 .RE
 <url> is required; #<head> is optional\.
-
+.sp
 Depending on the operation, git will use one of the following refspecs, if you don\'t provide one on the command line\. <branch> is the name of this file in $GIT_DIR/branches and <head> defaults to master\.
-
+.sp
 git fetch uses:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -278,7 +324,7 @@ git fetch uses:
 .fi
 .RE
 git push uses:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -291,9 +337,9 @@ git push uses:
 .RE
 .SH "OUTPUT"
 The output of "git push" depends on the transport method used; this section describes the output when pushing over the git protocol (either locally or via ssh)\.
-
+.sp
 The status of the push is output in tabular form, with each line representing the status of a single ref\. Each line is of the form:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -307,22 +353,44 @@ The status of the push is output in tabular form, with each line representing th
 .PP
 flag
 .RS 4
-A single character indicating the status of the ref\. This is blank for a successfully pushed ref, ! for a ref that was rejected or failed to push, and \fI=\fR for a ref that was up to date and did not need pushing (note that the status of up to date refs is shown only when git push is running verbosely)\.
+A single character indicating the status of the ref\. This is blank for a successfully pushed ref,
+!
+for a ref that was rejected or failed to push, and
+\fI=\fR
+for a ref that was up to date and did not need pushing (note that the status of up to date refs is shown only when
+git push
+is running verbosely)\.
 .RE
 .PP
 summary
 .RS 4
-For a successfully pushed ref, the summary shows the old and new values of the ref in a form suitable for using as an argument to git log (this is <old>\.\.<new> in most cases, and <old>\&...<new> for forced non\-fast forward updates)\. For a failed update, more details are given for the failure\. The string rejected indicates that git did not try to send the ref at all (typically because it is not a fast forward)\. The string remote rejected indicates that the remote end refused the update; this rejection is typically caused by a hook on the remote side\. The string remote failure indicates that the remote end did not report the successful update of the ref (perhaps because of a temporary error on the remote side, a break in the network connection, or other transient error)\.
+For a successfully pushed ref, the summary shows the old and new values of the ref in a form suitable for using as an argument to
+git log
+(this is
+<old>\.\.<new>
+in most cases, and
+<old>\&...<new>
+for forced non\-fast forward updates)\. For a failed update, more details are given for the failure\. The string
+rejected
+indicates that git did not try to send the ref at all (typically because it is not a fast forward)\. The string
+remote rejected
+indicates that the remote end refused the update; this rejection is typically caused by a hook on the remote side\. The string
+remote failure
+indicates that the remote end did not report the successful update of the ref (perhaps because of a temporary error on the remote side, a break in the network connection, or other transient error)\.
 .RE
 .PP
 from
 .RS 4
-The name of the local ref being pushed, minus its refs/<type>/ prefix\. In the case of deletion, the name of the local ref is omitted\.
+The name of the local ref being pushed, minus its
+refs/<type>/
+prefix\. In the case of deletion, the name of the local ref is omitted\.
 .RE
 .PP
 to
 .RS 4
-The name of the remote ref being updated, minus its refs/<type>/ prefix\.
+The name of the remote ref being updated, minus its
+refs/<type>/
+prefix\.
 .RE
 .PP
 reason
@@ -333,26 +401,46 @@ A human\-readable explanation\. In the case of successfully pushed refs, no expl
 .PP
 git push
 .RS 4
-Works like git push <remote>, where <remote> is the current branch\'s remote (or origin, if no remote is configured for the current branch)\.
+Works like
+git push <remote>, where <remote> is the current branch\'s remote (or
+origin, if no remote is configured for the current branch)\.
 .RE
 .PP
 git push origin
 .RS 4
-Without additional configuration, works like git push origin :\.
-
-The default behavior of this command when no <refspec> is given can be configured by setting the push option of the remote\.
-
-For example, to default to pushing only the current branch to origin use git config remote\.origin\.push HEAD\. Any valid <refspec> (like the ones in the examples below) can be configured as the default for git push origin\.
+Without additional configuration, works like
+git push origin :\.
+.sp
+The default behavior of this command when no <refspec> is given can be configured by setting the
+push
+option of the remote\.
+.sp
+For example, to default to pushing only the current branch to
+origin
+use
+git config remote\.origin\.push HEAD\. Any valid <refspec> (like the ones in the examples below) can be configured as the default for
+git push origin\.
 .RE
 .PP
 git push origin :
 .RS 4
-Push "matching" branches to origin\. See <refspec> in the OPTIONS section above for a description of "matching" branches\.
+Push "matching" branches to
+origin\. See <refspec> in the
+OPTIONS
+section above for a description of "matching" branches\.
 .RE
 .PP
 git push origin master
 .RS 4
-Find a ref that matches master in the source repository (most likely, it would find refs/heads/master), and update the same ref (e\.g\. refs/heads/master) in origin repository with it\. If master did not exist remotely, it would be created\.
+Find a ref that matches
+master
+in the source repository (most likely, it would find
+refs/heads/master), and update the same ref (e\.g\.
+refs/heads/master) in
+origin
+repository with it\. If
+master
+did not exist remotely, it would be created\.
 .RE
 .PP
 git push origin HEAD
@@ -362,28 +450,55 @@ A handy way to push the current branch to the same name on the remote\.
 .PP
 git push origin master:satellite/master dev:satellite/dev
 .RS 4
-Use the source ref that matches master (e\.g\. refs/heads/master) to update the ref that matches satellite/master (most probably refs/remotes/satellite/master) in the origin repository, then do the same for dev and satellite/dev\.
+Use the source ref that matches
+master
+(e\.g\.
+refs/heads/master) to update the ref that matches
+satellite/master
+(most probably
+refs/remotes/satellite/master) in the
+origin
+repository, then do the same for
+dev
+and
+satellite/dev\.
 .RE
 .PP
 git push origin HEAD:master
 .RS 4
-Push the current branch to the remote ref matching master in the origin repository\. This form is convenient to push the current branch without thinking about its local name\.
+Push the current branch to the remote ref matching
+master
+in the
+origin
+repository\. This form is convenient to push the current branch without thinking about its local name\.
 .RE
 .PP
 git push origin master:refs/heads/experimental
 .RS 4
-Create the branch experimental in the origin repository by copying the current master branch\. This form is only needed to create a new branch or tag in the remote repository when the local name and the remote name are different; otherwise, the ref name on its own will work\.
+Create the branch
+experimental
+in the
+origin
+repository by copying the current
+master
+branch\. This form is only needed to create a new branch or tag in the remote repository when the local name and the remote name are different; otherwise, the ref name on its own will work\.
 .RE
 .PP
 git push origin :experimental
 .RS 4
-Find a ref that matches experimental in the origin repository (e\.g\. refs/heads/experimental), and delete it\.
+Find a ref that matches
+experimental
+in the
+origin
+repository (e\.g\.
+refs/heads/experimental), and delete it\.
 .RE
 .PP
 git push origin +dev:master
 .RS 4
-Update the origin repository\'s master branch with the dev branch, allowing non\-fast forward updates\. \fBThis can leave unreferenced commits dangling in the origin repository\.\fR Consider the following situation, where a fast forward is not possible:
-
+Update the origin repository\'s master branch with the dev branch, allowing non\-fast forward updates\.
+\fBThis can leave unreferenced commits dangling in the origin repository\.\fR
+Consider the following situation, where a fast forward is not possible:
 .sp
 .RS 4
 .nf
@@ -397,7 +512,6 @@ Update the origin repository\'s master branch with the dev branch, allowing non\
 .fi
 .RE
 The above command would change the origin repository to
-
 .sp
 .RS 4
 .nf
@@ -410,12 +524,16 @@ The above command would change the origin repository to
 
 .fi
 .RE
-Commits A and B would no longer belong to a branch with a symbolic name, and so would be unreachable\. As such, these commits would be removed by a git gc command on the origin repository\.
+Commits A and B would no longer belong to a branch with a symbolic name, and so would be unreachable\. As such, these commits would be removed by a
+git gc
+command on the origin repository\.
 .RE
 .SH "AUTHOR"
 Written by Junio C Hamano <gitster@pobox\.com>, later rewritten in C by Linus Torvalds <torvalds@osdl\.org>
+.sp
 .SH "DOCUMENTATION"
 Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
-
+.sp

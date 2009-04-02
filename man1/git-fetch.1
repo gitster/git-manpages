@@ -1,11 +1,11 @@
 .\"     Title: git-fetch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
 .\"    Source: Git 1.6.2.rc0.64.ge9cc0
 .\"
-.TH "GIT\-FETCH" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-FETCH" "1" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,12 +14,14 @@
 git-fetch - Download objects and refs from another repository
 .SH "SYNOPSIS"
 \fIgit fetch\fR <options> <repository> <refspec>\&...
+.sp
 .SH "DESCRIPTION"
 Fetches named heads or tags from another repository, along with the objects necessary to complete them\.
-
+.sp
 The ref names and their object names of fetched refs are stored in \.git/FETCH_HEAD\. This information is left for a later merge operation done by \fIgit\-merge\fR\.
-
+.sp
 When <refspec> stores the fetched result in tracking branches, the tags that point at these branches are automatically followed\. This is done by first fetching from the remote using the given <refspec>s, and if the repository has objects that are pointed by remote tags that it does not yet have, then fetch those missing tags\. If the other end has tags that point at branches you are not interested in, you will not get them\.
+.sp
 .SH "OPTIONS"
 .PP
 \-q, \-\-quiet
@@ -34,17 +36,32 @@ Be verbose\.
 .PP
 \-a, \-\-append
 .RS 4
-Append ref names and object names of fetched refs to the existing contents of \.git/FETCH_HEAD\. Without this option old data in \.git/FETCH_HEAD will be overwritten\.
+Append ref names and object names of fetched refs to the existing contents of
+\.git/FETCH_HEAD\. Without this option old data in
+\.git/FETCH_HEAD
+will be overwritten\.
 .RE
 .PP
 \-\-upload\-pack <upload\-pack>
 .RS 4
-When given, and the repository to fetch from is handled by \fIgit\-fetch\-pack\fR, \fI\-\-exec=<upload\-pack>\fR is passed to the command to specify non\-default path for the command run on the other end\.
+When given, and the repository to fetch from is handled by
+\fIgit\-fetch\-pack\fR,
+\fI\-\-exec=<upload\-pack>\fR
+is passed to the command to specify non\-default path for the command run on the other end\.
 .RE
 .PP
 \-f, \-\-force
 .RS 4
-When \fIgit\-fetch\fR is used with <rbranch>:<lbranch> refspec, it refuses to update the local branch <lbranch> unless the remote branch <rbranch> it fetches is a descendant of <lbranch>\. This option overrides that check\.
+When
+\fIgit\-fetch\fR
+is used with
+<rbranch>:<lbranch>
+refspec, it refuses to update the local branch
+<lbranch>
+unless the remote branch
+<rbranch>
+it fetches is a descendant of
+<lbranch>\. This option overrides that check\.
 .RE
 .PP
 \-n, \-\-no\-tags
@@ -64,54 +81,102 @@ Keep downloaded pack\.
 .PP
 \-u, \-\-update\-head\-ok
 .RS 4
-By default \fIgit\-fetch\fR refuses to update the head which corresponds to the current branch\. This flag disables the check\. This is purely for the internal use for \fIgit\-pull\fR to communicate with \fIgit\-fetch\fR, and unless you are implementing your own Porcelain you are not supposed to use it\.
+By default
+\fIgit\-fetch\fR
+refuses to update the head which corresponds to the current branch\. This flag disables the check\. This is purely for the internal use for
+\fIgit\-pull\fR
+to communicate with
+\fIgit\-fetch\fR, and unless you are implementing your own Porcelain you are not supposed to use it\.
 .RE
 .PP
 \-\-depth=<depth>
 .RS 4
-Deepen the history of a \fIshallow\fR repository created by git clone with \-\-depth=<depth> option (see \fBgit-clone\fR(1)) by the specified number of commits\.
+Deepen the history of a
+\fIshallow\fR
+repository created by
+git clone
+with
+\-\-depth=<depth>
+option (see
+\fBgit-clone\fR(1)) by the specified number of commits\.
 .RE
 .PP
 <repository>
 .RS 4
-The "remote" repository that is the source of a fetch or pull operation\. This parameter can be either a URL (see the section GIT URLS below) or the name of a remote (see the section REMOTES below)\.
+The "remote" repository that is the source of a fetch or pull operation\. This parameter can be either a URL (see the section
+GIT URLS
+below) or the name of a remote (see the section
+REMOTES
+below)\.
 .RE
 .PP
 <refspec>
 .RS 4
-The format of a <refspec> parameter is an optional plus +, followed by the source ref <src>, followed by a colon :, followed by the destination ref <dst>\.
-
-The remote ref that matches <src> is fetched, and if <dst> is not empty string, the local ref that matches it is fast forwarded using <src>\. If the optional plus + is used, the local ref is updated even if it does not result in a fast forward update\.
+The format of a <refspec> parameter is an optional plus
++, followed by the source ref <src>, followed by a colon
+:, followed by the destination ref <dst>\.
+.sp
+The remote ref that matches <src> is fetched, and if <dst> is not empty string, the local ref that matches it is fast forwarded using <src>\. If the optional plus
++
+is used, the local ref is updated even if it does not result in a fast forward update\.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
 Note
-If the remote branch from which you want to pull is modified in non\-linear ways such as being rewound and rebased frequently, then a pull will attempt a merge with an older version of itself, likely conflict, and fail\. It is under these conditions that you would want to use the + sign to indicate non\-fast\-forward updates will be needed\. There is currently no easy way to determine or declare that a branch will be made available in a repository with this behavior; the pulling user simply must know this is the expected usage pattern for a branch\.
-
+If the remote branch from which you want to pull is modified in non\-linear ways such as being rewound and rebased frequently, then a pull will attempt a merge with an older version of itself, likely conflict, and fail\. It is under these conditions that you would want to use the
++
+sign to indicate non\-fast\-forward updates will be needed\. There is currently no easy way to determine or declare that a branch will be made available in a repository with this behavior; the pulling user simply must know this is the expected usage pattern for a branch\.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
 Note
-You never do your own development on branches that appear on the right hand side of a <refspec> colon on Pull: lines; they are to be updated by \fIgit\-fetch\fR\. If you intend to do development derived from a remote branch B, have a Pull: line to track it (i\.e\. Pull: B:remote\-B), and have a separate branch my\-B to do your development on top of it\. The latter is created by git branch my\-B remote\-B (or its equivalent git checkout \-b my\-B remote\-B)\. Run git fetch to keep track of the progress of the remote side, and when you see something new on the remote branch, merge it into your development branch with git pull \. remote\-B, while you are on my\-B branch\.
-
+You never do your own development on branches that appear on the right hand side of a <refspec> colon on
+Pull:
+lines; they are to be updated by
+\fIgit\-fetch\fR\. If you intend to do development derived from a remote branch
+B, have a
+Pull:
+line to track it (i\.e\.
+Pull: B:remote\-B), and have a separate branch
+my\-B
+to do your development on top of it\. The latter is created by
+git branch my\-B remote\-B
+(or its equivalent
+git checkout \-b my\-B remote\-B)\. Run
+git fetch
+to keep track of the progress of the remote side, and when you see something new on the remote branch, merge it into your development branch with
+git pull \. remote\-B, while you are on
+my\-B
+branch\.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
 Note
-There is a difference between listing multiple <refspec> directly on \fIgit\-pull\fR command line and having multiple Pull: <refspec> lines for a <repository> and running \fIgit\-pull\fR command without any explicit <refspec> parameters\. <refspec> listed explicitly on the command line are always merged into the current branch after fetching\. In other words, if you list more than one remote refs, you would be making an Octopus\. While \fIgit\-pull\fR run without any explicit <refspec> parameter takes default <refspec>s from Pull: lines, it merges only the first <refspec> found into the current branch, after fetching all the remote refs\. This is because making an Octopus from remote refs is rarely done, while keeping track of multiple remote heads in one\-go by fetching more than one is often useful\.
-
+There is a difference between listing multiple <refspec> directly on
+\fIgit\-pull\fR
+command line and having multiple
+Pull:
+<refspec> lines for a <repository> and running
+\fIgit\-pull\fR
+command without any explicit <refspec> parameters\. <refspec> listed explicitly on the command line are always merged into the current branch after fetching\. In other words, if you list more than one remote refs, you would be making an Octopus\. While
+\fIgit\-pull\fR
+run without any explicit <refspec> parameter takes default <refspec>s from
+Pull:
+lines, it merges only the first <refspec> found into the current branch, after fetching all the remote refs\. This is because making an Octopus from remote refs is rarely done, while keeping track of multiple remote heads in one\-go by fetching more than one is often useful\.
 
 Some short\-cut notations are also supported\.
-
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'tag <tag> means the same as refs/tags/<tag>:refs/tags/<tag>; it requests fetching everything up to the given tag\.
+\h'-04'\(bu\h'+03'
+tag <tag>
+means the same as
+refs/tags/<tag>:refs/tags/<tag>; it requests fetching everything up to the given tag\.
 .RE
 .sp
 .RS 4
@@ -120,7 +185,7 @@ Some short\-cut notations are also supported\.
 .RE
 .SH "GIT URLS"
 One of the following notations can be used to name the remote repository:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'rsync://host\.xz/path/to/repo\.git/
@@ -158,7 +223,7 @@ One of the following notations can be used to name the remote repository:
 \h'-04'\(bu\h'+03'ssh://[user@]host\.xz/~/path/to/repo\.git
 .RE
 SSH is the default transport protocol over the network\. You can optionally specify which user to log\-in as, and an alternate, scp\-like syntax is also supported\. Both syntaxes support username expansion, as does the native git protocol, but only the former supports port specification\. The following three are identical to the last three above, respectively:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'[user@]host\.xz:/path/to/repo\.git/
@@ -172,7 +237,7 @@ SSH is the default transport protocol over the network\. You can optionally spec
 \h'-04'\(bu\h'+03'[user@]host\.xz:path/to/repo\.git
 .RE
 To sync with a local directory, you can use:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'/path/to/repo\.git/
@@ -182,9 +247,9 @@ To sync with a local directory, you can use:
 \h'-04'\(bu\h'+03'file:///path/to/repo\.git/
 .RE
 They are mostly equivalent, except when cloning\. See \fBgit-clone\fR(1) for details\.
-
+.sp
 If there are a large number of similarly\-named remote repositories and you want to use a different format for them (such that the URLs you use will be rewritten into URLs that work), you can create a configuration section of the form:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -197,7 +262,7 @@ If there are a large number of similarly\-named remote repositories and you want
 .fi
 .RE
 For example, with this:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -211,25 +276,32 @@ For example, with this:
 .fi
 .RE
 a URL like "work:repo\.git" or like "host\.xz:/path/to/repo\.git" will be rewritten in any context that takes a URL to be "git://git\.host\.xz/repo\.git"\.
+.sp
 .SH "REMOTES"
 The name of one of the following can be used instead of a URL as <repository> argument:
-
+.sp
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'a remote in the git configuration file: $GIT_DIR/config,
+\h'-04'\(bu\h'+03'a remote in the git configuration file:
+$GIT_DIR/config,
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'a file in the $GIT_DIR/remotes directory, or
+\h'-04'\(bu\h'+03'a file in the
+$GIT_DIR/remotes
+directory, or
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'a file in the $GIT_DIR/branches directory\.
+\h'-04'\(bu\h'+03'a file in the
+$GIT_DIR/branches
+directory\.
 .RE
 All of these also allow you to omit the refspec from the command line because they each contain a refspec which git will use by default\.
+.sp
 .SS "Named remote in configuration file"
 You can choose to provide the name of a remote which you had previously configured using \fBgit-remote\fR(1), \fBgit-config\fR(1) or even by a manual edit to the $GIT_DIR/config file\. The URL of this remote will be used to access the repository\. The refspec of this remote will be used by default when you do not provide a refspec on the command line\. The entry in the config file would appear like this:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -245,7 +317,7 @@ You can choose to provide the name of a remote which you had previously configur
 .RE
 .SS "Named file in $GIT_DIR/remotes"
 You can choose to provide the name of a file in $GIT_DIR/remotes\. The URL in this file will be used to access the repository\. The refspec in this file will be used as default when you do not provide a refspec on the command line\. This file should have the following format:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -260,9 +332,10 @@ You can choose to provide the name of a file in $GIT_DIR/remotes\. The URL in th
 .fi
 .RE
 Push: lines are used by \fIgit\-push\fR and Pull: lines are used by \fIgit\-pull\fR and \fIgit\-fetch\fR\. Multiple Push: and Pull: lines may be specified for additional branch mappings\.
+.sp
 .SS "Named file in $GIT_DIR/branches"
 You can choose to provide the name of a file in $GIT_DIR/branches\. The URL in this file will be used to access the repository\. This file should have the following format:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -274,11 +347,11 @@ You can choose to provide the name of a file in $GIT_DIR/branches\. The URL in t
 .fi
 .RE
 <url> is required; #<head> is optional\.
-
+.sp
 Depending on the operation, git will use one of the following refspecs, if you don\'t provide one on the command line\. <branch> is the name of this file in $GIT_DIR/branches and <head> defaults to master\.
-
+.sp
 git fetch uses:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -290,7 +363,7 @@ git fetch uses:
 .fi
 .RE
 git push uses:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -303,10 +376,13 @@ git push uses:
 .RE
 .SH "SEE ALSO"
 \fBgit-pull\fR(1)
+.sp
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl\.org> and Junio C Hamano <gitster@pobox\.com>
+.sp
 .SH "DOCUMENTATION"
 Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
-
+.sp

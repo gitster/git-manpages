@@ -1,11 +1,11 @@
 .\"     Title: git-commit-tree
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
 .\"    Source: Git 1.6.2.rc0.64.ge9cc0
 .\"
-.TH "GIT\-COMMIT\-TREE" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-COMMIT\-TREE" "1" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -14,16 +14,18 @@
 git-commit-tree - Create a new commit object
 .SH "SYNOPSIS"
 \fIgit commit\-tree\fR <tree> [\-p <parent commit>]* < changelog
+.sp
 .SH "DESCRIPTION"
 This is usually not what an end user wants to run directly\. See \fBgit-commit\fR(1) instead\.
-
+.sp
 Creates a new commit object based on the provided tree object and emits the new commit object id on stdout\.
-
+.sp
 A commit object may have any number of parents\. With exactly one parent, it is an ordinary commit\. Having more than one parent makes the commit a merge between several lines of history\. Initial (root) commits have no parents\.
-
+.sp
 While a tree represents a particular directory state of a working directory, a commit represents that state in "time", and explains how to get there\.
-
+.sp
 Normally a commit would identify a new "HEAD" state, and while git doesn\'t care where you save the note about that state, in practice we tend to just write the result to the file that is pointed at by \.git/HEAD, so that we can always see what the last committed state was\.
+.sp
 .SH "OPTIONS"
 .PP
 <tree>
@@ -33,11 +35,13 @@ An existing tree object
 .PP
 \-p <parent commit>
 .RS 4
-Each \fI\-p\fR indicates the id of a parent commit object\.
+Each
+\fI\-p\fR
+indicates the id of a parent commit object\.
 .RE
 .SH "COMMIT INFORMATION"
 A commit encapsulates:
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'all parent object ids
@@ -51,7 +55,7 @@ A commit encapsulates:
 \h'-04'\(bu\h'+03'committer name and email and the commit time\.
 .RE
 While parent object ids are provided on the command line, author and committer information is taken from the following environment variables, if set:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -65,10 +69,11 @@ EMAIL
 .fi
 .RE
 (nb "<", ">" and "\en"s are stripped)
-
+.sp
 In case (some of) these environment variables are not set, the information is taken from the configuration items user\.name and user\.email, or, if not present, system user name and fully qualified hostname\.
-
+.sp
 A commit comment is read from stdin\. If a changelog entry is not provided via "<" redirection, \fIgit\-commit\-tree\fR will just wait for one to be entered and terminated with ^D\.
+.sp
 .SH "DIAGNOSTICS"
 .PP
 You don\'t exist\. Go away!
@@ -87,7 +92,7 @@ The passwd(5) name field is longer than a giant static buffer\.
 .RE
 .SH "DISCUSSION"
 At the core level, git is character encoding agnostic\.
-
+.sp
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'The pathnames recorded in the index and in the tree objects are treated as uninterpreted sequences of non\-NUL bytes\. What readdir(2) returns are what are recorded and compared with the data git keeps track of, which in turn are expected to be what lstat(2) and creat(2) accepts\. There is no such thing as pathname encoding translation\.
@@ -101,11 +106,16 @@ At the core level, git is character encoding agnostic\.
 \h'-04'\(bu\h'+03'The commit log messages are uninterpreted sequences of non\-NUL bytes\.
 .RE
 Although we encourage that the commit log messages are encoded in UTF\-8, both the core and git Porcelain are designed not to force UTF\-8 on projects\. If all participants of a particular project find it more convenient to use legacy encodings, git does not forbid it\. However, there are a few things to keep in mind\.
-
+.sp
 .sp
 .RS 4
-\h'-04' 1.\h'+02'\fIgit\-commit\fR and \fIgit\-commit\-tree\fR issues a warning if the commit log message given to it does not look like a valid UTF\-8 string, unless you explicitly say your project uses a legacy encoding\. The way to say this is to have i18n\.commitencoding in \.git/config file, like this:
-
+\h'-04' 1.\h'+02'
+\fIgit\-commit\fR
+and
+\fIgit\-commit\-tree\fR
+issues a warning if the commit log message given to it does not look like a valid UTF\-8 string, unless you explicitly say your project uses a legacy encoding\. The way to say this is to have i18n\.commitencoding in
+\.git/config
+file, like this:
 .sp
 .RS 4
 .nf
@@ -117,12 +127,25 @@ Although we encourage that the commit log messages are encoded in UTF\-8, both t
 
 .fi
 .RE
-Commit objects created with the above setting record the value of i18n\.commitencoding in its encoding header\. This is to help other people who look at them later\. Lack of this header implies that the commit log message is encoded in UTF\-8\.
+Commit objects created with the above setting record the value of
+i18n\.commitencoding
+in its
+encoding
+header\. This is to help other people who look at them later\. Lack of this header implies that the commit log message is encoded in UTF\-8\.
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'\fIgit\-log\fR, \fIgit\-show\fR, \fIgit\-blame\fR and friends look at the encoding header of a commit object, and try to re\-code the log message into UTF\-8 unless otherwise specified\. You can specify the desired output encoding with i18n\.logoutputencoding in \.git/config file, like this:
-
+\h'-04' 2.\h'+02'
+\fIgit\-log\fR,
+\fIgit\-show\fR,
+\fIgit\-blame\fR
+and friends look at the
+encoding
+header of a commit object, and try to re\-code the log message into UTF\-8 unless otherwise specified\. You can specify the desired output encoding with
+i18n\.logoutputencoding
+in
+\.git/config
+file, like this:
 .sp
 .RS 4
 .nf
@@ -134,15 +157,21 @@ Commit objects created with the above setting record the value of i18n\.commiten
 
 .fi
 .RE
-If you do not have this configuration variable, the value of i18n\.commitencoding is used instead\.
+If you do not have this configuration variable, the value of
+i18n\.commitencoding
+is used instead\.
 .RE
 Note that we deliberately chose not to re\-code the commit log message when a commit is made to force UTF\-8 at the commit object level, because re\-coding to UTF\-8 is not necessarily a reversible operation\.
+.sp
 .SH "SEE ALSO"
 \fBgit-write-tree\fR(1)
+.sp
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl\.org>
+.sp
 .SH "DOCUMENTATION"
 Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
-
+.sp

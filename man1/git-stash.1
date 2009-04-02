@@ -1,11 +1,11 @@
 .\"     Title: git-stash
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 02/14/2009
+.\"      Date: 04/02/2009
 .\"    Manual: Git Manual
 .\"    Source: Git 1.6.2.rc0.64.ge9cc0
 .\"
-.TH "GIT\-STASH" "1" "02/14/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-STASH" "1" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -27,23 +27,34 @@ git-stash - Stash the changes in a dirty working directory away
 .RE
 .SH "DESCRIPTION"
 Use \fIgit stash\fR when you want to record the current state of the working directory and the index, but want to go back to a clean working directory\. The command saves your local modifications away and reverts the working directory to match the HEAD commit\.
-
+.sp
 The modifications stashed away by this command can be listed with git stash list, inspected with git stash show, and restored (potentially on top of a different commit) with git stash apply\. Calling git stash without any arguments is equivalent to git stash save\. A stash is by default listed as "WIP on \fIbranchname\fR \&...", but you can give a more descriptive message on the command line when you create one\.
-
+.sp
 The latest stash you created is stored in $GIT_DIR/refs/stash; older stashes are found in the reflog of this reference and can be named using the usual reflog syntax (e\.g\. stash@{0} is the most recently created stash, stash@{1} is the one before it, stash@{2\.hours\.ago} is also possible)\.
+.sp
 .SH "OPTIONS"
 .PP
 save [\-\-keep\-index] [<message>]
 .RS 4
-Save your local modifications to a new \fIstash\fR, and run git reset \-\-hard to revert them\. This is the default action when no subcommand is given\. The <message> part is optional and gives the description along with the stashed state\.
-
-If the \-\-keep\-index option is used, all changes already added to the index are left intact\.
+Save your local modifications to a new
+\fIstash\fR, and run
+git reset \-\-hard
+to revert them\. This is the default action when no subcommand is given\. The <message> part is optional and gives the description along with the stashed state\.
+.sp
+If the
+\-\-keep\-index
+option is used, all changes already added to the index are left intact\.
 .RE
 .PP
 list [<options>]
 .RS 4
-List the stashes that you currently have\. Each \fIstash\fR is listed with its name (e\.g\. stash@{0} is the latest stash, stash@{1} is the one before, etc\.), the name of the branch that was current when the stash was made, and a short description of the commit the stash was based on\.
-
+List the stashes that you currently have\. Each
+\fIstash\fR
+is listed with its name (e\.g\.
+stash@{0}
+is the latest stash,
+stash@{1}
+is the one before, etc\.), the name of the branch that was current when the stash was made, and a short description of the commit the stash was based on\.
 .sp
 .RS 4
 .nf
@@ -55,28 +66,57 @@ stash@{1}: On master: 9cc0589\.\.\. Add git\-stash
 
 .fi
 .RE
-The command takes options applicable to the \fIgit\-log\fR command to control what is shown and how\. See \fBgit-log\fR(1)\.
+The command takes options applicable to the
+\fIgit\-log\fR
+command to control what is shown and how\. See
+\fBgit-log\fR(1)\.
 .RE
 .PP
 show [<stash>]
 .RS 4
-Show the changes recorded in the stash as a diff between the stashed state and its original parent\. When no <stash> is given, shows the latest one\. By default, the command shows the diffstat, but it will accept any format known to \fIgit\-diff\fR (e\.g\., git stash show \-p stash@{1} to view the second most recent stash in patch form)\.
+Show the changes recorded in the stash as a diff between the stashed state and its original parent\. When no
+<stash>
+is given, shows the latest one\. By default, the command shows the diffstat, but it will accept any format known to
+\fIgit\-diff\fR
+(e\.g\.,
+git stash show \-p stash@{1}
+to view the second most recent stash in patch form)\.
 .RE
 .PP
 apply [\-\-index] [<stash>]
 .RS 4
-Restore the changes recorded in the stash on top of the current working tree state\. When no <stash> is given, applies the latest one\. The working directory must match the index\.
-
+Restore the changes recorded in the stash on top of the current working tree state\. When no
+<stash>
+is given, applies the latest one\. The working directory must match the index\.
+.sp
 This operation can fail with conflicts; you need to resolve them by hand in the working tree\.
-
-If the \-\-index option is used, then tries to reinstate not only the working tree\'s changes, but also the index\'s ones\. However, this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally)\.
+.sp
+If the
+\-\-index
+option is used, then tries to reinstate not only the working tree\'s changes, but also the index\'s ones\. However, this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally)\.
 .RE
 .PP
 branch <branchname> [<stash>]
 .RS 4
-Creates and checks out a new branch named <branchname> starting from the commit at which the <stash> was originally created, applies the changes recorded in <stash> to the new working tree and index, then drops the <stash> if that completes successfully\. When no <stash> is given, applies the latest one\.
-
-This is useful if the branch on which you ran git stash save has changed enough that git stash apply fails due to conflicts\. Since the stash is applied on top of the commit that was HEAD at the time git stash was run, it restores the originally stashed state with no conflicts\.
+Creates and checks out a new branch named
+<branchname>
+starting from the commit at which the
+<stash>
+was originally created, applies the changes recorded in
+<stash>
+to the new working tree and index, then drops the
+<stash>
+if that completes successfully\. When no
+<stash>
+is given, applies the latest one\.
+.sp
+This is useful if the branch on which you ran
+git stash save
+has changed enough that
+git stash apply
+fails due to conflicts\. Since the stash is applied on top of the commit that was HEAD at the time
+git stash
+was run, it restores the originally stashed state with no conflicts\.
 .RE
 .PP
 clear
@@ -86,12 +126,20 @@ Remove all the stashed states\. Note that those states will then be subject to p
 .PP
 drop [<stash>]
 .RS 4
-Remove a single stashed state from the stash list\. When no <stash> is given, it removes the latest one\. i\.e\. stash@{0}
+Remove a single stashed state from the stash list\. When no
+<stash>
+is given, it removes the latest one\. i\.e\.
+stash@{0}
 .RE
 .PP
 pop [<stash>]
 .RS 4
-Remove a single stashed state from the stash list and apply on top of the current working tree state\. When no <stash> is given, stash@{0} is assumed\. See also apply\.
+Remove a single stashed state from the stash list and apply on top of the current working tree state\. When no
+<stash>
+is given,
+stash@{0}
+is assumed\. See also
+apply\.
 .RE
 .PP
 create
@@ -100,7 +148,7 @@ Create a stash (which is a regular commit object) and return its object name, wi
 .RE
 .SH "DISCUSSION"
 A stash is represented as a commit whose tree records the state of the working directory, and its first parent is the commit at HEAD when the stash was created\. The tree of the second parent records the state of the index when the stash is made, and it is made a child of the HEAD commit\. The ancestry graph looks like this:
-
+.sp
 .sp
 .RS 4
 .nf
@@ -110,14 +158,18 @@ A stash is represented as a commit whose tree records the state of the working d
 .fi
 .RE
 where H is the HEAD commit, I is a commit that records the state of the index, and W is a commit that records the state of the working tree\.
+.sp
 .SH "EXAMPLES"
 .PP
 Pulling into a dirty tree
 .RS 4
-When you are in the middle of something, you learn that there are upstream changes that are possibly relevant to what you are doing\. When your local changes do not conflict with the changes in the upstream, a simple git pull will let you move forward\.
-
-However, there are cases in which your local changes do conflict with the upstream changes, and git pull refuses to overwrite your changes\. In such a case, you can stash your changes away, perform a pull, and then unstash, like this:
-
+When you are in the middle of something, you learn that there are upstream changes that are possibly relevant to what you are doing\. When your local changes do not conflict with the changes in the upstream, a simple
+git pull
+will let you move forward\.
+.sp
+However, there are cases in which your local changes do conflict with the upstream changes, and
+git pull
+refuses to overwrite your changes\. In such a case, you can stash your changes away, perform a pull, and then unstash, like this:
 .sp
 .RS 4
 .nf
@@ -138,7 +190,6 @@ $ git stash apply
 Interrupted workflow
 .RS 4
 When you are in the middle of something, your boss comes in and demands that you fix something immediately\. Traditionally, you would make a commit to a temporary branch to store your changes away, and return to your original branch to make the emergency fix, like this:
-
 .sp
 .RS 4
 .nf
@@ -157,8 +208,9 @@ $ git reset \-\-soft HEAD^
 
 .fi
 .RE
-You can use \fIgit\-stash\fR to simplify the above, like this:
-
+You can use
+\fIgit\-stash\fR
+to simplify the above, like this:
 .sp
 .RS 4
 .nf
@@ -178,8 +230,9 @@ $ git stash apply
 .PP
 Testing partial commits
 .RS 4
-You can use git stash save \-\-keep\-index when you want to make two or more commits out of the changes in the work tree, and you want to test each change before committing:
-
+You can use
+git stash save \-\-keep\-index
+when you want to make two or more commits out of the changes in the work tree, and you want to test each change before committing:
 .sp
 .RS 4
 .nf
@@ -201,8 +254,10 @@ $ git commit foo \-m \'Remaining parts\'
 .RE
 .SH "SEE ALSO"
 \fBgit-checkout\fR(1), \fBgit-commit\fR(1), \fBgit-reflog\fR(1), \fBgit-reset\fR(1)
+.sp
 .SH "AUTHOR"
 Written by Nanako Shiraishi <nanako3@bluebottle\.com>
+.sp
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
-
+.sp
