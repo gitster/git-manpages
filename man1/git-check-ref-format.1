@@ -1,11 +1,11 @@
 .\"     Title: git-check-ref-format
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/02/2009
+.\"      Date: 04/06/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.1.389.geed1
+.\"    Source: Git 1.6.2.2.446.gfbdc
 .\"
-.TH "GIT\-CHECK\-REF\-FOR" "1" "04/02/2009" "Git 1\.6\.2\.1\.389\.geed1" "Git Manual"
+.TH "GIT\-CHECK\-REF\-FOR" "1" "04/06/2009" "Git 1\.6\.2\.2\.446\.gfbdc" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,8 +13,13 @@
 .SH "NAME"
 git-check-ref-format - Ensures that a reference name is well formed
 .SH "SYNOPSIS"
-\fIgit check\-ref\-format\fR <refname>
 .sp
+.RS 4
+.nf
+\fIgit check\-ref\-format\fR <refname>
+\fIgit check\-ref\-format\fR [\-\-branch] <branchname\-shorthand>
+.fi
+.RE
 .SH "DESCRIPTION"
 Checks if a given \fIrefname\fR is acceptable, and exits with a non\-zero status if it is not\.
 .sp
@@ -48,7 +53,19 @@ anywhere\.
 .sp
 .RS 4
 \h'-04' 4.\h'+02'They cannot end with a slash
-/\.
+/
+nor a dot
+\.\.
+.RE
+.sp
+.RS 4
+\h'-04' 5.\h'+02'They cannot end with the sequence
+\.lock\.
+.RE
+.sp
+.RS 4
+\h'-04' 6.\h'+02'They cannot contain a sequence
+@{\.
 .RE
 These rules make it easy for shell script based tools to parse reference names, pathname expansion by the shell when a reference name is used unquoted (by mistake), and also avoids ambiguities in certain reference name expressions (see \fBgit-rev-parse\fR(1)):
 .sp
@@ -83,6 +100,20 @@ operation\.
 is used as in
 srcref:dstref
 to mean "use srcref\'s value and store it in dstref" in fetch and push operations\. It may also be used to select a specific object such as with \'git\-cat\-file\': "git cat\-file blob v1\.3\.3:refs\.c"\.
+.RE
+.sp
+.RS 4
+\h'-04' 4.\h'+02'at\-open\-brace
+@{
+is used as a notation to access a reflog entry\.
+.RE
+With the \-\-branch option, it expands a branch name shorthand and prints the name of the branch the shorthand refers to\.
+.sp
+.SH "EXAMPLE"
+.PP
+git check\-ref\-format \-\-branch @{\-1}
+.RS 4
+Print the name of the previous branch\.
 .RE
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
