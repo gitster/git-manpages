@@ -1,11 +1,11 @@
 .\"     Title: git-svn
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/02/2009
+.\"      Date: 04/12/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.1.469.gdffc
+.\"    Source: Git 1.6.2.2.494.gee7ec
 .\"
-.TH "GIT\-SVN" "1" "04/02/2009" "Git 1\.6\.2\.1\.469\.gdffc" "Git Manual"
+.TH "GIT\-SVN" "1" "04/12/2009" "Git 1\.6\.2\.2\.494\.gee7ec" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -81,6 +81,18 @@ For transports that SVN handles authentication for (http, https, and plain svn),
 .RS 4
 This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified\. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want\. If \-\-branches/\-b is specified, the prefix must include a trailing slash\. Setting a prefix is useful if you wish to track multiple projects that share a common repository\.
 .RE
+.PP
+\-\-ignore\-paths=<regex>
+.RS 4
+When passed to
+\fIinit\fR
+or
+\fIclone\fR
+this regular expression will be preserved as a config key\. See
+\fIfetch\fR
+for a description of
+\fI\-\-ignore\-paths\fR\.
+.RE
 .RE
 .PP
 \fIfetch\fR
@@ -94,31 +106,48 @@ Store Git commit times in the local timezone instead of UTC\. This makes
 (even without \-\-date=local) show the same times that
 svn log
 would in the local timezone\.
+.RE
+.PP
+\-\-parent
+.RS 4
+Fetch only from the SVN parent of the current HEAD\.
 .sp
 This doesn\'t interfere with interoperating with the Subversion repository you cloned from, but if you wish for your local Git repository to be able to interoperate with someone else\'s local Git repository, either don\'t use this option or you should both use it in the same local timezone\.
 .RE
 .PP
 \-\-ignore\-paths=<regex>
 .RS 4
-This allows one to specify Perl regular expression that will cause skipping of all matching paths from checkout from SVN\. Examples:
+This allows one to specify a Perl regular expression that will cause skipping of all matching paths from checkout from SVN\. The
+\fI\-\-ignore\-paths\fR
+option should match for every
+\fIfetch\fR
+(including automatic fetches due to
+\fIclone\fR,
+\fIdcommit\fR,
+\fIrebase\fR, etc) on a given repository\.
+.sp
+config key: svn\-remote\.<name>\.ignore\-paths
 .sp
 .RS 4
 .nf
-\-\-ignore\-paths="^doc" \- skip "doc*" directory for every fetch\.
+If the ignore\-paths config key is set and the command
+line option is also given, both regular expressions
+will be used\.
+.fi
+.RE
+Examples:
+.sp
+.RS 4
+.nf
+\-\-ignore\-paths="^doc" \- skip "doc*" directory for every
+    fetch\.
 .fi
 .RE
 .sp
 .RS 4
 .nf
-\-\-ignore\-paths="^[^/]+/(?:branches|tags)" \- skip "branches"
-    and "tags" of first level directories\.
-.fi
-.RE
-.sp
-.RS 4
-.nf
-Regular expression is not persistent, you should specify
-it every time when fetching\.
+\-\-ignore\-paths="^[^/]+/(?:branches|tags)" \- skip
+    "branches" and "tags" of first level directories\.
 .fi
 .RE
 .RE
