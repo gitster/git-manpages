@@ -1,11 +1,11 @@
 .\"     Title: git-checkout
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/08/2009
+.\"      Date: 04/18/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.2.471.g6da14
+.\"    Source: Git 1.6.3.rc0.53.g1a1f0
 .\"
-.TH "GIT\-CHECKOUT" "1" "04/08/2009" "Git 1\.6\.2\.2\.471\.g6da14" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "04/18/2009" "Git 1\.6\.3\.rc0\.53\.g1a1f0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,14 +16,15 @@ git-checkout - Checkout a branch or paths to the working tree
 .sp
 .RS 4
 .nf
-\fIgit checkout\fR [\-q] [\-f] [\-t | \-\-track | \-\-no\-track] [\-b <new_branch> [\-l]] [\-m] [<branch>]
+\fIgit checkout\fR [\-q] [\-f] [\-m] [<branch>]
+\fIgit checkout\fR [\-q] [\-f] [\-m] [\-b <new_branch>] [<start_point>]
 \fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <paths>\&...
 .fi
 .RE
 .SH "DESCRIPTION"
-When <paths> are not given, this command switches branches by updating the index and working tree to reflect the specified branch, <branch>, and updating HEAD to be <branch> or, if specified, <new_branch>\. Using \-b will cause <new_branch> to be created; in this case you can use the \-\-track or \-\-no\-track options, which will be passed to git branch\.
+When <paths> are not given, this command switches branches by updating the index, working tree, and HEAD to reflect the specified branch\.
 .sp
-As a convenience, \-\-track will default to creating a branch whose name is constructed from the specified branch name by stripping the first namespace level\.
+If \-b is given, a new branch is created and checked out, as if \fBgit-branch\fR(1) were called; in this case you can use the \-\-track or \-\-no\-track options, which will be passed to git branch\. As a convenience, \-\-track without \-b implies branch creation; see the description of \-\-track below\.
 .sp
 When <paths> are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file, or from a named <tree\-ish> (most often a commit)\. In this case, the \-b and \-\-track options are meaningless and giving either of them results in an error\. The <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
 .sp
@@ -50,25 +51,16 @@ When checking out paths from the index, check out stage #2 (\fIours\fR) or #3 (\
 .PP
 \-b
 .RS 4
-Create a new branch named <new_branch> and start it at <branch>\. The new branch name must pass all checks defined by
-\fBgit-check-ref-format\fR(1)\. Some of these checks may restrict the characters allowed in a branch name\.
+Create a new branch named <new_branch> and start it at <start_point>; see
+\fBgit-branch\fR(1)
+for details\.
 .RE
 .PP
 \-t, \-\-track
 .RS 4
-When creating a new branch, set up configuration so that
-\fIgit\-pull\fR
-will automatically retrieve data from the start point, which must be a branch\. Use this if you always pull from the same upstream branch into the new branch, and if you don\'t want to use "git pull <repository> <refspec>" explicitly\. This behavior is the default when the start point is a remote branch\. Set the branch\.autosetupmerge configuration variable to
-false
-if you want
-\fIgit checkout\fR
-and
-\fIgit branch\fR
-to always behave as if
-\fI\-\-no\-track\fR
-were given\. Set it to
-always
-if you want this behavior when the start point is either a local or remote branch\.
+When creating a new branch, set up "upstream" configuration\. See "\-\-track" in
+\fBgit-branch\fR(1)
+for details\.
 .sp
 If no
 \fI\-b\fR
@@ -79,12 +71,14 @@ in such a case\.
 .PP
 \-\-no\-track
 .RS 4
-Ignore the branch\.autosetupmerge configuration variable\.
+Do not set up "upstream" configuration, even if the branch\.autosetupmerge configuration variable is true\.
 .RE
 .PP
 \-l
 .RS 4
-Create the new branch\'s reflog\. This activates recording of all changes made to the branch ref, enabling use of date based sha1 expressions such as "<branchname>@{yesterday}"\.
+Create the new branch\'s reflog; see
+\fBgit-branch\fR(1)
+for details\.
 .RE
 .PP
 \-m, \-\-merge
@@ -105,22 +99,9 @@ When checking out paths from the index, this option lets you recreate the confli
 The same as \-\-merge option above, but changes the way the conflicting hunks are presented, overriding the merge\.conflictstyle configuration variable\. Possible values are "merge" (default) and "diff3" (in addition to what is shown by "merge" style, shows the original contents)\.
 .RE
 .PP
-<new_branch>
-.RS 4
-Name for the new branch\.
-.RE
-.PP
-<tree\-ish>
-.RS 4
-Tree to checkout from (when paths are given)\. If not specified, the index will be used\.
-.RE
-.PP
 <branch>
 .RS 4
-Branch to checkout (when no paths are given); may be any object ID that resolves to a commit\. Defaults to HEAD\.
-.sp
-When this parameter names a non\-branch (but still a valid commit object), your HEAD becomes
-\fIdetached\fR\.
+Branch to checkout; if it refers to a branch (i\.e\., a name that, when prepended with "refs/heads/", is a valid ref), then that branch is checked out\. Otherwise, if it refers to a valid commit, your HEAD becomes "detached" and you are no longer on any branch (see below for details)\.
 .sp
 As a special case, the
 "@{\-N}"
@@ -128,6 +109,23 @@ syntax for the N\-th last branch checks out the branch (instead of detaching)\. 
 \-
 which is synonymous with
 "@{\-1}"\.
+.RE
+.PP
+<new_branch>
+.RS 4
+Name for the new branch\.
+.RE
+.PP
+<start_point>
+.RS 4
+The name of a commit at which to start the new branch; see
+\fBgit-branch\fR(1)
+for details\. Defaults to HEAD\.
+.RE
+.PP
+<tree\-ish>
+.RS 4
+Tree to checkout from (when paths are given)\. If not specified, the index will be used\.
 .RE
 .SH "DETACHED HEAD"
 It is sometimes useful to be able to \fIcheckout\fR a commit that is not at the tip of one of your branches\. The most obvious example is to check out the commit at a tagged official release point, like this:
