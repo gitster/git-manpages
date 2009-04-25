@@ -1,11 +1,11 @@
 .\"     Title: git-config
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/20/2009
+.\"      Date: 04/25/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.rc1.18.g66996
+.\"    Source: Git 1.6.3.rc2
 .\"
-.TH "GIT\-CONFIG" "1" "04/20/2009" "Git 1\.6\.3\.rc1\.18\.g66996" "Git Manual"
+.TH "GIT\-CONFIG" "1" "04/25/2009" "Git 1\.6\.3\.rc2" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -438,16 +438,16 @@ echo "${WS}your whitespace color or blue reverse${RESET}"
 .fi
 .RE
 .SH "CONFIGURATION FILE"
-The git configuration file contains a number of variables that affect the git command\'s behavior\. \.git/config file for each repository is used to store the information for that repository, and $HOME/\.gitconfig is used to store per user information to give fallback values for \.git/config file\. The file /etc/gitconfig can be used to store system\-wide defaults\.
+The git configuration file contains a number of variables that affect the git command\'s behavior\. The \.git/config file in each repository is used to store the configuration for that repository, and $HOME/\.gitconfig is used to store a per\-user configuration as fallback values for the \.git/config file\. The file /etc/gitconfig can be used to store a system\-wide default configuration\.
 .sp
-They can be used by both the git plumbing and the porcelains\. The variables are divided into sections, where in the fully qualified variable name the variable itself is the last dot\-separated segment and the section name is everything before the last dot\. The variable names are case\-insensitive and only alphanumeric characters are allowed\. Some variables may appear multiple times\.
+The configuration variables are used by both the git plumbing and the porcelains\. The variables are divided into sections, wherein the fully qualified variable name of the variable itself is the last dot\-separated segment and the section name is everything before the last dot\. The variable names are case\-insensitive and only alphanumeric characters are allowed\. Some variables may appear multiple times\.
 .sp
 .SS "Syntax"
 The syntax is fairly flexible and permissive; whitespaces are mostly ignored\. The \fI#\fR and \fI;\fR characters begin comments to the end of line, blank lines are ignored\.
 .sp
-The file consists of sections and variables\. A section begins with the name of the section in square brackets and continues until the next section begins\. Section names are not case sensitive\. Only alphanumeric characters, \- and \. are allowed in section names\. Each variable must belong to some section, which means that there must be section header before first setting of a variable\.
+The file consists of sections and variables\. A section begins with the name of the section in square brackets and continues until the next section begins\. Section names are not case sensitive\. Only alphanumeric characters, \- and \. are allowed in section names\. Each variable must belong to some section, which means that there must be a section header before the first setting of a variable\.
 .sp
-Sections can be further divided into subsections\. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in example below:
+Sections can be further divided into subsections\. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in the example below:
 .sp
 .sp
 .RS 4
@@ -460,9 +460,9 @@ Sections can be further divided into subsections\. To begin a subsection put its
 
 .fi
 .RE
-Subsection names can contain any characters except newline (doublequote " and backslash have to be escaped as \e" and \e\e, respectively) and are case sensitive\. Section header cannot span multiple lines\. Variables may belong directly to a section or to a given subsection\. You can have [section] if you have [section "subsection"], but you don\'t need to\.
+Subsection names are case sensitive and can contain any characters except newline (doublequote " and backslash have to be escaped as \e" and \e\e, respectively)\. Section headers cannot span multiple lines\. Variables may belong directly to a section or to a given subsection\. You can have [section] if you have [section "subsection"], but you don\'t need to\.
 .sp
-There is also (case insensitive) alternative [section\.subsection] syntax\. In this syntax subsection names follow the same restrictions as for section name\.
+There is also a case insensitive alternative [section\.subsection] syntax\. In this syntax, subsection names follow the same restrictions as for section names\.
 .sp
 All the other lines are recognized as setting variables, in the form \fIname = value\fR\. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true"\. The variable names are case\-insensitive and only alphanumeric characters and \- are allowed\. There can be more than one value for a given variable; we say then that variable is multivalued\.
 .sp
@@ -470,13 +470,13 @@ Leading and trailing whitespace in a variable value is discarded\. Internal whit
 .sp
 The values following the equals sign in variable assign are all either a string, an integer, or a boolean\. Boolean values may be given as yes/no, 0/1, true/false or on/off\. Case is not significant in boolean values, when converting value to the canonical form using \fI\-\-bool\fR type specifier; \fIgit\-config\fR will ensure that the output is "true" or "false"\.
 .sp
-String values may be entirely or partially enclosed in double quotes\. You need to enclose variable value in double quotes if you want to preserve leading or trailing whitespace, or if variable value contains beginning of comment characters (if it contains \fI#\fR or \fI;\fR)\. Double quote " and backslash \e characters in variable value must be escaped: use \e" for " and \e\e for \e\.
+String values may be entirely or partially enclosed in double quotes\. You need to enclose variable values in double quotes if you want to preserve leading or trailing whitespace, or if the variable value contains comment characters (i\.e\. it contains \fI#\fR or \fI;\fR)\. Double quote " and backslash \e characters in variable values must be escaped: use \e" for " and \e\e for \e\.
 .sp
 The following escape sequences (beside \e" and \e\e) are recognized: \en for newline character (NL), \et for horizontal tabulation (HT, TAB) and \eb for backspace (BS)\. No other char escape sequence, nor octal char sequences are valid\.
 .sp
-Variable value ending in a \e is continued on the next line in the customary UNIX fashion\.
+Variable values ending in a \e are continued on the next line in the customary UNIX fashion\.
 .sp
-Some variables may require special value format\.
+Some variables may require a special value format\.
 .sp
 .SS "Example"
 .sp
@@ -1287,6 +1287,13 @@ transfer\.unpackLimit
 is used instead\.
 .RE
 .PP
+format\.attach
+.RS 4
+Enable multipart/mixed attachments as the default for
+\fIformat\-patch\fR\. The value can also be a double quoted string which will enable attachments as the default and set the value as the boundary\. See the \-\-attach option in
+\fBgit-format-patch\fR(1)\.
+.RE
+.PP
 format\.numbered
 .RS 4
 A boolean which can enable or disable sequence numbers in patch subjects\. It defaults to "auto" which enables it only if there is more than one patch\. It can be enabled or disabled for all messages by setting it to "true" or "false"\. See \-\-numbered option in
@@ -1297,6 +1304,19 @@ format\.headers
 .RS 4
 Additional email headers to include in a patch to be submitted by mail\. See
 \fBgit-format-patch\fR(1)\.
+.RE
+.PP
+format\.cc
+.RS 4
+Additional "Cc:" headers to include in a patch to be submitted by mail\. See the \-\-cc option in
+\fBgit-format-patch\fR(1)\.
+.RE
+.PP
+format\.subjectprefix
+.RS 4
+The default for format\-patch is to output files with the
+\fI[PATCH]\fR
+subject prefix\. Use this variable to change that prefix\.
 .RE
 .PP
 format\.suffix
@@ -1320,10 +1340,10 @@ The default threading style for
 shallow
 or
 deep\.
-\fIShallow\fR
+shallow
 threading makes every mail a reply to the head of the series, where the head is chosen from the cover letter, the
 \-\-in\-reply\-to, and the first patch mail, in this order\.
-\fIDeep\fR
+deep
 threading makes every mail a reply to the previous one\. A true boolean value is the same as
 shallow, and a false value disables threading\.
 .RE

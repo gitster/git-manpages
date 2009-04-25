@@ -1,11 +1,11 @@
 .\"     Title: git-format-patch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/21/2009
+.\"      Date: 04/25/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.rc1.34.g0be9b
+.\"    Source: Git 1.6.3.rc2
 .\"
-.TH "GIT\-FORMAT\-PATCH" "1" "04/21/2009" "Git 1\.6\.3\.rc1\.34\.g0be9b" "Git Manual"
+.TH "GIT\-FORMAT\-PATCH" "1" "04/25/2009" "Git 1\.6\.3\.rc2" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,10 +16,10 @@ git-format-patch - Prepare patches for e-mail submission
 .sp
 .RS 4
 .nf
-\fIgit format\-patch\fR [\-k] [\-o <dir> | \-\-stdout] [\-\-thread]
-                   [\-\-attach[=<boundary>] | \-\-inline[=<boundary>] |
-                     [\-\-no\-attach]]
-                   [\-s | \-\-signoff] [<common diff options>]
+\fIgit format\-patch\fR [\-k] [(\-o|\-\-output\-directory) <dir> | \-\-stdout]
+                   [\-\-thread[=<style>]]
+                   [(\-\-attach|\-\-inline)[=<boundary>] | \-\-no\-attach]
+                   [\-s | \-\-signoff]
                    [\-n | \-\-numbered | \-N | \-\-no\-numbered]
                    [\-\-start\-number <n>] [\-\-numbered\-files]
                    [\-\-in\-reply\-to=Message\-Id] [\-\-suffix=\.<sfx>]
@@ -27,6 +27,7 @@ git-format-patch - Prepare patches for e-mail submission
                    [\-\-subject\-prefix=Subject\-Prefix]
                    [\-\-cc=<email>]
                    [\-\-cover\-letter]
+                   [<common diff options>]
                    [ <since> | <revision range> ]
 .fi
 .RE
@@ -401,10 +402,10 @@ The optional <style> argument can be either
 shallow
 or
 deep\.
-\fIShallow\fR
+\fIshallow\fR
 threading makes every mail a reply to the head of the series, where the head is chosen from the cover letter, the
 \-\-in\-reply\-to, and the first patch mail, in this order\.
-\fIDeep\fR
+\fIdeep\fR
 threading makes every mail a reply to the previous one\. If not specified, defaults to the
 \fIformat\.thread\fR
 configuration, or
@@ -450,17 +451,19 @@ In addition to the patches, generate a cover letter file containing the shortlog
 Instead of using
 \.patch
 as the suffix for generated filenames, use specified suffix\. A common alternative is
-\-\-suffix=\.txt\.
+\-\-suffix=\.txt\. Leaving this empty will remove the
+\.patch
+suffix\.
 .sp
-Note that you would need to include the leading dot
-\.
-if you want a filename like
-0001\-description\-of\-my\-change\.patch, and the first letter does not have to be a dot\. Leaving it empty would not add any suffix\.
+Note that the leading character does not have to be a dot; for example, you can use
+\-\-suffix=\-patch
+to get
+0001\-description\-of\-my\-change\-patch\.
 .RE
 .PP
 \-\-no\-binary
 .RS 4
-Don\'t output contents of changes in binary files, just take note that they differ\. Note that this disable the patch to be properly applied\. By default the contents of changes in those files are encoded in the patch\.
+Do not output contents of changes in binary files, instead display a notice that those files changed\. Patches generated using this option cannot be applied properly, but they are still useful for code review\.
 .RE
 .PP
 \-\-root
@@ -468,7 +471,7 @@ Don\'t output contents of changes in binary files, just take note that they diff
 Treat the revision argument as a <revision range>, even if it is just a single commit (that would normally be treated as a <since>)\. Note that root commits included in the specified range are always formatted as creation patches, independently of this flag\.
 .RE
 .SH "CONFIGURATION"
-You can specify extra mail header lines to be added to each message in the repository configuration, new defaults for the subject prefix and file suffix, control attachments, and number patches when outputting more than one\.
+You can specify extra mail header lines to be added to each message, defaults for the subject prefix and file suffix, number patches when outputting more than one patch, add "Cc:" headers, configure attachments, and sign off patches with configuration variables\.
 .sp
 .sp
 .RS 4
@@ -548,7 +551,7 @@ $ git format\-patch \-M \-B origin
 
 .fi
 .RE
-Additionally, it detects and handles renames and complete rewrites intelligently to produce a renaming patch\. A renaming patch reduces the amount of text output, and generally makes it easier to review it\. Note that the "patch" program does not understand renaming patches, so use it only when you know the recipient uses git to apply your patch\.
+Additionally, it detects and handles renames and complete rewrites intelligently to produce a renaming patch\. A renaming patch reduces the amount of text output, and generally makes it easier to review\. Note that non\-git "patch" programs won\'t understand renaming patches, so use it only when you know the recipient uses git to apply your patch\.
 .RE
 .sp
 .RS 4
