@@ -1,11 +1,11 @@
 .\"     Title: git-rev-parse
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/30/2009
+.\"      Date: 05/23/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.rc3.24.g6ffd5
+.\"    Source: Git 1.6.3.1.145.gb74d77
 .\"
-.TH "GIT\-REV\-PARSE" "1" "04/30/2009" "Git 1\.6\.3\.rc3\.24\.g6ffd5" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "05/23/2009" "Git 1\.6\.3\.1\.145\.gb74d77" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -34,6 +34,15 @@ Only meaningful in
 mode\. Tells the option parser to echo out the first
 \-\-
 met instead of skipping it\.
+.RE
+.PP
+\-\-sq\-quote
+.RS 4
+Use
+\fIgit\-rev\-parse\fR
+in shell quoting mode (see SQ\-QUOTE section below)\. In contrast to the
+\-\-sq
+option below, this mode does only quoting\. Nothing else is done to command input\.
 .RE
 .PP
 \-\-revs\-only
@@ -84,7 +93,9 @@ mode\. Do not output an error message if the first argument is not a valid objec
 Usually the output is made one line per flag and parameter\. This option makes output a single line, properly quoted for consumption by shell\. Useful when you expect your parameter to contain whitespaces and newlines (e\.g\. when using pickaxe
 \-S
 with
-\fIgit\-diff\-*\fR)\.
+\fIgit\-diff\-*\fR)\. In contrast to the
+\-\-sq\-quote
+option, the command input is still interpreted as usual\.
 .RE
 .PP
 \-\-not
@@ -517,6 +528,30 @@ bar=      some cool option \-\-bar with an argument
 C?        option C with an optional argument"
 
 eval `echo "$OPTS_SPEC" | git rev\-parse \-\-parseopt \-\- "$@" || echo exit $?`
+\.ft
+
+.fi
+.RE
+.SH "SQ-QUOTE"
+In \-\-sq\-quote mode, \fIgit\-rev\-parse\fR echoes on the standard output a single line suitable for sh(1) eval\. This line is made by normalizing the arguments following \-\-sq\-quote\. Nothing other than quoting the arguments is done\.
+.sp
+If you want command input to still be interpreted as usual by \fIgit\-rev\-parse\fR before the output is shell quoted, see the \-\-sq option\.
+.sp
+.SS "Example"
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ cat >your\-git\-script\.sh <<\eEOF
+#!/bin/sh
+args=$(git rev\-parse \-\-sq\-quote "$@")   # quote user\-supplied arguments
+command="git frotz \-n24 $args"          # and use it inside a handcrafted
+                                        # command line
+eval "$command"
+EOF
+
+$ sh your\-git\-script\.sh "a b\'c"
 \.ft
 
 .fi
