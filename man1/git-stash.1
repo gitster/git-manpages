@@ -1,11 +1,11 @@
 .\"     Title: git-stash
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/02/2009
+.\"      Date: 05/31/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.3.1.187.g0ddb
 .\"
-.TH "GIT\-STASH" "1" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-STASH" "1" "05/31/2009" "Git 1\.6\.3\.1\.187\.g0ddb" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -83,13 +83,27 @@ git stash show \-p stash@{1}
 to view the second most recent stash in patch form)\.
 .RE
 .PP
+pop [<stash>]
+.RS 4
+Remove a single stashed state from the stash list and apply it on top of the current working tree state, i\.e\., do the inverse operation of
+git stash save\. The working directory must match the index\.
+.sp
+Applying the state can fail with conflicts; in this case, it is not removed from the stash list\. You need to resolve the conflicts by hand and call
+git stash drop
+manually afterwards\.
+.sp
+When no
+<stash>
+is given,
+stash@{0}
+is assumed\. See also
+apply\.
+.RE
+.PP
 apply [\-\-index] [<stash>]
 .RS 4
-Restore the changes recorded in the stash on top of the current working tree state\. When no
-<stash>
-is given, applies the latest one\. The working directory must match the index\.
-.sp
-This operation can fail with conflicts; you need to resolve them by hand in the working tree\.
+Like
+pop, but do not remove the state from the stash list\.
 .sp
 If the
 \-\-index
@@ -132,16 +146,6 @@ is given, it removes the latest one\. i\.e\.
 stash@{0}
 .RE
 .PP
-pop [<stash>]
-.RS 4
-Remove a single stashed state from the stash list and apply on top of the current working tree state\. When no
-<stash>
-is given,
-stash@{0}
-is assumed\. See also
-apply\.
-.RE
-.PP
 create
 .RS 4
 Create a stash (which is a regular commit object) and return its object name, without storing it anywhere in the ref namespace\.
@@ -180,7 +184,7 @@ $ git pull
 file foobar not up to date, cannot merge\.
 $ git stash
 $ git pull
-$ git stash apply
+$ git stash pop
 \.ft
 
 .fi
@@ -220,7 +224,7 @@ to simplify the above, like this:
 $ git stash
 $ edit emergency fix
 $ git commit \-a \-m "Fix in a hurry"
-$ git stash apply
+$ git stash pop
 # \.\.\. continue hacking \.\.\.
 \.ft
 
