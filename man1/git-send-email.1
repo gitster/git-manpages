@@ -1,11 +1,11 @@
 .\"     Title: git-send-email
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 05/23/2009
+.\"      Date: 06/01/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.1.145.gb74d77
+.\"    Source: Git 1.6.3.1.244.gf9275
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "05/23/2009" "Git 1\.6\.3\.1\.145\.gb74d77" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "06/01/2009" "Git 1\.6\.3\.1\.244\.gf9275" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -41,6 +41,12 @@ This format expects the first line of the file to contain the "Cc:" value and th
 .SH "OPTIONS"
 .SS "Composing"
 .PP
+\-\-annotate
+.RS 4
+Review and edit each patch you\'re about to send\. See the CONFIGURATION section for
+\fIsendemail\.multiedit\fR\.
+.RE
+.PP
 \-\-bcc=<address>
 .RS 4
 Specify a "Bcc:" value for each email\. Default is the value of
@@ -57,13 +63,6 @@ Specify a starting "Cc:" value for each email\. Default is the value of
 The \-\-cc option must be repeated for each user you want on the cc list\.
 .RE
 .PP
-\-\-annotate
-.RS 4
-Review each patch you\'re about to send in an editor\. The setting
-\fIsendemail\.multiedit\fR
-defines if this will spawn one editor per patch or one for all of them at once\.
-.RE
-.PP
 \-\-compose
 .RS 4
 Use $GIT_EDITOR, core\.editor, $VISUAL, or $EDITOR to edit an introductory message for the patch series\.
@@ -73,6 +72,9 @@ When
 is used, git send\-email will use the From, Subject, and In\-Reply\-To headers specified in the message\. If the body of the message (what you type after the headers and a blank line) only contains blank (or GIT: prefixed) lines the summary won\'t be sent, but From, Subject, and In\-Reply\-To headers will be used unless they are removed\.
 .sp
 Missing From or In\-Reply\-To headers will be prompted for\.
+.sp
+See the CONFIGURATION section for
+\fIsendemail\.multiedit\fR\.
 .RE
 .PP
 \-\-from=<address>
@@ -155,8 +157,9 @@ otherwise\.
 .PP
 \-\-smtp\-server\-port=<port>
 .RS 4
-Specifies a port different from the default port (SMTP servers typically listen to smtp port 25 and ssmtp port 465)\. This can be set with
-\fIsendemail\.smtpserverport\fR\.
+Specifies a port different from the default port (SMTP servers typically listen to smtp port 25 and ssmtp port 465); symbolic port names (e\.g\. "submission" instead of 465) are also accepted\. The port can also be set with the
+\fIsendemail\.smtpserverport\fR
+configuration variable\.
 .RE
 .PP
 \-\-smtp\-ssl
@@ -341,6 +344,11 @@ unless any of the suppress options have been specified, in which case default to
 Do everything except actually send the emails\.
 .RE
 .PP
+\-\-[no\-]format\-patch
+.RS 4
+When an argument may be understood either as a reference or as a file name, choose to understand it as a format\-patch argument (\fI\-\-format\-patch\fR) or as a file name (\fI\-\-no\-format\-patch\fR)\. By default, when such a conflict occurs, git send\-email will fail\.
+.RE
+.PP
 \-\-quiet
 .RS 4
 Make git\-send\-email less verbose\. One line per email should be all that is output\.
@@ -357,11 +365,6 @@ Perform sanity checks on patches\. Currently, validation means the following:
 Default is the value of
 \fIsendemail\.validate\fR; if this is not set, default to
 \fI\-\-validate\fR\.
-.RE
-.PP
-\-\-[no\-]format\-patch
-.RS 4
-When an argument may be understood either as a reference or as a file name, choose to understand it as a format\-patch argument (\fI\-\-format\-patch\fR) or as a file name (\fI\-\-no\-format\-patch\fR)\. By default, when such a conflict occurs, git send\-email will fail\.
 .RE
 .SH "CONFIGURATION"
 .PP
