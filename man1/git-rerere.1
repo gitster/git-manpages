@@ -1,11 +1,11 @@
 .\"     Title: git-rerere
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 04/02/2009
+.\"      Date: 06/14/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.3.2.306.g4f4fa
 .\"
-.TH "GIT\-RERERE" "1" "04/02/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-RERERE" "1" "06/14/2009" "Git 1\.6\.3\.2\.306\.g4f4fa" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -16,9 +16,9 @@ git-rerere - Reuse recorded resolution of conflicted merges
 \fIgit rerere\fR [\fIclear\fR|\fIdiff\fR|\fIstatus\fR|\fIgc\fR]
 .sp
 .SH "DESCRIPTION"
-In a workflow that employs relatively long lived topic branches, the developer sometimes needs to resolve the same conflict over and over again until the topic branches are done (either merged to the "release" branch, or sent out and accepted upstream)\.
+In a workflow employing relatively long lived topic branches, the developer sometimes needs to resolve the same conflicts over and over again until the topic branches are done (either merged to the "release" branch, or sent out and accepted upstream)\.
 .sp
-This command helps this process by recording conflicted automerge results and corresponding hand\-resolve results on the initial manual merge, and later by noticing the same automerge results and applying the previously recorded hand resolution\.
+This command assists the developer in this process by recording conflicted automerge results and corresponding hand resolve results on the initial manual merge, and applying previously recorded hand resolutions to their corresponding automerge results\.
 .sp
 .sp
 .it 1 an-trap
@@ -55,14 +55,14 @@ Like
 .PP
 \fIgc\fR
 .RS 4
-This command is used to prune records of conflicted merge that occurred long time ago\. By default, conflicts older than 15 days that you have not recorded their resolution, and conflicts older than 60 days, are pruned\. These are controlled with
+This prunes records of conflicted merges that occurred a long time ago\. By default, unresolved conflicts older than 15 days and resolved conflicts older than 60 days are pruned\. These defaults are controlled via the
 gc\.rerereunresolved
 and
 gc\.rerereresolved
-configuration variables\.
+configuration variables respectively\.
 .RE
 .SH "DISCUSSION"
-When your topic branch modifies overlapping area that your master branch (or upstream) touched since your topic branch forked from it, you may want to test it with the latest master, even before your topic branch is ready to be pushed upstream:
+When your topic branch modifies an overlapping area that your master branch (or upstream) touched since your topic branch forked from it, you may want to test it with the latest master, even before your topic branch is ready to be pushed upstream:
 .sp
 .sp
 .RS 4
@@ -138,15 +138,15 @@ As an alternative, to keep the topic branch clean of test merges, you could blow
 
 .fi
 .RE
-This would leave only one merge commit when your topic branch is finally ready and merged into the master branch\. This merge would require you to resolve the conflict, introduced by the commits marked with *\. However, often this conflict is the same conflict you resolved when you created the test merge you blew away\. \fIgit\-rerere\fR command helps you to resolve this final conflicted merge using the information from your earlier hand resolve\.
+This would leave only one merge commit when your topic branch is finally ready and merged into the master branch\. This merge would require you to resolve the conflict, introduced by the commits marked with *\. However, this conflict is often the same conflict you resolved when you created the test merge you blew away\. \fIgit\-rerere\fR helps you resolve this final conflicted merge using the information from your earlier hand resolve\.
 .sp
-Running the \fIgit\-rerere\fR command immediately after a conflicted automerge records the conflicted working tree files, with the usual conflict markers <<<<<<<, =======, and >>>>>>> in them\. Later, after you are done resolving the conflicts, running \fIgit\-rerere\fR again records the resolved state of these files\. Suppose you did this when you created the test merge of master into the topic branch\.
+Running the \fIgit\-rerere\fR command immediately after a conflicted automerge records the conflicted working tree files, with the usual conflict markers <<<<<<<, =======, and >>>>>>> in them\. Later, after you are done resolving the conflicts, running \fIgit\-rerere\fR again will record the resolved state of these files\. Suppose you did this when you created the test merge of master into the topic branch\.
 .sp
-Next time, running \fIgit\-rerere\fR after seeing a conflicted automerge, if the conflict is the same as the earlier one recorded, it is noticed and a three\-way merge between the earlier conflicted automerge, the earlier manual resolution, and the current conflicted automerge is performed by the command\. If this three\-way merge resolves cleanly, the result is written out to your working tree file, so you would not have to manually resolve it\. Note that \fIgit\-rerere\fR leaves the index file alone, so you still need to do the final sanity checks with git diff (or git diff \-c) and \fIgit\-add\fR when you are satisfied\.
+Next time, after seeing the same conflicted automerge, running \fIgit\-rerere\fR will perform a three\-way merge between the earlier conflicted automerge, the earlier manual resolution, and the current conflicted automerge\. If this three\-way merge resolves cleanly, the result is written out to your working tree file, so you do not have to manually resolve it\. Note that \fIgit\-rerere\fR leaves the index file alone, so you still need to do the final sanity checks with git diff (or git diff \-c) and \fIgit\-add\fR when you are satisfied\.
 .sp
-As a convenience measure, \fIgit\-merge\fR automatically invokes \fIgit\-rerere\fR when it exits with a failed automerge, which records it if it is a new conflict, or reuses the earlier hand resolve when it is not\. \fIgit\-commit\fR also invokes \fIgit\-rerere\fR when recording a merge result\. What this means is that you do not have to do anything special yourself (Note: you still have to set the config variable rerere\.enabled to enable this command)\.
+As a convenience measure, \fIgit\-merge\fR automatically invokes \fIgit\-rerere\fR upon exiting with a failed automerge and \fIgit\-rerere\fR records the hand resolve when it is a new conflict, or reuses the earlier hand resolve when it is not\. \fIgit\-commit\fR also invokes \fIgit\-rerere\fR when committing a merge result\. What this means is that you do not have to do anything special yourself (besides enabling the rerere\.enabled config variable)\.
 .sp
-In our example, when you did the test merge, the manual resolution is recorded, and it will be reused when you do the actual merge later with updated master and topic branch, as long as the earlier resolution is still applicable\.
+In our example, when you do the test merge, the manual resolution is recorded, and it will be reused when you do the actual merge later with the updated master and topic branch, as long as the recorded resolution is still applicable\.
 .sp
 The information \fIgit\-rerere\fR records is also used when running \fIgit\-rebase\fR\. After blowing away the test merge and continuing development on the topic branch:
 .sp
@@ -168,7 +168,7 @@ The information \fIgit\-rerere\fR records is also used when running \fIgit\-reba
 
 .fi
 .RE
-you could run git rebase master topic, to keep yourself up\-to\-date even before your topic is ready to be sent upstream\. This would result in falling back to three\-way merge, and it would conflict the same way the test merge you resolved earlier\. \fIgit\-rerere\fR is run by \fIgit\-rebase\fR to help you resolve this conflict\.
+you could run git rebase master topic, to bring yourself up\-to\-date before your topic is ready to be sent upstream\. This would result in falling back to a three\-way merge, and it would conflict the same way as the test merge you resolved earlier\. \fIgit\-rerere\fR will be run by \fIgit\-rebase\fR to help you resolve this conflict\.
 .sp
 .SH "AUTHOR"
 Written by Junio C Hamano <gitster@pobox\.com>

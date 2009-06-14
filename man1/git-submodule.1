@@ -1,11 +1,11 @@
 .\"     Title: git-submodule
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 05/23/2009
+.\"      Date: 06/14/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.1.145.gb74d77
+.\"    Source: Git 1.6.3.2.306.g4f4fa
 .\"
-.TH "GIT\-SUBMODULE" "1" "05/23/2009" "Git 1\.6\.3\.1\.145\.gb74d77" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "06/14/2009" "Git 1\.6\.3\.2\.306\.g4f4fa" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -20,7 +20,7 @@ git-submodule - Initialize, update or inspect submodules
               [\-\-reference <repository>] [\-\-] <repository> <path>
 \fIgit submodule\fR [\-\-quiet] status [\-\-cached] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
-\fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-N|\-\-no\-fetch]
+\fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-N|\-\-no\-fetch] [\-\-rebase]
               [\-\-reference <repository>] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] summary [\-\-summary\-limit <n>] [commit] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] foreach <command>
@@ -76,7 +76,12 @@ step if you do not intend to customize any submodule locations\.
 .PP
 update
 .RS 4
-Update the registered submodules, i\.e\. clone missing submodules and checkout the commit specified in the index of the containing repository\. This will make the submodules HEAD be detached\.
+Update the registered submodules, i\.e\. clone missing submodules and checkout the commit specified in the index of the containing repository\. This will make the submodules HEAD be detached unless
+\fI\-\-rebase\fR
+is specified or the key
+submodule\.$name\.update
+is set to
+rebase\.
 .sp
 If the submodule is not yet initialized, and you just want to use the setting as stored in \.gitmodules, you can automatically initialize the submodule with the \-\-init option\.
 .RE
@@ -128,6 +133,15 @@ This option is only valid for the summary command\. Limit the summary size (numb
 \-N, \-\-no\-fetch
 .RS 4
 This option is only valid for the update command\. Don\'t fetch new objects from the remote site\.
+.RE
+.PP
+\-\-rebase
+.RS 4
+This option is only valid for the update command\. Rebase the current branch onto the commit recorded in the superproject\. If this option is given, the submodule\'s HEAD will not be detached\. If a a merge failure prevents this process, you will have to resolve these failures with
+\fBgit-rebase\fR(1)\. If the key
+submodule\.$name\.update
+is set to
+rebase, this option is implicit\.
 .RE
 .PP
 \-\-reference <repository>
