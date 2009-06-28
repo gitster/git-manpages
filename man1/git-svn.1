@@ -1,26 +1,26 @@
 .\"     Title: git-svn
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 06/21/2009
+.\"      Date: 06/28/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.2.363.gc5764
+.\"    Source: Git 1.6.3.3.353.g4f2b1
 .\"
-.TH "GIT\-SVN" "1" "06/21/2009" "Git 1\.6\.3\.2\.363\.gc5764" "Git Manual"
+.TH "GIT\-SVN" "1" "06/28/2009" "Git 1\.6\.3\.3\.353\.g4f2b1" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-git-svn - Bidirectional operation between a single Subversion branch and git
+git-svn - Bidirectional operation between a Subversion repository and git
 .SH "SYNOPSIS"
 \fIgit svn\fR <command> [options] [arguments]
 .sp
 .SH "DESCRIPTION"
 \fIgit\-svn\fR is a simple conduit for changesets between Subversion and git\. It provides a bidirectional flow of changes between a Subversion and a git repository\.
 .sp
-\fIgit\-svn\fR can track a single Subversion branch simply by using a URL to the branch, follow branches laid out in the Subversion recommended method (trunk, branches, tags directories) with the \-\-stdlayout option, or follow branches in any layout with the \-T/\-t/\-b options (see options to \fIinit\fR below, and also the \fIclone\fR command)\.
+\fIgit\-svn\fR can track a standard Subversion repository, following the common "trunk/branches/tags" layout, with the \-\-stdlayout option\. It can also follow branches and tags in any layout with the \-T/\-t/\-b options (see options to \fIinit\fR below, and also the \fIclone\fR command)\.
 .sp
-Once tracking a Subversion branch (with any of the above methods), the git repository can be updated from Subversion by the \fIfetch\fR command and Subversion updated from git by the \fIdcommit\fR command\.
+Once tracking a Subversion repository (with any of the above methods), the git repository can be updated from Subversion by the \fIfetch\fR command and Subversion updated from git by the \fIdcommit\fR command\.
 .sp
 .SH "COMMANDS"
 .PP
@@ -31,7 +31,7 @@ Initializes an empty git repository with additional metadata directories for
 .PP
 \-T<trunk_subdir>, \-\-trunk=<trunk_subdir>, \-t<tags_subdir>, \-\-tags=<tags_subdir>, \-b<branches_subdir>, \-\-branches=<branches_subdir>, \-s, \-\-stdlayout
 .RS 4
-These are optional command\-line options for init\. Each of these flags can point to a relative repository path (\-\-tags=project/tags\') or a full url (\-\-tags=https://foo\.org/project/tags)\. The option \-\-stdlayout is a shorthand way of setting trunk,tags,branches as the relative paths, which is the Subversion default\. If any of the other options are given as well, they take precedence\.
+These are optional command\-line options for init\. Each of these flags can point to a relative repository path (\-\-tags=project/tags) or a full url (\-\-tags=https://foo\.org/project/tags)\. You can specify more than one \-\-tags and/or \-\-branches options, in case your Subversion repository places tags or branches under multiple paths\. The option \-\-stdlayout is a shorthand way of setting trunk,tags,branches as the relative paths, which is the Subversion default\. If any of the other options are given as well, they take precedence\.
 .RE
 .PP
 \-\-no\-metadata
@@ -208,7 +208,9 @@ against the last fetched commit from the upstream SVN\.
 .RS 4
 Commit each diff from a specified head directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head)\. This will create a revision in SVN for each commit in git\. It is recommended that you run
 \fIgit\-svn\fR
-fetch and rebase (not pull or merge) your commits against the latest changes in the SVN repository\. An optional command\-line argument may be specified as an alternative to HEAD\. This is advantageous over
+fetch and rebase (not pull or merge) your commits against the latest changes in the SVN repository\. An optional revision or branch argument may be specified, and causes
+\fIgit\-svn\fR
+to do all work on that revision/branch instead of HEAD\. This is advantageous over
 \fIset\-tree\fR
 (below) because it produces cleaner, more linear history\.
 .PP
@@ -254,6 +256,25 @@ Allows to specify the commit message\.
 .RS 4
 Create a tag by using the tags_subdir instead of the branches_subdir specified during git svn init\.
 .RE
+.PP
+\-d, \-\-destination
+.RS 4
+If more than one \-\-branches (or \-\-tags) option was given to the
+\fIinit\fR
+or
+\fIclone\fR
+command, you must provide the location of the branch (or tag) you wish to create in the SVN repository\. The value of this option must match one of the paths specified by a \-\-branches (or \-\-tags) option\. You can see these paths with the commands
+.sp
+.RS 4
+.nf
+git config \-\-get\-all svn\-remote\.<name>\.branches
+git config \-\-get\-all svn\-remote\.<name>\.tags
+.fi
+.RE
+where <name> is the name of the SVN repository as specified by the \-R option to
+\fIinit\fR
+(or "svn" by default)\.
+.RE
 .RE
 .PP
 \fItag\fR
@@ -268,7 +289,7 @@ This should make it easy to look up svn log messages when svn users refer to \-r
 .sp
 The following features from `svn log\' are supported:
 .PP
-\-\-revision=<n>[:<n>]
+\-r/\-\-revision=<n>[:<n>]
 .RS 4
 is supported, non\-numeric args are not: HEAD, NEXT, BASE, PREV, etc \&...
 .RE
@@ -378,6 +399,99 @@ Gets the Subversion property given as the first argument, for a file\. A specifi
 \fIshow\-externals\fR
 .RS 4
 Shows the Subversion externals\. Use \-r/\-\-revision to specify a specific revision\.
+.RE
+.PP
+\fIreset\fR
+.RS 4
+Undoes the effects of
+\fIfetch\fR
+back to the specified revision\. This allows you to re\-\fIfetch\fR
+an SVN revision\. Normally the contents of an SVN revision should never change and
+\fIreset\fR
+should not be necessary\. However, if SVN permissions change, or if you alter your \-\-ignore\-paths option, a
+\fIfetch\fR
+may fail with "not found in commit" (file not previously visible) or "checksum mismatch" (missed a modification)\. If the problem file cannot be ignored forever (with \-\-ignore\-paths) the only way to repair the repo is to use
+\fIreset\fR\.
+.sp
+Only the rev_map and refs/remotes/git\-svn are changed\. Follow
+\fIreset\fR
+with a
+\fIfetch\fR
+and then
+\fIgit\-reset\fR
+or
+\fIgit\-rebase\fR
+to move local branches onto the new tree\.
+.PP
+\-r/\-\-revision=<n>
+.RS 4
+Specify the most recent revision to keep\. All later revisions are discarded\.
+.RE
+.PP
+\-p/\-\-parent
+.RS 4
+Discard the specified revision as well, keeping the nearest parent instead\.
+.RE
+.PP
+Example:
+.RS 4
+Assume you have local changes in "master", but you need to refetch "r2"\.
+.sp
+.RS 4
+.nf
+
+\.ft C
+    r1\-\-\-r2\-\-\-r3 remotes/git\-svn
+                \e
+                 A\-\-\-B master
+\.ft
+
+.fi
+.RE
+Fix the ignore\-paths or SVN permissions problem that caused "r2" to be incomplete in the first place\. Then:
+.sp
+.RS 4
+.nf
+git svn reset \-r2 \-p
+git svn fetch
+.fi
+.RE
+.sp
+.RS 4
+.nf
+
+\.ft C
+    r1\-\-\-r2\'\-\-r3\' remotes/git\-svn
+      \e
+       r2\-\-\-r3\-\-\-A\-\-\-B master
+\.ft
+
+.fi
+.RE
+Then fixup "master" with
+\fIgit\-rebase\fR\. Do NOT use
+\fIgit\-merge\fR
+or your history will not be compatible with a future
+\fIdcommit\fR!
+.sp
+.RS 4
+.nf
+git rebase \-\-onto remotes/git\-svn A^ master
+.fi
+.RE
+.sp
+.RS 4
+.nf
+
+\.ft C
+    r1\-\-\-r2\'\-\-r3\' remotes/git\-svn
+                \e
+                 A\'\-\-B\' master
+\.ft
+
+.fi
+.RE
+.RE
 .RE
 .SH "OPTIONS"
 .PP
@@ -719,6 +833,15 @@ Since \fIdcommit\fR uses rebase internally, any git branches you \fIgit\-push\fR
 .sp
 Do not use the \-\-amend option of \fBgit-commit\fR(1) on a change you\'ve already dcommitted\. It is considered bad practice to \-\-amend commits you\'ve already pushed to a remote repository for other users, and dcommit with SVN is analogous to that\.
 .sp
+When using multiple \-\-branches or \-\-tags, \fIgit\-svn\fR does not automatically handle name collisions (for example, if two branches from different paths have the same name, or if a branch and a tag have the same name)\. In these cases, use \fIinit\fR to set up your git repository then, before your first \fIfetch\fR, edit the \.git/config file so that the branches and tags are associated with different name spaces\. For example:
+.sp
+.sp
+.RS 4
+.nf
+branches = stable/*:refs/remotes/svn/stable/*
+branches = debug/*:refs/remotes/svn/debug/*
+.fi
+.RE
 .SH "BUGS"
 We ignore all SVN properties except svn:executable\. Any unhandled properties are logged to $GIT_DIR/svn/<refname>/unhandled\.log
 .sp
