@@ -1,11 +1,11 @@
 .\"     Title: git-format-patch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"      Date: 07/23/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.rc2
+.\"    Source: Git 1.6.4.rc2
 .\"
-.TH "GIT\-FORMAT\-PATCH" "1" "07/01/2009" "Git 1\.6\.3\.rc2" "Git Manual"
+.TH "GIT\-FORMAT\-PATCH" "1" "07/23/2009" "Git 1\.6\.4\.rc2" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,7 +17,7 @@ git-format-patch - Prepare patches for e-mail submission
 .RS 4
 .nf
 \fIgit format\-patch\fR [\-k] [(\-o|\-\-output\-directory) <dir> | \-\-stdout]
-                   [\-\-thread[=<style>]]
+                   [\-\-no\-thread | \-\-thread[=<style>]]
                    [(\-\-attach|\-\-inline)[=<boundary>] | \-\-no\-attach]
                    [\-s | \-\-signoff]
                    [\-n | \-\-numbered | \-N | \-\-no\-numbered]
@@ -394,9 +394,9 @@ Disable the creation of an attachment, overriding the configuration setting\.
 Create multipart/mixed attachment, the first part of which is the commit message and the patch itself in the second part, with "Content\-Disposition: inline"\.
 .RE
 .PP
-\-\-thread[=<style>]
+\-\-thread[=<style>], \-\-no\-thread
 .RS 4
-Add In\-Reply\-To and References headers to make the second and subsequent mails appear as replies to the first\. Also generates the Message\-Id header to reference\.
+Controls addition of In\-Reply\-To and References headers to make the second and subsequent mails appear as replies to the first\. Also controls generation of the Message\-Id header to reference\.
 .sp
 The optional <style> argument can be either
 shallow
@@ -406,11 +406,21 @@ deep\.
 threading makes every mail a reply to the head of the series, where the head is chosen from the cover letter, the
 \-\-in\-reply\-to, and the first patch mail, in this order\.
 \fIdeep\fR
-threading makes every mail a reply to the previous one\. If not specified, defaults to the
+threading makes every mail a reply to the previous one\.
+.sp
+The default is \-\-no\-thread, unless the
 \fIformat\.thread\fR
-configuration, or
-shallow
-if that is not set\.
+configuration is set\. If \-\-thread is specified without a style, it defaults to the style specified by
+\fIformat\.thread\fR
+if any, or else
+shallow\.
+.sp
+Beware that the default for
+\fIgit send\-email\fR
+is to thread emails itself\. If you want
+\fIgit format\-patch\fR
+to take care of hreading, you will want to ensure that threading is disabled for
+\fIgit send\-email\fR\.
 .RE
 .PP
 \-\-in\-reply\-to=Message\-Id
