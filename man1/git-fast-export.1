@@ -1,11 +1,11 @@
 .\"     Title: git-fast-export
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"      Date: 07/26/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.4.rc3.12.gdf73a
 .\"
-.TH "GIT\-FAST\-EXPORT" "1" "07/01/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-FAST\-EXPORT" "1" "07/26/2009" "Git 1\.6\.4\.rc3\.12\.gdf73a" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -43,6 +43,19 @@ When asking to
 \fIwarn\fR, they will be exported, but you will see a warning\.
 .RE
 .PP
+\-\-tag\-of\-filtered\-object=(abort|drop|rewrite)
+.RS 4
+Specify how to handle tags whose tagged objectis filtered out\. Since revisions and files to export can be limited by path, tagged objects may be filtered completely\.
+.sp
+When asking to
+\fIabort\fR
+(which is the default), this program will die when encountering such a tag\. With
+\fIdrop\fR
+it will omit such tags from the output\. With
+\fIrewrite\fR, if the tagged object is a commit, it will rewrite the tag to tag an ancestor commit (via parent rewriting; see
+\fBgit-rev-list\fR(1))
+.RE
+.PP
 \-M, \-C
 .RS 4
 Perform move and/or copy detection, as described in the
@@ -68,6 +81,16 @@ Any commits that have already been marked will not be exported again\. If the ba
 \-\-fake\-missing\-tagger
 .RS 4
 Some old repositories have tags without a tagger\. The fast\-import protocol was pretty strict about that, and did not allow that\. So fake a tagger to be able to fast\-import the output\.
+.RE
+.PP
+[git\-rev\-list\-args\&...]
+.RS 4
+A list of arguments, acceptable to
+\fIgit\-rev\-parse\fR
+and
+\fIgit\-rev\-list\fR, that specifies the specific objects and references to export\. For example,
+master\e~10\.\.master
+causes the current master reference to be exported along with all objects added since its 10th ancestor commit\.
 .RE
 .SH "EXAMPLES"
 .sp
