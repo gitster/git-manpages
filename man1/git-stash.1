@@ -1,11 +1,11 @@
 .\"     Title: git-stash
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/02/2009
+.\"      Date: 08/11/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.3.385.g60647
+.\"    Source: Git 1.6.4.114.gefd1
 .\"
-.TH "GIT\-STASH" "1" "07/02/2009" "Git 1\.6\.3\.3\.385\.g60647" "Git Manual"
+.TH "GIT\-STASH" "1" "08/11/2009" "Git 1\.6\.4\.114\.gefd1" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -135,7 +135,9 @@ was run, it restores the originally stashed state with no conflicts\.
 .PP
 clear
 .RS 4
-Remove all the stashed states\. Note that those states will then be subject to pruning, and may be difficult or impossible to recover\.
+Remove all the stashed states\. Note that those states will then be subject to pruning, and may be impossible to recover (see
+\fIExamples\fR
+below for a possible strategy)\.
 .RE
 .PP
 drop [\-q|\-\-quiet] [<stash>]
@@ -251,6 +253,23 @@ $ git stash pop                  # prepare to work on all other changes
 # \.\.\. repeat above five steps until one commit remains \.\.\.
 $ edit/build/test remaining parts
 $ git commit foo \-m \'Remaining parts\'
+\.ft
+
+.fi
+.RE
+.RE
+.PP
+Recovering stashes that were cleared/dropped erroneously
+.RS 4
+If you mistakenly drop or clear stashes, they cannot be recovered through the normal safety mechanisms\. However, you can try the following incantation to get a list of stashes that are still in your repository, but not reachable any more:
+.sp
+.RS 4
+.nf
+
+\.ft C
+git fsck \-\-unreachable |
+grep commit | cut \-d\e  \-f3 |
+xargs git log \-\-merges \-\-no\-walk \-\-grep=WIP
 \.ft
 
 .fi
