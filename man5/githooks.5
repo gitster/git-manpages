@@ -1,11 +1,11 @@
 .\"     Title: githooks
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"      Date: 09/08/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.1.404.gb008
+.\"    Source: Git 1.6.5.rc0
 .\"
-.TH "GITHOOKS" "5" "07/01/2009" "Git 1\.6\.2\.1\.404\.gb008" "Git Manual"
+.TH "GITHOOKS" "5" "09/08/2009" "Git 1\.6\.5\.rc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -29,14 +29,15 @@ It is also a requirement for a given hook to be executable\. However \- in a fre
 
 This document describes the currently defined hooks\.
 .sp
-.SH "APPLYPATCH-MSG"
+.SH "HOOKS"
+.SS "applypatch\-msg"
 This hook is invoked by \fIgit\-am\fR script\. It takes a single parameter, the name of the file that holds the proposed commit log message\. Exiting with non\-zero status causes \fIgit\-am\fR to abort before applying the patch\.
 .sp
 The hook is allowed to edit the message file in place, and can be used to normalize the message into some project standard format (if the project has one)\. It can also be used to refuse the commit after inspecting the message file\.
 .sp
 The default \fIapplypatch\-msg\fR hook, when enabled, runs the \fIcommit\-msg\fR hook, if the latter is enabled\.
 .sp
-.SH "PRE-APPLYPATCH"
+.SS "pre\-applypatch"
 This hook is invoked by \fIgit\-am\fR\. It takes no parameter, and is invoked after the patch is applied, but before a commit is made\.
 .sp
 If it exits with non\-zero status, then the working tree will not be committed after applying the patch\.
@@ -45,19 +46,19 @@ It can be used to inspect the current working tree and refuse to make a commit i
 .sp
 The default \fIpre\-applypatch\fR hook, when enabled, runs the \fIpre\-commit\fR hook, if the latter is enabled\.
 .sp
-.SH "POST-APPLYPATCH"
+.SS "post\-applypatch"
 This hook is invoked by \fIgit\-am\fR\. It takes no parameter, and is invoked after the patch is applied and a commit is made\.
 .sp
 This hook is meant primarily for notification, and cannot affect the outcome of \fIgit\-am\fR\.
 .sp
-.SH "PRE-COMMIT"
+.SS "pre\-commit"
 This hook is invoked by \fIgit\-commit\fR, and can be bypassed with \-\-no\-verify option\. It takes no parameter, and is invoked before obtaining the proposed commit log message and making a commit\. Exiting with non\-zero status from this script causes the \fIgit\-commit\fR to abort\.
 .sp
 The default \fIpre\-commit\fR hook, when enabled, catches introduction of lines with trailing whitespaces and aborts the commit when such a line is found\.
 .sp
 All the \fIgit\-commit\fR hooks are invoked with the environment variable GIT_EDITOR=: if the command will not bring up an editor to modify the commit message\.
 .sp
-.SH "PREPARE-COMMIT-MSG"
+.SS "prepare\-commit\-msg"
 This hook is invoked by \fIgit\-commit\fR right after preparing the default log message, and before the editor is started\.
 .sp
 It takes one to three parameters\. The first is the name of the file that contains the commit log message\. The second is the source of the commit message, and can be: message (if a \-m or \-F option was given); template (if a \-t option was given or the configuration option commit\.template is set); merge (if the commit is a merge or a \.git/MERGE_MSG file exists); squash (if a \.git/SQUASH_MSG file exists); or commit, followed by a commit SHA1 (if a \-c, \-C or \-\-amend option was given)\.
@@ -68,34 +69,34 @@ The purpose of the hook is to edit the message file in place, and it is not supp
 .sp
 The sample prepare\-commit\-msg hook that comes with git comments out the Conflicts: part of a merge\'s commit message\.
 .sp
-.SH "COMMIT-MSG"
+.SS "commit\-msg"
 This hook is invoked by \fIgit\-commit\fR, and can be bypassed with \-\-no\-verify option\. It takes a single parameter, the name of the file that holds the proposed commit log message\. Exiting with non\-zero status causes the \fIgit\-commit\fR to abort\.
 .sp
 The hook is allowed to edit the message file in place, and can be used to normalize the message into some project standard format (if the project has one)\. It can also be used to refuse the commit after inspecting the message file\.
 .sp
 The default \fIcommit\-msg\fR hook, when enabled, detects duplicate "Signed\-off\-by" lines, and aborts the commit if one is found\.
 .sp
-.SH "POST-COMMIT"
+.SS "post\-commit"
 This hook is invoked by \fIgit\-commit\fR\. It takes no parameter, and is invoked after a commit is made\.
 .sp
 This hook is meant primarily for notification, and cannot affect the outcome of \fIgit\-commit\fR\.
 .sp
-.SH "PRE-REBASE"
+.SS "pre\-rebase"
 This hook is called by \fIgit\-rebase\fR and can be used to prevent a branch from getting rebased\.
 .sp
-.SH "POST-CHECKOUT"
+.SS "post\-checkout"
 This hook is invoked when a \fIgit\-checkout\fR is run after having updated the worktree\. The hook is given three parameters: the ref of the previous HEAD, the ref of the new HEAD (which may or may not have changed), and a flag indicating whether the checkout was a branch checkout (changing branches, flag=1) or a file checkout (retrieving a file from the index, flag=0)\. This hook cannot affect the outcome of \fIgit\-checkout\fR\.
 .sp
 It is also run after \fIgit\-clone\fR, unless the \-\-no\-checkout (\-n) option is used\. The first parameter given to the hook is the null\-ref, the second the ref of the new HEAD and the flag is always 1\.
 .sp
 This hook can be used to perform repository validity checks, auto\-display differences from the previous HEAD if different, or set working dir metadata properties\.
 .sp
-.SH "POST-MERGE"
+.SS "post\-merge"
 This hook is invoked by \fIgit\-merge\fR, which happens when a \fIgit\-pull\fR is done on a local repository\. The hook takes a single parameter, a status flag specifying whether or not the merge being done was a squash merge\. This hook cannot affect the outcome of \fIgit\-merge\fR and is not executed, if the merge failed due to conflicts\.
 .sp
 This hook can be used in conjunction with a corresponding pre\-commit hook to save and restore any form of metadata associated with the working tree (eg: permissions/ownership, ACLS, etc)\. See contrib/hooks/setgitperms\.perl for an example of how to do this\.
 .sp
-.SH "PRE-RECEIVE"
+.SS "pre\-receive"
 This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit\-push\fR is done on a local repository\. Just before starting to update refs on the remote repository, the pre\-receive hook is invoked\. Its exit status determines the success or failure of the update\.
 .sp
 This hook executes once for the receive operation\. It takes no arguments, but for each ref to be updated it receives on standard input a line of the format:
@@ -112,7 +113,7 @@ If the hook exits with non\-zero status, none of the refs will be updated\. If t
 .sp
 Both standard output and standard error output are forwarded to \fIgit\-send\-pack\fR on the other end, so you can simply echo messages for the user\.
 .sp
-.SH "UPDATE"
+.SS "update"
 This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit\-push\fR is done on a local repository\. Just before updating the ref on the remote repository, the update hook is invoked\. Its exit status determines the success or failure of the ref update\.
 .sp
 The hook executes once for each ref to be updated, and takes three parameters:
@@ -141,7 +142,7 @@ Both standard output and standard error output are forwarded to \fIgit\-send\-pa
 .sp
 The default \fIupdate\fR hook, when enabled\-\-and with hooks\.allowunannotated config option turned on\-\-prevents unannotated tags to be pushed\.
 .sp
-.SH "POST-RECEIVE"
+.SS "post\-receive"
 This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit\-push\fR is done on a local repository\. It executes on the remote repository once after all the refs have been updated\.
 .sp
 This hook executes once for the receive operation\. It takes no arguments, but gets the same information as the \fIpre\-receive\fR hook does on its standard input\.
@@ -154,7 +155,7 @@ Both standard output and standard error output are forwarded to \fIgit\-send\-pa
 .sp
 The default \fIpost\-receive\fR hook is empty, but there is a sample script post\-receive\-email provided in the contrib/hooks directory in git distribution, which implements sending commit emails\.
 .sp
-.SH "POST-UPDATE"
+.SS "post\-update"
 This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit\-push\fR is done on a local repository\. It executes on the remote repository once after all the refs have been updated\.
 .sp
 It takes a variable number of parameters, each of which is the name of ref that was actually updated\.
@@ -167,7 +168,33 @@ When enabled, the default \fIpost\-update\fR hook runs \fIgit\-update\-server\-i
 .sp
 Both standard output and standard error output are forwarded to \fIgit\-send\-pack\fR on the other end, so you can simply echo messages for the user\.
 .sp
-.SH "PRE-AUTO-GC"
+.SH "POST-UPLOAD-PACK"
+After upload\-pack successfully finishes its operation, this hook is called for logging purposes\.
+.sp
+The hook is passed various pieces of information, one per line, from its standard input\. Currently the following items can be fed to the hook, but more types of information may be added in the future:
+.PP
+want SHA\-1
+.RS 4
+40\-byte hexadecimal object name the client asked to include in the resulting pack\. Can occur one or more times in the input\.
+.RE
+.PP
+have SHA\-1
+.RS 4
+40\-byte hexadecimal object name the client asked to exclude from the resulting pack, claiming to have them already\. Can occur zero or more times in the input\.
+.RE
+.PP
+time float
+.RS 4
+Number of seconds spent for creating the packfile\.
+.RE
+.PP
+size decimal
+.RS 4
+Size of the resulting packfile in bytes\.
+.RE
+kind string: Either "clone" (when the client did not give us any "have", and asked for all our refs with "want"), or "fetch" (otherwise)\.
+.sp
+.SS "pre\-auto\-gc"
 This hook is invoked by \fIgit\-gc \-\-auto\fR\. It takes no parameter, and exiting with non\-zero status from this script causes the \fIgit\-gc \-\-auto\fR to abort\.
 .sp
 .SH "GIT"

@@ -1,11 +1,11 @@
 .\"     Title: git-checkout
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/30/2009
+.\"      Date: 09/08/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.4.2.236.gf324c
+.\"    Source: Git 1.6.5.rc0
 .\"
-.TH "GIT\-CHECKOUT" "1" "08/30/2009" "Git 1\.6\.4\.2\.236\.gf324c" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "09/08/2009" "Git 1\.6\.5\.rc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -19,6 +19,7 @@ git-checkout - Checkout a branch or paths to the working tree
 \fIgit checkout\fR [\-q] [\-f] [\-m] [<branch>]
 \fIgit checkout\fR [\-q] [\-f] [\-m] [\-b <new_branch>] [<start_point>]
 \fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <paths>\&...
+\fIgit checkout\fR \-\-patch [<tree\-ish>] [\-\-] [<paths>\&...]
 .fi
 .RE
 .SH "DESCRIPTION"
@@ -26,7 +27,7 @@ When <paths> are not given, this command switches branches by updating the index
 .sp
 If \-b is given, a new branch is created and checked out, as if \fBgit-branch\fR(1) were called; in this case you can use the \-\-track or \-\-no\-track options, which will be passed to git branch\. As a convenience, \-\-track without \-b implies branch creation; see the description of \-\-track below\.
 .sp
-When <paths> are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file, or from a named <tree\-ish> (most often a commit)\. In this case, the \-b and \-\-track options are meaningless and giving either of them results in an error\. The <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
+When <paths> or \-\-patch are given, this command does \fBnot\fR switch branches\. It updates the named paths in the working tree from the index file, or from a named <tree\-ish> (most often a commit)\. In this case, the \-b and \-\-track options are meaningless and giving either of them results in an error\. The <tree\-ish> argument can be used to specify a specific tree\-ish (i\.e\. commit, tag or tree) to update the index for the given paths before updating the working tree\.
 .sp
 The index may contain unmerged entries after a failed merge\. By default, if you try to check out such an entry from the index, the checkout operation will fail and nothing will be checked out\. Using \-f will ignore these unmerged entries\. The contents from a specific side of the merge can be checked out of the index by using \-\-ours or \-\-theirs\. With \-m, changes made to the working tree file can be discarded to recreate the original conflicted merge result\.
 .sp
@@ -97,6 +98,15 @@ When checking out paths from the index, this option lets you recreate the confli
 \-\-conflict=<style>
 .RS 4
 The same as \-\-merge option above, but changes the way the conflicting hunks are presented, overriding the merge\.conflictstyle configuration variable\. Possible values are "merge" (default) and "diff3" (in addition to what is shown by "merge" style, shows the original contents)\.
+.RE
+.PP
+\-p, \-\-patch
+.RS 4
+Interactively select hunks in the difference between the <tree\-ish> (or the index, if unspecified) and the working tree\. The chosen hunks are then applied in reverse to the working tree (and if a <tree\-ish> was specified, the index)\.
+.sp
+This means that you can use
+git checkout \-p
+to selectively discard edits from your current working tree\.
 .RE
 .PP
 <branch>

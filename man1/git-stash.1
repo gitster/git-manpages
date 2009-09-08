@@ -1,11 +1,11 @@
 .\"     Title: git-stash
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/11/2009
+.\"      Date: 09/08/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.4.114.gefd1
+.\"    Source: Git 1.6.5.rc0
 .\"
-.TH "GIT\-STASH" "1" "08/11/2009" "Git 1\.6\.4\.114\.gefd1" "Git Manual"
+.TH "GIT\-STASH" "1" "09/08/2009" "Git 1\.6\.5\.rc0" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -21,7 +21,7 @@ git-stash - Stash the changes in a dirty working directory away
 \fIgit stash\fR drop [\-q|\-\-quiet] [<stash>]
 \fIgit stash\fR ( pop | apply ) [\-\-index] [\-q|\-\-quiet] [<stash>]
 \fIgit stash\fR branch <branchname> [<stash>]
-\fIgit stash\fR [save [\-\-keep\-index] [\-q|\-\-quiet] [<message>]]
+\fIgit stash\fR [save [\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-q|\-\-quiet] [<message>]]
 \fIgit stash\fR clear
 \fIgit stash\fR create
 .fi
@@ -35,16 +35,26 @@ The latest stash you created is stored in $GIT_DIR/refs/stash; older stashes are
 .sp
 .SH "OPTIONS"
 .PP
-save [\-\-keep\-index] [\-q|\-\-quiet] [<message>]
+save [\-\-patch] [\-\-[no\-]keep\-index] [\-q|\-\-quiet] [<message>]
 .RS 4
 Save your local modifications to a new
 \fIstash\fR, and run
 git reset \-\-hard
-to revert them\. This is the default action when no subcommand is given\. The <message> part is optional and gives the description along with the stashed state\.
+to revert them\. The <message> part is optional and gives the description along with the stashed state\. For quickly making a snapshot, you can omit _both_ "save" and <message>, but giving only <message> does not trigger this action to prevent a misspelled subcommand from making an unwanted stash\.
 .sp
 If the
 \-\-keep\-index
 option is used, all changes already added to the index are left intact\.
+.sp
+With
+\-\-patch, you can interactively select hunks from in the diff between HEAD and the working tree to be stashed\. The stash entry is constructed such that its index state is the same as the index state of your repository, and its worktree contains only the changes you selected interactively\. The selected changes are then rolled back from your worktree\.
+.sp
+The
+\-\-patch
+option implies
+\-\-keep\-index\. You can use
+\-\-no\-keep\-index
+to override this\.
 .RE
 .PP
 list [<options>]
