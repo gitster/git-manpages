@@ -1,11 +1,11 @@
 .\"     Title: git-archive
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/28/2009
+.\"      Date: 09/14/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.4.1.243.gaab9e
+.\"    Source: Git 1.6.5.rc1.10.g20f34
 .\"
-.TH "GIT\-ARCHIVE" "1" "08/28/2009" "Git 1\.6\.4\.1\.243\.gaab9e" "Git Manual"
+.TH "GIT\-ARCHIVE" "1" "09/14/2009" "Git 1\.6\.5\.rc1\.10\.g20f34" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -17,7 +17,7 @@ git-archive - Create an archive of files from a named tree
 .RS 4
 .nf
 \fIgit archive\fR [\-\-format=<fmt>] [\-\-list] [\-\-prefix=<prefix>/] [<extra>]
-              [\-\-output=<file>] [\-\-worktree\-attributes]
+              [\-o | \-\-output=<file>] [\-\-worktree\-attributes]
               [\-\-remote=<repo> [\-\-exec=<git\-upload\-archive>]] <tree\-ish>
               [path\&...]
 .fi
@@ -34,8 +34,8 @@ Creates an archive of the specified format containing the tree structure for the
 Format of the resulting archive:
 \fItar\fR
 or
-\fIzip\fR\. The default is
-\fItar\fR\.
+\fIzip\fR\. If this option is not given, and the output file is specified, the format is inferred from the filename if possible (e\.g\. writing to "foo\.zip" makes the output to be in the zip format)\. Otherwise the output format is
+tar\.
 .RE
 .PP
 \-l, \-\-list
@@ -53,7 +53,7 @@ Report progress to stderr\.
 Prepend <prefix>/ to each filename in the archive\.
 .RE
 .PP
-\-\-output=<file>
+\-o <file>, \-\-output=<file>
 .RS 4
 Write the archive to <file> instead of stdout\.
 .RE
@@ -146,6 +146,11 @@ git archive \-\-format=zip \-\-prefix=git\-docs/ HEAD:Documentation/ > git\-1\.4
 Put everything in the current head\'s Documentation/ directory into
 \fIgit\-1\.4\.0\-docs\.zip\fR, with the prefix
 \fIgit\-docs/\fR\.
+.RE
+.PP
+git archive \-o latest\.zip HEAD
+.RS 4
+Create a Zip archive that contains the contents of the latest commit on the current branch\. Note that the output format is inferred by the extension of the output file\.
 .RE
 .SH "SEE ALSO"
 \fBgitattributes\fR(5)
