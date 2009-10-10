@@ -1,11 +1,11 @@
 .\"     Title: git-branch
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/30/2009
+.\"      Date: 10/10/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.4.2.236.gf324c
+.\"    Source: Git 1.6.5.rc3.35.g3340
 .\"
-.TH "GIT\-BRANCH" "1" "08/30/2009" "Git 1\.6\.4\.2\.236\.gf324c" "Git Manual"
+.TH "GIT\-BRANCH" "1" "10/10/2009" "Git 1\.6\.5\.rc3\.35\.g3340" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -29,7 +29,7 @@ With no arguments, existing branches are listed and the current branch will be h
 .sp
 With \-\-contains, shows only the branches that contain the named commit (in other words, the branches whose tip commits are descendants of the named commit)\. With \-\-merged, only branches merged into the named commit (i\.e\. the branches whose tip commits are reachable from the named commit) will be listed\. With \-\-no\-merged only branches not merged into the named commit will be listed\. If the <commit> argument is missing it defaults to \fIHEAD\fR (i\.e\. the tip of the current branch)\.
 .sp
-In the command\'s second form, a new branch named <branchname> will be created\. It will start out with a head equal to the one given as <start\-point>\. If no <start\-point> is given, the branch will be created with a head equal to that of the currently checked out branch\.
+The command\'s second form creates a new branch head named <branchname> which points to the current \fIHEAD\fR, or <start\-point> if given\.
 .sp
 Note that this will create the new branch, but it will not switch the working tree to it; use "git checkout <newbranch>" to switch to the new branch\.
 .sp
@@ -143,14 +143,14 @@ Do not set up "upstream" configuration, even if the branch\.autosetupmerge confi
 Only list branches which contain the specified commit\.
 .RE
 .PP
-\-\-merged
+\-\-merged [<commit>]
 .RS 4
-Only list branches which are fully contained by HEAD\.
+Only list branches whose tips are reachable from the specified commit (HEAD if not specified)\.
 .RE
 .PP
-\-\-no\-merged
+\-\-no\-merged [<commit>]
 .RS 4
-Do not list branches which are fully contained by HEAD\.
+Only list branches whose tips are not reachable from the specified commit (HEAD if not specified)\.
 .RE
 .PP
 <branchname>
@@ -161,7 +161,7 @@ The name of the branch to create or delete\. The new branch name must pass all c
 .PP
 <start\-point>
 .RS 4
-The new branch will be created with a HEAD equal to this\. It may be given as a branch name, a commit\-id, or a tag\. If this option is omitted, the current branch is assumed\.
+The new branch head will point to this commit\. It may be given as a branch name, a commit\-id, or a tag\. If this option is omitted, the current HEAD will be used instead\.
 .RE
 .PP
 <oldbranch>
@@ -245,7 +245,7 @@ is used to find all branches which can be safely deleted, since those branches a
 is used to find branches which are candidates for merging into HEAD, since those branches are not fully contained by HEAD\.
 .RE
 .SH "SEE ALSO"
-\fBgit-check-ref-format\fR(1), \fBgit-fetch\fR(1), \fBgit-remote\fR(1)\.
+\fBgit-check-ref-format\fR(1), \fBgit-fetch\fR(1), \fBgit-remote\fR(1), \fI\(lqUnderstanding history: What is a branch?\(rq\fR\&[1] in the Git User\'s Manual\.
 .sp
 .SH "AUTHOR"
 Written by Linus Torvalds <torvalds@osdl\.org> and Junio C Hamano <gitster@pobox\.com>
@@ -256,3 +256,9 @@ Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
 .SH "GIT"
 Part of the \fBgit\fR(1) suite
 .sp
+.SH "NOTES"
+.IP " 1." 4
+\(lqUnderstanding history: What is a branch?\(rq
+.RS 4
+\%user-manual.html#what-is-a-branch
+.RE
