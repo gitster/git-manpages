@@ -1,11 +1,11 @@
 .\"     Title: git-replace
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/22/2009
+.\"      Date: 10/19/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.4.1.174.g32f4c
+.\"    Source: Git 1.6.5.1.61.ge79999
 .\"
-.TH "GIT\-REPLACE" "1" "08/22/2009" "Git 1\.6\.4\.1\.174\.g32f4c" "Git Manual"
+.TH "GIT\-REPLACE" "1" "10/19/2009" "Git 1\.6\.5\.1\.61\.ge79999" "Git Manual"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -27,6 +27,36 @@ Adds a \fIreplace\fR reference in \.git/refs/replace/
 The name of the \fIreplace\fR reference is the SHA1 of the object that is replaced\. The content of the replace reference is the SHA1 of the replacement object\.
 .sp
 Unless \-f is given, the replace reference must not yet exist in \.git/refs/replace/ directory\.
+.sp
+Replace references will be used by default by all git commands except those doing reachability traversal (prune, pack transfer and fsck)\.
+.sp
+It is possible to disable use of replacement refs for any command using the \-\-no\-replace\-objects option just after "git"\.
+.sp
+For example if commit "foo" has been replaced by commit "bar":
+.sp
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git \-\-no\-replace\-object cat\-file commit foo
+\.ft
+
+.fi
+.RE
+show information about commit "foo", while:
+.sp
+.sp
+.RS 4
+.nf
+
+\.ft C
+$ git cat\-file commit foo
+\.ft
+
+.fi
+.RE
+show information about commit "bar"\.
 .sp
 .SH "OPTIONS"
 .PP
@@ -50,7 +80,7 @@ Comparing blobs or trees that have been replaced with those that replace them wi
 There may be other problems when using \fIgit rev\-list\fR related to pending objects\. And of course things may break if an object of one type is replaced by an object of another type (for example a blob replaced by a commit)\.
 .sp
 .SH "SEE ALSO"
-\fBgit-tag\fR(1) \fBgit-branch\fR(1)
+\fBgit-tag\fR(1) \fBgit-branch\fR(1) \fBgit\fR(1)
 .sp
 .SH "AUTHOR"
 Written by Christian Couder <chriscool@tuxfamily\.org> and Junio C Hamano <gitster@pobox\.com>, based on \fIgit tag\fR by Kristian Hogsberg <krh@redhat\.com> and Carlos Rica <jasampler@gmail\.com>\.
