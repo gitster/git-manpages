@@ -1,127 +1,137 @@
+'\" t
 .\"     Title: git-fsck
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 10/26/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.5.2.74.g610f9
+.\"  Language: English
 .\"
-.TH "GIT\-FSCK" "1" "07/01/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-FSCK" "1" "10/26/2009" "Git 1\&.6\&.5\&.2\&.74\&.g610f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-fsck - Verifies the connectivity and validity of the objects in the database
+git-fsck \- Verifies the connectivity and validity of the objects in the database
 .SH "SYNOPSIS"
 .sp
-.RS 4
 .nf
 \fIgit fsck\fR [\-\-tags] [\-\-root] [\-\-unreachable] [\-\-cache] [\-\-no\-reflogs]
-         [\-\-full] [\-\-strict] [\-\-verbose] [\-\-lost\-found] [<object>*]
+         [\-\-[no\-]full] [\-\-strict] [\-\-verbose] [\-\-lost\-found] [<object>*]
 .fi
-.RE
 .SH "DESCRIPTION"
-Verifies the connectivity and validity of the objects in the database\.
 .sp
+Verifies the connectivity and validity of the objects in the database\&.
 .SH "OPTIONS"
 .PP
 <object>
 .RS 4
-An object to treat as the head of an unreachability trace\.
+An object to treat as the head of an unreachability trace\&.
 .sp
 If no objects are given,
 \fIgit\-fsck\fR
-defaults to using the index file, all SHA1 references in \.git/refs/*, and all reflogs (unless \-\-no\-reflogs is given) as heads\.
+defaults to using the index file, all SHA1 references in \&.git/refs/*, and all reflogs (unless \-\-no\-reflogs is given) as heads\&.
 .RE
 .PP
 \-\-unreachable
 .RS 4
-Print out objects that exist but that aren\'t readable from any of the reference nodes\.
+Print out objects that exist but that aren\'t readable from any of the reference nodes\&.
 .RE
 .PP
 \-\-root
 .RS 4
-Report root nodes\.
+Report root nodes\&.
 .RE
 .PP
 \-\-tags
 .RS 4
-Report tags\.
+Report tags\&.
 .RE
 .PP
 \-\-cache
 .RS 4
-Consider any object recorded in the index also as a head node for an unreachability trace\.
+Consider any object recorded in the index also as a head node for an unreachability trace\&.
 .RE
 .PP
 \-\-no\-reflogs
 .RS 4
-Do not consider commits that are referenced only by an entry in a reflog to be reachable\. This option is meant only to search for commits that used to be in a ref, but now aren\'t, but are still in that corresponding reflog\.
+Do not consider commits that are referenced only by an entry in a reflog to be reachable\&. This option is meant only to search for commits that used to be in a ref, but now aren\'t, but are still in that corresponding reflog\&.
 .RE
 .PP
 \-\-full
 .RS 4
-Check not just objects in GIT_OBJECT_DIRECTORY ($GIT_DIR/objects), but also the ones found in alternate object pools listed in GIT_ALTERNATE_OBJECT_DIRECTORIES or $GIT_DIR/objects/info/alternates, and in packed git archives found in $GIT_DIR/objects/pack and corresponding pack subdirectories in alternate object pools\.
+Check not just objects in GIT_OBJECT_DIRECTORY ($GIT_DIR/objects), but also the ones found in alternate object pools listed in GIT_ALTERNATE_OBJECT_DIRECTORIES or $GIT_DIR/objects/info/alternates, and in packed git archives found in $GIT_DIR/objects/pack and corresponding pack subdirectories in alternate object pools\&. This is now default; you can turn it off with \-\-no\-full\&.
 .RE
 .PP
 \-\-strict
 .RS 4
-Enable more strict checking, namely to catch a file mode recorded with g+w bit set, which was created by older versions of git\. Existing repositories, including the Linux kernel, git itself, and sparse repository have old objects that triggers this check, but it is recommended to check new projects with this flag\.
+Enable more strict checking, namely to catch a file mode recorded with g+w bit set, which was created by older versions of git\&. Existing repositories, including the Linux kernel, git itself, and sparse repository have old objects that triggers this check, but it is recommended to check new projects with this flag\&.
 .RE
 .PP
 \-\-verbose
 .RS 4
-Be chatty\.
+Be chatty\&.
 .RE
 .PP
 \-\-lost\-found
 .RS 4
-Write dangling objects into \.git/lost\-found/commit/ or \.git/lost\-found/other/, depending on type\. If the object is a blob, the contents are written into the file, rather than its object name\.
+Write dangling objects into \&.git/lost\-found/commit/ or \&.git/lost\-found/other/, depending on type\&. If the object is a blob, the contents are written into the file, rather than its object name\&.
 .RE
-It tests SHA1 and general object sanity, and it does full tracking of the resulting reachability and everything else\. It prints out any corruption it finds (missing or bad objects), and if you use the \fI\-\-unreachable\fR flag it will also print out objects that exist but that aren\'t readable from any of the specified head nodes\.
+.sp
+It tests SHA1 and general object sanity, and it does full tracking of the resulting reachability and everything else\&. It prints out any corruption it finds (missing or bad objects), and if you use the \fI\-\-unreachable\fR flag it will also print out objects that exist but that aren\'t readable from any of the specified head nodes\&.
 .sp
 So for example
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 git fsck \-\-unreachable HEAD \e
         $(git for\-each\-ref \-\-format="%(objectname)" refs/heads)
 .fi
+.if n \{\
 .RE
-will do quite a _lot_ of verification on the tree\. There are a few extra validity tests to be added (make sure that tree objects are sorted properly etc), but on the whole if \fIgit\-fsck\fR is happy, you do have a valid tree\.
+.\}
 .sp
-Any corrupt objects you will have to find in backups or other archives (i\.e\., you can just remove them and do an \fIrsync\fR with some other site in the hopes that somebody else has the object you have corrupted)\.
+will do quite a \fIlot\fR of verification on the tree\&. There are a few extra validity tests to be added (make sure that tree objects are sorted properly etc), but on the whole if \fIgit\-fsck\fR is happy, you do have a valid tree\&.
 .sp
-Of course, "valid tree" doesn\'t mean that it wasn\'t generated by some evil person, and the end result might be crap\. git is a revision tracking system, not a quality assurance system ;)
+Any corrupt objects you will have to find in backups or other archives (i\&.e\&., you can just remove them and do an \fIrsync\fR with some other site in the hopes that somebody else has the object you have corrupted)\&.
 .sp
+Of course, "valid tree" doesn\'t mean that it wasn\'t generated by some evil person, and the end result might be crap\&. git is a revision tracking system, not a quality assurance system ;)
 .SH "EXTRACTED DIAGNOSTICS"
 .PP
 expect dangling commits \- potential heads \- due to lack of head information
 .RS 4
-You haven\'t specified any nodes as heads so it won\'t be possible to differentiate between un\-parented commits and root nodes\.
+You haven\'t specified any nodes as heads so it won\'t be possible to differentiate between un\-parented commits and root nodes\&.
 .RE
 .PP
 missing sha1 directory \fI<dir>\fR
 .RS 4
-The directory holding the sha1 objects is missing\.
+The directory holding the sha1 objects is missing\&.
 .RE
 .PP
 unreachable <type> <object>
 .RS 4
-The <type> object <object>, isn\'t actually referred to directly or indirectly in any of the trees or commits seen\. This can mean that there\'s another root node that you\'re not specifying or that the tree is corrupt\. If you haven\'t missed a root node then you might as well delete unreachable nodes since they can\'t be used\.
+The <type> object <object>, isn\'t actually referred to directly or indirectly in any of the trees or commits seen\&. This can mean that there\'s another root node that you\'re not specifying or that the tree is corrupt\&. If you haven\'t missed a root node then you might as well delete unreachable nodes since they can\'t be used\&.
 .RE
 .PP
 missing <type> <object>
 .RS 4
-The <type> object <object>, is referred to but isn\'t present in the database\.
+The <type> object <object>, is referred to but isn\'t present in the database\&.
 .RE
 .PP
 dangling <type> <object>
 .RS 4
 The <type> object <object>, is present in the database but never
 \fIdirectly\fR
-used\. A dangling commit could be a root node\.
+used\&. A dangling commit could be a root node\&.
 .RE
 .PP
 warning: git\-fsck: tree <tree> has full pathnames in it
@@ -131,7 +141,7 @@ And it shouldn\'t\&...
 .PP
 sha1 mismatch <object>
 .RS 4
-The database has an object who\'s sha1 doesn\'t match the database value\. This indicates a serious data integrity problem\.
+The database has an object who\'s sha1 doesn\'t match the database value\&. This indicates a serious data integrity problem\&.
 .RE
 .SH "ENVIRONMENT VARIABLES"
 .PP
@@ -150,11 +160,11 @@ GIT_ALTERNATE_OBJECT_DIRECTORIES
 used to specify additional object database roots (usually unset)
 .RE
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl\.org>
 .sp
+Written by Linus Torvalds <torvalds@osdl\&.org>
 .SH "DOCUMENTATION"
-Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
 .sp
+Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite
