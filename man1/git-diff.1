@@ -1,571 +1,831 @@
+'\" t
 .\"     Title: git-diff
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/29/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 10/31/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.4
+.\"    Source: Git 1.6.5.2.140.g5f809
+.\"  Language: English
 .\"
-.TH "GIT\-DIFF" "1" "07/29/2009" "Git 1\.6\.4" "Git Manual"
+.TH "GIT\-DIFF" "1" "10/31/2009" "Git 1\&.6\&.5\&.2\&.140\&.g5f8" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-diff - Show changes between commits, commit and working tree, etc
+git-diff \- Show changes between commits, commit and working tree, etc
 .SH "SYNOPSIS"
-\fIgit diff\fR [<common diff options>] <commit>{0,2} [\-\-] [<path>\&...]
 .sp
+\fIgit diff\fR [<common diff options>] <commit>{0,2} [\-\-] [<path>\&...]
 .SH "DESCRIPTION"
-Show changes between two trees, a tree and the working tree, a tree and the index file, or the index file and the working tree\.
+.sp
+Show changes between two trees, a tree and the working tree, a tree and the index file, or the index file and the working tree\&.
 .PP
 \fIgit diff\fR [\-\-options] [\-\-] [<path>\&...]
 .RS 4
-This form is to view the changes you made relative to the index (staging area for the next commit)\. In other words, the differences are what you _could_ tell git to further add to the index but you still haven\'t\. You can stage these changes by using
-\fBgit-add\fR(1)\.
+This form is to view the changes you made relative to the index (staging area for the next commit)\&. In other words, the differences are what you
+\fIcould\fR
+tell git to further add to the index but you still haven\'t\&. You can stage these changes by using
+\fBgit-add\fR(1)\&.
 .sp
-If exactly two paths are given, and at least one is untracked, compare the two files / directories\. This behavior can be forced by \-\-no\-index\.
+If exactly two paths are given, and at least one is untracked, compare the two files / directories\&. This behavior can be forced by \-\-no\-index\&.
 .RE
 .PP
 \fIgit diff\fR [\-\-options] \-\-cached [<commit>] [\-\-] [<path>\&...]
 .RS 4
-This form is to view the changes you staged for the next commit relative to the named <commit>\. Typically you would want comparison with the latest commit, so if you do not give <commit>, it defaults to HEAD\. \-\-staged is a synonym of \-\-cached\.
+This form is to view the changes you staged for the next commit relative to the named <commit>\&. Typically you would want comparison with the latest commit, so if you do not give <commit>, it defaults to HEAD\&. \-\-staged is a synonym of \-\-cached\&.
 .RE
 .PP
 \fIgit diff\fR [\-\-options] <commit> [\-\-] [<path>\&...]
 .RS 4
-This form is to view the changes you have in your working tree relative to the named <commit>\. You can use HEAD to compare it with the latest commit, or a branch name to compare with the tip of a different branch\.
+This form is to view the changes you have in your working tree relative to the named <commit>\&. You can use HEAD to compare it with the latest commit, or a branch name to compare with the tip of a different branch\&.
 .RE
 .PP
 \fIgit diff\fR [\-\-options] <commit> <commit> [\-\-] [<path>\&...]
 .RS 4
-This is to view the changes between two arbitrary <commit>\.
+This is to view the changes between two arbitrary <commit>\&.
 .RE
 .PP
-\fIgit diff\fR [\-\-options] <commit>\.\.<commit> [\-\-] [<path>\&...]
+\fIgit diff\fR [\-\-options] <commit>\&.\&.<commit> [\-\-] [<path>\&...]
 .RS 4
-This is synonymous to the previous form\. If <commit> on one side is omitted, it will have the same effect as using HEAD instead\.
+This is synonymous to the previous form\&. If <commit> on one side is omitted, it will have the same effect as using HEAD instead\&.
 .RE
 .PP
-\fIgit diff\fR [\-\-options] <commit>\.\.\.<commit> [\-\-] [<path>\&...]
+\fIgit diff\fR [\-\-options] <commit>\&.\&.\&.<commit> [\-\-] [<path>\&...]
 .RS 4
-This form is to view the changes on the branch containing and up to the second <commit>, starting at a common ancestor of both <commit>\. "git diff A\.\.\.B" is equivalent to "git diff $(git\-merge\-base A B) B"\. You can omit any one of <commit>, which has the same effect as using HEAD instead\.
+This form is to view the changes on the branch containing and up to the second <commit>, starting at a common ancestor of both <commit>\&. "git diff A\&.\&.\&.B" is equivalent to "git diff $(git\-merge\-base A B) B"\&. You can omit any one of <commit>, which has the same effect as using HEAD instead\&.
 .RE
-Just in case if you are doing something exotic, it should be noted that all of the <commit> in the above description, except for the last two forms that use "\.\." notations, can be any <tree\-ish>\.
 .sp
-For a more complete list of ways to spell <commit>, see "SPECIFYING REVISIONS" section in \fBgit-rev-parse\fR(1)\. However, "diff" is about comparing two _endpoints_, not ranges, and the range notations ("<commit>\.\.<commit>" and "<commit>\.\.\.<commit>") do not mean a range as defined in the "SPECIFYING RANGES" section in \fBgit-rev-parse\fR(1)\.
+Just in case if you are doing something exotic, it should be noted that all of the <commit> in the above description, except for the last two forms that use "\&.\&." notations, can be any <tree\-ish>\&.
 .sp
+For a more complete list of ways to spell <commit>, see "SPECIFYING REVISIONS" section in \fBgit-rev-parse\fR(1)\&. However, "diff" is about comparing two \fIendpoints\fR, not ranges, and the range notations ("<commit>\&.\&.<commit>" and "<commit>\&.\&.\&.<commit>") do not mean a range as defined in the "SPECIFYING RANGES" section in \fBgit-rev-parse\fR(1)\&.
 .SH "OPTIONS"
 .PP
 \-p, \-u
 .RS 4
-Generate patch (see section on generating patches)\. This is the default\.
+Generate patch (see section on generating patches)\&. This is the default\&.
 .RE
 .PP
 \-U<n>, \-\-unified=<n>
 .RS 4
-Generate diffs with <n> lines of context instead of the usual three\. Implies "\-p"\.
+Generate diffs with <n> lines of context instead of the usual three\&. Implies "\-p"\&.
 .RE
 .PP
 \-\-raw
 .RS 4
-Generate the raw format\.
+Generate the raw format\&.
 .RE
 .PP
 \-\-patch\-with\-raw
 .RS 4
-Synonym for "\-p \-\-raw"\.
+Synonym for "\-p \-\-raw"\&.
 .RE
 .PP
 \-\-patience
 .RS 4
-Generate a diff using the "patience diff" algorithm\.
+Generate a diff using the "patience diff" algorithm\&.
 .RE
 .PP
 \-\-stat[=width[,name\-width]]
 .RS 4
-Generate a diffstat\. You can override the default output width for 80\-column terminal by "\-\-stat=width"\. The width of the filename part can be controlled by giving another width to it separated by a comma\.
+Generate a diffstat\&. You can override the default output width for 80\-column terminal by "\-\-stat=width"\&. The width of the filename part can be controlled by giving another width to it separated by a comma\&.
 .RE
 .PP
 \-\-numstat
 .RS 4
-Similar to \-\-stat, but shows number of added and deleted lines in decimal notation and pathname without abbreviation, to make it more machine friendly\. For binary files, outputs two
+Similar to \-\-stat, but shows number of added and deleted lines in decimal notation and pathname without abbreviation, to make it more machine friendly\&. For binary files, outputs two
 \-
 instead of saying
-0 0\.
+0 0\&.
 .RE
 .PP
 \-\-shortstat
 .RS 4
-Output only the last line of the \-\-stat format containing total number of modified files, as well as number of added and deleted lines\.
+Output only the last line of the \-\-stat format containing total number of modified files, as well as number of added and deleted lines\&.
 .RE
 .PP
 \-\-dirstat[=limit]
 .RS 4
-Output the distribution of relative amount of changes (number of lines added or removed) for each sub\-directory\. Directories with changes below a cut\-off percent (3% by default) are not shown\. The cut\-off percent can be set with "\-\-dirstat=limit"\. Changes in a child directory is not counted for the parent directory, unless "\-\-cumulative" is used\.
+Output the distribution of relative amount of changes (number of lines added or removed) for each sub\-directory\&. Directories with changes below a cut\-off percent (3% by default) are not shown\&. The cut\-off percent can be set with "\-\-dirstat=limit"\&. Changes in a child directory is not counted for the parent directory, unless "\-\-cumulative" is used\&.
 .RE
 .PP
 \-\-dirstat\-by\-file[=limit]
 .RS 4
-Same as \-\-dirstat, but counts changed files instead of lines\.
+Same as \-\-dirstat, but counts changed files instead of lines\&.
 .RE
 .PP
 \-\-summary
 .RS 4
-Output a condensed summary of extended header information such as creations, renames and mode changes\.
+Output a condensed summary of extended header information such as creations, renames and mode changes\&.
 .RE
 .PP
 \-\-patch\-with\-stat
 .RS 4
-Synonym for "\-p \-\-stat"\.
+Synonym for "\-p \-\-stat"\&.
 .RE
 .PP
 \-z
 .RS 4
-NUL\-line termination on output\. This affects the \-\-raw output field terminator\. Also output from commands such as "git\-log" will be delimited with NUL between commits\.
+NUL\-line termination on output\&. This affects the \-\-raw output field terminator\&. Also output from commands such as "git\-log" will be delimited with NUL between commits\&.
 .RE
 .PP
 \-\-name\-only
 .RS 4
-Show only names of changed files\.
+Show only names of changed files\&.
 .RE
 .PP
 \-\-name\-status
 .RS 4
-Show only names and status of changed files\. See the description of the
+Show only names and status of changed files\&. See the description of the
 \-\-diff\-filter
-option on what the status letters mean\.
+option on what the status letters mean\&.
+.RE
+.PP
+\-\-submodule[=<format>]
+.RS 4
+Chose the output format for submodule differences\&. <format> can be one of
+\fIshort\fR
+and
+\fIlog\fR\&.
+\fIshort\fR
+just shows pairs of commit names, this format is used when this option is not given\&.
+\fIlog\fR
+is the default value for this option and lists the commits in that commit range like the
+\fIsummary\fR
+option of
+\fBgit-submodule\fR(1)
+does\&.
 .RE
 .PP
 \-\-color
 .RS 4
-Show colored diff\.
+Show colored diff\&.
 .RE
 .PP
 \-\-no\-color
 .RS 4
-Turn off colored diff, even when the configuration file gives the default to color output\.
+Turn off colored diff, even when the configuration file gives the default to color output\&.
 .RE
 .PP
 \-\-color\-words[=<regex>]
 .RS 4
-Show colored word diff, i\.e\., color words which have changed\. By default, words are separated by whitespace\.
+Show colored word diff, i\&.e\&., color words which have changed\&. By default, words are separated by whitespace\&.
 .sp
-When a <regex> is specified, every non\-overlapping match of the <regex> is considered a word\. Anything between these matches is considered whitespace and ignored(!) for the purposes of finding differences\. You may want to append
+When a <regex> is specified, every non\-overlapping match of the <regex> is considered a word\&. Anything between these matches is considered whitespace and ignored(!) for the purposes of finding differences\&. You may want to append
 |[^[:space:]]
-to your regular expression to make sure that it matches all non\-whitespace characters\. A match that contains a newline is silently truncated(!) at the newline\.
+to your regular expression to make sure that it matches all non\-whitespace characters\&. A match that contains a newline is silently truncated(!) at the newline\&.
 .sp
 The regex can also be set via a diff driver or configuration option, see
 \fBgitattributes\fR(1)
 or
-\fBgit-config\fR(1)\. Giving it explicitly overrides any diff driver or configuration setting\. Diff drivers override configuration settings\.
+\fBgit-config\fR(1)\&. Giving it explicitly overrides any diff driver or configuration setting\&. Diff drivers override configuration settings\&.
 .RE
 .PP
 \-\-no\-renames
 .RS 4
-Turn off rename detection, even when the configuration file gives the default to do so\.
+Turn off rename detection, even when the configuration file gives the default to do so\&.
 .RE
 .PP
 \-\-check
 .RS 4
-Warn if changes introduce trailing whitespace or an indent that uses a space before a tab\. Exits with non\-zero status if problems are found\. Not compatible with \-\-exit\-code\.
+Warn if changes introduce trailing whitespace or an indent that uses a space before a tab\&. Exits with non\-zero status if problems are found\&. Not compatible with \-\-exit\-code\&.
 .RE
 .PP
 \-\-full\-index
 .RS 4
-Instead of the first handful of characters, show the full pre\- and post\-image blob object names on the "index" line when generating patch format output\.
+Instead of the first handful of characters, show the full pre\- and post\-image blob object names on the "index" line when generating patch format output\&.
 .RE
 .PP
 \-\-binary
 .RS 4
-In addition to \-\-full\-index, output "binary diff" that can be applied with "git apply"\.
+In addition to \-\-full\-index, output "binary diff" that can be applied with "git apply"\&.
 .RE
 .PP
 \-\-abbrev[=<n>]
 .RS 4
-Instead of showing the full 40\-byte hexadecimal object name in diff\-raw format output and diff\-tree header lines, show only a partial prefix\. This is independent of \-\-full\-index option above, which controls the diff\-patch output format\. Non default number of digits can be specified with \-\-abbrev=<n>\.
+Instead of showing the full 40\-byte hexadecimal object name in diff\-raw format output and diff\-tree header lines, show only a partial prefix\&. This is independent of \-\-full\-index option above, which controls the diff\-patch output format\&. Non default number of digits can be specified with \-\-abbrev=<n>\&.
 .RE
 .PP
 \-B
 .RS 4
-Break complete rewrite changes into pairs of delete and create\.
+Break complete rewrite changes into pairs of delete and create\&.
 .RE
 .PP
 \-M
 .RS 4
-Detect renames\.
+Detect renames\&.
 .RE
 .PP
 \-C
 .RS 4
-Detect copies as well as renames\. See also
-\-\-find\-copies\-harder\.
+Detect copies as well as renames\&. See also
+\-\-find\-copies\-harder\&.
 .RE
 .PP
 \-\-diff\-filter=[ACDMRTUXB*]
 .RS 4
-Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), have their type (i\.e\. regular file, symlink, submodule, \&...) changed (T), are Unmerged (U), are Unknown (X), or have had their pairing Broken (B)\. Any combination of the filter characters may be used\. When
+Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R), have their type (i\&.e\&. regular file, symlink, submodule, \&...) changed (T), are Unmerged (U), are Unknown (X), or have had their pairing Broken (B)\&. Any combination of the filter characters may be used\&. When
 *
-(All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected\.
+(All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected\&.
 .RE
 .PP
 \-\-find\-copies\-harder
 .RS 4
 For performance reasons, by default,
 \-C
-option finds copies only if the original file of the copy was modified in the same changeset\. This flag makes the command inspect unmodified files as candidates for the source of copy\. This is a very expensive operation for large projects, so use it with caution\. Giving more than one
+option finds copies only if the original file of the copy was modified in the same changeset\&. This flag makes the command inspect unmodified files as candidates for the source of copy\&. This is a very expensive operation for large projects, so use it with caution\&. Giving more than one
 \-C
-option has the same effect\.
+option has the same effect\&.
 .RE
 .PP
 \-l<num>
 .RS 4
-\-M and \-C options require O(n^2) processing time where n is the number of potential rename/copy targets\. This option prevents rename/copy detection from running if the number of rename/copy targets exceeds the specified number\.
+\-M and \-C options require O(n^2) processing time where n is the number of potential rename/copy targets\&. This option prevents rename/copy detection from running if the number of rename/copy targets exceeds the specified number\&.
 .RE
 .PP
 \-S<string>
 .RS 4
-Look for differences that introduce or remove an instance of <string>\. Note that this is different than the string simply appearing in diff output; see the
+Look for differences that introduce or remove an instance of <string>\&. Note that this is different than the string simply appearing in diff output; see the
 \fIpickaxe\fR
 entry in
 \fBgitdiffcore\fR(7)
-for more details\.
+for more details\&.
 .RE
 .PP
 \-\-pickaxe\-all
 .RS 4
-When \-S finds a change, show all the changes in that changeset, not just the files that contain the change in <string>\.
+When \-S finds a change, show all the changes in that changeset, not just the files that contain the change in <string>\&.
 .RE
 .PP
 \-\-pickaxe\-regex
 .RS 4
-Make the <string> not a plain string but an extended POSIX regex to match\.
+Make the <string> not a plain string but an extended POSIX regex to match\&.
 .RE
 .PP
 \-O<orderfile>
 .RS 4
-Output the patch in the order specified in the <orderfile>, which has one shell glob pattern per line\.
+Output the patch in the order specified in the <orderfile>, which has one shell glob pattern per line\&.
 .RE
 .PP
 \-R
 .RS 4
-Swap two inputs; that is, show differences from index or on\-disk file to tree contents\.
+Swap two inputs; that is, show differences from index or on\-disk file to tree contents\&.
 .RE
 .PP
 \-\-relative[=<path>]
 .RS 4
-When run from a subdirectory of the project, it can be told to exclude changes outside the directory and show pathnames relative to it with this option\. When you are not in a subdirectory (e\.g\. in a bare repository), you can name which subdirectory to make the output relative to by giving a <path> as an argument\.
+When run from a subdirectory of the project, it can be told to exclude changes outside the directory and show pathnames relative to it with this option\&. When you are not in a subdirectory (e\&.g\&. in a bare repository), you can name which subdirectory to make the output relative to by giving a <path> as an argument\&.
 .RE
 .PP
 \-a, \-\-text
 .RS 4
-Treat all files as text\.
+Treat all files as text\&.
 .RE
 .PP
 \-\-ignore\-space\-at\-eol
 .RS 4
-Ignore changes in whitespace at EOL\.
+Ignore changes in whitespace at EOL\&.
 .RE
 .PP
 \-b, \-\-ignore\-space\-change
 .RS 4
-Ignore changes in amount of whitespace\. This ignores whitespace at line end, and considers all other sequences of one or more whitespace characters to be equivalent\.
+Ignore changes in amount of whitespace\&. This ignores whitespace at line end, and considers all other sequences of one or more whitespace characters to be equivalent\&.
 .RE
 .PP
 \-w, \-\-ignore\-all\-space
 .RS 4
-Ignore whitespace when comparing lines\. This ignores differences even if one line has whitespace where the other line has none\.
+Ignore whitespace when comparing lines\&. This ignores differences even if one line has whitespace where the other line has none\&.
 .RE
 .PP
 \-\-inter\-hunk\-context=<lines>
 .RS 4
-Show the context between diff hunks, up to the specified number of lines, thereby fusing hunks that are close to each other\.
+Show the context between diff hunks, up to the specified number of lines, thereby fusing hunks that are close to each other\&.
 .RE
 .PP
 \-\-exit\-code
 .RS 4
-Make the program exit with codes similar to diff(1)\. That is, it exits with 1 if there were differences and 0 means no differences\.
+Make the program exit with codes similar to diff(1)\&. That is, it exits with 1 if there were differences and 0 means no differences\&.
 .RE
 .PP
 \-\-quiet
 .RS 4
-Disable all output of the program\. Implies \-\-exit\-code\.
+Disable all output of the program\&. Implies \-\-exit\-code\&.
 .RE
 .PP
 \-\-ext\-diff
 .RS 4
-Allow an external diff helper to be executed\. If you set an external diff driver with
+Allow an external diff helper to be executed\&. If you set an external diff driver with
 \fBgitattributes\fR(5), you need to use this option with
 \fBgit-log\fR(1)
-and friends\.
+and friends\&.
 .RE
 .PP
 \-\-no\-ext\-diff
 .RS 4
-Disallow external diff drivers\.
+Disallow external diff drivers\&.
 .RE
 .PP
 \-\-ignore\-submodules
 .RS 4
-Ignore changes to submodules in the diff generation\.
+Ignore changes to submodules in the diff generation\&.
 .RE
 .PP
 \-\-src\-prefix=<prefix>
 .RS 4
-Show the given source prefix instead of "a/"\.
+Show the given source prefix instead of "a/"\&.
 .RE
 .PP
 \-\-dst\-prefix=<prefix>
 .RS 4
-Show the given destination prefix instead of "b/"\.
+Show the given destination prefix instead of "b/"\&.
 .RE
 .PP
 \-\-no\-prefix
 .RS 4
-Do not show any source or destination prefix\.
+Do not show any source or destination prefix\&.
 .RE
-For more detailed explanation on these common options, see also \fBgitdiffcore\fR(7)\.
+.sp
+For more detailed explanation on these common options, see also \fBgitdiffcore\fR(7)\&.
 .PP
 <path>\&...
 .RS 4
-The <paths> parameters, when given, are used to limit the diff to the named paths (you can give directory names and get diff for all files under them)\.
+The <paths> parameters, when given, are used to limit the diff to the named paths (you can give directory names and get diff for all files under them)\&.
 .RE
 .SH "RAW OUTPUT FORMAT"
-The raw output format from "git\-diff\-index", "git\-diff\-tree", "git\-diff\-files" and "git diff \-\-raw" are very similar\.
+.sp
+The raw output format from "git\-diff\-index", "git\-diff\-tree", "git\-diff\-files" and "git diff \-\-raw" are very similar\&.
 .sp
 These commands all compare two sets of things; what is compared differs:
 .PP
 git\-diff\-index <tree\-ish>
 .RS 4
-compares the <tree\-ish> and the files on the filesystem\.
+compares the <tree\-ish> and the files on the filesystem\&.
 .RE
 .PP
 git\-diff\-index \-\-cached <tree\-ish>
 .RS 4
-compares the <tree\-ish> and the index\.
+compares the <tree\-ish> and the index\&.
 .RE
 .PP
 git\-diff\-tree [\-r] <tree\-ish\-1> <tree\-ish\-2> [<pattern>\&...]
 .RS 4
-compares the trees named by the two arguments\.
+compares the trees named by the two arguments\&.
 .RE
 .PP
 git\-diff\-files [<pattern>\&...]
 .RS 4
-compares the index and the files on the filesystem\.
+compares the index and the files on the filesystem\&.
 .RE
-The "git\-diff\-tree" command begins its ouput by printing the hash of what is being compared\. After that, all the commands print one output line per changed file\.
+.sp
+The "git\-diff\-tree" command begins its ouput by printing the hash of what is being compared\&. After that, all the commands print one output line per changed file\&.
 .sp
 An output line is formatted this way:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
-in\-place edit  :100644 100644 bcd1234\.\.\. 0123456\.\.\. M file0
-copy\-edit      :100644 100644 abcd123\.\.\. 1234567\.\.\. C68 file1 file2
-rename\-edit    :100644 100644 abcd123\.\.\. 1234567\.\.\. R86 file1 file3
-create         :000000 100644 0000000\.\.\. 1234567\.\.\. A file4
-delete         :100644 000000 1234567\.\.\. 0000000\.\.\. D file5
-unmerged       :000000 000000 0000000\.\.\. 0000000\.\.\. U file6
-\.ft
+\&.ft C
+in\-place edit  :100644 100644 bcd1234\&.\&.\&. 0123456\&.\&.\&. M file0
+copy\-edit      :100644 100644 abcd123\&.\&.\&. 1234567\&.\&.\&. C68 file1 file2
+rename\-edit    :100644 100644 abcd123\&.\&.\&. 1234567\&.\&.\&. R86 file1 file3
+create         :000000 100644 0000000\&.\&.\&. 1234567\&.\&.\&. A file4
+delete         :100644 000000 1234567\&.\&.\&. 0000000\&.\&.\&. D file5
+unmerged       :000000 000000 0000000\&.\&.\&. 0000000\&.\&.\&. U file6
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 That is, from the left to the right:
 .sp
-.sp
 .RS 4
-\h'-04' 1.\h'+02'a colon\.
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+a colon\&.
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'mode for "src"; 000000 if creation or unmerged\.
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+mode for "src"; 000000 if creation or unmerged\&.
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'a space\.
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+a space\&.
 .RE
 .sp
 .RS 4
-\h'-04' 4.\h'+02'mode for "dst"; 000000 if deletion or unmerged\.
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+mode for "dst"; 000000 if deletion or unmerged\&.
 .RE
 .sp
 .RS 4
-\h'-04' 5.\h'+02'a space\.
+.ie n \{\
+\h'-04' 5.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  5." 4.2
+.\}
+a space\&.
 .RE
 .sp
 .RS 4
-\h'-04' 6.\h'+02'sha1 for "src"; 0{40} if creation or unmerged\.
+.ie n \{\
+\h'-04' 6.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  6." 4.2
+.\}
+sha1 for "src"; 0{40} if creation or unmerged\&.
 .RE
 .sp
 .RS 4
-\h'-04' 7.\h'+02'a space\.
+.ie n \{\
+\h'-04' 7.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  7." 4.2
+.\}
+a space\&.
 .RE
 .sp
 .RS 4
-\h'-04' 8.\h'+02'sha1 for "dst"; 0{40} if creation, unmerged or "look at work tree"\.
+.ie n \{\
+\h'-04' 8.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  8." 4.2
+.\}
+sha1 for "dst"; 0{40} if creation, unmerged or "look at work tree"\&.
 .RE
 .sp
 .RS 4
-\h'-04' 9.\h'+02'a space\.
+.ie n \{\
+\h'-04' 9.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  9." 4.2
+.\}
+a space\&.
 .RE
 .sp
 .RS 4
-\h'-04'10.\h'+02'status, followed by optional "score" number\.
+.ie n \{\
+\h'-04'10.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "10." 4.2
+.\}
+status, followed by optional "score" number\&.
 .RE
 .sp
 .RS 4
-\h'-04'11.\h'+02'a tab or a NUL when
+.ie n \{\
+\h'-04'11.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "11." 4.2
+.\}
+a tab or a NUL when
 \fI\-z\fR
-option is used\.
+option is used\&.
 .RE
 .sp
 .RS 4
-\h'-04'12.\h'+02'path for "src"
+.ie n \{\
+\h'-04'12.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "12." 4.2
+.\}
+path for "src"
 .RE
 .sp
 .RS 4
-\h'-04'13.\h'+02'a tab or a NUL when
+.ie n \{\
+\h'-04'13.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "13." 4.2
+.\}
+a tab or a NUL when
 \fI\-z\fR
-option is used; only exists for C or R\.
+option is used; only exists for C or R\&.
 .RE
 .sp
 .RS 4
-\h'-04'14.\h'+02'path for "dst"; only exists for C or R\.
+.ie n \{\
+\h'-04'14.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "14." 4.2
+.\}
+path for "dst"; only exists for C or R\&.
 .RE
 .sp
 .RS 4
-\h'-04'15.\h'+02'an LF or a NUL when
+.ie n \{\
+\h'-04'15.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "15." 4.2
+.\}
+an LF or a NUL when
 \fI\-z\fR
-option is used, to terminate the record\.
+option is used, to terminate the record\&.
 .RE
+.sp
 Possible status letters are:
 .sp
-.sp
 .RS 4
-\h'-04'\(bu\h'+03'A: addition of a file
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A: addition of a file
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'C: copy of a file into a new one
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+C: copy of a file into a new one
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'D: deletion of a file
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+D: deletion of a file
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'M: modification of the contents or mode of a file
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+M: modification of the contents or mode of a file
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'R: renaming of a file
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+R: renaming of a file
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'T: change in the type of the file
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+T: change in the type of the file
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'U: file is unmerged (you must complete the merge before it can be committed)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+U: file is unmerged (you must complete the merge before it can be committed)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'X: "unknown" change type (most probably a bug, please report it)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+X: "unknown" change type (most probably a bug, please report it)
 .RE
-Status letters C and R are always followed by a score (denoting the percentage of similarity between the source and target of the move or copy), and are the only ones to be so\.
 .sp
-<sha1> is shown as all 0\'s if a file is new on the filesystem and it is out of sync with the index\.
+Status letters C and R are always followed by a score (denoting the percentage of similarity between the source and target of the move or copy), and are the only ones to be so\&.
+.sp
+<sha1> is shown as all 0\'s if a file is new on the filesystem and it is out of sync with the index\&.
 .sp
 Example:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
-:100644 100644 5be4a4\.\.\.\.\.\. 000000\.\.\.\.\.\. M file\.c
-\.ft
+\&.ft C
+:100644 100644 5be4a4\&.\&.\&.\&.\&.\&. 000000\&.\&.\&.\&.\&.\&. M file\&.c
+\&.ft
 
 .fi
+.if n \{\
 .RE
-When \-z option is not used, TAB, LF, and backslash characters in pathnames are represented as \et, \en, and \e\e, respectively\.
+.\}
 .sp
+When \-z option is not used, TAB, LF, and backslash characters in pathnames are represented as \et, \en, and \e\e, respectively\&.
 .SH "DIFF FORMAT FOR MERGES"
-"git\-diff\-tree", "git\-diff\-files" and "git\-diff \-\-raw" can take \fI\-c\fR or \fI\-\-cc\fR option to generate diff output also for merge commits\. The output differs from the format described above in the following way:
 .sp
+"git\-diff\-tree", "git\-diff\-files" and "git\-diff \-\-raw" can take \fI\-c\fR or \fI\-\-cc\fR option to generate diff output also for merge commits\&. The output differs from the format described above in the following way:
 .sp
 .RS 4
-\h'-04' 1.\h'+02'there is a colon for each parent
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+there is a colon for each parent
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'there are more "src" modes and "src" sha1
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+there are more "src" modes and "src" sha1
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'status is concatenated status characters for each parent
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+status is concatenated status characters for each parent
 .RE
 .sp
 .RS 4
-\h'-04' 4.\h'+02'no optional "score" number
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+no optional "score" number
 .RE
 .sp
 .RS 4
-\h'-04' 5.\h'+02'single path, only for "dst"
+.ie n \{\
+\h'-04' 5.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  5." 4.2
+.\}
+single path, only for "dst"
 .RE
+.sp
 Example:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
-::100644 100644 100644 fabadb8\.\.\. cc95eb0\.\.\. 4866510\.\.\. MM      describe\.c
-\.ft
+\&.ft C
+::100644 100644 100644 fabadb8\&.\&.\&. cc95eb0\&.\&.\&. 4866510\&.\&.\&. MM      describe\&.c
+\&.ft
 
 .fi
+.if n \{\
 .RE
-Note that \fIcombined diff\fR lists only files which were modified from all parents\.
+.\}
 .sp
+Note that \fIcombined diff\fR lists only files which were modified from all parents\&.
 .SH "GENERATING PATCHES WITH -P"
-When "git\-diff\-index", "git\-diff\-tree", or "git\-diff\-files" are run with a \fI\-p\fR option, "git diff" without the \fI\-\-raw\fR option, or "git log" with the "\-p" option, they do not produce the output described above; instead they produce a patch file\. You can customize the creation of such patches via the GIT_EXTERNAL_DIFF and the GIT_DIFF_OPTS environment variables\.
 .sp
-What the \-p option produces is slightly different from the traditional diff format\.
+When "git\-diff\-index", "git\-diff\-tree", or "git\-diff\-files" are run with a \fI\-p\fR option, "git diff" without the \fI\-\-raw\fR option, or "git log" with the "\-p" option, they do not produce the output described above; instead they produce a patch file\&. You can customize the creation of such patches via the GIT_EXTERNAL_DIFF and the GIT_DIFF_OPTS environment variables\&.
 .sp
-.sp
-.RS 4
-\h'-04' 1.\h'+02'It is preceded with a "git diff" header, that looks like this:
+What the \-p option produces is slightly different from the traditional diff format\&.
 .sp
 .RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+It is preceded with a "git diff" header, that looks like this:
+.sp
+.if n \{\
+.RS 4
+.\}
 .nf
 diff \-\-git a/file1 b/file2
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 The
 a/
 and
 b/
-filenames are the same unless rename/copy is involved\. Especially, even for a creation or a deletion,
+filenames are the same unless rename/copy is involved\&. Especially, even for a creation or a deletion,
 /dev/null
-is _not_ used in place of
+is
+\fInot\fR
+used in place of
 a/
 or
 b/
-filenames\.
+filenames\&.
 .sp
 When rename/copy is involved,
 file1
 and
 file2
-show the name of the source file of the rename/copy and the name of the file that rename/copy produces, respectively\.
+show the name of the source file of the rename/copy and the name of the file that rename/copy produces, respectively\&.
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'It is followed by one or more extended header lines:
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+It is followed by one or more extended header lines:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 old mode <mode>
 new mode <mode>
@@ -577,33 +837,44 @@ rename from <path>
 rename to <path>
 similarity index <number>
 dissimilarity index <number>
-index <hash>\.\.<hash> <mode>
+index <hash>\&.\&.<hash> <mode>
 .fi
+.if n \{\
 .RE
+.\}
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'TAB, LF, double quote and backslash characters in pathnames are represented as
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+TAB, LF, double quote and backslash characters in pathnames are represented as
 \et,
 \en,
 \e"
 and
-\e\e, respectively\. If there is need for such substitution then the whole pathname is put in double quotes\.
+\e\e, respectively\&. If there is need for such substitution then the whole pathname is put in double quotes\&.
 .RE
-The similarity index is the percentage of unchanged lines, and the dissimilarity index is the percentage of changed lines\. It is a rounded down integer, followed by a percent sign\. The similarity index value of 100% is thus reserved for two equal files, while 100% dissimilarity means that no line from the old file made it into the new one\.
 .sp
+The similarity index is the percentage of unchanged lines, and the dissimilarity index is the percentage of changed lines\&. It is a rounded down integer, followed by a percent sign\&. The similarity index value of 100% is thus reserved for two equal files, while 100% dissimilarity means that no line from the old file made it into the new one\&.
 .SH "COMBINED DIFF FORMAT"
-"git\-diff\-tree", "git\-diff\-files" and "git\-diff" can take \fI\-c\fR or \fI\-\-cc\fR option to produce \fIcombined diff\fR\. For showing a merge commit with "git log \-p", this is the default format\. A \fIcombined diff\fR format looks like this:
 .sp
+"git\-diff\-tree", "git\-diff\-files" and "git\-diff" can take \fI\-c\fR or \fI\-\-cc\fR option to produce \fIcombined diff\fR\&. For showing a merge commit with "git log \-p", this is the default format\&. A \fIcombined diff\fR format looks like this:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
-diff \-\-combined describe\.c
-index fabadb8,cc95eb0\.\.4866510
-\-\-\- a/describe\.c
-+++ b/describe\.c
+\&.ft C
+diff \-\-combined describe\&.c
+index fabadb8,cc95eb0\&.\&.4866510
+\-\-\- a/describe\&.c
++++ b/describe\&.c
 @@@ \-98,20 \-98,12 +98,20 @@@
         return (a_date > b_date) ? \-1 : (a_date == b_date) ? 0 : 1;
   }
@@ -627,214 +898,389 @@ index fabadb8,cc95eb0\.\.4866510
         if (!initialized) {
                 initialized = 1;
                 for_each_ref(get_name);
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
 .sp
 .RS 4
-\h'-04' 1.\h'+02'It is preceded with a "git diff" header, that looks like this (when
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+It is preceded with a "git diff" header, that looks like this (when
 \fI\-c\fR
 option is used):
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 diff \-\-combined file
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 or like this (when
 \fI\-\-cc\fR
 option is used):
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 diff \-\-cc file
 .fi
+.if n \{\
 .RE
+.\}
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'It is followed by one or more extended header lines (this example shows a merge with two parents):
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+It is followed by one or more extended header lines (this example shows a merge with two parents):
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-index <hash>,<hash>\.\.<hash>
-mode <mode>,<mode>\.\.<mode>
+index <hash>,<hash>\&.\&.<hash>
+mode <mode>,<mode>\&.\&.<mode>
 new file mode <mode>
 deleted file mode <mode>,<mode>
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 The
-mode <mode>,<mode>\.\.<mode>
-line appears only if at least one of the <mode> is different from the rest\. Extended headers with information about detected contents movement (renames and copying detection) are designed to work with diff of two <tree\-ish> and are not used by combined diff format\.
+mode <mode>,<mode>\&.\&.<mode>
+line appears only if at least one of the <mode> is different from the rest\&. Extended headers with information about detected contents movement (renames and copying detection) are designed to work with diff of two <tree\-ish> and are not used by combined diff format\&.
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'It is followed by two\-line from\-file/to\-file header
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+It is followed by two\-line from\-file/to\-file header
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 \-\-\- a/file
 +++ b/file
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 Similar to two\-line header for traditional
 \fIunified\fR
 diff format,
 /dev/null
-is used to signal created or deleted files\.
+is used to signal created or deleted files\&.
 .RE
 .sp
 .RS 4
-\h'-04' 4.\h'+02'Chunk header format is modified to prevent people from accidentally feeding it to
-patch \-p1\. Combined diff format was created for review of merge commit changes, and was not meant for apply\. The change is similar to the change in the extended
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+Chunk header format is modified to prevent people from accidentally feeding it to
+patch \-p1\&. Combined diff format was created for review of merge commit changes, and was not meant for apply\&. The change is similar to the change in the extended
 \fIindex\fR
 header:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 @@@ <from\-file\-range> <from\-file\-range> <to\-file\-range> @@@
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 There are (number of parents + 1)
 @
-characters in the chunk header for combined diff format\.
+characters in the chunk header for combined diff format\&.
 .RE
-Unlike the traditional \fIunified\fR diff format, which shows two files A and B with a single column that has \- (minus \(em appears in A but removed in B), + (plus \(em missing in A but added to B), or " " (space \(em unchanged) prefix, this format compares two or more files file1, file2,\&... with one file X, and shows how X differs from each of fileN\. One column for each of fileN is prepended to the output line to note how X\'s line is different from it\.
 .sp
-A \- character in the column N means that the line appears in fileN but it does not appear in the result\. A + character in the column N means that the line appears in the result, and fileN does not have that line (in other words, the line was added, from the point of view of that parent)\.
+Unlike the traditional \fIunified\fR diff format, which shows two files A and B with a single column that has \- (minus \(em appears in A but removed in B), + (plus \(em missing in A but added to B), or " " (space \(em unchanged) prefix, this format compares two or more files file1, file2,\&... with one file X, and shows how X differs from each of fileN\&. One column for each of fileN is prepended to the output line to note how X\'s line is different from it\&.
 .sp
-In the above example output, the function signature was changed from both files (hence two \- removals from both file1 and file2, plus ++ to mean one line that was added does not appear in either file1 nor file2)\. Also eight other lines are the same from file1 but do not appear in file2 (hence prefixed with +)\.
+A \- character in the column N means that the line appears in fileN but it does not appear in the result\&. A + character in the column N means that the line appears in the result, and fileN does not have that line (in other words, the line was added, from the point of view of that parent)\&.
 .sp
-When shown by git diff\-tree \-c, it compares the parents of a merge commit with the merge result (i\.e\. file1\.\.fileN are the parents)\. When shown by git diff\-files \-c, it compares the two unresolved merge parents with the working tree file (i\.e\. file1 is stage 2 aka "our version", file2 is stage 3 aka "their version")\.
+In the above example output, the function signature was changed from both files (hence two \- removals from both file1 and file2, plus ++ to mean one line that was added does not appear in either file1 nor file2)\&. Also eight other lines are the same from file1 but do not appear in file2 (hence prefixed with +)\&.
 .sp
+When shown by git diff\-tree \-c, it compares the parents of a merge commit with the merge result (i\&.e\&. file1\&.\&.fileN are the parents)\&. When shown by git diff\-files \-c, it compares the two unresolved merge parents with the working tree file (i\&.e\&. file1 is stage 2 aka "our version", file2 is stage 3 aka "their version")\&.
 .SH "OTHER DIFF FORMATS"
-The \-\-summary option describes newly added, deleted, renamed and copied files\. The \-\-stat option adds diffstat(1) graph to the output\. These options can be combined with other options, such as \-p, and are meant for human consumption\.
 .sp
-When showing a change that involves a rename or a copy, \-\-stat output formats the pathnames compactly by combining common prefix and suffix of the pathnames\. For example, a change that moves arch/i386/Makefile to arch/x86/Makefile while modifying 4 lines will be shown like this:
+The \-\-summary option describes newly added, deleted, renamed and copied files\&. The \-\-stat option adds diffstat(1) graph to the output\&. These options can be combined with other options, such as \-p, and are meant for human consumption\&.
 .sp
+When showing a change that involves a rename or a copy, \-\-stat output formats the pathnames compactly by combining common prefix and suffix of the pathnames\&. For example, a change that moves arch/i386/Makefile to arch/x86/Makefile while modifying 4 lines will be shown like this:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 arch/{i386 => x86}/Makefile    |   4 +\-\-
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
-The \-\-numstat option gives the diffstat(1) information but is designed for easier machine consumption\. An entry in \-\-numstat output looks like this:
+.\}
 .sp
+The \-\-numstat option gives the diffstat(1) information but is designed for easier machine consumption\&. An entry in \-\-numstat output looks like this:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 1       2       README
 3       1       arch/{i386 => x86}/Makefile
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 That is, from left to right:
 .sp
-.sp
 .RS 4
-\h'-04' 1.\h'+02'the number of added lines;
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+the number of added lines;
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'a tab;
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+a tab;
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'the number of deleted lines;
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+the number of deleted lines;
 .RE
 .sp
 .RS 4
-\h'-04' 4.\h'+02'a tab;
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+a tab;
 .RE
 .sp
 .RS 4
-\h'-04' 5.\h'+02'pathname (possibly with rename/copy information);
+.ie n \{\
+\h'-04' 5.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  5." 4.2
+.\}
+pathname (possibly with rename/copy information);
 .RE
 .sp
 .RS 4
-\h'-04' 6.\h'+02'a newline\.
+.ie n \{\
+\h'-04' 6.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  6." 4.2
+.\}
+a newline\&.
 .RE
+.sp
 When \-z output option is in effect, the output is formatted this way:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 1       2       README NUL
 3       1       NUL arch/i386/Makefile NUL arch/x86/Makefile NUL
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 That is:
 .sp
-.sp
 .RS 4
-\h'-04' 1.\h'+02'the number of added lines;
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+the number of added lines;
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'a tab;
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+a tab;
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'the number of deleted lines;
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+the number of deleted lines;
 .RE
 .sp
 .RS 4
-\h'-04' 4.\h'+02'a tab;
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+a tab;
 .RE
 .sp
 .RS 4
-\h'-04' 5.\h'+02'a NUL (only exists if renamed/copied);
+.ie n \{\
+\h'-04' 5.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  5." 4.2
+.\}
+a NUL (only exists if renamed/copied);
 .RE
 .sp
 .RS 4
-\h'-04' 6.\h'+02'pathname in preimage;
+.ie n \{\
+\h'-04' 6.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  6." 4.2
+.\}
+pathname in preimage;
 .RE
 .sp
 .RS 4
-\h'-04' 7.\h'+02'a NUL (only exists if renamed/copied);
+.ie n \{\
+\h'-04' 7.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  7." 4.2
+.\}
+a NUL (only exists if renamed/copied);
 .RE
 .sp
 .RS 4
-\h'-04' 8.\h'+02'pathname in postimage (only exists if renamed/copied);
+.ie n \{\
+\h'-04' 8.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  8." 4.2
+.\}
+pathname in postimage (only exists if renamed/copied);
 .RE
 .sp
 .RS 4
-\h'-04' 9.\h'+02'a NUL\.
+.ie n \{\
+\h'-04' 9.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  9." 4.2
+.\}
+a NUL\&.
 .RE
-The extra NUL before the preimage path in renamed case is to allow scripts that read the output to tell if the current record being read is a single\-path record or a rename/copy record without reading ahead\. After reading added and deleted lines, reading up to NUL would yield the pathname, but if that is NUL, the record will show two paths\.
 .sp
+The extra NUL before the preimage path in renamed case is to allow scripts that read the output to tell if the current record being read is a single\-path record or a rename/copy record without reading ahead\&. After reading added and deleted lines, reading up to NUL would yield the pathname, but if that is NUL, the record will show two paths\&.
 .SH "EXAMPLES"
 .PP
 Various ways to check your working tree
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 $ git diff            \fB(1)\fR
 $ git diff \-\-cached   \fB(2)\fR
 $ git diff HEAD       \fB(3)\fR
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRChanges in the working tree not yet staged for the next commit\.
+\fB1. \fRChanges in the working tree not yet staged for the next commit\&.
 .br
-\fB2. \fRChanges between the index and your last commit; what you would be committing if you run "git commit" without "\-a" option\.
+\fB2. \fRChanges between the index and your last commit; what you would be committing if you run "git commit" without "\-a" option\&.
 .br
 \fB3. \fRChanges in the working tree since your last commit; what you would be committing if you run "git commit \-a"
 .br
@@ -843,97 +1289,113 @@ $ git diff HEAD       \fB(3)\fR
 Comparing with arbitrary commits
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 $ git diff test            \fB(1)\fR
-$ git diff HEAD \-\- \./test  \fB(2)\fR
+$ git diff HEAD \-\- \&./test  \fB(2)\fR
 $ git diff HEAD^ HEAD      \fB(3)\fR
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRInstead of using the tip of the current branch, compare with the tip of "test" branch\.
+\fB1. \fRInstead of using the tip of the current branch, compare with the tip of "test" branch\&.
 .br
-\fB2. \fRInstead of comparing with the tip of "test" branch, compare with the tip of the current branch, but limit the comparison to the file "test"\.
+\fB2. \fRInstead of comparing with the tip of "test" branch, compare with the tip of the current branch, but limit the comparison to the file "test"\&.
 .br
-\fB3. \fRCompare the version before the last commit and the last commit\.
+\fB3. \fRCompare the version before the last commit and the last commit\&.
 .br
 .RE
 .PP
 Comparing branches
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 $ git diff topic master    \fB(1)\fR
-$ git diff topic\.\.master   \fB(2)\fR
-$ git diff topic\.\.\.master  \fB(3)\fR
-\.ft
+$ git diff topic\&.\&.master   \fB(2)\fR
+$ git diff topic\&.\&.\&.master  \fB(3)\fR
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRChanges between the tips of the topic and the master branches\.
+\fB1. \fRChanges between the tips of the topic and the master branches\&.
 .br
-\fB2. \fRSame as above\.
+\fB2. \fRSame as above\&.
 .br
-\fB3. \fRChanges that occurred on the master branch since when the topic branch was started off it\.
+\fB3. \fRChanges that occurred on the master branch since when the topic branch was started off it\&.
 .br
 .RE
 .PP
 Limiting the diff output
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 $ git diff \-\-diff\-filter=MRC            \fB(1)\fR
 $ git diff \-\-name\-status                \fB(2)\fR
 $ git diff arch/i386 include/asm\-i386   \fB(3)\fR
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRShow only modification, rename and copy, but not addition nor deletion\.
+\fB1. \fRShow only modification, rename and copy, but not addition nor deletion\&.
 .br
-\fB2. \fRShow only names and the nature of change, but not actual diff output\.
+\fB2. \fRShow only names and the nature of change, but not actual diff output\&.
 .br
-\fB3. \fRLimit diff output to named subtrees\.
+\fB3. \fRLimit diff output to named subtrees\&.
 .br
 .RE
 .PP
 Munging the diff output
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
-\.ft C
+\&.ft C
 $ git diff \-\-find\-copies\-harder \-B \-C  \fB(1)\fR
 $ git diff \-R                          \fB(2)\fR
-\.ft
+\&.ft
 
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRSpend extra cycles to find renames, copies and complete rewrites (very expensive)\.
+\fB1. \fRSpend extra cycles to find renames, copies and complete rewrites (very expensive)\&.
 .br
-\fB2. \fROutput diff in reverse\.
+\fB2. \fROutput diff in reverse\&.
 .br
 .RE
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl\.org>
 .sp
+Written by Linus Torvalds <torvalds@osdl\&.org>
 .SH "DOCUMENTATION"
-Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
 .sp
+Documentation by Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite
