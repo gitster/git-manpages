@@ -1,100 +1,107 @@
+'\" t
 .\"     Title: git-archimport
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"  Language: English
 .\"
-.TH "GIT\-ARCHIMPORT" "1" "07/01/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-ARCHIMPORT" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-archimport - Import an Arch repository into git
+git-archimport \- Import an Arch repository into git
 .SH "SYNOPSIS"
 .sp
-.RS 4
 .nf
 \fIgit archimport\fR [\-h] [\-v] [\-o] [\-a] [\-f] [\-T] [\-D depth] [\-t tempdir]
                <archive/branch>[:<git\-branch>] \&...
 .fi
-.RE
+.sp
 .SH "DESCRIPTION"
-Imports a project from one or more Arch repositories\. It will follow branches and repositories within the namespaces defined by the <archive/branch> parameters supplied\. If it cannot find the remote branch a merge comes from it will just import it as a regular commit\. If it can find it, it will mark it as a merge whenever possible (see discussion below)\.
 .sp
-The script expects you to provide the key roots where it can start the import from an \fIinitial import\fR or \fItag\fR type of Arch commit\. It will follow and import new branches within the provided roots\.
+Imports a project from one or more Arch repositories\&. It will follow branches and repositories within the namespaces defined by the <archive/branch> parameters supplied\&. If it cannot find the remote branch a merge comes from it will just import it as a regular commit\&. If it can find it, it will mark it as a merge whenever possible (see discussion below)\&.
 .sp
-It expects to be dealing with one project only\. If it sees branches that have different roots, it will refuse to run\. In that case, edit your <archive/branch> parameters to define clearly the scope of the import\.
+The script expects you to provide the key roots where it can start the import from an \fIinitial import\fR or \fItag\fR type of Arch commit\&. It will follow and import new branches within the provided roots\&.
 .sp
-\fIgit\-archimport\fR uses tla extensively in the background to access the Arch repository\. Make sure you have a recent version of tla available in the path\. tla must know about the repositories you pass to \fIgit\-archimport\fR\.
+It expects to be dealing with one project only\&. If it sees branches that have different roots, it will refuse to run\&. In that case, edit your <archive/branch> parameters to define clearly the scope of the import\&.
 .sp
-For the initial import, \fIgit\-archimport\fR expects to find itself in an empty directory\. To follow the development of a project that uses Arch, rerun \fIgit\-archimport\fR with the same parameters as the initial import to perform incremental imports\.
+\fIgit\-archimport\fR uses tla extensively in the background to access the Arch repository\&. Make sure you have a recent version of tla available in the path\&. tla must know about the repositories you pass to \fIgit\-archimport\fR\&.
 .sp
-While \fIgit\-archimport\fR will try to create sensible branch names for the archives that it imports, it is also possible to specify git branch names manually\. To do so, write a git branch name after each <archive/branch> parameter, separated by a colon\. This way, you can shorten the Arch branch names and convert Arch jargon to git jargon, for example mapping a "PROJECT\-\-devo\-\-VERSION" branch to "master"\.
+For the initial import, \fIgit\-archimport\fR expects to find itself in an empty directory\&. To follow the development of a project that uses Arch, rerun \fIgit\-archimport\fR with the same parameters as the initial import to perform incremental imports\&.
 .sp
-Associating multiple Arch branches to one git branch is possible; the result will make the most sense only if no commits are made to the first branch, after the second branch is created\. Still, this is useful to convert Arch repositories that had been rotated periodically\.
+While \fIgit\-archimport\fR will try to create sensible branch names for the archives that it imports, it is also possible to specify git branch names manually\&. To do so, write a git branch name after each <archive/branch> parameter, separated by a colon\&. This way, you can shorten the Arch branch names and convert Arch jargon to git jargon, for example mapping a "PROJECT\-\-devo\-\-VERSION" branch to "master"\&.
 .sp
+Associating multiple Arch branches to one git branch is possible; the result will make the most sense only if no commits are made to the first branch, after the second branch is created\&. Still, this is useful to convert Arch repositories that had been rotated periodically\&.
 .SH "MERGES"
-Patch merge data from Arch is used to mark merges in git as well\. git does not care much about tracking patches, and only considers a merge when a branch incorporates all the commits since the point they forked\. The end result is that git will have a good idea of how far branches have diverged\. So the import process does lose some patch\-trading metadata\.
 .sp
-Fortunately, when you try and merge branches imported from Arch, git will find a good merge base, and it has a good chance of identifying patches that have been traded out\-of\-sequence between the branches\.
+Patch merge data from Arch is used to mark merges in git as well\&. git does not care much about tracking patches, and only considers a merge when a branch incorporates all the commits since the point they forked\&. The end result is that git will have a good idea of how far branches have diverged\&. So the import process does lose some patch\-trading metadata\&.
 .sp
+Fortunately, when you try and merge branches imported from Arch, git will find a good merge base, and it has a good chance of identifying patches that have been traded out\-of\-sequence between the branches\&.
 .SH "OPTIONS"
 .PP
 \-h
 .RS 4
-Display usage\.
+Display usage\&.
 .RE
 .PP
 \-v
 .RS 4
-Verbose output\.
+Verbose output\&.
 .RE
 .PP
 \-T
 .RS 4
-Many tags\. Will create a tag for every commit, reflecting the commit name in the Arch repository\.
+Many tags\&. Will create a tag for every commit, reflecting the commit name in the Arch repository\&.
 .RE
 .PP
 \-f
 .RS 4
-Use the fast patchset import strategy\. This can be significantly faster for large trees, but cannot handle directory renames or permissions changes\. The default strategy is slow and safe\.
+Use the fast patchset import strategy\&. This can be significantly faster for large trees, but cannot handle directory renames or permissions changes\&. The default strategy is slow and safe\&.
 .RE
 .PP
 \-o
 .RS 4
 Use this for compatibility with old\-style branch names used by earlier versions of
-\fIgit\-archimport\fR\. Old\-style branch names were category\-\-branch, whereas new\-style branch names are archive,category\-\-branch\-\-version\. In both cases, names given on the command\-line will override the automatically\-generated ones\.
+\fIgit\-archimport\fR\&. Old\-style branch names were category\-\-branch, whereas new\-style branch names are archive,category\-\-branch\-\-version\&. In both cases, names given on the command\-line will override the automatically\-generated ones\&.
 .RE
 .PP
 \-D <depth>
 .RS 4
-Follow merge ancestry and attempt to import trees that have been merged from\. Specify a depth greater than 1 if patch logs have been pruned\.
+Follow merge ancestry and attempt to import trees that have been merged from\&. Specify a depth greater than 1 if patch logs have been pruned\&.
 .RE
 .PP
 \-a
 .RS 4
-Attempt to auto\-register archives at http://mirrors\.sourcecontrol\.net This is particularly useful with the \-D option\.
+Attempt to auto\-register archives at http://mirrors\&.sourcecontrol\&.net This is particularly useful with the \-D option\&.
 .RE
 .PP
 \-t <tmpdir>
 .RS 4
-Override the default tempdir\.
+Override the default tempdir\&.
 .RE
 .PP
 <archive/branch>
 .RS 4
 Archive/branch identifier in a format that
 tla log
-understands\.
+understands\&.
 .RE
 .SH "AUTHOR"
-Written by Martin Langhoff <martin@catalyst\.net\.nz>\.
 .sp
+Written by Martin Langhoff <martin@catalyst\&.net\&.nz>\&.
 .SH "DOCUMENTATION"
-Documentation by Junio C Hamano, Martin Langhoff and the git\-list <git@vger\.kernel\.org>\.
 .sp
+Documentation by Junio C Hamano, Martin Langhoff and the git\-list <git@vger\&.kernel\&.org>\&.
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite

@@ -1,244 +1,251 @@
+'\" t
 .\"     Title: git-reset
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 09/08/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.rc0
+.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"  Language: English
 .\"
-.TH "GIT\-RESET" "1" "09/08/2009" "Git 1\.6\.5\.rc0" "Git Manual"
+.TH "GIT\-RESET" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-reset - Reset current HEAD to the specified state
+git-reset \- Reset current HEAD to the specified state
 .SH "SYNOPSIS"
 .sp
-.RS 4
 .nf
 \fIgit reset\fR [\-\-mixed | \-\-soft | \-\-hard | \-\-merge] [\-q] [<commit>]
 \fIgit reset\fR [\-q] [<commit>] [\-\-] <paths>\&...
 \fIgit reset\fR \-\-patch [<commit>] [\-\-] [<paths>\&...]
 .fi
-.RE
+.sp
 .SH "DESCRIPTION"
-Sets the current head to the specified commit and optionally resets the index and working tree to match\.
 .sp
-This command is useful if you notice some small error in a recent commit (or set of commits) and want to redo that part without showing the undo in the history\.
+Sets the current head to the specified commit and optionally resets the index and working tree to match\&.
 .sp
-If you want to undo a commit other than the latest on a branch, \fBgit-revert\fR(1) is your friend\.
+This command is useful if you notice some small error in a recent commit (or set of commits) and want to redo that part without showing the undo in the history\&.
 .sp
-The second and third forms with \fIpaths\fR and/or \-\-patch are used to revert selected paths in the index from a given commit, without moving HEAD\.
+If you want to undo a commit other than the latest on a branch, \fBgit-revert\fR(1) is your friend\&.
 .sp
+The second and third forms with \fIpaths\fR and/or \-\-patch are used to revert selected paths in the index from a given commit, without moving HEAD\&.
 .SH "OPTIONS"
 .PP
 \-\-mixed
 .RS 4
-Resets the index but not the working tree (i\.e\., the changed files are preserved but not marked for commit) and reports what has not been updated\. This is the default action\.
+Resets the index but not the working tree (i\&.e\&., the changed files are preserved but not marked for commit) and reports what has not been updated\&. This is the default action\&.
 .RE
 .PP
 \-\-soft
 .RS 4
-Does not touch the index file nor the working tree at all, but requires them to be in a good order\. This leaves all your changed files "Changes to be committed", as
+Does not touch the index file nor the working tree at all, but requires them to be in a good order\&. This leaves all your changed files "Changes to be committed", as
 \fIgit\-status\fR
-would put it\.
+would put it\&.
 .RE
 .PP
 \-\-hard
 .RS 4
-Matches the working tree and index to that of the tree being switched to\. Any changes to tracked files in the working tree since <commit> are lost\.
+Matches the working tree and index to that of the tree being switched to\&. Any changes to tracked files in the working tree since <commit> are lost\&.
 .RE
 .PP
 \-\-merge
 .RS 4
-Resets the index to match the tree recorded by the named commit, and updates the files that are different between the named commit and the current commit in the working tree\.
+Resets the index to match the tree recorded by the named commit, and updates the files that are different between the named commit and the current commit in the working tree\&.
 .RE
 .PP
 \-p, \-\-patch
 .RS 4
-Interactively select hunks in the difference between the index and <commit> (defaults to HEAD)\. The chosen hunks are applied in reverse to the index\.
+Interactively select hunks in the difference between the index and <commit> (defaults to HEAD)\&. The chosen hunks are applied in reverse to the index\&.
 .sp
 This means that
 git reset \-p
 is the opposite of
 git add \-p
 (see
-\fBgit-add\fR(1))\.
+\fBgit-add\fR(1))\&.
 .RE
 .PP
 \-q
 .RS 4
-Be quiet, only report errors\.
+Be quiet, only report errors\&.
 .RE
 .PP
 <commit>
 .RS 4
-Commit to make the current HEAD\. If not given defaults to HEAD\.
+Commit to make the current HEAD\&. If not given defaults to HEAD\&.
 .RE
 .SH "EXAMPLES"
 .PP
 Undo a commit and redo
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
-$ git commit \.\.\.
+$ git commit \&.\&.\&.
 $ git reset \-\-soft HEAD^      \fB(1)\fR
 $ edit                        \fB(2)\fR
 $ git commit \-a \-c ORIG_HEAD  \fB(3)\fR
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRThis is most often done when you remembered what you just committed is incomplete, or you misspelled your commit message, or both\. Leaves working tree as it was before "reset"\.
+\fB1. \fRThis is most often done when you remembered what you just committed is incomplete, or you misspelled your commit message, or both\&. Leaves working tree as it was before "reset"\&.
 .br
-\fB2. \fRMake corrections to working tree files\.
+\fB2. \fRMake corrections to working tree files\&.
 .br
-\fB3. \fR"reset" copies the old head to \.git/ORIG_HEAD; redo the commit by starting with its log message\. If you do not need to edit the message further, you can give \-C option instead\.
+\fB3. \fR"reset" copies the old head to \&.git/ORIG_HEAD; redo the commit by starting with its log message\&. If you do not need to edit the message further, you can give \-C option instead\&.
 .sp
 See also the \-\-amend option to
-\fBgit-commit\fR(1)\.
+\fBgit-commit\fR(1)\&.
 .br
 .RE
 .PP
 Undo commits permanently
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
-$ git commit \.\.\.
+$ git commit \&.\&.\&.
 $ git reset \-\-hard HEAD~3   \fB(1)\fR
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRThe last three commits (HEAD, HEAD^, and HEAD~2) were bad and you do not want to ever see them again\. Do
+\fB1. \fRThe last three commits (HEAD, HEAD^, and HEAD~2) were bad and you do not want to ever see them again\&. Do
 \fBnot\fR
-do this if you have already given these commits to somebody else\. (See the "RECOVERING FROM UPSTREAM REBASE" section in
+do this if you have already given these commits to somebody else\&. (See the "RECOVERING FROM UPSTREAM REBASE" section in
 \fBgit-rebase\fR(1)
-for the implications of doing so\.)
+for the implications of doing so\&.)
 .br
 .RE
 .PP
 Undo a commit, making it a topic branch
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
 $ git branch topic/wip     \fB(1)\fR
 $ git reset \-\-hard HEAD~3  \fB(2)\fR
 $ git checkout topic/wip   \fB(3)\fR
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRYou have made some commits, but realize they were premature to be in the "master" branch\. You want to continue polishing them in a topic branch, so create "topic/wip" branch off of the current HEAD\.
+\fB1. \fRYou have made some commits, but realize they were premature to be in the "master" branch\&. You want to continue polishing them in a topic branch, so create "topic/wip" branch off of the current HEAD\&.
 .br
-\fB2. \fRRewind the master branch to get rid of those three commits\.
+\fB2. \fRRewind the master branch to get rid of those three commits\&.
 .br
-\fB3. \fRSwitch to "topic/wip" branch and keep working\.
+\fB3. \fRSwitch to "topic/wip" branch and keep working\&.
 .br
 .RE
 .PP
 Undo add
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
 $ edit                                     \fB(1)\fR
-$ git add frotz\.c filfre\.c
+$ git add frotz\&.c filfre\&.c
 $ mailx                                    \fB(2)\fR
 $ git reset                                \fB(3)\fR
-$ git pull git://info\.example\.com/ nitfol  \fB(4)\fR
-\.ft
-
+$ git pull git://info\&.example\&.com/ nitfol  \fB(4)\fR
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRYou are happily working on something, and find the changes in these files are in good order\. You do not want to see them when you run "git diff", because you plan to work on other files and changes with these files are distracting\.
+\fB1. \fRYou are happily working on something, and find the changes in these files are in good order\&. You do not want to see them when you run "git diff", because you plan to work on other files and changes with these files are distracting\&.
 .br
-\fB2. \fRSomebody asks you to pull, and the changes sounds worthy of merging\.
+\fB2. \fRSomebody asks you to pull, and the changes sounds worthy of merging\&.
 .br
-\fB3. \fRHowever, you already dirtied the index (i\.e\. your index does not match the HEAD commit)\. But you know the pull you are going to make does not affect frotz\.c nor filfre\.c, so you revert the index changes for these two files\. Your changes in working tree remain there\.
+\fB3. \fRHowever, you already dirtied the index (i\&.e\&. your index does not match the HEAD commit)\&. But you know the pull you are going to make does not affect frotz\&.c nor filfre\&.c, so you revert the index changes for these two files\&. Your changes in working tree remain there\&.
 .br
-\fB4. \fRThen you can pull and merge, leaving frotz\.c and filfre\.c changes still in the working tree\.
+\fB4. \fRThen you can pull and merge, leaving frotz\&.c and filfre\&.c changes still in the working tree\&.
 .br
 .RE
 .PP
 Undo a merge or pull
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
 $ git pull                         \fB(1)\fR
 Auto\-merging nitfol
 CONFLICT (content): Merge conflict in nitfol
-Automatic merge failed; fix conflicts and then commit the result\.
+Automatic merge failed; fix conflicts and then commit the result\&.
 $ git reset \-\-hard                 \fB(2)\fR
-$ git pull \. topic/branch          \fB(3)\fR
-Updating from 41223\.\.\. to 13134\.\.\.
+$ git pull \&. topic/branch          \fB(3)\fR
+Updating from 41223\&.\&.\&. to 13134\&.\&.\&.
 Fast forward
 $ git reset \-\-hard ORIG_HEAD       \fB(4)\fR
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRTry to update from the upstream resulted in a lot of conflicts; you were not ready to spend a lot of time merging right now, so you decide to do that later\.
+\fB1. \fRTry to update from the upstream resulted in a lot of conflicts; you were not ready to spend a lot of time merging right now, so you decide to do that later\&.
 .br
-\fB2. \fR"pull" has not made merge commit, so "git reset \-\-hard" which is a synonym for "git reset \-\-hard HEAD" clears the mess from the index file and the working tree\.
+\fB2. \fR"pull" has not made merge commit, so "git reset \-\-hard" which is a synonym for "git reset \-\-hard HEAD" clears the mess from the index file and the working tree\&.
 .br
-\fB3. \fRMerge a topic branch into the current branch, which resulted in a fast forward\.
+\fB3. \fRMerge a topic branch into the current branch, which resulted in a fast forward\&.
 .br
-\fB4. \fRBut you decided that the topic branch is not ready for public consumption yet\. "pull" or "merge" always leaves the original tip of the current branch in ORIG_HEAD, so resetting hard to it brings your index file and the working tree back to that state, and resets the tip of the branch to that commit\.
+\fB4. \fRBut you decided that the topic branch is not ready for public consumption yet\&. "pull" or "merge" always leaves the original tip of the current branch in ORIG_HEAD, so resetting hard to it brings your index file and the working tree back to that state, and resets the tip of the branch to that commit\&.
 .br
 .RE
 .PP
 Undo a merge or pull inside a dirty work tree
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
 $ git pull                         \fB(1)\fR
 Auto\-merging nitfol
-Merge made by recursive\.
+Merge made by recursive\&.
  nitfol                |   20 +++++\-\-\-\-
- \.\.\.
+ \&.\&.\&.
 $ git reset \-\-merge ORIG_HEAD      \fB(2)\fR
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fREven if you may have local modifications in your working tree, you can safely say "git pull" when you know that the change in the other branch does not overlap with them\.
+\fB1. \fREven if you may have local modifications in your working tree, you can safely say "git pull" when you know that the change in the other branch does not overlap with them\&.
 .br
-\fB2. \fRAfter inspecting the result of the merge, you may find that the change in the other branch is unsatisfactory\. Running "git reset \-\-hard ORIG_HEAD" will let you go back to where you were, but it will discard your local changes, which you do not want\. "git reset \-\-merge" keeps your local changes\.
+\fB2. \fRAfter inspecting the result of the merge, you may find that the change in the other branch is unsatisfactory\&. Running "git reset \-\-hard ORIG_HEAD" will let you go back to where you were, but it will discard your local changes, which you do not want\&. "git reset \-\-merge" keeps your local changes\&.
 .br
 .RE
 .PP
 Interrupted workflow
 .RS 4
-Suppose you are interrupted by an urgent fix request while you are in the middle of a large change\. The files in your working tree are not in any shape to be committed yet, but you need to get to the other branch for a quick bugfix\.
+Suppose you are interrupted by an urgent fix request while you are in the middle of a large change\&. The files in your working tree are not in any shape to be committed yet, but you need to get to the other branch for a quick bugfix\&.
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
 $ git checkout feature ;# you were working in "feature" branch and
 $ work work work       ;# got interrupted
 $ git commit \-a \-m "snapshot WIP"                 \fB(1)\fR
@@ -248,54 +255,54 @@ $ git commit ;# commit with real log
 $ git checkout feature
 $ git reset \-\-soft HEAD^ ;# go back to WIP state  \fB(2)\fR
 $ git reset                                       \fB(3)\fR
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRThis commit will get blown away so a throw\-away log message is OK\.
+\fB1. \fRThis commit will get blown away so a throw\-away log message is OK\&.
 .br
 \fB2. \fRThis removes the
 \fIWIP\fR
-commit from the commit history, and sets your working tree to the state just before you made that snapshot\.
+commit from the commit history, and sets your working tree to the state just before you made that snapshot\&.
 .br
 \fB3. \fRAt this point the index file still has all the WIP changes you committed as
-\fIsnapshot WIP\fR\. This updates the index to show your WIP files as uncommitted\.
+\fIsnapshot WIP\fR\&. This updates the index to show your WIP files as uncommitted\&.
 .sp
 See also
-\fBgit-stash\fR(1)\.
+\fBgit-stash\fR(1)\&.
 .br
 .RE
 .PP
 Reset a single file in the index
 .RS 4
-Suppose you have added a file to your index, but later decide you do not want to add it to your commit\. You can remove the file from the index while keeping your changes with git reset\.
+Suppose you have added a file to your index, but later decide you do not want to add it to your commit\&. You can remove the file from the index while keeping your changes with git reset\&.
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
-$ git reset \-\- frotz\.c                      \fB(1)\fR
+$ git reset \-\- frotz\&.c                      \fB(1)\fR
 $ git commit \-m "Commit files in index"     \fB(2)\fR
-$ git add frotz\.c                           \fB(3)\fR
-\.ft
-
+$ git add frotz\&.c                           \fB(3)\fR
 .fi
+.if n \{\
 .RE
+.\}
 .sp
-\fB1. \fRThis removes the file from the index while keeping it in the working directory\.
+\fB1. \fRThis removes the file from the index while keeping it in the working directory\&.
 .br
-\fB2. \fRThis commits all other changes in the index\.
+\fB2. \fRThis commits all other changes in the index\&.
 .br
-\fB3. \fRAdds the file to the index again\.
+\fB3. \fRAdds the file to the index again\&.
 .br
 .RE
 .SH "AUTHOR"
-Written by Junio C Hamano <gitster@pobox\.com> and Linus Torvalds <torvalds@osdl\.org>
 .sp
+Written by Junio C Hamano <gitster@pobox\&.com> and Linus Torvalds <torvalds@osdl\&.org>
 .SH "DOCUMENTATION"
-Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
 .sp
+Documentation by Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite

@@ -2,12 +2,12 @@
 .\"     Title: git-bisect
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 10/31/2009
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.140.g5f809
+.\"    Source: Git 1.6.5.2.185.gb7fba
 .\"  Language: English
 .\"
-.TH "GIT\-BISECT" "1" "10/31/2009" "Git 1\&.6\&.5\&.2\&.140\&.g5f8" "Git Manual"
+.TH "GIT\-BISECT" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -58,18 +58,15 @@ Using the Linux kernel tree as an example, basic use of the bisect command is as
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect start
 $ git bisect bad                 # Current version is bad
 $ git bisect good v2\&.6\&.13\-rc2    # v2\&.6\&.13\-rc2 was the last version
                                  # tested that was good
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 When you have specified at least one bad and one good version, the command bisects the revision tree and outputs something similar to the following:
 .sp
@@ -77,15 +74,12 @@ When you have specified at least one bad and one good version, the command bisec
 .RS 4
 .\}
 .nf
-
-\&.ft C
 Bisecting: 675 revisions left to test after this
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 The state in the middle of the set of revisions is then checked out\&. You would now compile that kernel and boot it\&. If the booted kernel works correctly, you would then issue the following command:
 .sp
@@ -93,15 +87,12 @@ The state in the middle of the set of revisions is then checked out\&. You would
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect good                       # this one is good
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 The output of this command would be something similar to the following:
 .sp
@@ -109,15 +100,12 @@ The output of this command would be something similar to the following:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 Bisecting: 337 revisions left to test after this
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 You keep repeating this process, compiling the tree, testing it, and depending on whether it is good or bad issuing the command "git bisect good" or "git bisect bad" to ask for the next bisection\&.
 .sp
@@ -130,15 +118,12 @@ After a bisect session, to clean up the bisection state and return to the origin
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect reset
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 By default, this will return your tree to the commit that was checked out before git bisect start\&. (A new git bisect start will also do that, as it cleans up the old bisection state\&.)
 .sp
@@ -148,15 +133,12 @@ With an optional argument, you can return to a different commit instead:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect reset <commit>
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 For example, git bisect reset HEAD will leave you on the current bisection commit and avoid switching commits at all, while git bisect reset bisect/bad will check out the first bad revision\&.
 .SS "Bisect visualize"
@@ -167,15 +149,12 @@ To see the currently remaining suspects in \fIgitk\fR, issue the following comma
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect visualize
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 view may also be used as a synonym for visualize\&.
 .sp
@@ -185,15 +164,12 @@ If the \fIDISPLAY\fR environment variable is not set, \fIgit log\fR is used inst
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect view \-\-stat
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .SS "Bisect log and bisect replay"
 .sp
 After having marked revisions as good or bad, issue the following command to show what has been done so far:
@@ -202,15 +178,12 @@ After having marked revisions as good or bad, issue the following command to sho
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect log
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 If you discover that you made a mistake in specifying the status of a revision, you can save the output of this command to a file, edit it to remove the incorrect entries, and then issue the following commands to return to a corrected state:
 .sp
@@ -218,16 +191,13 @@ If you discover that you made a mistake in specifying the status of a revision, 
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect reset
 $ git bisect replay that\-file
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .SS "Avoiding testing a commit"
 .sp
 If, in the middle of a bisect session, you know that the next suggested revision is not a good one to test (e\&.g\&. the change the commit introduces is known not to work in your environment and you know it does not have anything to do with the bug you are chasing), you may want to find a nearby commit and try that instead\&.
@@ -238,19 +208,16 @@ For example:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect good/bad                   # previous round was good or bad\&.
 Bisecting: 337 revisions left to test after this
 $ git bisect visualize                  # oops, that is uninteresting\&.
 $ git reset \-\-hard HEAD~3               # try 3 revisions before what
                                         # was suggested
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 Then compile and test the chosen revision, and afterwards mark the revision as good or bad in the usual manner\&.
 .SS "Bisect skip"
@@ -261,15 +228,12 @@ Instead of choosing by yourself a nearby commit, you can ask git to do it for yo
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect skip                 # Current version cannot be tested
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 But git may eventually be unable to tell the first bad commit among a bad commit and one or more skipped commits\&.
 .sp
@@ -279,15 +243,12 @@ You can even skip a range of commits, instead of just one commit, using the "\fI
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect skip v2\&.5\&.\&.v2\&.6
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 This tells the bisect process that no commit after v2\&.5, up to and including v2\&.6, should be tested\&.
 .sp
@@ -297,15 +258,12 @@ Note that if you also want to skip the first commit of the range you would issue
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect skip v2\&.5 v2\&.5\&.\&.v2\&.6
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 This tells the bisect process that the commits between v2\&.5 included and v2\&.6 included should be skipped\&.
 .SS "Cutting down bisection by giving more parameters to bisect start"
@@ -316,15 +274,12 @@ You can further cut down the number of trials, if you know what part of the tree
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect start \-\- arch/i386 include/asm\-i386
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 If you know beforehand more than one good commit, you can narrow the bisect space down by specifying all of the good commits immediately after the bad commit when issuing the bisect start command:
 .sp
@@ -332,17 +287,14 @@ If you know beforehand more than one good commit, you can narrow the bisect spac
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect start v2\&.6\&.20\-rc6 v2\&.6\&.20\-rc4 v2\&.6\&.20\-rc1 \-\-
                    # v2\&.6\&.20\-rc6 is bad
                    # v2\&.6\&.20\-rc4 and v2\&.6\&.20\-rc1 are good
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .SS "Bisect run"
 .sp
 If you have a script that can tell if the current source code is good or bad, you can bisect by issuing the command:
@@ -351,15 +303,12 @@ If you have a script that can tell if the current source code is good or bad, yo
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect run my_script arguments
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 Note that the script (my_script in the above example) should exit with code 0 if the current source code is good, and exit with a code between 1 and 127 (inclusive), except 125, if the current source code is bad\&.
 .sp
@@ -386,16 +335,13 @@ Automatically bisect a broken build between v1\&.2 and HEAD:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect start HEAD v1\&.2 \-\-      # HEAD is bad, v1\&.2 is good
 $ git bisect run make                # "make" builds the app
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .RE
 .sp
 .RS 4
@@ -412,16 +358,13 @@ Automatically bisect a test failure between origin and HEAD:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect start HEAD origin \-\-    # HEAD is bad, origin is good
 $ git bisect run make test           # "make test" builds and tests
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .RE
 .sp
 .RS 4
@@ -438,16 +381,12 @@ Automatically bisect a broken test suite:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ cat ~/test\&.sh
 #!/bin/sh
 make || exit 125                   # this skips broken builds
 make test                          # "make test" runs the test suite
 $ git bisect start v1\&.3 v1\&.1 \-\-    # v1\&.3 is bad, v1\&.1 is good
 $ git bisect run ~/test\&.sh
-\&.ft
-
 .fi
 .if n \{\
 .RE
@@ -474,16 +413,12 @@ Automatically bisect a broken test case:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ cat ~/test\&.sh
 #!/bin/sh
 make || exit 125                     # this skips broken builds
 ~/check_test_case\&.sh                 # does the test case passes ?
 $ git bisect start HEAD HEAD~10 \-\-   # culprit is among the last 10
 $ git bisect run ~/test\&.sh
-\&.ft
-
 .fi
 .if n \{\
 .RE
@@ -508,12 +443,8 @@ Automatically bisect a broken test suite:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git bisect start HEAD HEAD~10 \-\-   # culprit is among the last 10
 $ git bisect run sh \-c "make || exit 125; ~/check_test_case\&.sh"
-\&.ft
-
 .fi
 .if n \{\
 .RE

@@ -1,20 +1,27 @@
+'\" t
 .\"     Title: git-daemon
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.rc1
+.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"  Language: English
 .\"
-.TH "GIT\-DAEMON" "1" "07/01/2009" "Git 1\.6\.3\.rc1" "Git Manual"
+.TH "GIT\-DAEMON" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-daemon - A really simple server for git repositories
+git-daemon \- A really simple server for git repositories
 .SH "SYNOPSIS"
 .sp
-.RS 4
 .nf
 \fIgit daemon\fR [\-\-verbose] [\-\-syslog] [\-\-export\-all]
              [\-\-timeout=n] [\-\-init\-timeout=n] [\-\-max\-connections=n]
@@ -27,50 +34,50 @@ git-daemon - A really simple server for git repositories
              [\-\-inetd | [\-\-listen=host_or_ipaddr] [\-\-port=n] [\-\-user=user [\-\-group=group]]
              [directory\&...]
 .fi
-.RE
+.sp
 .SH "DESCRIPTION"
-A really simple TCP git daemon that normally listens on port "DEFAULT_GIT_PORT" aka 9418\. It waits for a connection asking for a service, and will serve that service if it is enabled\.
 .sp
-It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any git directory that hasn\'t explicitly been marked for export this way (unless the \fI\-\-export\-all\fR parameter is specified)\. If you pass some directory paths as \fIgit\-daemon\fR arguments, you can further restrict the offers to a whitelist comprising of those\.
+A really simple TCP git daemon that normally listens on port "DEFAULT_GIT_PORT" aka 9418\&. It waits for a connection asking for a service, and will serve that service if it is enabled\&.
 .sp
-By default, only upload\-pack service is enabled, which serves \fIgit\-fetch\-pack\fR and \fIgit\-ls\-remote\fR clients, which are invoked from \fIgit\-fetch\fR, \fIgit\-pull\fR, and \fIgit\-clone\fR\.
+It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any git directory that hasn\(aqt explicitly been marked for export this way (unless the \fI\-\-export\-all\fR parameter is specified)\&. If you pass some directory paths as \fIgit\-daemon\fR arguments, you can further restrict the offers to a whitelist comprising of those\&.
 .sp
-This is ideally suited for read\-only updates, i\.e\., pulling from git repositories\.
+By default, only upload\-pack service is enabled, which serves \fIgit\-fetch\-pack\fR and \fIgit\-ls\-remote\fR clients, which are invoked from \fIgit\-fetch\fR, \fIgit\-pull\fR, and \fIgit\-clone\fR\&.
 .sp
-An upload\-archive also exists to serve \fIgit\-archive\fR\.
+This is ideally suited for read\-only updates, i\&.e\&., pulling from git repositories\&.
 .sp
+An upload\-archive also exists to serve \fIgit\-archive\fR\&.
 .SH "OPTIONS"
 .PP
 \-\-strict\-paths
 .RS 4
-Match paths exactly (i\.e\. don\'t allow "/foo/repo" when the real path is "/foo/repo\.git" or "/foo/repo/\.git") and don\'t do user\-relative paths\.
+Match paths exactly (i\&.e\&. don\(aqt allow "/foo/repo" when the real path is "/foo/repo\&.git" or "/foo/repo/\&.git") and don\(aqt do user\-relative paths\&.
 \fIgit\-daemon\fR
-will refuse to start when this option is enabled and no whitelist is specified\.
+will refuse to start when this option is enabled and no whitelist is specified\&.
 .RE
 .PP
 \-\-base\-path=path
 .RS 4
-Remap all the path requests as relative to the given path\. This is sort of "GIT root" \- if you run
+Remap all the path requests as relative to the given path\&. This is sort of "GIT root" \- if you run
 \fIgit\-daemon\fR
 with
 \fI\-\-base\-path=/srv/git\fR
-on example\.com, then if you later try to pull
-\fIgit://example\.com/hello\.git\fR,
+on example\&.com, then if you later try to pull
+\fIgit://example\&.com/hello\&.git\fR,
 \fIgit\-daemon\fR
 will interpret the path as
-\fI/srv/git/hello\.git\fR\.
+\fI/srv/git/hello\&.git\fR\&.
 .RE
 .PP
 \-\-base\-path\-relaxed
 .RS 4
 If \-\-base\-path is enabled and repo lookup fails, with this option
 \fIgit\-daemon\fR
-will attempt to lookup without prefixing the base path\. This is useful for switching to \-\-base\-path usage, while still allowing the old paths\.
+will attempt to lookup without prefixing the base path\&. This is useful for switching to \-\-base\-path usage, while still allowing the old paths\&.
 .RE
 .PP
 \-\-interpolated\-path=pathtemplate
 .RS 4
-To support virtual hosting, an interpolated path template can be used to dynamically construct alternate paths\. The template supports %H for the target hostname as supplied by the client but converted to all lowercase, %CH for the canonical hostname, %IP for the server\'s IP address, %P for the port number, and %D for the absolute path of the named repository\. After interpolation, the path is validated against the directory whitelist\.
+To support virtual hosting, an interpolated path template can be used to dynamically construct alternate paths\&. The template supports %H for the target hostname as supplied by the client but converted to all lowercase, %CH for the canonical hostname, %IP for the server\(aqs IP address, %P for the port number, and %D for the absolute path of the named repository\&. After interpolation, the path is validated against the directory whitelist\&.
 .RE
 .PP
 \-\-export\-all
@@ -81,116 +88,117 @@ and
 \fIrefs\fR
 subdirectories), even if they do not have the
 \fIgit\-daemon\-export\-ok\fR
-file\.
+file\&.
 .RE
 .PP
 \-\-inetd
 .RS 4
-Have the server run as an inetd service\. Implies \-\-syslog\. Incompatible with \-\-port, \-\-listen, \-\-user and \-\-group options\.
+Have the server run as an inetd service\&. Implies \-\-syslog\&. Incompatible with \-\-port, \-\-listen, \-\-user and \-\-group options\&.
 .RE
 .PP
 \-\-listen=host_or_ipaddr
 .RS 4
-Listen on a specific IP address or hostname\. IP addresses can be either an IPv4 address or an IPv6 address if supported\. If IPv6 is not supported, then \-\-listen=hostname is also not supported and \-\-listen must be given an IPv4 address\. Incompatible with
+Listen on a specific IP address or hostname\&. IP addresses can be either an IPv4 address or an IPv6 address if supported\&. If IPv6 is not supported, then \-\-listen=hostname is also not supported and \-\-listen must be given an IPv4 address\&. Incompatible with
 \fI\-\-inetd\fR
-option\.
+option\&.
 .RE
 .PP
 \-\-port=n
 .RS 4
-Listen on an alternative port\. Incompatible with
+Listen on an alternative port\&. Incompatible with
 \fI\-\-inetd\fR
-option\.
+option\&.
 .RE
 .PP
 \-\-init\-timeout=n
 .RS 4
-Timeout between the moment the connection is established and the client request is received (typically a rather low value, since that should be basically immediate)\.
+Timeout between the moment the connection is established and the client request is received (typically a rather low value, since that should be basically immediate)\&.
 .RE
 .PP
 \-\-timeout=n
 .RS 4
-Timeout for specific client sub\-requests\. This includes the time it takes for the server to process the sub\-request and the time spent waiting for the next client\'s request\.
+Timeout for specific client sub\-requests\&. This includes the time it takes for the server to process the sub\-request and the time spent waiting for the next client\(aqs request\&.
 .RE
 .PP
 \-\-max\-connections=n
 .RS 4
-Maximum number of concurrent clients, defaults to 32\. Set it to zero for no limit\.
+Maximum number of concurrent clients, defaults to 32\&. Set it to zero for no limit\&.
 .RE
 .PP
 \-\-syslog
 .RS 4
-Log to syslog instead of stderr\. Note that this option does not imply \-\-verbose, thus by default only error conditions will be logged\.
+Log to syslog instead of stderr\&. Note that this option does not imply \-\-verbose, thus by default only error conditions will be logged\&.
 .RE
 .PP
 \-\-user\-path, \-\-user\-path=path
 .RS 4
-Allow ~user notation to be used in requests\. When specified with no parameter, requests to git://host/~alice/foo is taken as a request to access
+Allow ~user notation to be used in requests\&. When specified with no parameter, requests to git://host/~alice/foo is taken as a request to access
 \fIfoo\fR
 repository in the home directory of user
-alice\. If
+alice\&. If
 \-\-user\-path=path
 is specified, the same request is taken as a request to access
 path/foo
 repository in the home directory of user
-alice\.
+alice\&.
 .RE
 .PP
 \-\-verbose
 .RS 4
-Log details about the incoming connections and requested files\.
+Log details about the incoming connections and requested files\&.
 .RE
 .PP
 \-\-reuseaddr
 .RS 4
-Use SO_REUSEADDR when binding the listening socket\. This allows the server to restart without waiting for old connections to time out\.
+Use SO_REUSEADDR when binding the listening socket\&. This allows the server to restart without waiting for old connections to time out\&.
 .RE
 .PP
 \-\-detach
 .RS 4
-Detach from the shell\. Implies \-\-syslog\.
+Detach from the shell\&. Implies \-\-syslog\&.
 .RE
 .PP
 \-\-pid\-file=file
 .RS 4
 Save the process id in
-\fIfile\fR\. Ignored when the daemon is run under
-\-\-inetd\.
+\fIfile\fR\&. Ignored when the daemon is run under
+\-\-inetd\&.
 .RE
 .PP
 \-\-user=user, \-\-group=group
 .RS 4
-Change daemon\'s uid and gid before entering the service loop\. When only
+Change daemon\(aqs uid and gid before entering the service loop\&. When only
 \-\-user
 is given without
-\-\-group, the primary group ID for the user is used\. The values of the option are given to
+\-\-group, the primary group ID for the user is used\&. The values of the option are given to
 getpwnam(3)
 and
 getgrnam(3)
-and numeric IDs are not supported\.
+and numeric IDs are not supported\&.
 .sp
 Giving these options is an error when used with
 \-\-inetd; use the facility of inet daemon to achieve the same before spawning
 \fIgit\-daemon\fR
-if needed\.
+if needed\&.
 .RE
 .PP
 \-\-enable=service, \-\-disable=service
 .RS 4
-Enable/disable the service site\-wide per default\. Note that a service disabled site\-wide can still be enabled per repository if it is marked overridable and the repository enables the service with a configuration item\.
+Enable/disable the service site\-wide per default\&. Note that a service disabled site\-wide can still be enabled per repository if it is marked overridable and the repository enables the service with a configuration item\&.
 .RE
 .PP
 \-\-allow\-override=service, \-\-forbid\-override=service
 .RS 4
-Allow/forbid overriding the site\-wide default with per repository configuration\. By default, all the services are overridable\.
+Allow/forbid overriding the site\-wide default with per repository configuration\&. By default, all the services are overridable\&.
 .RE
 .PP
 <directory>
 .RS 4
-A directory to add to the whitelist of allowed directories\. Unless \-\-strict\-paths is specified this will also include subdirectories of each named directory\.
+A directory to add to the whitelist of allowed directories\&. Unless \-\-strict\-paths is specified this will also include subdirectories of each named directory\&.
 .RE
 .SH "SERVICES"
-These services can be globally enabled/disabled using the command line options of this command\. If a finer\-grained control is desired (e\.g\. to allow \fIgit\-archive\fR to be run against only in a few selected repositories the daemon serves), the per\-repository configuration file can be used to enable or disable them\.
+.sp
+These services can be globally enabled/disabled using the command line options of this command\&. If a finer\-grained control is desired (e\&.g\&. to allow \fIgit\-archive\fR to be run against only in a few selected repositories the daemon serves), the per\-repository configuration file can be used to enable or disable them\&.
 .PP
 upload\-pack
 .RS 4
@@ -198,45 +206,46 @@ This serves
 \fIgit\-fetch\-pack\fR
 and
 \fIgit\-ls\-remote\fR
-clients\. It is enabled by default, but a repository can disable it by setting
-daemon\.uploadpack
+clients\&. It is enabled by default, but a repository can disable it by setting
+daemon\&.uploadpack
 configuration item to
-false\.
+false\&.
 .RE
 .PP
 upload\-archive
 .RS 4
 This serves
-\fIgit\-archive \-\-remote\fR\. It is disabled by default, but a repository can enable it by setting
-daemon\.uploadarch
+\fIgit\-archive \-\-remote\fR\&. It is disabled by default, but a repository can enable it by setting
+daemon\&.uploadarch
 configuration item to
-true\.
+true\&.
 .RE
 .PP
 receive\-pack
 .RS 4
 This serves
 \fIgit\-send\-pack\fR
-clients, allowing anonymous push\. It is disabled by default, as there is _no_ authentication in the protocol (in other words, anybody can push anything into the repository, including removal of refs)\. This is solely meant for a closed LAN setting where everybody is friendly\. This service can be enabled by
-daemon\.receivepack
+clients, allowing anonymous push\&. It is disabled by default, as there is _no_ authentication in the protocol (in other words, anybody can push anything into the repository, including removal of refs)\&. This is solely meant for a closed LAN setting where everybody is friendly\&. This service can be enabled by
+daemon\&.receivepack
 configuration item to
-true\.
+true\&.
 .RE
 .SH "EXAMPLES"
 .PP
 We assume the following in /etc/services
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
 $ grep 9418 /etc/services
 git             9418/tcp                # Git Version Control System
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .PP
 \fIgit\-daemon\fR as inetd server
@@ -245,17 +254,18 @@ To set up
 \fIgit\-daemon\fR
 as an inetd service that handles any repository under the whitelisted set of directories, /pub/foo and /pub/bar, place an entry like the following into /etc/inetd all on one line:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
         git stream tcp nowait nobody  /usr/bin/git
                 git daemon \-\-inetd \-\-verbose \-\-export\-all
                 /pub/foo /pub/bar
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .PP
 \fIgit\-daemon\fR as inetd server for virtual hosts
@@ -263,32 +273,33 @@ as an inetd service that handles any repository under the whitelisted set of dir
 To set up
 \fIgit\-daemon\fR
 as an inetd service that handles repositories for different virtual hosts,
-www\.example\.com
+www\&.example\&.com
 and
-www\.example\.org, place an entry like the following into
+www\&.example\&.org, place an entry like the following into
 /etc/inetd
 all on one line:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
         git stream tcp nowait nobody /usr/bin/git
                 git daemon \-\-inetd \-\-verbose \-\-export\-all
                 \-\-interpolated\-path=/pub/%H%D
-                /pub/www\.example\.org/software
-                /pub/www\.example\.com/software
+                /pub/www\&.example\&.org/software
+                /pub/www\&.example\&.com/software
                 /software
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 In this example, the root\-level directory
 /pub
-will contain a subdirectory for each virtual host name supported\. Further, both hosts advertise repositories simply as
-git://www\.example\.com/software/repo\.git\. For pre\-1\.4\.0 clients, a symlink from
+will contain a subdirectory for each virtual host name supported\&. Further, both hosts advertise repositories simply as
+git://www\&.example\&.com/software/repo\&.git\&. For pre\-1\&.4\&.0 clients, a symlink from
 /software
-into the appropriate default repository could be made as well\.
+into the appropriate default repository could be made as well\&.
 .RE
 .PP
 \fIgit\-daemon\fR as regular daemon for virtual hosts
@@ -297,21 +308,22 @@ To set up
 \fIgit\-daemon\fR
 as a regular, non\-inetd service that handles repositories for multiple virtual hosts based on their IP addresses, start the daemon like this:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
         git daemon \-\-verbose \-\-export\-all
                 \-\-interpolated\-path=/pub/%IP/%D
-                /pub/192\.168\.1\.200/software
-                /pub/10\.10\.220\.23/software
-\.ft
-
+                /pub/192\&.168\&.1\&.200/software
+                /pub/10\&.10\&.220\&.23/software
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 In this example, the root\-level directory
 /pub
-will contain a subdirectory for each virtual host IP address supported\. Repositories can still be accessed by hostname though, assuming they correspond to these IP addresses\.
+will contain a subdirectory for each virtual host IP address supported\&. Repositories can still be accessed by hostname though, assuming they correspond to these IP addresses\&.
 .RE
 .PP
 selectively enable/disable services per repository
@@ -326,29 +338,30 @@ next to
 \fIHEAD\fR,
 \fIrefs\fR
 and
-\fIobjects\fR)\.
+\fIobjects\fR)\&.
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
         [daemon]
                 uploadpack = false
                 uploadarch = true
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .SH "ENVIRONMENT"
-\fIgit\-daemon\fR will set REMOTE_ADDR to the IP address of the client that connected to it, if the IP address is available\. REMOTE_ADDR will be available in the environment of hooks called when services are performed\.
 .sp
+\fIgit\-daemon\fR will set REMOTE_ADDR to the IP address of the client that connected to it, if the IP address is available\&. REMOTE_ADDR will be available in the environment of hooks called when services are performed\&.
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl\.org>, YOSHIFUJI Hideaki <yoshfuji@linux\-ipv6\.org> and the git\-list <git@vger\.kernel\.org>
 .sp
+Written by Linus Torvalds <torvalds@osdl\&.org>, YOSHIFUJI Hideaki <yoshfuji@linux\-ipv6\&.org> and the git\-list <git@vger\&.kernel\&.org>
 .SH "DOCUMENTATION"
-Documentation by Junio C Hamano and the git\-list <git@vger\.kernel\.org>\.
 .sp
+Documentation by Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite

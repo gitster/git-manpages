@@ -1,181 +1,188 @@
+'\" t
 .\"     Title: git-pack-objects
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/25/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.4.rc2.20.g8f5e3
+.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"  Language: English
 .\"
-.TH "GIT\-PACK\-OBJECTS" "1" "07/25/2009" "Git 1\.6\.4\.rc2\.20\.g8f5e3" "Git Manual"
+.TH "GIT\-PACK\-OBJECTS" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-pack-objects - Create a packed archive of objects
+git-pack-objects \- Create a packed archive of objects
 .SH "SYNOPSIS"
 .sp
-.RS 4
 .nf
 \fIgit pack\-objects\fR [\-q] [\-\-no\-reuse\-delta] [\-\-delta\-base\-offset] [\-\-non\-empty]
         [\-\-local] [\-\-incremental] [\-\-window=N] [\-\-depth=N] [\-\-all\-progress]
         [\-\-revs [\-\-unpacked | \-\-all]*] [\-\-stdout | base\-name]
         [\-\-keep\-true\-parents] < object\-list
 .fi
-.RE
+.sp
 .SH "DESCRIPTION"
-Reads list of objects from the standard input, and writes a packed archive with specified base\-name, or to the standard output\.
 .sp
-A packed archive is an efficient way to transfer set of objects between two repositories, and also is an archival format which is efficient to access\. The packed archive format (\.pack) is designed to be self contained so that it can be unpacked without any further information, but for fast, random access to the objects in the pack, a pack index file (\.idx) will be generated\.
+Reads list of objects from the standard input, and writes a packed archive with specified base\-name, or to the standard output\&.
 .sp
-Placing both in the pack/ subdirectory of $GIT_OBJECT_DIRECTORY (or any of the directories on $GIT_ALTERNATE_OBJECT_DIRECTORIES) enables git to read from such an archive\.
+A packed archive is an efficient way to transfer set of objects between two repositories, and also is an archival format which is efficient to access\&. The packed archive format (\&.pack) is designed to be self contained so that it can be unpacked without any further information, but for fast, random access to the objects in the pack, a pack index file (\&.idx) will be generated\&.
 .sp
-The \fIgit\-unpack\-objects\fR command can read the packed archive and expand the objects contained in the pack into "one\-file one\-object" format; this is typically done by the smart\-pull commands when a pack is created on\-the\-fly for efficient network transport by their peers\.
+Placing both in the pack/ subdirectory of $GIT_OBJECT_DIRECTORY (or any of the directories on $GIT_ALTERNATE_OBJECT_DIRECTORIES) enables git to read from such an archive\&.
 .sp
-In a packed archive, an object is either stored as a compressed whole, or as a difference from some other object\. The latter is often called a delta\.
+The \fIgit\-unpack\-objects\fR command can read the packed archive and expand the objects contained in the pack into "one\-file one\-object" format; this is typically done by the smart\-pull commands when a pack is created on\-the\-fly for efficient network transport by their peers\&.
 .sp
+In a packed archive, an object is either stored as a compressed whole, or as a difference from some other object\&. The latter is often called a delta\&.
 .SH "OPTIONS"
 .PP
 base\-name
 .RS 4
-Write into a pair of files (\.pack and \.idx), using <base\-name> to determine the name of the created file\. When this option is used, the two files are written in <base\-name>\-<SHA1>\.{pack,idx} files\. <SHA1> is a hash of the sorted object names to make the resulting filename based on the pack content, and written to the standard output of the command\.
+Write into a pair of files (\&.pack and \&.idx), using <base\-name> to determine the name of the created file\&. When this option is used, the two files are written in <base\-name>\-<SHA1>\&.{pack,idx} files\&. <SHA1> is a hash of the sorted object names to make the resulting filename based on the pack content, and written to the standard output of the command\&.
 .RE
 .PP
 \-\-stdout
 .RS 4
-Write the pack contents (what would have been written to \.pack file) out to the standard output\.
+Write the pack contents (what would have been written to \&.pack file) out to the standard output\&.
 .RE
 .PP
 \-\-revs
 .RS 4
-Read the revision arguments from the standard input, instead of individual object names\. The revision arguments are processed the same way as
+Read the revision arguments from the standard input, instead of individual object names\&. The revision arguments are processed the same way as
 \fIgit\-rev\-list\fR
 with the
 \-\-objects
 flag uses its
 commit
-arguments to build the list of objects it outputs\. The objects on the resulting list are packed\.
+arguments to build the list of objects it outputs\&. The objects on the resulting list are packed\&.
 .RE
 .PP
 \-\-unpacked
 .RS 4
 This implies
-\-\-revs\. When processing the list of revision arguments read from the standard input, limit the objects packed to those that are not already packed\.
+\-\-revs\&. When processing the list of revision arguments read from the standard input, limit the objects packed to those that are not already packed\&.
 .RE
 .PP
 \-\-all
 .RS 4
 This implies
-\-\-revs\. In addition to the list of revision arguments read from the standard input, pretend as if all refs under
+\-\-revs\&. In addition to the list of revision arguments read from the standard input, pretend as if all refs under
 $GIT_DIR/refs
-are specified to be included\.
+are specified to be included\&.
 .RE
 .PP
 \-\-include\-tag
 .RS 4
-Include unasked\-for annotated tags if the object they reference was included in the resulting packfile\. This can be useful to send new tags to native git clients\.
+Include unasked\-for annotated tags if the object they reference was included in the resulting packfile\&. This can be useful to send new tags to native git clients\&.
 .RE
 .PP
 \-\-window=[N], \-\-depth=[N]
 .RS 4
-These two options affect how the objects contained in the pack are stored using delta compression\. The objects are first internally sorted by type, size and optionally names and compared against the other objects within \-\-window to see if using delta compression saves space\. \-\-depth limits the maximum delta depth; making it too deep affects the performance on the unpacker side, because delta data needs to be applied that many times to get to the necessary object\. The default value for \-\-window is 10 and \-\-depth is 50\.
+These two options affect how the objects contained in the pack are stored using delta compression\&. The objects are first internally sorted by type, size and optionally names and compared against the other objects within \-\-window to see if using delta compression saves space\&. \-\-depth limits the maximum delta depth; making it too deep affects the performance on the unpacker side, because delta data needs to be applied that many times to get to the necessary object\&. The default value for \-\-window is 10 and \-\-depth is 50\&.
 .RE
 .PP
 \-\-window\-memory=[N]
 .RS 4
 This option provides an additional limit on top of
-\-\-window; the window size will dynamically scale down so as to not take up more than N bytes in memory\. This is useful in repositories with a mix of large and small objects to not run out of memory with a large window, but still be able to take advantage of the large window for the smaller objects\. The size can be suffixed with "k", "m", or "g"\.
+\-\-window; the window size will dynamically scale down so as to not take up more than N bytes in memory\&. This is useful in repositories with a mix of large and small objects to not run out of memory with a large window, but still be able to take advantage of the large window for the smaller objects\&. The size can be suffixed with "k", "m", or "g"\&.
 \-\-window\-memory=0
-makes memory usage unlimited, which is the default\.
+makes memory usage unlimited, which is the default\&.
 .RE
 .PP
 \-\-max\-pack\-size=<n>
 .RS 4
-Maximum size of each output packfile, expressed in MiB\. If specified, multiple packfiles may be created\. The default is unlimited, unless the config variable
-pack\.packSizeLimit
-is set\.
+Maximum size of each output packfile, expressed in MiB\&. If specified, multiple packfiles may be created\&. The default is unlimited, unless the config variable
+pack\&.packSizeLimit
+is set\&.
 .RE
 .PP
 \-\-honor\-pack\-keep
 .RS 4
-This flag causes an object already in a local pack that has a \.keep file to be ignored, even if it appears in the standard input\.
+This flag causes an object already in a local pack that has a \&.keep file to be ignored, even if it appears in the standard input\&.
 .RE
 .PP
 \-\-incremental
 .RS 4
-This flag causes an object already in a pack ignored even if it appears in the standard input\.
+This flag causes an object already in a pack ignored even if it appears in the standard input\&.
 .RE
 .PP
 \-\-local
 .RS 4
 This flag is similar to
-\-\-incremental; instead of ignoring all packed objects, it only ignores objects that are packed and/or not in the local object store (i\.e\. borrowed from an alternate)\.
+\-\-incremental; instead of ignoring all packed objects, it only ignores objects that are packed and/or not in the local object store (i\&.e\&. borrowed from an alternate)\&.
 .RE
 .PP
 \-\-non\-empty
 .RS 4
-Only create a packed archive if it would contain at least one object\.
+Only create a packed archive if it would contain at least one object\&.
 .RE
 .PP
 \-\-progress
 .RS 4
-Progress status is reported on the standard error stream by default when it is attached to a terminal, unless \-q is specified\. This flag forces progress status even if the standard error stream is not directed to a terminal\.
+Progress status is reported on the standard error stream by default when it is attached to a terminal, unless \-q is specified\&. This flag forces progress status even if the standard error stream is not directed to a terminal\&.
 .RE
 .PP
 \-\-all\-progress
 .RS 4
-When \-\-stdout is specified then progress report is displayed during the object count and deltification phases but inhibited during the write\-out phase\. The reason is that in some cases the output stream is directly linked to another command which may wish to display progress status of its own as it processes incoming pack data\. This flag is like \-\-progress except that it forces progress report for the write\-out phase as well even if \-\-stdout is used\.
+When \-\-stdout is specified then progress report is displayed during the object count and deltification phases but inhibited during the write\-out phase\&. The reason is that in some cases the output stream is directly linked to another command which may wish to display progress status of its own as it processes incoming pack data\&. This flag is like \-\-progress except that it forces progress report for the write\-out phase as well even if \-\-stdout is used\&.
 .RE
 .PP
 \-q
 .RS 4
-This flag makes the command not to report its progress on the standard error stream\.
+This flag makes the command not to report its progress on the standard error stream\&.
 .RE
 .PP
 \-\-no\-reuse\-delta
 .RS 4
-When creating a packed archive in a repository that has existing packs, the command reuses existing deltas\. This sometimes results in a slightly suboptimal pack\. This flag tells the command not to reuse existing deltas but compute them from scratch\.
+When creating a packed archive in a repository that has existing packs, the command reuses existing deltas\&. This sometimes results in a slightly suboptimal pack\&. This flag tells the command not to reuse existing deltas but compute them from scratch\&.
 .RE
 .PP
 \-\-no\-reuse\-object
 .RS 4
-This flag tells the command not to reuse existing object data at all, including non deltified object, forcing recompression of everything\. This implies \-\-no\-reuse\-delta\. Useful only in the obscure case where wholesale enforcement of a different compression level on the packed data is desired\.
+This flag tells the command not to reuse existing object data at all, including non deltified object, forcing recompression of everything\&. This implies \-\-no\-reuse\-delta\&. Useful only in the obscure case where wholesale enforcement of a different compression level on the packed data is desired\&.
 .RE
 .PP
 \-\-compression=[N]
 .RS 4
-Specifies compression level for newly\-compressed data in the generated pack\. If not specified, pack compression level is determined first by pack\.compression, then by core\.compression, and defaults to \-1, the zlib default, if neither is set\. Add \-\-no\-reuse\-object if you want to force a uniform compression level on all data no matter the source\.
+Specifies compression level for newly\-compressed data in the generated pack\&. If not specified, pack compression level is determined first by pack\&.compression, then by core\&.compression, and defaults to \-1, the zlib default, if neither is set\&. Add \-\-no\-reuse\-object if you want to force a uniform compression level on all data no matter the source\&.
 .RE
 .PP
 \-\-delta\-base\-offset
 .RS 4
-A packed archive can express base object of a delta as either 20\-byte object name or as an offset in the stream, but older version of git does not understand the latter\. By default,
+A packed archive can express base object of a delta as either 20\-byte object name or as an offset in the stream, but older version of git does not understand the latter\&. By default,
 \fIgit\-pack\-objects\fR
-only uses the former format for better compatibility\. This option allows the command to use the latter format for compactness\. Depending on the average delta chain length, this option typically shrinks the resulting packfile by 3\-5 per\-cent\.
+only uses the former format for better compatibility\&. This option allows the command to use the latter format for compactness\&. Depending on the average delta chain length, this option typically shrinks the resulting packfile by 3\-5 per\-cent\&.
 .RE
 .PP
 \-\-threads=<n>
 .RS 4
-Specifies the number of threads to spawn when searching for best delta matches\. This requires that pack\-objects be compiled with pthreads otherwise this option is ignored with a warning\. This is meant to reduce packing time on multiprocessor machines\. The required amount of memory for the delta search window is however multiplied by the number of threads\. Specifying 0 will cause git to auto\-detect the number of CPU\'s and set the number of threads accordingly\.
+Specifies the number of threads to spawn when searching for best delta matches\&. This requires that pack\-objects be compiled with pthreads otherwise this option is ignored with a warning\&. This is meant to reduce packing time on multiprocessor machines\&. The required amount of memory for the delta search window is however multiplied by the number of threads\&. Specifying 0 will cause git to auto\-detect the number of CPU\(aqs and set the number of threads accordingly\&.
 .RE
 .PP
 \-\-index\-version=<version>[,<offset>]
 .RS 4
-This is intended to be used by the test suite only\. It allows to force the version for the generated pack index, and to force 64\-bit index entries on objects located above the given offset\.
+This is intended to be used by the test suite only\&. It allows to force the version for the generated pack index, and to force 64\-bit index entries on objects located above the given offset\&.
 .RE
 .PP
 \-\-keep\-true\-parents
 .RS 4
-With this option, parents that are hidden by grafts are packed nevertheless\.
+With this option, parents that are hidden by grafts are packed nevertheless\&.
 .RE
 .SH "AUTHOR"
-Written by Linus Torvalds <torvalds@osdl\.org>
 .sp
+Written by Linus Torvalds <torvalds@osdl\&.org>
 .SH "DOCUMENTATION"
+.sp
 Documentation by Junio C Hamano
-.sp
 .SH "SEE ALSO"
+.sp
 \fBgit-rev-list\fR(1) \fBgit-repack\fR(1) \fBgit-prune-packed\fR(1)
-.sp
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite

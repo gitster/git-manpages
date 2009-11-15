@@ -1,153 +1,164 @@
+'\" t
 .\"     Title: git-cvsexportcommit
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.2.316.gda4e
+.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"  Language: English
 .\"
-.TH "GIT\-CVSEXPORTCOMMIT" "1" "07/01/2009" "Git 1\.6\.3\.2\.316\.gda4e" "Git Manual"
+.TH "GIT\-CVSEXPORTCOMMIT" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-cvsexportcommit - Export a single commit to a CVS checkout
+git-cvsexportcommit \- Export a single commit to a CVS checkout
 .SH "SYNOPSIS"
+.sp
 \fIgit cvsexportcommit\fR [\-h] [\-u] [\-v] [\-c] [\-P] [\-p] [\-a] [\-d cvsroot] [\-w cvsworkdir] [\-W] [\-f] [\-m msgprefix] [PARENTCOMMIT] COMMITID
-.sp
 .SH "DESCRIPTION"
-Exports a commit from GIT to a CVS checkout, making it easier to merge patches from a git repository into a CVS repository\.
 .sp
-Specify the name of a CVS checkout using the \-w switch or execute it from the root of the CVS working copy\. In the latter case GIT_DIR must be defined\. See examples below\.
+Exports a commit from GIT to a CVS checkout, making it easier to merge patches from a git repository into a CVS repository\&.
 .sp
-It does its best to do the safe thing, it will check that the files are unchanged and up to date in the CVS checkout, and it will not autocommit by default\.
+Specify the name of a CVS checkout using the \-w switch or execute it from the root of the CVS working copy\&. In the latter case GIT_DIR must be defined\&. See examples below\&.
 .sp
-Supports file additions, removals, and commits that affect binary files\.
+It does its best to do the safe thing, it will check that the files are unchanged and up to date in the CVS checkout, and it will not autocommit by default\&.
 .sp
-If the commit is a merge commit, you must tell \fIgit\-cvsexportcommit\fR what parent the changeset should be done against\.
+Supports file additions, removals, and commits that affect binary files\&.
 .sp
+If the commit is a merge commit, you must tell \fIgit\-cvsexportcommit\fR what parent the changeset should be done against\&.
 .SH "OPTIONS"
 .PP
 \-c
 .RS 4
-Commit automatically if the patch applied cleanly\. It will not commit if any hunks fail to apply or there were other problems\.
+Commit automatically if the patch applied cleanly\&. It will not commit if any hunks fail to apply or there were other problems\&.
 .RE
 .PP
 \-p
 .RS 4
-Be pedantic (paranoid) when applying patches\. Invokes patch with \-\-fuzz=0
+Be pedantic (paranoid) when applying patches\&. Invokes patch with \-\-fuzz=0
 .RE
 .PP
 \-a
 .RS 4
-Add authorship information\. Adds Author line, and Committer (if different from Author) to the message\.
+Add authorship information\&. Adds Author line, and Committer (if different from Author) to the message\&.
 .RE
 .PP
 \-d
 .RS 4
-Set an alternative CVSROOT to use\. This corresponds to the CVS \-d parameter\. Usually users will not want to set this, except if using CVS in an asymmetric fashion\.
+Set an alternative CVSROOT to use\&. This corresponds to the CVS \-d parameter\&. Usually users will not want to set this, except if using CVS in an asymmetric fashion\&.
 .RE
 .PP
 \-f
 .RS 4
-Force the merge even if the files are not up to date\.
+Force the merge even if the files are not up to date\&.
 .RE
 .PP
 \-P
 .RS 4
-Force the parent commit, even if it is not a direct parent\.
+Force the parent commit, even if it is not a direct parent\&.
 .RE
 .PP
 \-m
 .RS 4
-Prepend the commit message with the provided prefix\. Useful for patch series and the like\.
+Prepend the commit message with the provided prefix\&. Useful for patch series and the like\&.
 .RE
 .PP
 \-u
 .RS 4
-Update affected files from CVS repository before attempting export\.
+Update affected files from CVS repository before attempting export\&.
 .RE
 .PP
 \-k
 .RS 4
-Reverse CVS keyword expansion (e\.g\. $Revision: 1\.2\.3\.4$ becomes $Revision$) in working CVS checkout before applying patch\.
+Reverse CVS keyword expansion (e\&.g\&. $Revision: 1\&.2\&.3\&.4$ becomes $Revision$) in working CVS checkout before applying patch\&.
 .RE
 .PP
 \-w
 .RS 4
-Specify the location of the CVS checkout to use for the export\. This option does not require GIT_DIR to be set before execution if the current directory is within a git repository\. The default is the value of
-\fIcvsexportcommit\.cvsdir\fR\.
+Specify the location of the CVS checkout to use for the export\&. This option does not require GIT_DIR to be set before execution if the current directory is within a git repository\&. The default is the value of
+\fIcvsexportcommit\&.cvsdir\fR\&.
 .RE
 .PP
 \-W
 .RS 4
-Tell cvsexportcommit that the current working directory is not only a Git checkout, but also the CVS checkout\. Therefore, Git will reset the working directory to the parent commit before proceeding\.
+Tell cvsexportcommit that the current working directory is not only a Git checkout, but also the CVS checkout\&. Therefore, Git will reset the working directory to the parent commit before proceeding\&.
 .RE
 .PP
 \-v
 .RS 4
-Verbose\.
+Verbose\&.
 .RE
 .SH "CONFIGURATION"
 .PP
-cvsexportcommit\.cvsdir
+cvsexportcommit\&.cvsdir
 .RS 4
-The default location of the CVS checkout to use for the export\.
+The default location of the CVS checkout to use for the export\&.
 .RE
 .SH "EXAMPLES"
 .PP
 Merge one patch into CVS
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
-$ export GIT_DIR=~/project/\.git
+$ export GIT_DIR=~/project/\&.git
 $ cd ~/project_cvs_checkout
 $ git cvsexportcommit \-v <commit\-sha1>
-$ cvs commit \-F \.msg <files>
-\.ft
-
+$ cvs commit \-F \&.msg <files>
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .PP
-Merge one patch into CVS (\-c and \-w options)\. The working directory is within the Git Repo
+Merge one patch into CVS (\-c and \-w options)\&. The working directory is within the Git Repo
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
         $ git cvsexportcommit \-v \-c \-w ~/project_cvs_checkout <commit\-sha1>
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .PP
 Merge pending patches into CVS automatically \(em only if you really know what you are doing
 .RS 4
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
-$ export GIT_DIR=~/project/\.git
+$ export GIT_DIR=~/project/\&.git
 $ cd ~/project_cvs_checkout
-$ git cherry cvshead myhead | sed \-n \'s/^+ //p\' | xargs \-l1 git cvsexportcommit \-c \-p \-v
-\.ft
-
+$ git cherry cvshead myhead | sed \-n \(aqs/^+ //p\(aq | xargs \-l1 git cvsexportcommit \-c \-p \-v
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .SH "AUTHOR"
-Written by Martin Langhoff <martin@catalyst\.net\.nz> and others\.
 .sp
+Written by Martin Langhoff <martin@catalyst\&.net\&.nz> and others\&.
 .SH "DOCUMENTATION"
-Documentation by Martin Langhoff <martin@catalyst\.net\.nz> and others\.
 .sp
+Documentation by Martin Langhoff <martin@catalyst\&.net\&.nz> and others\&.
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite

@@ -2,12 +2,12 @@
 .\"     Title: git-update-index
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/10/2009
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.179.g8ac7a
+.\"    Source: Git 1.6.5.2.185.gb7fba
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "11/10/2009" "Git 1\&.6\&.5\&.2\&.179\&.g8ac" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -36,6 +36,7 @@ git-update-index \- Register file contents in the working tree to the index
              [\-\-verbose]
              [\-\-] [<file>]*
 .fi
+.sp
 .SH "DESCRIPTION"
 .sp
 Modifies the index or directory cache\&. Each file mentioned is updated into the index and any \fIunmerged\fR or \fIneeds updating\fR state is cleared\&.
@@ -47,12 +48,12 @@ The way \fIgit\-update\-index\fR handles files it is told about can be modified 
 .PP
 \-\-add
 .RS 4
-If a specified file isn\'t in the index already then it\'s added\&. Default behaviour is to ignore new files\&.
+If a specified file isn\(aqt in the index already then it\(aqs added\&. Default behaviour is to ignore new files\&.
 .RE
 .PP
 \-\-remove
 .RS 4
-If a specified file is in the index but is missing then it\'s removed\&. Default behavior is to ignore removed file\&.
+If a specified file is in the index but is missing then it\(aqs removed\&. Default behavior is to ignore removed file\&.
 .RE
 .PP
 \-\-refresh
@@ -186,16 +187,16 @@ Files to act on\&. Note that files beginning with
 are discarded\&. This includes
 \&./file
 and
-dir/\&./file\&. If you don\'t want this, then use cleaner names\&. The same applies to directories ending
+dir/\&./file\&. If you don\(aqt want this, then use cleaner names\&. The same applies to directories ending
 \fI/\fR
 and paths with
 \fI//\fR
 .RE
 .SH "USING --REFRESH"
 .sp
-\fI\-\-refresh\fR does not calculate a new sha1 file or bring the index up\-to\-date for mode/content changes\&. But what it \fBdoes\fR do is to "re\-match" the stat information of a file with the index, so that you can refresh the index for a file that hasn\'t been changed but where the stat entry is out of date\&.
+\fI\-\-refresh\fR does not calculate a new sha1 file or bring the index up\-to\-date for mode/content changes\&. But what it \fBdoes\fR do is to "re\-match" the stat information of a file with the index, so that you can refresh the index for a file that hasn\(aqt been changed but where the stat entry is out of date\&.
 .sp
-For example, you\'d want to do this after doing a \fIgit\-read\-tree\fR, to link up the stat index details with the proper files\&.
+For example, you\(aqd want to do this after doing a \fIgit\-read\-tree\fR, to link up the stat index details with the proper files\&.
 .SH "USING --CACHEINFO OR --INFO-ONLY"
 .sp
 \fI\-\-cacheinfo\fR is used to register a file that is not in the current working directory\&. This is useful for minimum\-checkout merging\&.
@@ -206,19 +207,16 @@ To pretend you have a file with mode and sha1 at path, say:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git update\-index \-\-cacheinfo mode sha1 path
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
 .sp
+.sp
 \fI\-\-info\-only\fR is used to register files without placing them in the object database\&. This is useful for status\-only repositories\&.
 .sp
-Both \fI\-\-cacheinfo\fR and \fI\-\-info\-only\fR behave similarly: the index is updated but the object database isn\'t\&. \fI\-\-cacheinfo\fR is useful when the object is in the database but the file isn\'t available locally\&. \fI\-\-info\-only\fR is useful when the file is available, but you do not wish to update the object database\&.
+Both \fI\-\-cacheinfo\fR and \fI\-\-info\-only\fR behave similarly: the index is updated but the object database isn\(aqt\&. \fI\-\-cacheinfo\fR is useful when the object is in the database but the file isn\(aqt available locally\&. \fI\-\-info\-only\fR is useful when the file is available, but you do not wish to update the object database\&.
 .SH "USING --INDEX-INFO"
 .sp
 \-\-index\-info is a more powerful mechanism that lets you feed multiple entry definitions from the standard input, and designed specifically for scripts\&. It can take inputs of three formats:
@@ -274,16 +272,13 @@ For example, starting with this index:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git ls\-files \-s
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 0       frotz
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 you can feed the following input to \-\-index\-info:
 .sp
@@ -291,18 +286,15 @@ you can feed the following input to \-\-index\-info:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git update\-index \-\-index\-info
 0 0000000000000000000000000000000000000000      frotz
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 1       frotz
 100755 8a1218a1024a212bb3db30becd860315f9f3ac52 2       frotz
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 The first line of the input feeds 0 as the mode to remove the path; the SHA1 does not matter as long as it is well formatted\&. Then the second and third line feeds stage 1 and stage 2 entries for that path\&. After the above, we would end up with this:
 .sp
@@ -310,17 +302,14 @@ The first line of the input feeds 0 as the mode to remove the path; the SHA1 doe
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git ls\-files \-s
 100644 8a1218a1024a212bb3db30becd860315f9f3ac52 1       frotz
 100755 8a1218a1024a212bb3db30becd860315f9f3ac52 2       frotz
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .SH "USING \(lqASSUME UNCHANGED\(rq BIT"
 .sp
 Many operations in git depend on your filesystem to have an efficient lstat(2) implementation, so that st_mtime information for working tree files can be cheaply checked to see if the file contents have changed from the version recorded in the index file\&. Unfortunately, some filesystems have inefficient lstat(2)\&. If your filesystem is one of them, you can set "assume unchanged" bit to paths you have not changed to cause git not to do this check\&. Note that setting this bit on a path does not mean git will check the contents of the file to see if it has changed \(em it makes git to omit any checking and assume it has \fBnot\fR changed\&. When you make changes to working tree files, you have to explicitly tell git about it by dropping "assume unchanged" bit, either before or after you modify them\&.
@@ -336,15 +325,12 @@ To update and refresh only the files already checked out:
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git checkout\-index \-n \-f \-a && git update\-index \-\-ignore\-missing \-\-refresh
-\&.ft
-
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .PP
 On an inefficient filesystem with core\&.ignorestat set
 .RS 4
@@ -353,8 +339,6 @@ On an inefficient filesystem with core\&.ignorestat set
 .RS 4
 .\}
 .nf
-
-\&.ft C
 $ git update\-index \-\-really\-refresh              \fB(1)\fR
 $ git update\-index \-\-no\-assume\-unchanged foo\&.c   \fB(2)\fR
 $ git diff \-\-name\-only                           \fB(3)\fR
@@ -368,8 +352,6 @@ $ git diff \-\-name\-only                           \fB(7)\fR
 $ git update\-index \-\-no\-assume\-unchanged foo\&.c   \fB(8)\fR
 $ git diff \-\-name\-only                           \fB(9)\fR
 M foo\&.c
-\&.ft
-
 .fi
 .if n \{\
 .RE

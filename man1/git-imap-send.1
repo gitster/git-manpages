@@ -1,128 +1,148 @@
+'\" t
 .\"     Title: git-imap-send
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"    Author: [see the "Author" section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.3.rc1
+.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"  Language: English
 .\"
-.TH "GIT\-IMAP\-SEND" "1" "07/01/2009" "Git 1\.6\.3\.rc1" "Git Manual"
+.TH "GIT\-IMAP\-SEND" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-imap-send - Send a collection of patches from stdin to an IMAP folder
+git-imap-send \- Send a collection of patches from stdin to an IMAP folder
 .SH "SYNOPSIS"
-\fIgit imap\-send\fR
 .sp
+\fIgit imap\-send\fR
 .SH "DESCRIPTION"
-This command uploads a mailbox generated with \fIgit\-format\-patch\fR into an IMAP drafts folder\. This allows patches to be sent as other email is when using mail clients that cannot read mailbox files directly\.
+.sp
+This command uploads a mailbox generated with \fIgit\-format\-patch\fR into an IMAP drafts folder\&. This allows patches to be sent as other email is when using mail clients that cannot read mailbox files directly\&.
 .sp
 Typical usage is something like:
 .sp
 git format\-patch \-\-signoff \-\-stdout \-\-attach origin | git imap\-send
-.sp
 .SH "CONFIGURATION"
-To use the tool, imap\.folder and either imap\.tunnel or imap\.host must be set to appropriate values\.
 .sp
+To use the tool, imap\&.folder and either imap\&.tunnel or imap\&.host must be set to appropriate values\&.
 .SS "Variables"
 .PP
-imap\.folder
+imap\&.folder
 .RS 4
-The folder to drop the mails into, which is typically the Drafts folder\. For example: "INBOX\.Drafts", "INBOX/Drafts" or "[Gmail]/Drafts"\. Required to use imap\-send\.
+The folder to drop the mails into, which is typically the Drafts folder\&. For example: "INBOX\&.Drafts", "INBOX/Drafts" or "[Gmail]/Drafts"\&. Required to use imap\-send\&.
 .RE
 .PP
-imap\.tunnel
+imap\&.tunnel
 .RS 4
-Command used to setup a tunnel to the IMAP server through which commands will be piped instead of using a direct network connection to the server\. Required when imap\.host is not set to use imap\-send\.
+Command used to setup a tunnel to the IMAP server through which commands will be piped instead of using a direct network connection to the server\&. Required when imap\&.host is not set to use imap\-send\&.
 .RE
 .PP
-imap\.host
+imap\&.host
 .RS 4
-A URL identifying the server\. Use a
+A URL identifying the server\&. Use a
 imap://
 prefix for non\-secure connections and a
 imaps://
-prefix for secure connections\. Ignored when imap\.tunnel is set, but required to use imap\-send otherwise\.
+prefix for secure connections\&. Ignored when imap\&.tunnel is set, but required to use imap\-send otherwise\&.
 .RE
 .PP
-imap\.user
+imap\&.user
 .RS 4
-The username to use when logging in to the server\.
+The username to use when logging in to the server\&.
 .RE
 .PP
-imap\.pass
+imap\&.pass
 .RS 4
-The password to use when logging in to the server\.
+The password to use when logging in to the server\&.
 .RE
 .PP
-imap\.port
+imap\&.port
 .RS 4
-An integer port number to connect to on the server\. Defaults to 143 for imap:// hosts and 993 for imaps:// hosts\. Ignored when imap\.tunnel is set\.
+An integer port number to connect to on the server\&. Defaults to 143 for imap:// hosts and 993 for imaps:// hosts\&. Ignored when imap\&.tunnel is set\&.
 .RE
 .PP
-imap\.sslverify
+imap\&.sslverify
 .RS 4
-A boolean to enable/disable verification of the server certificate used by the SSL/TLS connection\. Default is
-true\. Ignored when imap\.tunnel is set\.
+A boolean to enable/disable verification of the server certificate used by the SSL/TLS connection\&. Default is
+true\&. Ignored when imap\&.tunnel is set\&.
 .RE
 .PP
-imap\.preformattedHTML
+imap\&.preformattedHTML
 .RS 4
-A boolean to enable/disable the use of html encoding when sending a patch\. An html encoded patch will be bracketed with <pre> and have a content type of text/html\. Ironically, enabling this option causes Thunderbird to send the patch as a plain/text, format=fixed email\. Default is
-false\.
+A boolean to enable/disable the use of html encoding when sending a patch\&. An html encoded patch will be bracketed with <pre> and have a content type of text/html\&. Ironically, enabling this option causes Thunderbird to send the patch as a plain/text, format=fixed email\&. Default is
+false\&.
 .RE
 .SS "Examples"
+.sp
 Using tunnel mode:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 [imap]
-    folder = "INBOX\.Drafts"
-    tunnel = "ssh \-q \-C user@example\.com /usr/bin/imapd \./Maildir 2> /dev/null"
+    folder = "INBOX\&.Drafts"
+    tunnel = "ssh \-q \-C user@example\&.com /usr/bin/imapd \&./Maildir 2> /dev/null"
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 Using direct mode:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 [imap]
-    folder = "INBOX\.Drafts"
-    host = imap://imap\.example\.com
+    folder = "INBOX\&.Drafts"
+    host = imap://imap\&.example\&.com
     user = bob
     pass = p4ssw0rd
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 Using direct mode with SSL:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
 .nf
 [imap]
-    folder = "INBOX\.Drafts"
-    host = imaps://imap\.example\.com
+    folder = "INBOX\&.Drafts"
+    host = imaps://imap\&.example\&.com
     user = bob
     pass = p4ssw0rd
     port = 123
     sslverify = false
 .fi
+.if n \{\
 .RE
+.\}
 .SH "CAUTION"
-It is still your responsibility to make sure that the email message sent by your email program meets the standards of your project\. Many projects do not like patches to be attached\. Some mail agents will transform patches (e\.g\. wrap lines, send them as format=flowed) in ways that make them fail\. You will get angry flames ridiculing you if you don\'t check this\.
 .sp
-Thunderbird in particular is known to be problematic\. Thunderbird users may wish to visit this web page for more information: http://kb\.mozillazine\.org/Plain_text_e\-mail_\-_Thunderbird#Completely_plain_email
+It is still your responsibility to make sure that the email message sent by your email program meets the standards of your project\&. Many projects do not like patches to be attached\&. Some mail agents will transform patches (e\&.g\&. wrap lines, send them as format=flowed) in ways that make them fail\&. You will get angry flames ridiculing you if you don\(aqt check this\&.
 .sp
+Thunderbird in particular is known to be problematic\&. Thunderbird users may wish to visit this web page for more information: http://kb\&.mozillazine\&.org/Plain_text_e\-mail_\-_Thunderbird#Completely_plain_email
 .SH "BUGS"
-Doesn\'t handle lines starting with "From " in the message body\.
 .sp
+Doesn\(aqt handle lines starting with "From " in the message body\&.
 .SH "AUTHOR"
-Derived from isync 1\.0\.1 by Mike McCormack\.
 .sp
+Derived from isync 1\&.0\&.1 by Mike McCormack\&.
 .SH "DOCUMENTATION"
+.sp
 Documentation by Mike McCormack
-.sp
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite

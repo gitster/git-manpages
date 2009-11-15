@@ -1,45 +1,51 @@
+'\" t
 .\"     Title: git-cvsserver
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 07/01/2009
+.\"    Author: [see the Documentation section]
+.\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
+.\"      Date: 11/15/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.2.rc0.64.ge9cc0
+.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"  Language: English
 .\"
-.TH "GIT\-CVSSERVER" "1" "07/01/2009" "Git 1\.6\.2\.rc0\.64\.ge9cc0" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-git-cvsserver - A CVS server emulator for git
+git-cvsserver \- A CVS server emulator for git
 .SH "SYNOPSIS"
+.sp
 SSH:
 .sp
-.sp
-.RS 4
 .nf
 export CVS_SERVER="git cvsserver"
-\fIcvs\fR \-d :ext:user@server/path/repo\.git co <HEAD_name>
+\fIcvs\fR \-d :ext:user@server/path/repo\&.git co <HEAD_name>
 .fi
-.RE
-pserver (/etc/inetd\.conf):
 .sp
 .sp
-.RS 4
+pserver (/etc/inetd\&.conf):
+.sp
 .nf
 cvspserver stream tcp nowait nobody /usr/bin/git\-cvsserver git\-cvsserver pserver
 .fi
-.RE
+.sp
+.sp
 Usage:
 .sp
-.sp
-.RS 4
 .nf
 \fIgit cvsserver\fR [options] [pserver|server] [<directory> \&...]
 .fi
-.RE
+.sp
 .SH "OPTIONS"
-All these options obviously only make sense if enforced by the server side\. They have been implemented to resemble the \fBgit-daemon\fR(1) options as closely as possible\.
+.sp
+All these options obviously only make sense if enforced by the server side\&. They have been implemented to resemble the \fBgit-daemon\fR(1) options as closely as possible\&.
 .PP
 \-\-base\-path <path>
 .RS 4
@@ -50,14 +56,14 @@ to requested CVSROOT
 .PP
 \-\-strict\-paths
 .RS 4
-Don\'t allow recursing into subdirectories
+Don\(aqt allow recursing into subdirectories
 .RE
 .PP
 \-\-export\-all
 .RS 4
-Don\'t check for
-gitcvs\.enabled
-in config\. You also have to specify a list of allowed directories (see below) if you want to use this option\.
+Don\(aqt check for
+gitcvs\&.enabled
+in config\&. You also have to specify a list of allowed directories (see below) if you want to use this option\&.
 .RE
 .PP
 \-V, \-\-version
@@ -72,74 +78,82 @@ Print usage information and exit
 .PP
 <directory>
 .RS 4
-You can specify a list of allowed directories\. If no directories are given, all are allowed\. This is an additional restriction, gitcvs access still needs to be enabled by the
-gitcvs\.enabled
+You can specify a list of allowed directories\&. If no directories are given, all are allowed\&. This is an additional restriction, gitcvs access still needs to be enabled by the
+gitcvs\&.enabled
 config option unless
 \fI\-\-export\-all\fR
-was given, too\.
+was given, too\&.
 .RE
 .SH "DESCRIPTION"
-This application is a CVS emulation layer for git\.
 .sp
-It is highly functional\. However, not all methods are implemented, and for those methods that are implemented, not all switches are implemented\.
+This application is a CVS emulation layer for git\&.
 .sp
-Testing has been done using both the CLI CVS client, and the Eclipse CVS plugin\. Most functionality works fine with both of these clients\.
+It is highly functional\&. However, not all methods are implemented, and for those methods that are implemented, not all switches are implemented\&.
 .sp
+Testing has been done using both the CLI CVS client, and the Eclipse CVS plugin\&. Most functionality works fine with both of these clients\&.
 .SH "LIMITATIONS"
-Currently cvsserver works over SSH connections for read/write clients, and over pserver for anonymous CVS access\.
 .sp
-CVS clients cannot tag, branch or perform GIT merges\.
+Currently cvsserver works over SSH connections for read/write clients, and over pserver for anonymous CVS access\&.
 .sp
-\fIgit\-cvsserver\fR maps GIT branches to CVS modules\. This is very different from what most CVS users would expect since in CVS modules usually represent one or more directories\.
+CVS clients cannot tag, branch or perform GIT merges\&.
 .sp
+\fIgit\-cvsserver\fR maps GIT branches to CVS modules\&. This is very different from what most CVS users would expect since in CVS modules usually represent one or more directories\&.
 .SH "INSTALLATION"
 .sp
 .RS 4
-\h'-04' 1.\h'+02'If you are going to offer anonymous CVS access via pserver, add a line in /etc/inetd\.conf like
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+If you are going to offer anonymous CVS access via pserver, add a line in /etc/inetd\&.conf like
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
    cvspserver stream tcp nowait nobody git\-cvsserver pserver
-
-\.ft
-
 .fi
+.if n \{\
 .RE
-Note: Some inetd servers let you specify the name of the executable independently of the value of argv[0] (i\.e\. the name the program assumes it was executed with)\. In this case the correct line in /etc/inetd\.conf looks like
+.\}
 .sp
+Note: Some inetd servers let you specify the name of the executable independently of the value of argv[0] (i\&.e\&. the name the program assumes it was executed with)\&. In this case the correct line in /etc/inetd\&.conf looks like
+.sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
    cvspserver stream tcp nowait nobody /usr/bin/git\-cvsserver git\-cvsserver pserver
-
-\.ft
-
 .fi
+.if n \{\
 .RE
-No special setup is needed for SSH access, other than having GIT tools in the PATH\. If you have clients that do not accept the CVS_SERVER environment variable, you can rename
+.\}
+.sp
+No special setup is needed for SSH access, other than having GIT tools in the PATH\&. If you have clients that do not accept the CVS_SERVER environment variable, you can rename
 \fIgit\-cvsserver\fR
 to
-cvs\.
+cvs\&.
 .sp
-Note: Newer CVS versions (>= 1\.12\.11) also support specifying CVS_SERVER directly in CVSROOT like
+Note: Newer CVS versions (>= 1\&.12\&.11) also support specifying CVS_SERVER directly in CVSROOT like
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
-cvs \-d ":ext;CVS_SERVER=git cvsserver:user@server/path/repo\.git" co <HEAD_name>
-\.ft
-
+cvs \-d ":ext;CVS_SERVER=git cvsserver:user@server/path/repo\&.git" co <HEAD_name>
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 This has the advantage that it will be saved in your
 \fICVS/Root\fR
-files and you don\'t need to worry about always setting the correct environment variable\. SSH users restricted to
+files and you don\(aqt need to worry about always setting the correct environment variable\&. SSH users restricted to
 \fIgit\-shell\fR
-don\'t need to override the default with CVS_SERVER (and shouldn\'t) as
+don\(aqt need to override the default with CVS_SERVER (and shouldn\(aqt) as
 \fIgit\-shell\fR
 understands
 cvs
@@ -147,153 +161,187 @@ to mean
 \fIgit\-cvsserver\fR
 and pretends that the other end runs the real
 \fIcvs\fR
-better\.
+better\&.
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'For each repo that you want accessible from CVS you need to edit config in the repo and add the following section\.
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+For each repo that you want accessible from CVS you need to edit config in the repo and add the following section\&.
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
    [gitcvs]
         enabled=1
         # optional for debugging
         logfile=/path/to/logfile
-
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 Note: you need to ensure each user that is going to invoke
 \fIgit\-cvsserver\fR
 has write access to the log file and to the database (see
-Database Backend\. If you want to offer write access over SSH, the users of course also need write access to the git repository itself\.
+Database Backend\&. If you want to offer write access over SSH, the users of course also need write access to the git repository itself\&.
 .sp
 You also need to ensure that each repository is "bare" (without a git index file) for
 cvs commit
-to work\. See
-\fBgitcvs-migration\fR(7)\.
+to work\&. See
+\fBgitcvs-migration\fR(7)\&.
 .sp
-All configuration variables can also be overridden for a specific method of access\. Valid method names are "ext" (for SSH access) and "pserver"\. The following example configuration would disable pserver access while still allowing access over SSH\.
+All configuration variables can also be overridden for a specific method of access\&. Valid method names are "ext" (for SSH access) and "pserver"\&. The following example configuration would disable pserver access while still allowing access over SSH\&.
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
    [gitcvs]
         enabled=0
 
    [gitcvs "ext"]
         enabled=1
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'If you didn\'t specify the CVSROOT/CVS_SERVER directly in the checkout command, automatically saving it in your
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+If you didn\(aqt specify the CVSROOT/CVS_SERVER directly in the checkout command, automatically saving it in your
 \fICVS/Root\fR
-files, then you need to set them explicitly in your environment\. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo\. As above, for SSH clients _not_ restricted to
+files, then you need to set them explicitly in your environment\&. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo\&. As above, for SSH clients _not_ restricted to
 \fIgit\-shell\fR, CVS_SERVER should be set to
-\fIgit\-cvsserver\fR\.
+\fIgit\-cvsserver\fR\&.
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
-     export CVSROOT=:ext:user@server:/var/git/project\.git
+     export CVSROOT=:ext:user@server:/var/git/project\&.git
      export CVS_SERVER="git cvsserver"
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .sp
 .RS 4
-\h'-04' 4.\h'+02'For SSH clients that will make commits, make sure their server\-side \.ssh/environment files (or \.bashrc, etc\., according to their specific shell) export appropriate values for GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_COMMITTER_NAME, and GIT_COMMITTER_EMAIL\. For SSH clients whose login shell is bash, \.bashrc may be a reasonable alternative\.
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+For SSH clients that will make commits, make sure their server\-side \&.ssh/environment files (or \&.bashrc, etc\&., according to their specific shell) export appropriate values for GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_COMMITTER_NAME, and GIT_COMMITTER_EMAIL\&. For SSH clients whose login shell is bash, \&.bashrc may be a reasonable alternative\&.
 .RE
 .sp
 .RS 4
-\h'-04' 5.\h'+02'Clients should now be able to check out the project\. Use the CVS
+.ie n \{\
+\h'-04' 5.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  5." 4.2
+.\}
+Clients should now be able to check out the project\&. Use the CVS
 \fImodule\fR
 name to indicate what GIT
 \fIhead\fR
-you want to check out\. This also sets the name of your newly checked\-out directory, unless you tell it otherwise with
-\-d <dir_name>\. For example, this checks out
+you want to check out\&. This also sets the name of your newly checked\-out directory, unless you tell it otherwise with
+\-d <dir_name>\&. For example, this checks out
 \fImaster\fR
 branch to the
 project\-master
 directory:
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
-
-\.ft C
      cvs co \-d project\-master master
-\.ft
-
 .fi
+.if n \{\
 .RE
+.\}
+.sp
 .RE
 .SH "DATABASE BACKEND"
-\fIgit\-cvsserver\fR uses one database per git head (i\.e\. CVS module) to store information about the repository for faster access\. The database doesn\'t contain any persistent data and can be completely regenerated from the git repository at any time\. The database needs to be updated (i\.e\. written to) after every commit\.
 .sp
-If the commit is done directly by using git (as opposed to using \fIgit\-cvsserver\fR) the update will need to happen on the next repository access by \fIgit\-cvsserver\fR, independent of access method and requested operation\.
+\fIgit\-cvsserver\fR uses one database per git head (i\&.e\&. CVS module) to store information about the repository for faster access\&. The database doesn\(aqt contain any persistent data and can be completely regenerated from the git repository at any time\&. The database needs to be updated (i\&.e\&. written to) after every commit\&.
 .sp
-That means that even if you offer only read access (e\.g\. by using the pserver method), \fIgit\-cvsserver\fR should have write access to the database to work reliably (otherwise you need to make sure that the database is up\-to\-date any time \fIgit\-cvsserver\fR is executed)\.
+If the commit is done directly by using git (as opposed to using \fIgit\-cvsserver\fR) the update will need to happen on the next repository access by \fIgit\-cvsserver\fR, independent of access method and requested operation\&.
 .sp
-By default it uses SQLite databases in the git directory, named gitcvs\.<module_name>\.sqlite\. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using \fIgit\-cvsserver\fR write access to the database file without granting them write access to the directory, too\.
+That means that even if you offer only read access (e\&.g\&. by using the pserver method), \fIgit\-cvsserver\fR should have write access to the database to work reliably (otherwise you need to make sure that the database is up\-to\-date any time \fIgit\-cvsserver\fR is executed)\&.
+.sp
+By default it uses SQLite databases in the git directory, named gitcvs\&.<module_name>\&.sqlite\&. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using \fIgit\-cvsserver\fR write access to the database file without granting them write access to the directory, too\&.
 .sp
 You can configure the database backend with the following configuration variables:
-.sp
 .SS "Configuring database backend"
-\fIgit\-cvsserver\fR uses the Perl DBI module\. Please also read its documentation if changing these variables, especially about DBI\->connect()\.
+.sp
+\fIgit\-cvsserver\fR uses the Perl DBI module\&. Please also read its documentation if changing these variables, especially about DBI\->connect()\&.
 .PP
-gitcvs\.dbname
+gitcvs\&.dbname
 .RS 4
-Database name\. The exact meaning depends on the selected database driver, for SQLite this is a filename\. Supports variable substitution (see below)\. May not contain semicolons (;)\. Default:
-\fI%Ggitcvs\.%m\.sqlite\fR
+Database name\&. The exact meaning depends on the selected database driver, for SQLite this is a filename\&. Supports variable substitution (see below)\&. May not contain semicolons (;)\&. Default:
+\fI%Ggitcvs\&.%m\&.sqlite\fR
 .RE
 .PP
-gitcvs\.dbdriver
+gitcvs\&.dbdriver
 .RS 4
-Used DBI driver\. You can specify any available driver for this here, but it might not work\. cvsserver is tested with
+Used DBI driver\&. You can specify any available driver for this here, but it might not work\&. cvsserver is tested with
 \fIDBD::SQLite\fR, reported to work with
 \fIDBD::Pg\fR, and reported
 \fBnot\fR
 to work with
-\fIDBD::mysql\fR\. Please regard this as an experimental feature\. May not contain colons (:)\. Default:
+\fIDBD::mysql\fR\&. Please regard this as an experimental feature\&. May not contain colons (:)\&. Default:
 \fISQLite\fR
 .RE
 .PP
-gitcvs\.dbuser
+gitcvs\&.dbuser
 .RS 4
-Database user\. Only useful if setting
-dbdriver, since SQLite has no concept of database users\. Supports variable substitution (see below)\.
+Database user\&. Only useful if setting
+dbdriver, since SQLite has no concept of database users\&. Supports variable substitution (see below)\&.
 .RE
 .PP
-gitcvs\.dbpass
+gitcvs\&.dbpass
 .RS 4
-Database password\. Only useful if setting
-dbdriver, since SQLite has no concept of database passwords\.
+Database password\&. Only useful if setting
+dbdriver, since SQLite has no concept of database passwords\&.
 .RE
 .PP
-gitcvs\.dbTableNamePrefix
+gitcvs\&.dbTableNamePrefix
 .RS 4
-Database table name prefix\. Supports variable substitution (see below)\. Any non\-alphabetic characters will be replaced with underscores\.
+Database table name prefix\&. Supports variable substitution (see below)\&. Any non\-alphabetic characters will be replaced with underscores\&.
 .RE
-All variables can also be set per access method, see above\.
 .sp
+All variables can also be set per access method, see above\&.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
-Variable substitution
-.RS
+.ps +1
+\fBVariable substitution\fR
+.RS 4
+.sp
 In dbdriver and dbuser you can use the following variables:
 .PP
 %G
@@ -304,7 +352,7 @@ git directory name
 %g
 .RS 4
 git directory name, where all characters except for alpha\-numeric ones,
-\., and
+\&., and
 \-
 are replaced with
 _
@@ -324,86 +372,156 @@ access method (one of "ext" or "pserver")
 %u
 .RS 4
 Name of the user running
-\fIgit\-cvsserver\fR\. If no name can be determined, the numeric uid is used\.
+\fIgit\-cvsserver\fR\&. If no name can be determined, the numeric uid is used\&.
 .RE
 .RE
 .SH "ECLIPSE CVS CLIENT NOTES"
+.sp
 To get a checkout with the Eclipse CVS client:
 .sp
-.sp
 .RS 4
-\h'-04' 1.\h'+02'Select "Create a new project \-> From CVS checkout"
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Select "Create a new project \-> From CVS checkout"
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'Create a new location\. See the notes below for details on how to choose the right protocol\.
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Create a new location\&. See the notes below for details on how to choose the right protocol\&.
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'Browse the
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+Browse the
 \fImodules\fR
-available\. It will give you a list of the heads in the repository\. You will not be able to browse the tree from there\. Only the heads\.
+available\&. It will give you a list of the heads in the repository\&. You will not be able to browse the tree from there\&. Only the heads\&.
 .RE
 .sp
 .RS 4
-\h'-04' 4.\h'+02'Pick
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+Pick
 \fIHEAD\fR
-when it asks what branch/tag to check out\. Untick the "launch commit wizard" to avoid committing the \.project file\.
+when it asks what branch/tag to check out\&. Untick the "launch commit wizard" to avoid committing the \&.project file\&.
 .RE
-Protocol notes: If you are using anonymous access via pserver, just select that\. Those using SSH access should choose the \fIext\fR protocol, and configure \fIext\fR access on the Preferences\->Team\->CVS\->ExtConnection pane\. Set CVS_SERVER to "\fIgit cvsserver\fR"\. Note that password support is not good when using \fIext\fR, you will definitely want to have SSH keys setup\.
 .sp
-Alternatively, you can just use the non\-standard extssh protocol that Eclipse offer\. In that case CVS_SERVER is ignored, and you will have to replace the cvs utility on the server with \fIgit\-cvsserver\fR or manipulate your \.bashrc so that calling \fIcvs\fR effectively calls \fIgit\-cvsserver\fR\.
+Protocol notes: If you are using anonymous access via pserver, just select that\&. Those using SSH access should choose the \fIext\fR protocol, and configure \fIext\fR access on the Preferences\->Team\->CVS\->ExtConnection pane\&. Set CVS_SERVER to "\fIgit cvsserver\fR"\&. Note that password support is not good when using \fIext\fR, you will definitely want to have SSH keys setup\&.
 .sp
+Alternatively, you can just use the non\-standard extssh protocol that Eclipse offer\&. In that case CVS_SERVER is ignored, and you will have to replace the cvs utility on the server with \fIgit\-cvsserver\fR or manipulate your \&.bashrc so that calling \fIcvs\fR effectively calls \fIgit\-cvsserver\fR\&.
 .SH "CLIENTS KNOWN TO WORK"
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'CVS 1\.12\.9 on Debian
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+CVS 1\&.12\&.9 on Debian
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'CVS 1\.11\.17 on MacOSX (from Fink package)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+CVS 1\&.11\&.17 on MacOSX (from Fink package)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Eclipse 3\.0, 3\.1\.2 on MacOSX (see Eclipse CVS Client Notes)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Eclipse 3\&.0, 3\&.1\&.2 on MacOSX (see Eclipse CVS Client Notes)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'TortoiseCVS
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+TortoiseCVS
 .RE
 .SH "OPERATIONS SUPPORTED"
-All the operations required for normal use are supported, including checkout, diff, status, update, log, add, remove, commit\. Legacy monitoring operations are not supported (edit, watch and related)\. Exports and tagging (tags and branches) are not supported at this stage\.
 .sp
+All the operations required for normal use are supported, including checkout, diff, status, update, log, add, remove, commit\&. Legacy monitoring operations are not supported (edit, watch and related)\&. Exports and tagging (tags and branches) are not supported at this stage\&.
 .SS "CRLF Line Ending Conversions"
-By default the server leaves the \fI\-k\fR mode blank for all files, which causes the cvs client to treat them as a text files, subject to crlf conversion on some platforms\.
 .sp
-You can make the server use crlf attributes to set the \fI\-k\fR modes for files by setting the gitcvs\.usecrlfattr config variable\. In this case, if crlf is explicitly unset (\fI\-crlf\fR), then the server will set \fI\-kb\fR mode for binary files\. If crlf is set, then the \fI\-k\fR mode will explicitly be left blank\. See also \fBgitattributes\fR(5) for more information about the crlf attribute\.
+By default the server leaves the \fI\-k\fR mode blank for all files, which causes the cvs client to treat them as a text files, subject to crlf conversion on some platforms\&.
 .sp
-Alternatively, if gitcvs\.usecrlfattr config is not enabled or if the crlf attribute is unspecified for a filename, then the server uses the gitcvs\.allbinary config for the default setting\. If gitcvs\.allbinary is set, then file not otherwise specified will default to \fI\-kb\fR mode\. Otherwise the \fI\-k\fR mode is left blank\. But if gitcvs\.allbinary is set to "guess", then the correct \fI\-k\fR mode will be guessed based on the contents of the file\.
+You can make the server use crlf attributes to set the \fI\-k\fR modes for files by setting the gitcvs\&.usecrlfattr config variable\&. In this case, if crlf is explicitly unset (\fI\-crlf\fR), then the server will set \fI\-kb\fR mode for binary files\&. If crlf is set, then the \fI\-k\fR mode will explicitly be left blank\&. See also \fBgitattributes\fR(5) for more information about the crlf attribute\&.
 .sp
-For best consistency with \fIcvs\fR, it is probably best to override the defaults by setting gitcvs\.usecrlfattr to true, and gitcvs\.allbinary to "guess"\.
+Alternatively, if gitcvs\&.usecrlfattr config is not enabled or if the crlf attribute is unspecified for a filename, then the server uses the gitcvs\&.allbinary config for the default setting\&. If gitcvs\&.allbinary is set, then file not otherwise specified will default to \fI\-kb\fR mode\&. Otherwise the \fI\-k\fR mode is left blank\&. But if gitcvs\&.allbinary is set to "guess", then the correct \fI\-k\fR mode will be guessed based on the contents of the file\&.
 .sp
+For best consistency with \fIcvs\fR, it is probably best to override the defaults by setting gitcvs\&.usecrlfattr to true, and gitcvs\&.allbinary to "guess"\&.
 .SH "DEPENDENCIES"
-\fIgit\-cvsserver\fR depends on DBD::SQLite\.
 .sp
+\fIgit\-cvsserver\fR depends on DBD::SQLite\&.
 .SH "COPYRIGHT AND AUTHORS"
-This program is copyright The Open University UK \- 2006\.
+.sp
+This program is copyright The Open University UK \- 2006\&.
 .sp
 Authors:
 .sp
-.sp
 .RS 4
-\h'-04'\(bu\h'+03'Martyn Smith <martyn@catalyst\.net\.nz>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Martyn Smith <martyn@catalyst\&.net\&.nz>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Martin Langhoff <martin@catalyst\.net\.nz>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Martin Langhoff <martin@catalyst\&.net\&.nz>
 .RE
-with ideas and patches from participants of the git\-list <git@vger\.kernel\.org>\.
 .sp
+with ideas and patches from participants of the git\-list <git@vger\&.kernel\&.org>\&.
 .SH "DOCUMENTATION"
-Documentation by Martyn Smith <martyn@catalyst\.net\.nz>, Martin Langhoff <martin@catalyst\.net\.nz>, and Matthias Urlichs <smurf@smurf\.noris\.de>\.
 .sp
+Documentation by Martyn Smith <martyn@catalyst\&.net\&.nz>, Martin Langhoff <martin@catalyst\&.net\&.nz>, and Matthias Urlichs <smurf@smurf\&.noris\&.de>\&.
 .SH "GIT"
-Part of the \fBgit\fR(1) suite
 .sp
+Part of the \fBgit\fR(1) suite
