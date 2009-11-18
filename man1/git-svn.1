@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/15/2009
+.\"      Date: 11/18/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"    Source: Git 1.6.5.3.171.ge36e
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.TH "GIT\-SVN" "1" "11/18/2009" "Git 1\&.6\&.5\&.3\&.171\&.ge36" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -422,6 +422,11 @@ Recursively finds the svn:ignore property on directories and creates matching \&
 \fIshow\-ignore\fR
 .RS 4
 Recursively finds and lists the svn:ignore property on directories\&. The output is suitable for appending to the $GIT_DIR/info/exclude file\&.
+.RE
+.PP
+\fImkdirs\fR
+.RS 4
+Attempts to recreate empty directories that core git cannot track based on information in $GIT_DIR/svn/<refname>/unhandled\&.log files\&. Empty directories are automatically recreated when using "git svn clone" and "git svn rebase", so "mkdirs" is intended for use after commands like "git checkout" or "git reset"\&.
 .RE
 .PP
 \fIcommit\-diff\fR
@@ -955,6 +960,21 @@ Merge tracking in Subversion is lacking and doing branched development with Subv
 For the sake of simplicity and interoperating with a less\-capable system (SVN), it is recommended that all \fIgit svn\fR users clone, fetch and dcommit directly from the SVN server, and avoid all \fIgit clone\fR/\fIpull\fR/\fImerge\fR/\fIpush\fR operations between git repositories and branches\&. The recommended method of exchanging code between git branches and users is \fIgit format\-patch\fR and \fIgit am\fR, or just \(aqdcommit\(aqing to the SVN repository\&.
 .sp
 Running \fIgit merge\fR or \fIgit pull\fR is NOT recommended on a branch you plan to \fIdcommit\fR from\&. Subversion does not represent merges in any reasonable or useful fashion; so users using Subversion cannot see any merges you\(aqve made\&. Furthermore, if you merge or pull from a git branch that is a mirror of an SVN branch, \fIdcommit\fR may commit to the wrong branch\&.
+.sp
+If you do merge, note the following rule: \fIgit svn dcommit\fR will attempt to commit on top of the SVN commit named in
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git log \-\-grep=^git\-svn\-id: \-\-first\-parent \-1
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+You \fImust\fR therefore ensure that the most recent commit of the branch you want to dcommit to is the \fIfirst\fR parent of the merge\&. Chaos will ensue otherwise, especially if the first parent is an older commit on the same SVN branch\&.
 .sp
 \fIgit clone\fR does not clone branches under the refs/remotes/ hierarchy or any \fIgit svn\fR metadata, or config\&. So repositories created and managed with using \fIgit svn\fR should use \fIrsync\fR for cloning, if cloning is to be done at all\&.
 .sp
