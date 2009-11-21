@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/15/2009
+.\"      Date: 11/21/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"    Source: Git 1.6.5.3.298.g39add
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "11/21/2009" "Git 1\&.6\&.5\&.3\&.298\&.g39a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -238,7 +238,7 @@ Create or update a branch with a new commit, recording one logical change to the
         data
         (\(aqfrom\(aq SP <committish> LF)?
         (\(aqmerge\(aq SP <committish> LF)?
-        (filemodify | filedelete | filecopy | filerename | filedeleteall)*
+        (filemodify | filedelete | filecopy | filerename | filedeleteall | notemodify)*
         LF?
 .fi
 .if n \{\
@@ -251,7 +251,7 @@ A mark command may optionally appear, requesting fast\-import to save a referenc
 .sp
 The data command following committer must supply the commit message (see below for data command syntax)\&. To import an empty commit message use a 0 length data\&. Commit messages are free\-form and are not interpreted by Git\&. Currently they must be encoded in UTF\-8, as fast\-import does not permit other encodings to be specified\&.
 .sp
-Zero or more filemodify, filedelete, filecopy, filerename and filedeleteall commands may be included to update the contents of the branch prior to creating the commit\&. These commands may be supplied in any order\&. However it is recommended that a filedeleteall command precede all filemodify, filecopy and filerename commands in the same commit, as filedeleteall wipes the branch clean (see below)\&.
+Zero or more filemodify, filedelete, filecopy, filerename, filedeleteall and notemodify commands may be included to update the contents of the branch prior to creating the commit\&. These commands may be supplied in any order\&. However it is recommended that a filedeleteall command precede all filemodify, filecopy, filerename and notemodify commands in the same commit, as filedeleteall wipes the branch clean (see below)\&.
 .sp
 The LF after the command is optional (it used to be required)\&.
 .sp
@@ -660,6 +660,62 @@ Included in a commit command to remove all files (and also all directories) from
 This command is extremely useful if the frontend does not know (or does not care to know) what files are currently on the branch, and therefore cannot generate the proper filedelete commands to update the content\&.
 .sp
 Issuing a filedeleteall followed by the needed filemodify commands to set the correct content will produce the same results as sending only the needed filemodify and filedelete commands\&. The filedeleteall approach may however require fast\-import to use slightly more memory per active branch (less than 1 MiB for even most large projects); so frontends that can easily obtain only the affected paths for a commit are encouraged to do so\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBnotemodify\fR
+.RS 4
+.sp
+Included in a commit command to add a new note (annotating a given commit) or change the content of an existing note\&. This command has two different means of specifying the content of the note\&.
+.PP
+External data format
+.RS 4
+The data content for the note was already supplied by a prior
+blob
+command\&. The frontend just needs to connect it to the commit that is to be annotated\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        \(aqN\(aq SP <dataref> SP <committish> LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Here
+<dataref>
+can be either a mark reference (:<idnum>) set by a prior
+blob
+command, or a full 40\-byte SHA\-1 of an existing Git blob object\&.
+.RE
+.PP
+Inline data format
+.RS 4
+The data content for the note has not been supplied yet\&. The frontend wants to supply it as part of this modify command\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        \(aqN\(aq SP \(aqinline\(aq SP <committish> LF
+        data
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+See below for a detailed description of the
+data
+command\&.
+.RE
+.sp
+In both formats <committish> is any of the commit specification expressions also accepted by from (see above)\&.
 .RE
 .SS "mark"
 .sp

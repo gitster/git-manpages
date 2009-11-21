@@ -2,12 +2,12 @@
 .\"     Title: gitworkflows
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/15/2009
+.\"      Date: 11/21/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"    Source: Git 1.6.5.3.298.g39add
 .\"  Language: English
 .\"
-.TH "GITWORKFLOWS" "7" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.TH "GITWORKFLOWS" "7" "11/21/2009" "Git 1\&.6\&.5\&.3\&.298\&.g39a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -188,6 +188,142 @@ The solution, of course, is to make a merge that we can undo: merge into a throw
 To test the interaction of several topics, merge them into a throw\-away branch\&. You must never base any work on such a branch!
 .sp
 If you make it (very) clear that this branch is going to be deleted right after the testing, you can even publish this branch, for example to give the testers a chance to work with it, or other developers a chance to see if their in\-progress work will be compatible\&. git\&.git has such an official throw\-away integration branch called \fIpu\fR\&.
+.SS "Branch management for a release"
+.sp
+Assuming you are using the merge approach discussed above, when you are releasing your project you will need to do some additional branch management work\&.
+.sp
+A feature release is created from the \fImaster\fR branch, since \fImaster\fR tracks the commits that should go into the next feature release\&.
+.sp
+The \fImaster\fR branch is supposed to be a superset of \fImaint\fR\&. If this condition does not hold, then \fImaint\fR contains some commits that are not included on \fImaster\fR\&. The fixes represented by those commits will therefore not be included in your feature release\&.
+.sp
+To verify that \fImaster\fR is indeed a superset of \fImaint\fR, use git log:
+.PP
+\fBExample\ \&5.\ \&Verify master is a superset of maint\fR
+.sp
+git log master\&.\&.maint
+.sp
+This command should not list any commits\&. Otherwise, check out \fImaster\fR and merge \fImaint\fR into it\&.
+.sp
+Now you can proceed with the creation of the feature release\&. Apply a tag to the tip of \fImaster\fR indicating the release version:
+.PP
+\fBExample\ \&6.\ \&Release tagging\fR
+.sp
+git tag \-s \-m "GIT X\&.Y\&.Z" vX\&.Y\&.Z master
+.sp
+You need to push the new tag to a public git server (see "DISTRIBUTED WORKFLOWS" below)\&. This makes the tag available to others tracking your project\&. The push could also trigger a post\-update hook to perform release\-related items such as building release tarballs and preformatted documentation pages\&.
+.sp
+Similarly, for a maintenance release, \fImaint\fR is tracking the commits to be released\&. Therefore, in the steps above simply tag and push \fImaint\fR rather than \fImaster\fR\&.
+.SS "Maintenance branch management after a feature release"
+.sp
+After a feature release, you need to manage your maintenance branches\&.
+.sp
+First, if you wish to continue to release maintenance fixes for the feature release made before the recent one, then you must create another branch to track commits for that previous release\&.
+.sp
+To do this, the current maintenance branch is copied to another branch named with the previous release version number (e\&.g\&. maint\-X\&.Y\&.(Z\-1) where X\&.Y\&.Z is the current release)\&.
+.PP
+\fBExample\ \&7.\ \&Copy maint\fR
+.sp
+git branch maint\-X\&.Y\&.(Z\-1) maint
+.sp
+The \fImaint\fR branch should now be fast\-forwarded to the newly released code so that maintenance fixes can be tracked for the current release:
+.PP
+\fBExample\ \&8.\ \&Update maint to new release\fR
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+git checkout maint
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+git merge \-\-ff\-only master
+.RE
+.sp
+If the merge fails because it is not a fast\-forward, then it is possible some fixes on \fImaint\fR were missed in the feature release\&. This will not happen if the content of the branches was verified as described in the previous section\&.
+.SS "Branch management for next and pu after a feature release"
+.sp
+After a feature release, the integration branch \fInext\fR may optionally be rewound and rebuilt from the tip of \fImaster\fR using the surviving topics on \fInext\fR:
+.PP
+\fBExample\ \&9.\ \&Rewind and rebuild next\fR
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+git checkout next
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+git reset \-\-hard master
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+git merge ai/topic_in_next1
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+git merge ai/topic_in_next2
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\&...
+.RE
+.sp
+The advantage of doing this is that the history of \fInext\fR will be clean\&. For example, some topics merged into \fInext\fR may have initially looked promising, but were later found to be undesirable or premature\&. In such a case, the topic is reverted out of \fInext\fR but the fact remains in the history that it was once merged and reverted\&. By recreating \fInext\fR, you give another incarnation of such topics a clean slate to retry, and a feature release is a good point in history to do so\&.
+.sp
+If you do this, then you should make a public announcement indicating that \fInext\fR was rewound and rebuilt\&.
+.sp
+The same rewind and rebuild process may be followed for \fIpu\fR\&. A public announcement is not necessary since \fIpu\fR is a throw\-away branch, as described above\&.
 .SH "DISTRIBUTED WORKFLOWS"
 .sp
 After the last section, you should know how to manage topics\&. In general, you will not be the only person working on the project, so you will have to share your work\&.
@@ -244,7 +380,7 @@ Note the last point\&. Do \fInot\fR use \fIgit\-pull\fR unless you actually want
 .sp
 Getting changes out is easy:
 .PP
-\fBExample\ \&5.\ \&Push/pull: Publishing branches/topics\fR
+\fBExample\ \&10.\ \&Push/pull: Publishing branches/topics\fR
 .sp
 git push <remote> <branch> and tell everyone where they can fetch from\&.
 .sp
@@ -252,7 +388,7 @@ You will still have to tell people by other means, such as mail\&. (Git provides
 .sp
 If you just want to get the newest copies of the integration branches, staying up to date is easy too:
 .PP
-\fBExample\ \&6.\ \&Push/pull: Staying up to date\fR
+\fBExample\ \&11.\ \&Push/pull: Staying up to date\fR
 .sp
 Use git fetch <remote> or git remote update to stay up to date\&.
 .sp
@@ -274,7 +410,7 @@ Please pull from
 .sp
 In that case, \fIgit\-pull\fR can do the fetch and merge in one go, as follows\&.
 .PP
-\fBExample\ \&7.\ \&Push/pull: Merging remote topics\fR
+\fBExample\ \&12.\ \&Push/pull: Merging remote topics\fR
 .sp
 git pull <url> <branch>
 .sp
@@ -283,7 +419,7 @@ Occasionally, the maintainer may get merge conflicts when he tries to pull chang
 .sp
 If you are a contributor that sends changes upstream in the form of emails, you should use topic branches as usual (see above)\&. Then use \fBgit-format-patch\fR(1) to generate the corresponding emails (highly recommended over manually formatting them because it makes the maintainer\(aqs life easier)\&.
 .PP
-\fBExample\ \&8.\ \&format-patch/am: Publishing branches/topics\fR
+\fBExample\ \&13.\ \&format-patch/am: Publishing branches/topics\fR
 .sp
 .RS 4
 .ie n \{\
@@ -314,7 +450,7 @@ See the \fBgit-format-patch\fR(1) and \fBgit-send-email\fR(1) manpages for furth
 .sp
 If the maintainer tells you that your patch no longer applies to the current upstream, you will have to rebase your topic (you cannot use a merge because you cannot format\-patch merges):
 .PP
-\fBExample\ \&9.\ \&format-patch/am: Keeping topics up to date\fR
+\fBExample\ \&14.\ \&format-patch/am: Keeping topics up to date\fR
 .sp
 git pull \-\-rebase <url> <branch>
 .sp
@@ -322,7 +458,7 @@ You can then fix the conflicts during the rebase\&. Presumably you have not publ
 .sp
 If you receive such a patch series (as maintainer, or perhaps as a reader of the mailing list it was sent to), save the mails to files, create a new topic branch and use \fIgit\-am\fR to import the commits:
 .PP
-\fBExample\ \&10.\ \&format-patch/am: Importing patches\fR
+\fBExample\ \&15.\ \&format-patch/am: Importing patches\fR
 .sp
 git am < patch
 .sp
