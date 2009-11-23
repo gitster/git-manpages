@@ -2,12 +2,12 @@
 .\"     Title: git-cvsserver
 .\"    Author: [see the Documentation section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/15/2009
+.\"      Date: 11/23/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"    Source: Git 1.6.6.rc0.15.g4fa80
 .\"  Language: English
 .\"
-.TH "GIT\-CVSSERVER" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "11/23/2009" "Git 1\&.6\&.6\&.rc0\&.15\&.g4f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -285,13 +285,15 @@ directory:
 .RE
 .SH "DATABASE BACKEND"
 .sp
-\fIgit\-cvsserver\fR uses one database per git head (i\&.e\&. CVS module) to store information about the repository for faster access\&. The database doesn\(aqt contain any persistent data and can be completely regenerated from the git repository at any time\&. The database needs to be updated (i\&.e\&. written to) after every commit\&.
+\fIgit\-cvsserver\fR uses one database per git head (i\&.e\&. CVS module) to store information about the repository to maintain consistent CVS revision numbers\&. The database needs to be updated (i\&.e\&. written to) after every commit\&.
 .sp
 If the commit is done directly by using git (as opposed to using \fIgit\-cvsserver\fR) the update will need to happen on the next repository access by \fIgit\-cvsserver\fR, independent of access method and requested operation\&.
 .sp
 That means that even if you offer only read access (e\&.g\&. by using the pserver method), \fIgit\-cvsserver\fR should have write access to the database to work reliably (otherwise you need to make sure that the database is up\-to\-date any time \fIgit\-cvsserver\fR is executed)\&.
 .sp
 By default it uses SQLite databases in the git directory, named gitcvs\&.<module_name>\&.sqlite\&. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using \fIgit\-cvsserver\fR write access to the database file without granting them write access to the directory, too\&.
+.sp
+The database can not be reliably regenerated in a consistent form after the branch it is tracking has changed\&. Example: For merged branches, \fIgit\-cvsserver\fR only tracks one branch of development, and after a \fIgit\-merge\fR an incrementally updated database may track a different branch than a database regenerated from scratch, causing inconsistent CVS revision numbers\&. git\-cvsserver has no way of knowing which branch it would have picked if it had been run incrementally pre\-merge\&. So if you have to fully or partially (from old backup) regenerate the database, you should be suspicious of pre\-existing CVS sandboxes\&.
 .sp
 You can configure the database backend with the following configuration variables:
 .SS "Configuring database backend"

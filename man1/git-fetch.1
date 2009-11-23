@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/16/2009
+.\"      Date: 11/23/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.215.g77097f
+.\"    Source: Git 1.6.6.rc0.15.g4fa80
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "11/16/2009" "Git 1\&.6\&.5\&.2\&.215\&.g770" "Git Manual"
+.TH "GIT\-FETCH" "1" "11/23/2009" "Git 1\&.6\&.6\&.rc0\&.15\&.g4f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -23,14 +23,27 @@ git-fetch \- Download objects and refs from another repository
 .SH "SYNOPSIS"
 .sp
 \fIgit fetch\fR <options> <repository> <refspec>\&...
+.sp
+\fIgit fetch\fR <options> <group>
+.sp
+\fIgit fetch\fR \-\-multiple <options> [<repository> | <group>]\&...
+.sp
+\fIgit fetch\fR \-\-all <options>
 .SH "DESCRIPTION"
 .sp
-Fetches named heads or tags from another repository, along with the objects necessary to complete them\&.
+Fetches named heads or tags from one or more other repositories, along with the objects necessary to complete them\&.
 .sp
 The ref names and their object names of fetched refs are stored in \&.git/FETCH_HEAD\&. This information is left for a later merge operation done by \fIgit\-merge\fR\&.
 .sp
 When <refspec> stores the fetched result in tracking branches, the tags that point at these branches are automatically followed\&. This is done by first fetching from the remote using the given <refspec>s, and if the repository has objects that are pointed by remote tags that it does not yet have, then fetch those missing tags\&. If the other end has tags that point at branches you are not interested in, you will not get them\&.
+.sp
+\fIgit fetch\fR can fetch from either a single named repository, or or from several repositories at once if <group> is given and there is a remotes\&.<group> entry in the configuration file\&. (See \fBgit-config\fR(1))\&.
 .SH "OPTIONS"
+.PP
+\-\-all
+.RS 4
+Fetch all remotes\&.
+.RE
 .PP
 \-a, \-\-append
 .RS 4
@@ -52,6 +65,11 @@ option (see
 \fBgit-clone\fR(1)) by the specified number of commits\&.
 .RE
 .PP
+\-\-dry\-run
+.RS 4
+Show what would be done, without making any changes\&.
+.RE
+.PP
 \-f, \-\-force
 .RS 4
 When
@@ -69,6 +87,16 @@ it fetches is a descendant of
 \-k, \-\-keep
 .RS 4
 Keep downloaded pack\&.
+.RE
+.PP
+\-\-multiple
+.RS 4
+Allow several <repository> and <group> arguments to be specified\&. No <refspec>s may be specified\&.
+.RE
+.PP
+\-\-prune
+.RS 4
+After fetching, remove any remote tracking branches which no longer exist on the remote\&.
 .RE
 .PP
 \-n, \-\-no\-tags
@@ -116,6 +144,12 @@ GIT URLS
 below) or the name of a remote (see the section
 REMOTES
 below)\&.
+.RE
+.PP
+<group>
+.RS 4
+A name referring to a list of repositories as the value of remotes\&.<group> in the configuration file\&. (See
+\fBgit-config\fR(1))\&.
 .RE
 .PP
 <refspec>

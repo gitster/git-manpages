@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
 .\"      Date: 11/23/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc0
+.\"    Source: Git 1.6.6.rc0.15.g4fa80
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "11/23/2009" "Git 1\&.6\&.6\&.rc0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "11/23/2009" "Git 1\&.6\&.6\&.rc0\&.15\&.g4f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -644,12 +644,29 @@ and the template shown when writing commit messages\&. Default: true\&.
 core\&.fileMode
 .RS 4
 If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT\&. See
-\fBgit-update-index\fR(1)\&. True by default\&.
+\fBgit-update-index\fR(1)\&.
+.sp
+The default is true, except
+\fBgit-clone\fR(1)
+or
+\fBgit-init\fR(1)
+will probe and set core\&.fileMode false if appropriate when the repository is created\&.
 .RE
 .PP
 core\&.ignoreCygwinFSTricks
 .RS 4
 This option is only used by Cygwin implementation of Git\&. If false, the Cygwin stat() and lstat() functions are used\&. This may be useful if your repository consists of a few separate directories joined in one hierarchy using Cygwin mount\&. If true, Git uses native Win32 API whenever it is possible and falls back to Cygwin functions only to handle symbol links\&. The native mode is more than twice faster than normal Cygwin l/stat() functions\&. True by default, unless core\&.filemode is true, in which case ignoreCygwinFSTricks is ignored as Cygwin\(aqs POSIX emulation is required to support core\&.filemode\&.
+.RE
+.PP
+core\&.ignorecase
+.RS 4
+If true, this option enables various workarounds to enable git to work better on filesystems that are not case sensitive, like FAT\&. For example, if a directory listing finds "makefile" when git expects "Makefile", git will assume it is really the same file, and continue to remember it as "Makefile"\&.
+.sp
+The default is false, except
+\fBgit-clone\fR(1)
+or
+\fBgit-init\fR(1)
+will probe and set core\&.ignorecase true if appropriate when the repository is created\&.
 .RE
 .PP
 core\&.trustctime
@@ -723,7 +740,13 @@ If false, symbolic links are checked out as small plain files that contain the l
 \fBgit-update-index\fR(1)
 and
 \fBgit-add\fR(1)
-will not change the recorded type to regular file\&. Useful on filesystems like FAT that do not support symbolic links\&. True by default\&.
+will not change the recorded type to regular file\&. Useful on filesystems like FAT that do not support symbolic links\&.
+.sp
+The default is true, except
+\fBgit-clone\fR(1)
+or
+\fBgit-init\fR(1)
+will probe and set core\&.symlinks false if appropriate when the repository is created\&.
 .RE
 .PP
 core\&.gitProxy
@@ -2504,7 +2527,21 @@ option was given on the command line\&.
 .PP
 remote\&.<name>\&.skipDefaultUpdate
 .RS 4
-If true, this remote will be skipped by default when updating using the update subcommand of
+If true, this remote will be skipped by default when updating using
+\fBgit-fetch\fR(1)
+or the
+update
+subcommand of
+\fBgit-remote\fR(1)\&.
+.RE
+.PP
+remote\&.<name>\&.skipFetchAll
+.RS 4
+If true, this remote will be skipped by default when updating using
+\fBgit-fetch\fR(1)
+or the
+update
+subcommand of
 \fBgit-remote\fR(1)\&.
 .RE
 .PP
