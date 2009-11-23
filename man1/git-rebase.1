@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/15/2009
+.\"      Date: 11/23/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"    Source: Git 1.6.6.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.TH "GIT\-REBASE" "1" "11/23/2009" "Git 1\&.6\&.6\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -330,16 +330,27 @@ Restart the rebasing process by skipping the current patch\&.
 \-m, \-\-merge
 .RS 4
 Use merging strategies to rebase\&. When the recursive (default) merge strategy is used, this allows rebase to be aware of renames on the upstream side\&.
+.sp
+Note that a rebase merge works by replaying each commit from the working branch on top of the <upstream> branch\&. Because of this, when a merge conflict happens, the side reported as
+\fIours\fR
+is the so\-far rebased series, starting with <upstream>, and
+\fItheirs\fR
+is the working branch\&. In other words, the sides are swapped\&.
 .RE
 .PP
 \-s <strategy>, \-\-strategy=<strategy>
 .RS 4
 Use the given merge strategy\&. If there is no
 \-s
-option, a built\-in list of strategies is used instead (\fIgit\-merge\-recursive\fR
-when merging a single head,
-\fIgit\-merge\-octopus\fR
-otherwise)\&. This implies \-\-merge\&.
+option
+\fIgit\-merge\-recursive\fR
+is used instead\&. This implies \-\-merge\&.
+.sp
+Because
+\fIgit\-rebase\fR
+replays each commit from the working branch on top of the <upstream> branch using the given strategy, using the
+\fIours\fR
+strategy simply discards all patches from the <branch>, which makes little sense\&.
 .RE
 .PP
 \-q, \-\-quiet
@@ -429,7 +440,7 @@ This resolves cases with more than two heads, but refuses to do a complex merge 
 .PP
 ours
 .RS 4
-This resolves any number of heads, but the result of the merge is always the current branch head\&. It is meant to be used to supersede old development history of side branches\&.
+This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&.
 .RE
 .PP
 subtree
