@@ -2,12 +2,12 @@
 .\"     Title: git-apply
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/15/2009
+.\"      Date: 11/24/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.5.2.185.gb7fba
+.\"    Source: Git 1.6.6.rc0.50.gaf06e
 .\"  Language: English
 .\"
-.TH "GIT\-APPLY" "1" "11/15/2009" "Git 1\&.6\&.5\&.2\&.185\&.gb7f" "Git Manual"
+.TH "GIT\-APPLY" "1" "11/24/2009" "Git 1\&.6\&.6\&.rc0\&.50\&.gaf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -19,7 +19,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-apply \- Apply a patch on a git index file and/or a working tree
+git-apply \- Apply a patch to files and/or to the index
 .SH "SYNOPSIS"
 .sp
 .nf
@@ -35,7 +35,7 @@ git-apply \- Apply a patch on a git index file and/or a working tree
 .sp
 .SH "DESCRIPTION"
 .sp
-Reads supplied \fIdiff\fR output and applies it on a git index file and a work tree\&.
+Reads the supplied diff output (i\&.e\&. "a patch") and applies it to files\&. With the \-\-index option the patch is also applied to the index, and with the \-\-cache option the patch is only applied to the index\&. Without these options, the command applies the patch only to files, and does not require them to be in a git repository\&.
 .SH "OPTIONS"
 .PP
 <patch>\&...
@@ -52,7 +52,8 @@ Instead of applying the patch, output diffstat for the input\&. Turns off "apply
 .PP
 \-\-numstat
 .RS 4
-Similar to \-\-stat, but shows the number of added and deleted lines in decimal notation and the pathname without abbreviation, to make it more machine friendly\&. For binary files, outputs two
+Similar to
+\-\-stat, but shows the number of added and deleted lines in decimal notation and the pathname without abbreviation, to make it more machine friendly\&. For binary files, outputs two
 \-
 instead of saying
 0 0\&. Turns off "apply"\&.
@@ -65,18 +66,20 @@ Instead of applying the patch, output a condensed summary of information obtaine
 .PP
 \-\-check
 .RS 4
-Instead of applying the patch, see if the patch is applicable to the current work tree and/or the index file and detects errors\&. Turns off "apply"\&.
+Instead of applying the patch, see if the patch is applicable to the current working tree and/or the index file and detects errors\&. Turns off "apply"\&.
 .RE
 .PP
 \-\-index
 .RS 4
-When \-\-check is in effect, or when applying the patch (which is the default when none of the options that disables it is in effect), make sure the patch is applicable to what the current index file records\&. If the file to be patched in the work tree is not up\-to\-date, it is flagged as an error\&. This flag also causes the index file to be updated\&.
+When
+\-\-check
+is in effect, or when applying the patch (which is the default when none of the options that disables it is in effect), make sure the patch is applicable to what the current index file records\&. If the file to be patched in the working tree is not up\-to\-date, it is flagged as an error\&. This flag also causes the index file to be updated\&.
 .RE
 .PP
 \-\-cached
 .RS 4
 Apply a patch without touching the working tree\&. Instead take the cached data, apply the patch, and store the result in the index without using the working tree\&. This implies
-\fI\-\-index\fR\&.
+\-\-index\&.
 .RE
 .PP
 \-\-build\-fake\-ancestor=<file>
@@ -104,10 +107,15 @@ by default fails the whole patch and does not touch the working tree when some o
 .PP
 \-z
 .RS 4
-When showing the index information, do not munge paths, but use NUL terminated machine readable format\&. Without this flag, the pathnames output will have TAB, LF, and backslash characters replaced with
+When
+\-\-numstat
+has been given, do not munge pathnames, but use a NUL\-terminated machine\-readable format\&.
+.sp
+Without this option, each pathname output will have TAB, LF, double quotes, and backslash characters replaced with
 \et,
-\en, and
-\e\e, respectively\&.
+\en,
+\e", and
+\e\e, respectively, and the pathname will be enclosed in double quotes if any of those replacements occurred\&.
 .RE
 .PP
 \-p<n>
@@ -124,8 +132,9 @@ Ensure at least <n> lines of surrounding context match before and after each cha
 .RS 4
 By default,
 \fIgit\-apply\fR
-expects that the patch being applied is a unified diff with at least one line of context\&. This provides good safety measures, but breaks down when applying a diff generated with \-\-unified=0\&. To bypass these checks use
-\fI\-\-unidiff\-zero\fR\&.
+expects that the patch being applied is a unified diff with at least one line of context\&. This provides good safety measures, but breaks down when applying a diff generated with
+\-\-unified=0\&. To bypass these checks use
+\-\-unidiff\-zero\&.
 .sp
 Note, for the reasons stated above usage of context\-free patches is discouraged\&.
 .RE
@@ -159,7 +168,11 @@ Don\(aqt apply changes to files matching the given path pattern\&. This can be u
 .RS 4
 Apply changes to files matching the given path pattern\&. This can be useful when importing patchsets, where you want to include certain files or directories\&.
 .sp
-When \-\-exclude and \-\-include patterns are used, they are examined in the order they appear on the command line, and the first match determines if a patch to each path is used\&. A patch to a path that does not match any include/exclude pattern is used by default if there is no include pattern on the command line, and ignored if there is any include pattern\&.
+When
+\-\-exclude
+and
+\-\-include
+patterns are used, they are examined in the order they appear on the command line, and the first match determines if a patch to each path is used\&. A patch to a path that does not match any include/exclude pattern is used by default if there is no include pattern on the command line, and ignored if there is any include pattern\&.
 .RE
 .PP
 \-\-ignore\-space\-change, \-\-ignore\-whitespace

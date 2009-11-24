@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.3 <http://docbook.sf.net/>
-.\"      Date: 11/23/2009
+.\"      Date: 11/24/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc0
+.\"    Source: Git 1.6.6.rc0.50.gaf06e
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "11/23/2009" "Git 1\&.6\&.6\&.rc0" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "11/24/2009" "Git 1\&.6\&.6\&.rc0\&.50\&.gaf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -400,7 +400,9 @@ are listed on the command line as
 .RS 4
 In addition to the
 \fI<commit>\fR
-listed on the command line, read them from the standard input\&.
+listed on the command line, read them from the standard input\&. If a
+\fI\-\-\fR
+separator is seen, stop reading commits and start reading paths to limit the result\&.
 .RE
 .PP
 \-\-quiet
@@ -855,7 +857,12 @@ The \fI\-\-simplify\-by\-decoration\fR option allows you to view only the big pi
 .PP
 \-\-bisect
 .RS 4
-Limit output to the one commit object which is roughly halfway between the included and excluded commits\&. Thus, if
+Limit output to the one commit object which is roughly halfway between included and excluded commits\&. Note that the bad bisection ref
+$GIT_DIR/refs/bisect/bad
+is added to the included commits (if it exists) and the good bisection refs
+$GIT_DIR/refs/bisect/good\-*
+are added to the excluded commits (if they exist)\&. Thus, supposing there are no refs in
+$GIT_DIR/refs/bisect/, if
 .RE
 .sp
 .if n \{\
@@ -888,7 +895,9 @@ would be of roughly the same length\&. Finding the change which introduces a reg
 \-\-bisect\-vars
 .RS 4
 This calculates the same as
-\-\-bisect, but outputs text ready to be eval\(aqed by the shell\&. These lines will assign the name of the midpoint revision to the variable
+\-\-bisect, except that refs in
+$GIT_DIR/refs/bisect/
+are not used, and except that this outputs text ready to be eval\(aqed by the shell\&. These lines will assign the name of the midpoint revision to the variable
 bisect_rev, and the expected number of commits to be tested after
 bisect_rev
 is tested to
@@ -904,7 +913,9 @@ bisect_all\&.
 .PP
 \-\-bisect\-all
 .RS 4
-This outputs all the commit objects between the included and excluded commits, ordered by their distance to the included and excluded commits\&. The farthest from them is displayed first\&. (This is the only one displayed by
+This outputs all the commit objects between the included and excluded commits, ordered by their distance to the included and excluded commits\&. Refs in
+$GIT_DIR/refs/bisect/
+are not used\&. The farthest from them is displayed first\&. (This is the only one displayed by
 \-\-bisect\&.)
 .sp
 This is useful because it makes it easy to choose a good commit to test when you want to avoid to test some of them for some reason (they may not compile for example)\&.
@@ -1773,7 +1784,7 @@ stash@{1}
 .\}
 
 \fI%w([<w>[,<i1>[,<i2>]]])\fR: switch line wrapping, like the \-w option of
-\fBgit-shortlog\fR(1)\&. NOTE: Color placeholders (%C*) are not recognized as having no width, so they should not be put into wrapped sections\&.
+\fBgit-shortlog\fR(1)\&.
 .RE
 .RE
 .if n \{\
