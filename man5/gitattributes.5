@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 12/17/2009
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.rc3
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GITATTRIBUTES" "5" "12/17/2009" "Git 1\&.6\&.6\&.rc3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -212,6 +212,34 @@ A filter driver consists of a clean command and a smudge command, either of whic
 A missing filter driver definition in the config is not an error but makes the filter a no\-op passthru\&.
 .sp
 The content filtering is done to massage the content into a shape that is more convenient for the platform, filesystem, and the user to use\&. The key phrase here is "more convenient" and not "turning something unusable into usable"\&. In other words, the intent is that if someone unsets the filter driver definition, or does not have the appropriate filter program, the project should still be usable\&.
+.sp
+For example, in \&.gitattributes, you would assign the filter attribute for paths\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+*\&.c     filter=indent
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Then you would define a "filter\&.indent\&.clean" and "filter\&.indent\&.smudge" configuration in your \&.git/config to specify a pair of commands to modify the contents of C programs when the source files are checked in ("clean" is run) and checked out (no change is made because the command is "cat")\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[filter "indent"]
+        clean = indent
+        smudge = cat
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .RE
 .sp
 .it 1 an-trap
