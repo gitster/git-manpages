@@ -2,12 +2,12 @@
 .\"     Title: git-add
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/08/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.102.gd6f8
 .\"  Language: English
 .\"
-.TH "GIT\-ADD" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-ADD" "1" "01/08/2010" "Git 1\&.6\&.6\&.102\&.gd6f8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -30,15 +30,15 @@ git-add \- Add file contents to the index
 .sp
 .SH "DESCRIPTION"
 .sp
-This command adds the current content of new or modified files to the index, thus staging that content for inclusion in the next commit\&.
+This command updates the index using the current content found in the working tree, to prepare the content staged for the next commit\&. It typically adds the current content of existing paths as a whole, but with some options it can also be used to add content with only part of the changes made to the working tree files applied, or remove paths that do not exist in the working tree anymore\&.
 .sp
-The "index" holds a snapshot of the content of the working tree, and it is this snapshot that is taken as the contents of the next commit\&. Thus after making any changes to the working directory, and before running the commit command, you must use the \fIadd\fR command to add any new or modified files to the index\&.
+The "index" holds a snapshot of the content of the working tree, and it is this snapshot that is taken as the contents of the next commit\&. Thus after making any changes to the working directory, and before running the commit command, you must use the add command to add any new or modified files to the index\&.
 .sp
-This command can be performed multiple times before a commit\&. It only adds the content of the specified file(s) at the time the add command is run; if you want subsequent changes included in the next commit, then you must run \fIgit add\fR again to add the new content to the index\&.
+This command can be performed multiple times before a commit\&. It only adds the content of the specified file(s) at the time the add command is run; if you want subsequent changes included in the next commit, then you must run git add again to add the new content to the index\&.
 .sp
-The \fIgit status\fR command can be used to obtain a summary of which files have changes that are staged for the next commit\&.
+The git status command can be used to obtain a summary of which files have changes that are staged for the next commit\&.
 .sp
-The \fIgit add\fR command will not add ignored files by default\&. If any ignored files were explicitly specified on the command line, \fIgit add\fR will fail with a list of ignored files\&. Ignored files reached by directory recursion or filename globbing performed by Git (quote your globs before the shell) will be silently ignored\&. The \fIadd\fR command can be used to add ignored files with the \-f (force) option\&.
+The git add command will not add ignored files by default\&. If any ignored files were explicitly specified on the command line, git add will fail with a list of ignored files\&. Ignored files reached by directory recursion or filename globbing performed by Git (quote your globs before the shell) will be silently ignored\&. The add command can be used to add ignored files with the \-f (force) option\&.
 .sp
 Please see \fBgit-commit\fR(1) for alternative ways to add content to a commit\&.
 .SH "OPTIONS"
@@ -93,23 +93,23 @@ Open the diff vs\&. the index in an editor and let the user edit it\&. After the
 .PP
 \-u, \-\-update
 .RS 4
-Update only files that git already knows about, staging modified content for commit and marking deleted files for removal\&. This is similar to what "git commit \-a" does in preparation for making a commit, except that the update is limited to paths specified on the command line\&. If no paths are specified, all tracked files in the current directory and its subdirectories are updated\&.
+Only match <filepattern> against already tracked files in the index rather than the working tree\&. That means that it will never stage new files, but that it will stage modified new contents of tracked files and that it will remove files from the index if the corresponding files in the working tree have been removed\&.
+.sp
+If no <filepattern> is given, default to "\&."; in other words, update all tracked files in the current directory and its subdirectories\&.
 .RE
 .PP
 \-A, \-\-all
 .RS 4
-Update files that git already knows about (same as
-\fI\-\-update\fR) and add all untracked files that are not ignored by
-\fI\&.gitignore\fR
-mechanism\&.
+Like
+\-u, but match <filepattern> against files in the working tree in addition to the index\&. That means that it will find new files as well as staging modified content and removing files that are no longer in the working tree\&.
 .RE
 .PP
 \-N, \-\-intent\-to\-add
 .RS 4
 Record only the fact that the path will be added later\&. An entry for the path is placed in the index with no content\&. This is useful for, among other things, showing the unstaged content of such files with
-\fIgit diff\fR
+git diff
 and committing them with
-\fIgit commit \-a\fR\&.
+git commit \-a\&.
 .RE
 .PP
 \-\-refresh
@@ -128,7 +128,7 @@ This option can be used to separate command\-line options from the list of files
 .RE
 .SH "CONFIGURATION"
 .sp
-The optional configuration variable \fIcore\&.excludesfile\fR indicates a path to a file containing patterns of file names to exclude from git\-add, similar to $GIT_DIR/info/exclude\&. Patterns in the exclude file are used in addition to those in info/exclude\&. See \fBgitrepository-layout\fR(5)\&.
+The optional configuration variable core\&.excludesfile indicates a path to a file containing patterns of file names to exclude from git\-add, similar to $GIT_DIR/info/exclude\&. Patterns in the exclude file are used in addition to those in info/exclude\&. See \fBgitrepository-layout\fR(5)\&.
 .SH "EXAMPLES"
 .sp
 .RS 4
@@ -205,13 +205,17 @@ The command loop shows the list of subcommands available, and gives a prompt "Wh
 .\}
 .sp
 .sp
-You also could say "s" or "sta" or "status" above as long as the choice is unique\&.
+You also could say s or sta or status above as long as the choice is unique\&.
 .sp
 The main command loop has 6 subcommands (plus help and quit)\&.
 .PP
 status
 .RS 4
-This shows the change between HEAD and index (i\&.e\&. what will be committed if you say "git commit"), and between index and working tree files (i\&.e\&. what you could stage further before "git commit" using "git\-add") for each path\&. A sample output looks like this:
+This shows the change between HEAD and index (i\&.e\&. what will be committed if you say
+git commit), and between index and working tree files (i\&.e\&. what you could stage further before
+git commit
+using
+git add) for each path\&. A sample output looks like this:
 .sp
 .if n \{\
 .RS 4

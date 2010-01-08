@@ -2,12 +2,12 @@
 .\"     Title: git-rm
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/08/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.102.gd6f8
 .\"  Language: English
 .\"
-.TH "GIT\-RM" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-RM" "1" "01/08/2010" "Git 1\&.6\&.6\&.102\&.gd6f8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -25,7 +25,7 @@ git-rm \- Remove files from the working tree and from the index
 \fIgit rm\fR [\-f | \-\-force] [\-n] [\-r] [\-\-cached] [\-\-ignore\-unmatch] [\-\-quiet] [\-\-] <file>\&...
 .SH "DESCRIPTION"
 .sp
-Remove files from the index, or from the working tree and the index\&. \fIgit\-rm\fR will not remove a file from just your working directory\&. (There is no option to remove a file only from the work tree and yet keep it in the index; use /bin/rm if you want to do that\&.) The files being removed have to be identical to the tip of the branch, and no updates to their contents can be staged in the index, though that default behavior can be overridden with the \-f option\&. When \fI\-\-cached\fR is given, the staged content has to match either the tip of the branch or the file on disk, allowing the file to be removed from just the index\&.
+Remove files from the index, or from the working tree and the index\&. git rm will not remove a file from just your working directory\&. (There is no option to remove a file only from the working tree and yet keep it in the index; use /bin/rm if you want to do that\&.) The files being removed have to be identical to the tip of the branch, and no updates to their contents can be staged in the index, though that default behavior can be overridden with the \-f option\&. When \-\-cached is given, the staged content has to match either the tip of the branch or the file on disk, allowing the file to be removed from just the index\&.
 .SH "OPTIONS"
 .PP
 <file>\&...
@@ -74,14 +74,69 @@ Exit with a zero status even if no files matched\&.
 \-q, \-\-quiet
 .RS 4
 
-\fIgit\-rm\fR
-normally outputs one line (in the form of an "rm" command) for each file removed\&. This option suppresses that output\&.
+git rm
+normally outputs one line (in the form of an
+rm
+command) for each file removed\&. This option suppresses that output\&.
 .RE
 .SH "DISCUSSION"
 .sp
 The <file> list given to the command can be exact pathnames, file glob patterns, or leading directory names\&. The command removes only the paths that are known to git\&. Giving the name of a file that you have not told git about does not remove that file\&.
 .sp
 File globbing matches across directory boundaries\&. Thus, given two directories d and d2, there is a difference between using git rm \(aqd*\(aq and git rm \(aqd/*\(aq, as the former will also remove all of directory d2\&.
+.SH "REMOVING FILES THAT HAVE DISAPPEARED FROM THE FILESYSTEM"
+.sp
+There is no option for git rm to remove from the index only the paths that have disappeared from the filesystem\&. However, depending on the use case, there are several ways that can be done\&.
+.SS "Using "git commit \-a""
+.sp
+If you intend that your next commit should record all modifications of tracked files in the working tree and record all removals of files that have been removed from the working tree with rm (as opposed to git rm), use git commit \-a, as it will automatically notice and record all removals\&. You can also have a similar effect without committing by using git add \-u\&.
+.SS "Using "git add \-A""
+.sp
+When accepting a new code drop for a vendor branch, you probably want to record both the removal of paths and additions of new paths as well as modifications of existing paths\&.
+.sp
+Typically you would first remove all tracked files from the working tree using this command:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git ls\-files \-z | xargs \-0 rm \-f
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+and then "untar" the new code in the working tree\&. Alternately you could "rsync" the changes into the working tree\&.
+.sp
+After that, the easiest way to record all removals, additions, and modifications in the working tree is:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git add \-A
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+See \fBgit-add\fR(1)\&.
+.SS "Other ways"
+.sp
+If all you really want to do is to remove from the index the files that are no longer present in the working tree (perhaps because your working tree is dirty so that you cannot use git commit \-a), use the following command:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git diff \-\-name\-only \-\-diff\-filter=D \-z | xargs \-0 git rm \-\-cached
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "EXAMPLES"
 .PP
 git rm Documentation/\e*\&.txt
