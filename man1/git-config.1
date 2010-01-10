@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/30/2009
+.\"      Date: 01/10/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.69.gc18d
+.\"    Source: Git 1.6.6.136.g637af
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/30/2009" "Git 1\&.6\&.6\&.69\&.gc18d" "Git Manual"
+.TH "GIT\-CONFIG" "1" "01/10/2010" "Git 1\&.6\&.6\&.136\&.g637af" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -45,7 +45,7 @@ You can query/set/replace/unset options with this command\&. The name is actuall
 .sp
 Multiple lines can be added to an option by using the \fI\-\-add\fR option\&. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp value_regex needs to be given\&. Only the existing values that match the regexp are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq)\&.
 .sp
-The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, which will make \fIgit\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool)\&. If no type specifier is passed, no checks or transformations are performed on the value\&.
+The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, to make \fIgit\-config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool), or \fI\-\-path\fR, which does some path expansion (see \fI\-\-path\fR below)\&. If no type specifier is passed, no checks or transformations are performed on the value\&.
 .sp
 The file\-option can be one of \fI\-\-system\fR, \fI\-\-global\fR or \fI\-\-file\fR which specify where the values will be read from or written to\&. The default is to assume the config file of the current repository, \&.git/config unless defined otherwise with GIT_DIR and GIT_CONFIG (see the section called \(lqFILES\(rq)\&.
 .sp
@@ -232,6 +232,20 @@ in the config file will cause the value to be multiplied by 1024, 1048576, or 10
 
 \fIgit\-config\fR
 will ensure that the output matches the format of either \-\-bool or \-\-int, as described above\&.
+.RE
+.PP
+\-\-path
+.RS 4
+
+\fIgit\-config\fR
+will expand leading
+\fI~\fR
+to the value of
+\fI$HOME\fR, and
+\fI~user\fR
+to the home directory for the specified user\&. This option has no effect when setting the value (but you can use
+\fIgit config bla ~/\fR
+from the command line to let your shell do the expansion)\&.
 .RE
 .PP
 \-z, \-\-null
@@ -1140,7 +1154,7 @@ Tells
 \fIgit\-branch\fR
 and
 \fIgit\-checkout\fR
-to setup new branches so that
+to set up new branches so that
 \fBgit-pull\fR(1)
 will appropriately merge from the starting point branch\&. Note that even if this option is not set, this behavior can be chosen per\-branch using the
 \-\-track
@@ -1453,7 +1467,7 @@ to update the cached stat information for paths whose contents in the work tree 
 \fIgit\-diff\fR
 Porcelain, and not lower level
 \fIdiff\fR
-commands, such as
+commands such as
 \fIgit\-diff\-files\fR\&.
 .RE
 .PP
@@ -1610,7 +1624,7 @@ The default pretty format for log/show/whatchanged command, See
 format\&.thread
 .RS 4
 The default threading style for
-\fIgit\-format\-patch\fR\&. Can be either a boolean value,
+\fIgit\-format\-patch\fR\&. Can be a boolean value, or
 shallow
 or
 deep\&.
@@ -1657,29 +1671,13 @@ consolidates them into one larger pack\&. The default value is 50\&. Setting thi
 .PP
 gc\&.packrefs
 .RS 4
-
-\fIgit\-gc\fR
-does not run
+Running
 git pack\-refs
-in a bare repository by default so that older dumb\-transport clients can still fetch from the repository\&. Setting this to
-true
-lets
-\fIgit\-gc\fR
-to run
-git pack\-refs\&. Setting this to
-false
-tells
-\fIgit\-gc\fR
-never to run
-git pack\-refs\&. The default setting is
-notbare\&. Enable it only when you know you do not have to support such clients\&. The default setting will change to
-true
-at some stage, and setting this to
-false
-will continue to prevent
-git pack\-refs
-from being run from
-\fIgit\-gc\fR\&.
+in a repository renders it unclonable by Git versions prior to 1\&.5\&.1\&.2 over dumb transports such as HTTP\&. This variable determines whether
+\fIgit gc\fR
+runs
+git pack\-refs\&. This can be set to "nobare" to enable it within all non\-bare repos or it can be set to a boolean value\&. The default is
+true\&.
 .RE
 .PP
 gc\&.pruneexpire
@@ -2057,6 +2055,11 @@ http\&.maxRequests
 How many HTTP requests to launch in parallel\&. Can be overridden by the
 \fIGIT_HTTP_MAX_REQUESTS\fR
 environment variable\&. Default is 5\&.
+.RE
+.PP
+http\&.minSessions
+.RS 4
+The number of curl sessions (counted across slots) to be kept across requests\&. They will not be ended with curl_easy_cleanup() until http_cleanup() is invoked\&. If USE_CURL_MULTI is not defined, this value will be capped at 1\&. Defaults to 1\&.
 .RE
 .PP
 http\&.postBuffer
