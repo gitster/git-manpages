@@ -2,12 +2,12 @@
 .\"     Title: git-read-tree
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/13/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.196.g1f735
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "01/13/2010" "Git 1\&.6\&.6\&.196\&.g1f735" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -22,7 +22,7 @@
 git-read-tree \- Reads tree information into the index
 .SH "SYNOPSIS"
 .sp
-\fIgit read\-tree\fR [[\-m [\-\-trivial] [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u [\-\-exclude\-per\-directory=<gitignore>] | \-i]] [\-\-index\-output=<file>] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]]
+\fIgit read\-tree\fR [[\-m [\-\-trivial] [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>] [\-u [\-\-exclude\-per\-directory=<gitignore>] | \-i]] [\-\-index\-output=<file>] [\-\-no\-sparse\-checkout] <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]]
 .SH "DESCRIPTION"
 .sp
 Reads the tree information given by <tree\-ish> into the index, but does not actually \fBupdate\fR any of the files it "caches"\&. (see: \fBgit-checkout-index\fR(1))
@@ -134,6 +134,13 @@ to remove the generated file\&. This option tells the command to read per\-direc
 .RS 4
 Instead of writing the results out to
 $GIT_INDEX_FILE, write the resulting index in the named file\&. While the command is operating, the original index file is locked with the same mechanism as usual\&. The file must allow to be rename(2)ed into from a temporary file that is created next to the usual index file; typically this means it needs to be on the same filesystem as the index file itself, and you need write permission to the directories the index file and index output file are located in\&.
+.RE
+.PP
+\-\-no\-sparse\-checkout
+.RS 4
+Disable sparse checkout support even if
+core\&.sparseCheckout
+is true\&.
 .RE
 .PP
 <tree\-ish#>
@@ -454,6 +461,42 @@ what you would commit is a pure merge between $JC and $LT without your work\-in\
 However, if you have local changes in the working tree that would be overwritten by this merge, \fIgit\-read\-tree\fR will refuse to run to prevent your changes from being lost\&.
 .sp
 In other words, there is no need to worry about what exists only in the working tree\&. When you have local changes in a part of the project that is not involved in the merge, your changes do not interfere with the merge, and are kept intact\&. When they \fBdo\fR interfere, the merge does not even start (\fIgit\-read\-tree\fR complains loudly and fails without modifying anything)\&. In such a case, you can simply continue doing what you were in the middle of doing, and when your working tree is ready (i\&.e\&. you have finished your work\-in\-progress), attempt the merge again\&.
+.SH "SPARSE CHECKOUT"
+.sp
+"Sparse checkout" allows to sparsely populate working directory\&. It uses skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file on working directory is worth looking at\&.
+.sp
+"git read\-tree" and other merge\-based commands ("git merge", "git checkout"\&...) can help maintaining skip\-worktree bitmap and working directory update\&. $GIT_DIR/info/sparse\-checkout is used to define the skip\-worktree reference bitmap\&. When "git read\-tree" needs to update working directory, it will reset skip\-worktree bit in index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, skip\-worktree will be set on that entry\&. Otherwise, skip\-worktree will be unset\&.
+.sp
+Then it compares the new skip\-worktree value with the previous one\&. If skip\-worktree turns from unset to set, it will add the corresponding file back\&. If it turns from set to unset, that file will be removed\&.
+.sp
+While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are in\&. You can also specify what files are _not_ in, using negate patterns\&. For example, to remove file "unwanted":
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+*
+!unwanted
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Another tricky thing is fully repopulating working directory when you no longer want sparse checkout\&. You cannot just disable "sparse checkout" because skip\-worktree are still in the index and you working directory is still sparsely populated\&. You should re\-populate working directory with the $GIT_DIR/info/sparse\-checkout file content as follows:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+*
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Then you can disable sparse checkout\&. Sparse checkout support in "git read\-tree" and similar commands is disabled by default\&. You need to turn core\&.sparseCheckout on in order to have sparse checkout support\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-write-tree\fR(1); \fBgit-ls-files\fR(1); \fBgitignore\fR(5)

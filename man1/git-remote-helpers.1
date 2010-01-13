@@ -2,12 +2,12 @@
 .\"     Title: git-remote-helpers
 .\"    Author: [see the Documentation section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/26/2009
+.\"      Date: 01/13/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.35.g1d85d
+.\"    Source: Git 1.6.6.196.g1f735
 .\"  Language: English
 .\"
-.TH "GIT\-REMOTE\-HELPERS" "1" "12/26/2009" "Git 1\&.6\&.6\&.35\&.g1d85d" "Git Manual"
+.TH "GIT\-REMOTE\-HELPERS" "1" "01/13/2010" "Git 1\&.6\&.6\&.196\&.g1f735" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -32,7 +32,8 @@ Commands are given by the caller on the helper\(aqs standard input, one per line
 .PP
 \fIcapabilities\fR
 .RS 4
-Lists the capabilities of the helper, one per line, ending with a blank line\&.
+Lists the capabilities of the helper, one per line, ending with a blank line\&. Each capability may be preceeded with
+\fI*\fR\&. This marks them mandatory for git version using the remote helper to understand (unknown mandatory capability is fatal error)\&.
 .RE
 .PP
 \fIlist\fR
@@ -95,6 +96,17 @@ Produces a fast\-import stream which imports the current value of the named ref\
 .sp
 Supported if the helper has the "import" capability\&.
 .RE
+.PP
+\fIconnect\fR <service>
+.RS 4
+Connects to given service\&. Standard input and standard output of helper are connected to specified service (git prefix is included in service name so e\&.g\&. fetching uses
+\fIgit\-upload\-pack\fR
+as service) on remote side\&. Valid replies to this command are empty line (connection established),
+\fIfallback\fR
+(no smart transport support, fall back to dumb transports) and just exiting with error message printed (can\(aqt connect, don\(aqt bother trying to fall back)\&. After line feed terminating the positive (empty) response, the output of service starts\&. After the connection ends, the remote helper exits\&.
+.sp
+Supported if the helper has the "connect" capability\&.
+.RE
 .sp
 If a fatal error occurs, the program writes the error message to stderr and exits\&. The caller should expect that a suitable error message has been printed if the child closes the connection without completing a valid response for the current command\&.
 .sp
@@ -131,6 +143,13 @@ command\&.
 .RS 4
 When using the import command, expect the source ref to have been written to the destination ref\&. The earliest applicable refspec takes precedence\&. For example "refs/heads/\fB:refs/svn/origin/branches/\fR" means that, after an "import refs/heads/name", the script has written to refs/svn/origin/branches/name\&. If this capability is used at all, it must cover all refs reported by the list command; if it is not used, it is effectively "\fB:\fR"
 .RE
+.PP
+\fIconnect\fR
+.RS 4
+This helper supports the
+\fIconnect\fR
+command\&.
+.RE
 .SH "REF LIST ATTRIBUTES"
 .PP
 \fIfor\-push\fR
@@ -165,9 +184,14 @@ If enabled the helper should automatically fetch annotated tag objects if the ob
 .RE
 .sp
 \fIoption dry\-run\fR {\fItrue\fR|\fIfalse\fR}: If true, pretend the operation completed successfully, but don\(aqt actually change any repository data\&. For most helpers this only applies to the \fIpush\fR, if supported\&.
+.PP
+\fIoption servpath <c\-style\-quoted\-path>\fR
+.RS 4
+Set service path (\-\-upload\-pack, \-\-receive\-pack etc\&.) for next connect\&. Remote helper MAY support this option\&. Remote helper MUST NOT rely on this option being set before connect request occurs\&.
+.RE
 .SH "DOCUMENTATION"
 .sp
-Documentation by Daniel Barkalow\&.
+Documentation by Daniel Barkalow and Ilari Liusvaara
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

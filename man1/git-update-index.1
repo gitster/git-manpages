@@ -2,12 +2,12 @@
 .\"     Title: git-update-index
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/13/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.196.g1f735
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "01/13/2010" "Git 1\&.6\&.6\&.196\&.g1f735" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -29,6 +29,7 @@ git-update-index \- Register file contents in the working tree to the index
              [\-\-cacheinfo <mode> <object> <file>]*
              [\-\-chmod=(+|\-)x]
              [\-\-assume\-unchanged | \-\-no\-assume\-unchanged]
+             [\-\-skip\-worktree | \-\-no\-skip\-worktree]
              [\-\-ignore\-submodules]
              [\-\-really\-refresh] [\-\-unresolve] [\-\-again | \-g]
              [\-\-info\-only] [\-\-index\-info]
@@ -115,6 +116,11 @@ operation will still cause the file to be refreshed from the working tree\&. Git
 .RS 4
 Like
 \fI\-\-refresh\fR, but checks stat information unconditionally, without regard to the "assume unchanged" setting\&.
+.RE
+.PP
+\-\-skip\-worktree, \-\-no\-skip\-worktree
+.RS 4
+When one of these flags is specified, the object name recorded for the paths are not updated\&. Instead, these options set and unset the "skip\-worktree" bit for the paths\&. See section "Skip\-worktree bit" below for more information\&.
 .RE
 .PP
 \-g, \-\-again
@@ -378,6 +384,13 @@ match the path\&.
 \fB9. \fRnow it checks with lstat(2) and finds it has been changed\&.
 .br
 .RE
+.SH "SKIP-WORKTREE BIT"
+.sp
+Skip\-worktree bit can be defined in one (long) sentence: When reading an entry, if it is marked as skip\-worktree, then Git pretends its working directory version is up to date and read the index version instead\&.
+.sp
+To elaborate, "reading" means checking for file existence, reading file attributes or file content\&. The working directory version may be present or absent\&. If present, its content may match against the index version or not\&. Writing is not affected by this bit, content safety is still first priority\&. Note that Git _can_ update working directory file, that is marked skip\-worktree, if it is safe to do so (i\&.e\&. working directory version matches index version)
+.sp
+Although this bit looks similar to assume\-unchanged bit, its goal is different from assume\-unchanged bit\(aqs\&. Skip\-worktree also takes precedence over assume\-unchanged bit when both are set\&.
 .SH "CONFIGURATION"
 .sp
 The command honors core\&.filemode configuration variable\&. If your repository is on a filesystem whose executable bits are unreliable, this should be set to \fIfalse\fR (see \fBgit-config\fR(1))\&. This causes the command to ignore differences in file modes recorded in the index and the file mode on the filesystem if they differ only on executable bit\&. On such an unfortunate filesystem, you may need to use \fIgit\-update\-index \-\-chmod=\fR\&.
