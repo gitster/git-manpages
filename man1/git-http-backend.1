@@ -2,12 +2,12 @@
 .\"     Title: git-http-backend
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/18/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.243.gff6d2
 .\"  Language: English
 .\"
-.TH "GIT\-HTTP\-BACKEND" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-HTTP\-BACKEND" "1" "01/18/2010" "Git 1\&.6\&.6\&.243\&.gff6d2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -29,6 +29,8 @@ git-http-backend \- Server side implementation of Git over HTTP
 .SH "DESCRIPTION"
 .sp
 A simple CGI program to serve the contents of a Git repository to Git clients accessing the repository over http:// and https:// protocols\&. The program supports clients fetching using both the smart HTTP protcol and the backwards\-compatible dumb HTTP protocol, as well as clients pushing using the smart HTTP protocol\&.
+.sp
+It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any git directory that hasn\(aqt explicitly been marked for export this way (unless the GIT_HTTP_EXPORT_ALL environmental variable is set)\&.
 .sp
 By default, only the upload\-pack service is enabled, which serves \fIgit\-fetch\-pack\fR and \fIgit\-ls\-remote\fR clients, which are invoked from \fIgit\-fetch\fR, \fIgit\-pull\fR, and \fIgit\-clone\fR\&. If the client is authenticated, the receive\-pack service is enabled, which serves \fIgit\-send\-pack\fR clients, which is invoked from \fIgit\-push\fR\&.
 .SH "SERVICES"
@@ -75,6 +77,7 @@ Ensure mod_cgi, mod_alias, and mod_env are enabled, set GIT_PROJECT_ROOT (or Doc
 .\}
 .nf
 SetEnv GIT_PROJECT_ROOT /var/www/git
+SetEnv GIT_HTTP_EXPORT_ALL
 ScriptAlias /git/ /usr/libexec/git\-core/git\-http\-backend/
 .fi
 .if n \{\
@@ -250,6 +253,8 @@ QUERY_STRING
 .\}
 REQUEST_METHOD
 .RE
+.sp
+The GIT_HTTP_EXPORT_ALL environmental variable may be passed to \fIgit\-http\-backend\fR to bypass the check for the "git\-daemon\-export\-ok" file in each repository before allowing export of that repository\&.
 .sp
 The backend process sets GIT_COMMITTER_NAME to \fI$REMOTE_USER\fR and GIT_COMMITTER_EMAIL to \fI${REMOTE_USER}@http\&.${REMOTE_ADDR}\fR, ensuring that any reflogs created by \fIgit\-receive\-pack\fR contain some identifying information of the remote user who performed the push\&.
 .sp

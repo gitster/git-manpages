@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/01/2010
+.\"      Date: 01/18/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.75.g37bae
+.\"    Source: Git 1.6.6.243.gff6d2
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "01/01/2010" "Git 1\&.6\&.6\&.75\&.g37bae" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "01/18/2010" "Git 1\&.6\&.6\&.243\&.gff6d2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -71,6 +71,16 @@ Dumps the internal marks table to <file> when complete\&. Marks are written one 
 \-\-import\-marks=<file>
 .RS 4
 Before processing any input, load the marks specified in <file>\&. The input file must exist, must be readable, and must use the same format as produced by \-\-export\-marks\&. Multiple options may be supplied to import more than one set of marks\&. If a mark is defined to different values, the last file wins\&.
+.RE
+.PP
+\-\-relative\-marks
+.RS 4
+After specifying \-\-relative\-marks= the paths specified with \-\-import\-marks= and \-\-export\-marks= are relative to an internal directory in the current repository\&. In git\-fast\-import this means that the paths are relative to the \&.git/info/fast\-import directory\&. However, other importers may use a different location\&.
+.RE
+.PP
+\-\-no\-relative\-marks
+.RS 4
+Negates a previous \-\-relative\-marks\&. Allows for combining relative and non\-relative marks by interweaving \-\-(no\-)\-relative\-marks= with the \-\-(import|export)\-marks= options\&.
 .RE
 .PP
 \-\-export\-pack\-edges=<file>
@@ -222,6 +232,16 @@ Forces fast\-import to close the current packfile, generate its unique SHA\-1 ch
 progress
 .RS 4
 Causes fast\-import to echo the entire line to its own standard output\&. This command is optional and is not needed to perform an import\&.
+.RE
+.PP
+feature
+.RS 4
+Require that fast\-import supports the specified feature, or abort if it does not\&.
+.RE
+.PP
+option
+.RS 4
+Specify any of the options listed under OPTIONS that do not change stream semantic to suit the frontend\(aqs needs\&. This command is optional and is not needed to perform an import\&.
 .RE
 .SS "commit"
 .sp
@@ -944,6 +964,156 @@ frontend | git fast\-import | sed \(aqs/^progress //\(aq
 .\}
 .sp
 Placing a progress command immediately after a checkpoint will inform the reader when the checkpoint has been completed and it can safely access the refs that fast\-import updated\&.
+.SS "feature"
+.sp
+Require that fast\-import supports the specified feature, or abort if it does not\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        \(aqfeature\(aq SP <feature> LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The <feature> part of the command may be any string matching ^[a\-zA\-Z][a\-zA\-Z\-]*$ and should be understood by fast\-import\&.
+.sp
+Feature work identical as their option counterparts with the exception of the import\-marks feature, see below\&.
+.sp
+The following features are currently supported:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+date\-format
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+import\-marks
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+export\-marks
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+relative\-marks
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+no\-relative\-marks
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+force
+.RE
+.sp
+The import\-marks behaves differently from when it is specified as commandline option in that only one "feature import\-marks" is allowed per stream\&. Also, any \-\-import\-marks= specified on the commandline will override those from the stream (if any)\&.
+.SS "option"
+.sp
+Processes the specified option so that git fast\-import behaves in a way that suits the frontend\(aqs needs\&. Note that options specified by the frontend are overridden by any options the user may specify to git fast\-import itself\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+    \(aqoption\(aq SP <option> LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The <option> part of the command may contain any of the options listed in the OPTIONS section that do not change import semantics, without the leading \fI\-\-\fR and is treated in the same way\&.
+.sp
+Option commands must be the first commands on the input (not counting feature commands), to give an option command after any non\-option command is an error\&.
+.sp
+The following commandline options change import semantics and may therefore not be passed as option:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+date\-format
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+import\-marks
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+export\-marks
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+force
+.RE
 .SH "CRASH REPORTS"
 .sp
 If fast\-import is supplied invalid input it will terminate with a non\-zero exit status and create a crash report in the top level of the Git repository it was importing into\&. Crash reports contain a snapshot of the internal fast\-import state as well as the most recent commands that lead up to the crash\&.
