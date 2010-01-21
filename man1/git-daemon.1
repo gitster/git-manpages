@@ -2,12 +2,12 @@
 .\"     Title: git-daemon
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-DAEMON" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-DAEMON" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -39,31 +39,31 @@ git-daemon \- A really simple server for git repositories
 .sp
 A really simple TCP git daemon that normally listens on port "DEFAULT_GIT_PORT" aka 9418\&. It waits for a connection asking for a service, and will serve that service if it is enabled\&.
 .sp
-It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any git directory that hasn\(aqt explicitly been marked for export this way (unless the \fI\-\-export\-all\fR parameter is specified)\&. If you pass some directory paths as \fIgit\-daemon\fR arguments, you can further restrict the offers to a whitelist comprising of those\&.
+It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any git directory that hasn\(aqt explicitly been marked for export this way (unless the \fI\-\-export\-all\fR parameter is specified)\&. If you pass some directory paths as \fIgit daemon\fR arguments, you can further restrict the offers to a whitelist comprising of those\&.
 .sp
-By default, only upload\-pack service is enabled, which serves \fIgit\-fetch\-pack\fR and \fIgit\-ls\-remote\fR clients, which are invoked from \fIgit\-fetch\fR, \fIgit\-pull\fR, and \fIgit\-clone\fR\&.
+By default, only upload\-pack service is enabled, which serves \fIgit fetch\-pack\fR and \fIgit ls\-remote\fR clients, which are invoked from \fIgit fetch\fR, \fIgit pull\fR, and \fIgit clone\fR\&.
 .sp
 This is ideally suited for read\-only updates, i\&.e\&., pulling from git repositories\&.
 .sp
-An upload\-archive also exists to serve \fIgit\-archive\fR\&.
+An upload\-archive also exists to serve \fIgit archive\fR\&.
 .SH "OPTIONS"
 .PP
 \-\-strict\-paths
 .RS 4
 Match paths exactly (i\&.e\&. don\(aqt allow "/foo/repo" when the real path is "/foo/repo\&.git" or "/foo/repo/\&.git") and don\(aqt do user\-relative paths\&.
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 will refuse to start when this option is enabled and no whitelist is specified\&.
 .RE
 .PP
 \-\-base\-path=path
 .RS 4
 Remap all the path requests as relative to the given path\&. This is sort of "GIT root" \- if you run
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 with
 \fI\-\-base\-path=/srv/git\fR
 on example\&.com, then if you later try to pull
 \fIgit://example\&.com/hello\&.git\fR,
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 will interpret the path as
 \fI/srv/git/hello\&.git\fR\&.
 .RE
@@ -71,7 +71,7 @@ will interpret the path as
 \-\-base\-path\-relaxed
 .RS 4
 If \-\-base\-path is enabled and repo lookup fails, with this option
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 will attempt to lookup without prefixing the base path\&. This is useful for switching to \-\-base\-path usage, while still allowing the old paths\&.
 .RE
 .PP
@@ -178,7 +178,7 @@ and numeric IDs are not supported\&.
 .sp
 Giving these options is an error when used with
 \-\-inetd; use the facility of inet daemon to achieve the same before spawning
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 if needed\&.
 .RE
 .PP
@@ -198,14 +198,14 @@ A directory to add to the whitelist of allowed directories\&. Unless \-\-strict\
 .RE
 .SH "SERVICES"
 .sp
-These services can be globally enabled/disabled using the command line options of this command\&. If a finer\-grained control is desired (e\&.g\&. to allow \fIgit\-archive\fR to be run against only in a few selected repositories the daemon serves), the per\-repository configuration file can be used to enable or disable them\&.
+These services can be globally enabled/disabled using the command line options of this command\&. If a finer\-grained control is desired (e\&.g\&. to allow \fIgit archive\fR to be run against only in a few selected repositories the daemon serves), the per\-repository configuration file can be used to enable or disable them\&.
 .PP
 upload\-pack
 .RS 4
 This serves
-\fIgit\-fetch\-pack\fR
+\fIgit fetch\-pack\fR
 and
-\fIgit\-ls\-remote\fR
+\fIgit ls\-remote\fR
 clients\&. It is enabled by default, but a repository can disable it by setting
 daemon\&.uploadpack
 configuration item to
@@ -215,7 +215,7 @@ false\&.
 upload\-archive
 .RS 4
 This serves
-\fIgit\-archive \-\-remote\fR\&. It is disabled by default, but a repository can enable it by setting
+\fIgit archive \-\-remote\fR\&. It is disabled by default, but a repository can enable it by setting
 daemon\&.uploadarch
 configuration item to
 true\&.
@@ -224,7 +224,7 @@ true\&.
 receive\-pack
 .RS 4
 This serves
-\fIgit\-send\-pack\fR
+\fIgit send\-pack\fR
 clients, allowing anonymous push\&. It is disabled by default, as there is _no_ authentication in the protocol (in other words, anybody can push anything into the repository, including removal of refs)\&. This is solely meant for a closed LAN setting where everybody is friendly\&. This service can be enabled by
 daemon\&.receivepack
 configuration item to
@@ -248,10 +248,10 @@ git             9418/tcp                # Git Version Control System
 .sp
 .RE
 .PP
-\fIgit\-daemon\fR as inetd server
+\fIgit daemon\fR as inetd server
 .RS 4
 To set up
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 as an inetd service that handles any repository under the whitelisted set of directories, /pub/foo and /pub/bar, place an entry like the following into /etc/inetd all on one line:
 .sp
 .if n \{\
@@ -268,10 +268,10 @@ as an inetd service that handles any repository under the whitelisted set of dir
 .sp
 .RE
 .PP
-\fIgit\-daemon\fR as inetd server for virtual hosts
+\fIgit daemon\fR as inetd server for virtual hosts
 .RS 4
 To set up
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 as an inetd service that handles repositories for different virtual hosts,
 www\&.example\&.com
 and
@@ -302,10 +302,10 @@ git://www\&.example\&.com/software/repo\&.git\&. For pre\-1\&.4\&.0 clients, a s
 into the appropriate default repository could be made as well\&.
 .RE
 .PP
-\fIgit\-daemon\fR as regular daemon for virtual hosts
+\fIgit daemon\fR as regular daemon for virtual hosts
 .RS 4
 To set up
-\fIgit\-daemon\fR
+\fIgit daemon\fR
 as a regular, non\-inetd service that handles repositories for multiple virtual hosts based on their IP addresses, start the daemon like this:
 .sp
 .if n \{\
@@ -329,9 +329,9 @@ will contain a subdirectory for each virtual host IP address supported\&. Reposi
 selectively enable/disable services per repository
 .RS 4
 To enable
-\fIgit\-archive \-\-remote\fR
+\fIgit archive \-\-remote\fR
 and disable
-\fIgit\-fetch\fR
+\fIgit fetch\fR
 against a repository, have the following in the configuration file in the repository (that is the file
 \fIconfig\fR
 next to
@@ -355,7 +355,7 @@ and
 .RE
 .SH "ENVIRONMENT"
 .sp
-\fIgit\-daemon\fR will set REMOTE_ADDR to the IP address of the client that connected to it, if the IP address is available\&. REMOTE_ADDR will be available in the environment of hooks called when services are performed\&.
+\fIgit daemon\fR will set REMOTE_ADDR to the IP address of the client that connected to it, if the IP address is available\&. REMOTE_ADDR will be available in the environment of hooks called when services are performed\&.
 .SH "AUTHOR"
 .sp
 Written by Linus Torvalds <torvalds@osdl\&.org>, YOSHIFUJI Hideaki <yoshfuji@linux\-ipv6\&.org> and the git\-list <git@vger\&.kernel\&.org>

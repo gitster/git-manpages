@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/18/2010
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.243.gff6d2
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "01/18/2010" "Git 1\&.6\&.6\&.243\&.gff6d2" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -25,11 +25,11 @@ git-fast-import \- Backend for fast Git data importers
 frontend | \fIgit fast\-import\fR [options]
 .SH "DESCRIPTION"
 .sp
-This program is usually not what the end user wants to run directly\&. Most end users want to use one of the existing frontend programs, which parses a specific type of foreign source and feeds the contents stored there to \fIgit\-fast\-import\fR\&.
+This program is usually not what the end user wants to run directly\&. Most end users want to use one of the existing frontend programs, which parses a specific type of foreign source and feeds the contents stored there to \fIgit fast\-import\fR\&.
 .sp
 fast\-import reads a mixed command/data stream from standard input and writes one or more packfiles directly into the current repository\&. When EOF is received on standard input, fast import writes out updated branch and tag refs, fully updating the current repository with the newly imported data\&.
 .sp
-The fast\-import backend itself can import into an empty repository (one that has already been initialized by \fIgit\-init\fR) or incrementally update an existing populated repository\&. Whether or not incremental imports are supported from a particular foreign source depends on the frontend program in use\&.
+The fast\-import backend itself can import into an empty repository (one that has already been initialized by \fIgit init\fR) or incrementally update an existing populated repository\&. Whether or not incremental imports are supported from a particular foreign source depends on the frontend program in use\&.
 .SH "OPTIONS"
 .PP
 \-\-date\-format=<fmt>
@@ -86,7 +86,7 @@ Negates a previous \-\-relative\-marks\&. Allows for combining relative and non\
 \-\-export\-pack\-edges=<file>
 .RS 4
 After creating a packfile, print a line of data to <file> listing the filename of the packfile and the last commit on each branch that was written to that packfile\&. This information may be useful after importing projects whose total object set exceeds the 4 GiB packfile limit, as these commits can be used as edge points during calls to
-\fIgit\-pack\-objects\fR\&.
+\fIgit pack\-objects\fR\&.
 .RE
 .PP
 \-\-quiet
@@ -108,7 +108,7 @@ Most bottlenecks appear to be in foreign source data access (the source just can
 A typical frontend for fast\-import tends to weigh in at approximately 200 lines of Perl/Python/Ruby code\&. Most developers have been able to create working importers in just a couple of hours, even though it is their first exposure to fast\-import, and sometimes even to Git\&. This is an ideal situation, given that most conversion tools are throw\-away (use once, and never look back)\&.
 .SH "PARALLEL OPERATION"
 .sp
-Like \fIgit\-push\fR or \fIgit\-fetch\fR, imports handled by fast\-import are safe to run alongside parallel git repack \-a \-d or git gc invocations, or any other Git operation (including \fIgit\-prune\fR, as loose objects are never used by fast\-import)\&.
+Like \fIgit push\fR or \fIgit fetch\fR, imports handled by fast\-import are safe to run alongside parallel git repack \-a \-d or git gc invocations, or any other Git operation (including \fIgit prune\fR, as loose objects are never used by fast\-import)\&.
 .sp
 fast\-import does not lock the branch or tag refs it is actively importing\&. After the import, during its ref update phase, fast\-import tests each existing branch ref to verify the update will be a fast\-forward update (the commit stored in the ref is contained in the new history of the commit to be written)\&. If the update is not a fast\-forward update, fast\-import will skip updating that ref and instead prints a warning message\&. fast\-import will always attempt to update all branch refs, and does not stop on the first failure\&.
 .sp
@@ -158,7 +158,7 @@ rfc2822
 This is the standard email format as described by RFC 2822\&.
 .sp
 An example value is \(lqTue Feb 6 11:22:18 2007 \-0500\(rq\&. The Git parser is accurate, but a little on the lenient side\&. It is the same parser used by
-\fIgit\-am\fR
+\fIgit am\fR
 when applying patches received from email\&.
 .sp
 Some malformed strings may be accepted as valid dates\&. In some of these cases Git will still be able to obtain the correct date from the malformed string\&. There are also some types of malformed strings which Git will parse wrong, and yet consider valid\&. Seriously malformed strings will be rejected\&.
@@ -184,7 +184,7 @@ must always be supplied for
 This is a toy format\&. The current time and timezone of this system is always copied into the identity string at the time it is being created by fast\-import\&. There is no way to specify a different time or timezone\&.
 .sp
 This particular format is supplied as its short to implement and may be useful to a process that wants to create a new commit right now, without needing to use a working directory or
-\fIgit\-update\-index\fR\&.
+\fIgit update\-index\fR\&.
 .sp
 If separate
 author
@@ -783,7 +783,7 @@ The tagger command uses the same format as committer within commit; again see ab
 .sp
 The data command following tagger must supply the annotated tag message (see below for data command syntax)\&. To import an empty tag message use a 0 length data\&. Tag messages are free\-form and are not interpreted by Git\&. Currently they must be encoded in UTF\-8, as fast\-import does not permit other encodings to be specified\&.
 .sp
-Signing annotated tags during import from within fast\-import is not supported\&. Trying to include your own PGP/GPG signature is not recommended, as the frontend does not (easily) have access to the complete set of bytes which normally goes into such a signature\&. If signing is required, create lightweight tags from within fast\-import with reset, then create the annotated versions of those tags offline with the standard \fIgit\-tag\fR process\&.
+Signing annotated tags during import from within fast\-import is not supported\&. Trying to include your own PGP/GPG signature is not recommended, as the frontend does not (easily) have access to the complete set of bytes which normally goes into such a signature\&. If signing is required, create lightweight tags from within fast\-import with reset, then create the annotated versions of those tags offline with the standard \fIgit tag\fR process\&.
 .SS "reset"
 .sp
 Creates (or recreates) the named branch, optionally starting from a specific revision\&. The reset command allows a frontend to issue a new from command for an existing branch, or to create a new branch from an existing commit without creating a new commit\&.
@@ -1278,7 +1278,7 @@ Importing these tags as\-is in Git is impossible without making at least one com
 .sp
 For example since all normal branches are stored under refs/heads/ name the tag fixup branch TAG_FIXUP\&. This way it is impossible for the fixup branch used by the importer to have namespace conflicts with real branches imported from the source (the name TAG_FIXUP is not refs/heads/TAG_FIXUP)\&.
 .sp
-When committing fixups, consider using merge to connect the commit(s) which are supplying file revisions to the fixup branch\&. Doing so will allow tools such as \fIgit\-blame\fR to track through the real commit history and properly annotate the source files\&.
+When committing fixups, consider using merge to connect the commit(s) which are supplying file revisions to the fixup branch\&. Doing so will allow tools such as \fIgit blame\fR to track through the real commit history and properly annotate the source files\&.
 .sp
 After fast\-import terminates the frontend will need to do rm \&.git/TAG_FIXUP to remove the dummy branch\&.
 .SS "Import Now, Repack Later"
@@ -1290,7 +1290,7 @@ However repacking the repository is necessary to improve data locality and acces
 If you choose to wait for the repack, don\(aqt try to run benchmarks or performance tests until repacking is completed\&. fast\-import outputs suboptimal packfiles that are simply never seen in real use situations\&.
 .SS "Repacking Historical Data"
 .sp
-If you are repacking very old imported data (e\&.g\&. older than the last year), consider expending some extra CPU time and supplying \-\-window=50 (or higher) when you run \fIgit\-repack\fR\&. This will take longer, but will also produce a smaller packfile\&. You only need to expend the effort once, and everyone using your project will benefit from the smaller repository\&.
+If you are repacking very old imported data (e\&.g\&. older than the last year), consider expending some extra CPU time and supplying \-\-window=50 (or higher) when you run \fIgit repack\fR\&. This will take longer, but will also produce a smaller packfile\&. You only need to expend the effort once, and everyone using your project will benefit from the smaller repository\&.
 .SS "Include Some Progress Messages"
 .sp
 Every once in a while have your frontend emit a progress message to fast\-import\&. The contents of the messages are entirely free\-form, so one suggestion would be to output the current month and year each time the current commit date moves into the next month\&. Your users will feel better knowing how much of the data stream has been processed\&.

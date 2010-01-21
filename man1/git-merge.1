@@ -2,12 +2,12 @@
 .\"     Title: git-merge
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/19/2010
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.264.gd0743
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "01/19/2010" "Git 1\&.6\&.6\&.264\&.gd0743" "Git Manual"
+.TH "GIT\-MERGE" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -24,15 +24,17 @@ git-merge \- Join two or more development histories together
 .sp
 .nf
 \fIgit merge\fR [\-n] [\-\-stat] [\-\-no\-commit] [\-\-squash] [\-s <strategy>]\&...
-         [\-\-[no\-]rerere\-autoupdate] [\-m <msg>] <remote>\&...
-\fIgit merge\fR <msg> HEAD <remote>\&...
+        [\-\-[no\-]rerere\-autoupdate] [\-m <msg>] <commit>\&...
+\fIgit merge\fR <msg> HEAD <commit>\&...
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-This is the top\-level interface to the merge machinery which drives multiple merge strategy scripts\&.
+Merges the history specified by <commit> into HEAD, optionally using a specific merge strategy\&.
 .sp
-The second syntax (<msg> HEAD <remote>) is supported for historical reasons\&. Do not use it from the command line or in new scripts\&. It is the same as git merge \-m <msg> <remote>\&.
+The second syntax (<msg> HEAD <commit>\&...) is supported for historical reasons\&. Do not use it from the command line or in new scripts\&. It is the same as git merge \-m <msg> <commit>\&...\&.
+.sp
+\fBWarning\fR: Running \fIgit merge\fR with uncommitted changes is discouraged: while possible, it leaves you in a state that is hard to back out of in the case of a conflict\&.
 .SH "OPTIONS"
 .PP
 \-\-commit, \-\-no\-commit
@@ -86,9 +88,9 @@ is already up\-to\-date or the merge can be resolved as a fast\-forward\&.
 .RS 4
 Use the given merge strategy; can be supplied more than once to specify them in the order they should be tried\&. If there is no
 \-s
-option, a built\-in list of strategies is used instead (\fIgit\-merge\-recursive\fR
+option, a built\-in list of strategies is used instead (\fIgit merge\-recursive\fR
 when merging a single head,
-\fIgit\-merge\-octopus\fR
+\fIgit merge\-octopus\fR
 otherwise)\&.
 .RE
 .PP
@@ -107,6 +109,11 @@ Operate quietly\&.
 Be verbose\&.
 .RE
 .PP
+\-X <option>, \-\-strategy\-option=<option>
+.RS 4
+Pass merge strategy specific option through to the merge strategy\&.
+.RE
+.PP
 \-m <msg>
 .RS 4
 Set the commit message to be used for the merge commit (in case one is created)\&. The
@@ -121,11 +128,13 @@ invocations\&.
 Allow the rerere mechanism to update the index with the result of auto\-conflict resolution if possible\&.
 .RE
 .PP
-<remote>\&...
+<commit>\&...
 .RS 4
-Other branch heads to merge into our branch\&. You need at least one <remote>\&. Specifying more than one <remote> obviously means you are trying an Octopus\&.
+Commits, usually other branch heads, to merge into our branch\&. You need at least one <commit>\&. Specifying more than one <commit> obviously means you are trying an Octopus\&.
 .RE
 .SH "MERGE STRATEGIES"
+.sp
+The merge mechanism (\fIgit\-merge\fR and \fIgit\-pull\fR commands) allows the backend \fImerge strategies\fR to be chosen with \-s option\&. Some strategies can also take their own options, which can be passed by giving \-X<option> arguments to \fIgit\-merge\fR and/or \fIgit\-pull\fR\&.
 .PP
 resolve
 .RS 4
@@ -135,6 +144,36 @@ This can only resolve two heads (i\&.e\&. the current branch and another branch 
 recursive
 .RS 4
 This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mis\-merges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames\&. This is the default merge strategy when pulling or merging one branch\&.
+.sp
+The
+\fIrecursive\fR
+strategy can take the following options:
+.PP
+ours
+.RS 4
+This option forces conflicting hunks to be auto\-resolved cleanly by favoring
+\fIour\fR
+version\&. Changes from the other tree that do not conflict with our side are reflected to the merge result\&.
+.sp
+This should not be confused with the
+\fIours\fR
+merge strategy, which does not even look at what the other tree contains at all\&. It discards everything the other tree did, declaring
+\fIour\fR
+history contains all that happened in it\&.
+.RE
+.PP
+theirs
+.RS 4
+This is opposite of
+\fIours\fR\&.
+.RE
+.PP
+subtree[=path]
+.RS 4
+This option is a more advanced form of
+\fIsubtree\fR
+strategy, where the strategy makes a guess on how two trees must be shifted to match with each other when merging\&. Instead, the specified path is prefixed (or stripped from the beginning) to make the shape of two trees to match\&.
+.RE
 .RE
 .PP
 octopus
@@ -144,7 +183,9 @@ This resolves cases with more than two heads, but refuses to do a complex merge 
 .PP
 ours
 .RS 4
-This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&.
+This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&. Note that this is different from the \-Xours option to the
+\fIrecursive\fR
+merge strategy\&.
 .RE
 .PP
 subtree
@@ -152,7 +193,7 @@ subtree
 This is a modified recursive strategy\&. When merging trees A and B, if B corresponds to a subtree of A, B is first adjusted to match the tree structure of A, instead of reading the trees at the same level\&. This adjustment is also done to the common ancestor tree\&.
 .RE
 .sp
-If you tried a merge which resulted in complex conflicts and want to start over, you can recover with \fIgit\-reset\fR\&.
+If you tried a merge which resulted in complex conflicts and want to start over, you can recover with \fIgit reset\fR\&.
 .SH "CONFIGURATION"
 .PP
 merge\&.conflictstyle
@@ -319,7 +360,7 @@ HEAD
 pointer gets advanced\&.
 .RE
 .sp
-Because of 2\&., we require that the original state of the index file matches exactly the current HEAD commit; otherwise we will write out your local changes already registered in your index file along with the merge result, which is not good\&. Because 1\&. involves only those paths differing between your branch and the remote branch you are pulling from during the merge (which is typically a fraction of the whole tree), you can have local modifications in your working tree as long as they do not overlap with what the merge updates\&.
+Because of 2\&., we require that the original state of the index file matches exactly the current HEAD commit; otherwise we will write out your local changes already registered in your index file along with the merge result, which is not good\&. Because 1\&. involves only those paths differing between your branch and the branch you are merging (which is typically a fraction of the whole tree), you can have local modifications in your working tree as long as they do not overlap with what the merge updates\&.
 .sp
 When there are conflicts, the following happens:
 .sp
@@ -356,7 +397,7 @@ Cleanly merged paths are updated both in the index file and in your working tree
 .IP "  3." 4.2
 .\}
 For conflicting paths, the index file records up to three versions; stage1 stores the version from the common ancestor, stage2 from
-HEAD, and stage3 from the remote branch (you can inspect the stages with
+HEAD, and stage3 from the other branch (you can inspect the stages with
 git ls\-files \-u)\&. The working tree files contain the result of the "merge" program; i\&.e\&. 3\-way merge results with familiar conflict markers
 <<< === >>>\&.
 .RE
@@ -440,7 +481,7 @@ After seeing a conflict, you can do two things:
 Decide not to merge\&. The only clean\-ups you need are to reset the index file to the
 HEAD
 commit to reverse 2\&. and to clean up working tree changes made by 2\&. and 3\&.;
-\fIgit\-reset \-\-hard\fR
+git\-reset \-\-hard
 can be used for this\&.
 .RE
 .sp
@@ -453,9 +494,9 @@ can be used for this\&.
 .IP \(bu 2.3
 .\}
 Resolve the conflicts\&. Git will mark the conflicts in the working tree\&. Edit the files into shape and
-\fIgit\-add\fR
+\fIgit add\fR
 them to the index\&. Use
-\fIgit\-commit\fR
+\fIgit commit\fR
 to seal the deal\&.
 .RE
 .sp
@@ -470,7 +511,7 @@ You can work through the conflict with a number of tools:
 .IP \(bu 2.3
 .\}
 Use a mergetool\&.
-\fIgit mergetool\fR
+git mergetool
 to launch a graphical mergetool which will work you through the merge\&.
 .RE
 .sp
@@ -483,8 +524,8 @@ to launch a graphical mergetool which will work you through the merge\&.
 .IP \(bu 2.3
 .\}
 Look at the diffs\&.
-\fIgit diff\fR
-will show a three\-way diff, highlighting changes from both the HEAD and remote versions\&.
+git diff
+will show a three\-way diff, highlighting changes from both the HEAD and their versions\&.
 .RE
 .sp
 .RS 4
@@ -496,8 +537,8 @@ will show a three\-way diff, highlighting changes from both the HEAD and remote 
 .IP \(bu 2.3
 .\}
 Look at the diffs on their own\&.
-\fIgit log \-\-merge \-p <path>\fR
-will show diffs first for the HEAD version and then the remote version\&.
+git log \-\-merge \-p <path>
+will show diffs first for the HEAD version and then their version\&.
 .RE
 .sp
 .RS 4
@@ -509,12 +550,12 @@ will show diffs first for the HEAD version and then the remote version\&.
 .IP \(bu 2.3
 .\}
 Look at the originals\&.
-\fIgit show :1:filename\fR
+git show :1:filename
 shows the common ancestor,
-\fIgit show :2:filename\fR
+git show :2:filename
 shows the HEAD version and
-\fIgit show :3:filename\fR
-shows the remote version\&.
+git show :3:filename
+shows their version\&.
 .RE
 .SH "EXAMPLES"
 .sp

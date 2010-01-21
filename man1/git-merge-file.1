@@ -2,12 +2,12 @@
 .\"     Title: git-merge-file
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE\-FILE" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-MERGE\-FILE" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -24,14 +24,15 @@ git-merge-file \- Run a three\-way file merge
 .sp
 .nf
 \fIgit merge\-file\fR [\-L <current\-name> [\-L <base\-name> [\-L <other\-name>]]]
-        [\-p|\-\-stdout] [\-q|\-\-quiet] <current\-file> <base\-file> <other\-file>
+        [\-\-ours|\-\-theirs] [\-p|\-\-stdout] [\-q|\-\-quiet]
+        <current\-file> <base\-file> <other\-file>
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-\fIgit\-merge\-file\fR incorporates all changes that lead from the <base\-file> to <other\-file> into <current\-file>\&. The result ordinarily goes into <current\-file>\&. \fIgit\-merge\-file\fR is useful for combining separate changes to an original\&. Suppose <base\-file> is the original, and both <current\-file> and <other\-file> are modifications of <base\-file>, then \fIgit\-merge\-file\fR combines both changes\&.
+\fIgit merge\-file\fR incorporates all changes that lead from the <base\-file> to <other\-file> into <current\-file>\&. The result ordinarily goes into <current\-file>\&. \fIgit merge\-file\fR is useful for combining separate changes to an original\&. Suppose <base\-file> is the original, and both <current\-file> and <other\-file> are modifications of <base\-file>, then \fIgit merge\-file\fR combines both changes\&.
 .sp
-A conflict occurs if both <current\-file> and <other\-file> have changes in a common segment of lines\&. If a conflict is found, \fIgit\-merge\-file\fR normally outputs a warning and brackets the conflict with lines containing <<<<<<< and >>>>>>> markers\&. A typical conflict will look like this:
+A conflict occurs if both <current\-file> and <other\-file> have changes in a common segment of lines\&. If a conflict is found, \fIgit merge\-file\fR normally outputs a warning and brackets the conflict with lines containing <<<<<<< and >>>>>>> markers\&. A typical conflict will look like this:
 .sp
 .if n \{\
 .RS 4
@@ -47,11 +48,11 @@ lines in file B
 .RE
 .\}
 .sp
-If there are conflicts, the user should edit the result and delete one of the alternatives\&.
+If there are conflicts, the user should edit the result and delete one of the alternatives\&. When \-\-ours or \-\-theirs option is in effect, however, these conflicts are resolved favouring lines from <current\-file> or lines from <other\-file> respectively\&.
 .sp
 The exit value of this program is negative on error, and the number of conflicts otherwise\&. If the merge was clean, the exit value is 0\&.
 .sp
-\fIgit\-merge\-file\fR is designed to be a minimal clone of RCS \fImerge\fR; that is, it implements all of RCS \fImerge\fR\(aqs functionality which is needed by \fBgit\fR(1)\&.
+\fIgit merge\-file\fR is designed to be a minimal clone of RCS \fImerge\fR; that is, it implements all of RCS \fImerge\fR\(aqs functionality which is needed by \fBgit\fR(1)\&.
 .SH "OPTIONS"
 .PP
 \-L <label>
@@ -70,6 +71,11 @@ Send results to standard output instead of overwriting
 \-q
 .RS 4
 Quiet; do not warn about conflicts\&.
+.RE
+.PP
+\-\-ours, \-\-theirs
+.RS 4
+Instead of leaving conflicts in the file, resolve conflicts favouring our (or their) side of the lines\&.
 .RE
 .SH "EXAMPLES"
 .PP

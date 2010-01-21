@@ -2,12 +2,12 @@
 .\"     Title: git-filter-branch
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -86,7 +86,7 @@ This is the filter for rewriting the commit messages\&. The argument is evaluate
 \-\-commit\-filter <command>
 .RS 4
 This is the filter for performing the commit\&. If this filter is specified, it will be called instead of the
-\fIgit\-commit\-tree\fR
+\fIgit commit\-tree\fR
 command, with arguments of the form "<TREE_ID> [\-p <PARENT_COMMIT_ID>]\&..." and the log message on stdin\&. The commit id is expected on stdout\&.
 .sp
 As a special extension, the commit filter may emit multiple commit ids; in that case, the rewritten children of the original commit will have all of them as parents\&.
@@ -96,13 +96,13 @@ You can use the
 convenience function in this filter, and other convenience functions, too\&. For example, calling
 \fIskip_commit "$@"\fR
 will leave out the current commit (but not its changes! If you want that, use
-\fIgit\-rebase\fR
+\fIgit rebase\fR
 instead)\&.
 .sp
 You can also use the
-\fIgit_commit_non_empty_tree "$@"\fR
+git_commit_non_empty_tree "$@"
 instead of
-\fIgit commit\-tree "$@"\fR
+git commit\-tree "$@"
 if you don\(aqt wish to keep commits with a single parent and that makes no change to the tree\&.
 .RE
 .PP
@@ -135,7 +135,7 @@ Some kind of filters will generate empty commits, that left the tree untouched\&
 \fI\-\-commit\-filter\fR\&. Though you just need to use the function
 \fIgit_commit_non_empty_tree "$@"\fR
 instead of the
-\fIgit commit\-tree "$@"\fR
+git commit\-tree "$@"
 idiom in your commit filter to make that happen\&.
 .RE
 .PP
@@ -155,7 +155,7 @@ directory but you can override that choice by this parameter\&.
 \-f, \-\-force
 .RS 4
 
-\fIgit\-filter\-branch\fR
+\fIgit filter\-branch\fR
 refuses to start with an existing temporary directory or when there are already refs starting with
 \fIrefs/original/\fR, unless forced\&.
 .RE
@@ -163,11 +163,11 @@ refuses to start with an existing temporary directory or when there are already 
 <rev\-list options>\&...
 .RS 4
 Arguments for
-\fIgit\-rev\-list\fR\&. All positive refs included by these options are rewritten\&. You may also specify options such as
+\fIgit rev\-list\fR\&. All positive refs included by these options are rewritten\&. You may also specify options such as
 \fI\-\-all\fR, but you must use
 \fI\-\-\fR
 to separate them from the
-\fIgit\-filter\-branch\fR
+\fIgit filter\-branch\fR
 options\&.
 .RE
 .SH "EXAMPLES"
@@ -187,7 +187,7 @@ git filter\-branch \-\-tree\-filter \(aqrm filename\(aq HEAD
 .sp
 However, if the file is absent from the tree of some commit, a simple rm filename will fail for that tree and commit\&. Thus you may instead want to use rm \-f filename as the script\&.
 .sp
-Using \-\-index\-filter with \fIgit\-rm\fR yields a significantly faster version\&. Like with using rm filename, git rm \-\-cached filename will fail if the file is absent from the tree of a commit\&. If you want to "completely forget" a file, it does not matter when it entered history, so we also add \-\-ignore\-unmatch:
+Using \-\-index\-filter with \fIgit rm\fR yields a significantly faster version\&. Like with using rm filename, git rm \-\-cached filename will fail if the file is absent from the tree of a commit\&. If you want to "completely forget" a file, it does not matter when it entered history, so we also add \-\-ignore\-unmatch:
 .sp
 .if n \{\
 .RS 4
@@ -301,7 +301,7 @@ skip_commit()
 .sp
 The shift magic first throws away the tree id and then the \-p parameters\&. Note that this handles merges properly! In case Darl committed a merge between P1 and P2, it will be propagated properly and all children of the merge will become merge commits with P1,P2 as their parents instead of the merge commit\&.
 .sp
-You can rewrite the commit log messages using \-\-msg\-filter\&. For example, \fIgit\-svn\-id\fR strings in a repository created by \fIgit\-svn\fR can be removed this way:
+You can rewrite the commit log messages using \-\-msg\-filter\&. For example, \fIgit svn\-id\fR strings in a repository created by \fIgit svn\fR can be removed this way:
 .sp
 .if n \{\
 .RS 4
@@ -316,7 +316,7 @@ git filter\-branch \-\-msg\-filter \(aq
 .\}
 .sp
 .sp
-To restrict rewriting to only part of the history, specify a revision range in addition to the new branch name\&. The new branch name will point to the top\-most revision that a \fIgit\-rev\-list\fR of this range will print\&.
+To restrict rewriting to only part of the history, specify a revision range in addition to the new branch name\&. The new branch name will point to the top\-most revision that a \fIgit rev\-list\fR of this range will print\&.
 .sp
 If you need to add \fIAcked\-by\fR lines to, say, the last 10 commits (none of which is a merge), use this command:
 .sp
@@ -334,7 +334,7 @@ git filter\-branch \-\-msg\-filter \(aq
 .\}
 .sp
 .sp
-\fBNOTE\fR the changes introduced by the commits, and which are not reverted by subsequent commits, will still be in the rewritten branch\&. If you want to throw out _changes_ together with the commits, you should use the interactive mode of \fIgit\-rebase\fR\&.
+\fBNOTE\fR the changes introduced by the commits, and which are not reverted by subsequent commits, will still be in the rewritten branch\&. If you want to throw out _changes_ together with the commits, you should use the interactive mode of \fIgit rebase\fR\&.
 .sp
 Consider this history:
 .sp

@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
 .\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.1.336.g19c6
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.336\&.g19c" "Git Manual"
+.TH "GIT\-REBASE" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-rebase \- Forward\-port local commits to the updated upstream head
 \fIgit rebase\fR \-\-continue | \-\-skip | \-\-abort
 .SH "DESCRIPTION"
 .sp
-If <branch> is specified, \fIgit\-rebase\fR will perform an automatic git checkout <branch> before doing anything else\&. Otherwise it remains on the current branch\&.
+If <branch> is specified, \fIgit rebase\fR will perform an automatic git checkout <branch> before doing anything else\&. Otherwise it remains on the current branch\&.
 .sp
 All changes made by commits in the current branch but that are not in <upstream> are saved to a temporary area\&. This is the same set of commits that would be shown by git log <upstream>\&.\&.HEAD (or git log HEAD, if \-\-root is specified)\&.
 .sp
@@ -254,7 +254,7 @@ would result in the removal of commits F and G:
 .sp
 This is useful if F and G were flawed in some way, or should not be part of topicA\&. Note that the argument to \-\-onto and the <upstream> parameter can be any valid commit\-ish\&.
 .sp
-In case of conflict, \fIgit\-rebase\fR will stop at the first problematic commit and leave conflict markers in the tree\&. You can use \fIgit\-diff\fR to locate the markers (<<<<<<) and make edits to resolve the conflict\&. For each file you edit, you need to tell git that the conflict has been resolved, typically this would be done with
+In case of conflict, \fIgit rebase\fR will stop at the first problematic commit and leave conflict markers in the tree\&. You can use \fIgit diff\fR to locate the markers (<<<<<<) and make edits to resolve the conflict\&. For each file you edit, you need to tell git that the conflict has been resolved, typically this would be done with
 .sp
 .if n \{\
 .RS 4
@@ -278,7 +278,7 @@ git rebase \-\-continue
 .RE
 .\}
 .sp
-Alternatively, you can undo the \fIgit\-rebase\fR with
+Alternatively, you can undo the \fIgit rebase\fR with
 .sp
 .if n \{\
 .RS 4
@@ -343,11 +343,11 @@ is the working branch\&. In other words, the sides are swapped\&.
 Use the given merge strategy\&. If there is no
 \-s
 option
-\fIgit\-merge\-recursive\fR
+\fIgit merge\-recursive\fR
 is used instead\&. This implies \-\-merge\&.
 .sp
 Because
-\fIgit\-rebase\fR
+\fIgit rebase\fR
 replays each commit from the working branch on top of the <upstream> branch using the given strategy, using the
 \fIours\fR
 strategy simply discards all patches from the <branch>, which makes little sense\&.
@@ -392,7 +392,7 @@ Force the rebase even if the current branch is a descendant of the commit you ar
 \-\-ignore\-whitespace, \-\-whitespace=<option>
 .RS 4
 These flag are passed to the
-\fIgit\-apply\fR
+\fIgit apply\fR
 program (see
 \fBgit-apply\fR(1)) that applies the patch\&. Incompatible with the \-\-interactive option\&.
 .RE
@@ -400,7 +400,7 @@ program (see
 \-\-committer\-date\-is\-author\-date, \-\-ignore\-date
 .RS 4
 These flags are passed to
-\fIgit\-am\fR
+\fIgit am\fR
 to easily change the dates of the rebased commits (see
 \fBgit-am\fR(1))\&.
 .RE
@@ -436,6 +436,8 @@ This option is only valid when
 option is used\&.
 .RE
 .SH "MERGE STRATEGIES"
+.sp
+The merge mechanism (\fIgit\-merge\fR and \fIgit\-pull\fR commands) allows the backend \fImerge strategies\fR to be chosen with \-s option\&. Some strategies can also take their own options, which can be passed by giving \-X<option> arguments to \fIgit\-merge\fR and/or \fIgit\-pull\fR\&.
 .PP
 resolve
 .RS 4
@@ -445,6 +447,36 @@ This can only resolve two heads (i\&.e\&. the current branch and another branch 
 recursive
 .RS 4
 This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mis\-merges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames\&. This is the default merge strategy when pulling or merging one branch\&.
+.sp
+The
+\fIrecursive\fR
+strategy can take the following options:
+.PP
+ours
+.RS 4
+This option forces conflicting hunks to be auto\-resolved cleanly by favoring
+\fIour\fR
+version\&. Changes from the other tree that do not conflict with our side are reflected to the merge result\&.
+.sp
+This should not be confused with the
+\fIours\fR
+merge strategy, which does not even look at what the other tree contains at all\&. It discards everything the other tree did, declaring
+\fIour\fR
+history contains all that happened in it\&.
+.RE
+.PP
+theirs
+.RS 4
+This is opposite of
+\fIours\fR\&.
+.RE
+.PP
+subtree[=path]
+.RS 4
+This option is a more advanced form of
+\fIsubtree\fR
+strategy, where the strategy makes a guess on how two trees must be shifted to match with each other when merging\&. Instead, the specified path is prefixed (or stripped from the beginning) to make the shape of two trees to match\&.
+.RE
 .RE
 .PP
 octopus
@@ -454,7 +486,9 @@ This resolves cases with more than two heads, but refuses to do a complex merge 
 .PP
 ours
 .RS 4
-This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&.
+This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&. Note that this is different from the \-Xours option to the
+\fIrecursive\fR
+merge strategy\&.
 .RE
 .PP
 subtree
@@ -463,7 +497,7 @@ This is a modified recursive strategy\&. When merging trees A and B, if B corres
 .RE
 .SH "NOTES"
 .sp
-You should understand the implications of using \fIgit\-rebase\fR on a repository that you share\&. See also RECOVERING FROM UPSTREAM REBASE below\&.
+You should understand the implications of using \fIgit rebase\fR on a repository that you share\&. See also RECOVERING FROM UPSTREAM REBASE below\&.
 .sp
 When the git\-rebase command is run, it will first execute a "pre\-rebase" hook if one exists\&. You can use this hook to do sanity checks and reject the rebase if it isn\(aqt appropriate\&. Please see the template pre\-rebase hook script for an example\&.
 .sp
@@ -626,17 +660,17 @@ pick fa1afe1 The oneline of the next commit
 .\}
 .sp
 .sp
-The oneline descriptions are purely for your pleasure; \fIgit\-rebase\fR will not look at them but at the commit names ("deadbee" and "fa1afe1" in this example), so do not delete or edit the names\&.
+The oneline descriptions are purely for your pleasure; \fIgit rebase\fR will not look at them but at the commit names ("deadbee" and "fa1afe1" in this example), so do not delete or edit the names\&.
 .sp
-By replacing the command "pick" with the command "edit", you can tell \fIgit\-rebase\fR to stop after applying that commit, so that you can edit the files and/or the commit message, amend the commit, and continue rebasing\&.
+By replacing the command "pick" with the command "edit", you can tell \fIgit rebase\fR to stop after applying that commit, so that you can edit the files and/or the commit message, amend the commit, and continue rebasing\&.
 .sp
 If you just want to edit the commit message for a commit, replace the command "pick" with the command "reword"\&.
 .sp
 If you want to fold two or more commits into one, replace the command "pick" for the second and subsequent commits with "squash" or "fixup"\&. If the commits had different authors, the folded commit will be attributed to the author of the first commit\&. The suggested commit message for the folded commit is the concatenation of the commit messages of the first commit and of those with the "squash" command, but omits the commit messages of commits with the "fixup" command\&.
 .sp
-\fIgit\-rebase\fR will stop when "pick" has been replaced with "edit" or when a command fails due to merge errors\&. When you are done editing and/or resolving conflicts you can continue with git rebase \-\-continue\&.
+\fIgit rebase\fR will stop when "pick" has been replaced with "edit" or when a command fails due to merge errors\&. When you are done editing and/or resolving conflicts you can continue with git rebase \-\-continue\&.
 .sp
-For example, if you want to reorder the last 5 commits, such that what was HEAD~4 becomes the new HEAD\&. To achieve that, you would call \fIgit\-rebase\fR like this:
+For example, if you want to reorder the last 5 commits, such that what was HEAD~4 becomes the new HEAD\&. To achieve that, you would call \fIgit rebase\fR like this:
 .sp
 .if n \{\
 .RS 4
@@ -682,7 +716,7 @@ $ git rebase \-i \-p \-\-onto Q O
 .sp
 .SH "SPLITTING COMMITS"
 .sp
-In interactive mode, you can mark commits with the action "edit"\&. However, this does not necessarily mean that \fIgit\-rebase\fR expects the result of this edit to be exactly one commit\&. Indeed, you can undo the commit, or you can add other commits\&. This can be used to split a commit into two:
+In interactive mode, you can mark commits with the action "edit"\&. However, this does not necessarily mean that \fIgit rebase\fR expects the result of this edit to be exactly one commit\&. Indeed, you can undo the commit, or you can add other commits\&. This can be used to split a commit into two:
 .sp
 .RS 4
 .ie n \{\
@@ -730,7 +764,7 @@ git reset HEAD^\&. The effect is that the HEAD is rewound by one, and the index 
 Now add the changes to the index that you want to have in the first commit\&. You can use
 git add
 (possibly interactively) or
-\fIgit\-gui\fR
+\fIgit gui\fR
 (or both) to do that\&.
 .RE
 .sp
@@ -768,7 +802,7 @@ Continue the rebase with
 git rebase \-\-continue\&.
 .RE
 .sp
-If you are not absolutely sure that the intermediate revisions are consistent (they compile, pass the testsuite, etc\&.) you should use \fIgit\-stash\fR to stash away the not\-yet\-committed changes after each commit, test, and amend the commit if fixes are necessary\&.
+If you are not absolutely sure that the intermediate revisions are consistent (they compile, pass the testsuite, etc\&.) you should use \fIgit stash\fR to stash away the not\-yet\-committed changes after each commit, test, and amend the commit if fixes are necessary\&.
 .SH "RECOVERING FROM UPSTREAM REBASE"
 .sp
 Rebasing (or any other form of rewriting) a branch that others have based work on is a bad idea: anyone downstream of it is forced to manually fix their history\&. This section explains how to do the fix from the downstream\(aqs point of view\&. The real fix, however, would be to avoid rebasing the upstream in the first place\&.
@@ -850,7 +884,7 @@ filter\-branch\&.
 .sp
 Only works if the changes (patch IDs based on the diff contents) on \fIsubsystem\fR are literally the same before and after the rebase \fIsubsystem\fR did\&.
 .sp
-In that case, the fix is easy because \fIgit\-rebase\fR knows to skip changes that are already present in the new upstream\&. So if you say (assuming you\(aqre on \fItopic\fR)
+In that case, the fix is easy because \fIgit rebase\fR knows to skip changes that are already present in the new upstream\&. So if you say (assuming you\(aqre on \fItopic\fR)
 .sp
 .if n \{\
 .RS 4
@@ -899,7 +933,7 @@ While an "easy case recovery" sometimes appears to be successful even in the har
 .sp .5v
 .RE
 .sp
-The idea is to manually tell \fIgit\-rebase\fR "where the old \fIsubsystem\fR ended and your \fItopic\fR began", that is, what the old merge\-base between them was\&. You will have to find a way to name the last commit of the old \fIsubsystem\fR, for example:
+The idea is to manually tell \fIgit rebase\fR "where the old \fIsubsystem\fR ended and your \fItopic\fR began", that is, what the old merge\-base between them was\&. You will have to find a way to name the last commit of the old \fIsubsystem\fR, for example:
 .sp
 .RS 4
 .ie n \{\
@@ -912,7 +946,7 @@ The idea is to manually tell \fIgit\-rebase\fR "where the old \fIsubsystem\fR en
 With the
 \fIsubsystem\fR
 reflog: after
-\fIgit\-fetch\fR, the old tip of
+\fIgit fetch\fR, the old tip of
 \fIsubsystem\fR
 is at
 subsystem@{1}\&. Subsequent fetches will increase the number\&. (See

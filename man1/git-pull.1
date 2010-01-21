@@ -2,12 +2,12 @@
 .\"     Title: git-pull
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-PULL" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-PULL" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -25,11 +25,13 @@ git-pull \- Fetch from and merge with another repository or a local branch
 \fIgit pull\fR <options> <repository> <refspec>\&...
 .SH "DESCRIPTION"
 .sp
-Runs \fIgit\-fetch\fR with the given parameters, and calls \fIgit\-merge\fR to merge the retrieved head(s) into the current branch\&. With \-\-rebase, calls \fIgit\-rebase\fR instead of \fIgit\-merge\fR\&.
+Runs \fIgit fetch\fR with the given parameters, and calls \fIgit merge\fR to merge the retrieved head(s) into the current branch\&. With \-\-rebase, calls \fIgit rebase\fR instead of \fIgit merge\fR\&.
 .sp
 Note that you can use \&. (current directory) as the <repository> to pull from the local repository \(em this is useful when merging local branches into the current branch\&.
 .sp
-Also note that options meant for \fIgit\-pull\fR itself and underlying \fIgit\-merge\fR must be given before the options meant for \fIgit\-fetch\fR\&.
+Also note that options meant for \fIgit pull\fR itself and underlying \fIgit merge\fR must be given before the options meant for \fIgit fetch\fR\&.
+.sp
+\fBWarning\fR: Running \fIgit pull\fR (actually, the underlying \fIgit merge\fR) with uncommitted changes is discouraged: while possible, it leaves you in a state that is hard to back out of in the case of a conflict\&.
 .SH "OPTIONS"
 .SS "Options related to merging"
 .PP
@@ -84,9 +86,9 @@ is already up\-to\-date or the merge can be resolved as a fast\-forward\&.
 .RS 4
 Use the given merge strategy; can be supplied more than once to specify them in the order they should be tried\&. If there is no
 \-s
-option, a built\-in list of strategies is used instead (\fIgit\-merge\-recursive\fR
+option, a built\-in list of strategies is used instead (\fIgit merge\-recursive\fR
 when merging a single head,
-\fIgit\-merge\-octopus\fR
+\fIgit merge\-octopus\fR
 otherwise)\&.
 .RE
 .PP
@@ -103,6 +105,11 @@ Operate quietly\&.
 \-v, \-\-verbose
 .RS 4
 Be verbose\&.
+.RE
+.PP
+\-X <option>, \-\-strategy\-option=<option>
+.RS 4
+Pass merge strategy specific option through to the merge strategy\&.
 .RE
 .PP
 \-\-rebase
@@ -167,7 +174,7 @@ option (see
 \-f, \-\-force
 .RS 4
 When
-\fIgit\-fetch\fR
+\fIgit fetch\fR
 is used with
 <rbranch>:<lbranch>
 refspec, it refuses to update the local branch
@@ -196,17 +203,17 @@ Most of the tags are fetched automatically as branch heads are downloaded, but t
 \-u, \-\-update\-head\-ok
 .RS 4
 By default
-\fIgit\-fetch\fR
+\fIgit fetch\fR
 refuses to update the head which corresponds to the current branch\&. This flag disables the check\&. This is purely for the internal use for
-\fIgit\-pull\fR
+\fIgit pull\fR
 to communicate with
-\fIgit\-fetch\fR, and unless you are implementing your own Porcelain you are not supposed to use it\&.
+\fIgit fetch\fR, and unless you are implementing your own Porcelain you are not supposed to use it\&.
 .RE
 .PP
 \-\-upload\-pack <upload\-pack>
 .RS 4
 When given, and the repository to fetch from is handled by
-\fIgit\-fetch\-pack\fR,
+\fIgit fetch\-pack\fR,
 \fI\-\-exec=<upload\-pack>\fR
 is passed to the command to specify non\-default path for the command run on the other end\&.
 .RE
@@ -261,7 +268,7 @@ sign to indicate non\-fast\-forward updates will be needed\&. There is currently
 You never do your own development on branches that appear on the right hand side of a <refspec> colon on
 Pull:
 lines; they are to be updated by
-\fIgit\-fetch\fR\&. If you intend to do development derived from a remote branch
+\fIgit fetch\fR\&. If you intend to do development derived from a remote branch
 B, have a
 Pull:
 line to track it (i\&.e\&.
@@ -291,13 +298,13 @@ branch\&.
 .ps -1
 .br
 There is a difference between listing multiple <refspec> directly on
-\fIgit\-pull\fR
+\fIgit pull\fR
 command line and having multiple
 Pull:
 <refspec> lines for a <repository> and running
-\fIgit\-pull\fR
+\fIgit pull\fR
 command without any explicit <refspec> parameters\&. <refspec> listed explicitly on the command line are always merged into the current branch after fetching\&. In other words, if you list more than one remote refs, you would be making an Octopus\&. While
-\fIgit\-pull\fR
+\fIgit pull\fR
 run without any explicit <refspec> parameter takes default <refspec>s from
 Pull:
 lines, it merges only the first <refspec> found into the current branch, after fetching all the remote refs\&. This is because making an Octopus from remote refs is rarely done, while keeping track of multiple remote heads in one\-go by fetching more than one is often useful\&.
@@ -634,7 +641,7 @@ You can choose to provide the name of a file in $GIT_DIR/remotes\&. The URL in t
 .\}
 .sp
 .sp
-Push: lines are used by \fIgit\-push\fR and Pull: lines are used by \fIgit\-pull\fR and \fIgit\-fetch\fR\&. Multiple Push: and Pull: lines may be specified for additional branch mappings\&.
+Push: lines are used by \fIgit push\fR and Pull: lines are used by \fIgit pull\fR and \fIgit fetch\fR\&. Multiple Push: and Pull: lines may be specified for additional branch mappings\&.
 .SS "Named file in $GIT_DIR/branches"
 .sp
 You can choose to provide the name of a file in $GIT_DIR/branches\&. The URL in this file will be used to access the repository\&. This file should have the following format:
@@ -680,6 +687,8 @@ git push uses:
 .\}
 .sp
 .SH "MERGE STRATEGIES"
+.sp
+The merge mechanism (\fIgit\-merge\fR and \fIgit\-pull\fR commands) allows the backend \fImerge strategies\fR to be chosen with \-s option\&. Some strategies can also take their own options, which can be passed by giving \-X<option> arguments to \fIgit\-merge\fR and/or \fIgit\-pull\fR\&.
 .PP
 resolve
 .RS 4
@@ -689,6 +698,36 @@ This can only resolve two heads (i\&.e\&. the current branch and another branch 
 recursive
 .RS 4
 This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mis\-merges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames\&. This is the default merge strategy when pulling or merging one branch\&.
+.sp
+The
+\fIrecursive\fR
+strategy can take the following options:
+.PP
+ours
+.RS 4
+This option forces conflicting hunks to be auto\-resolved cleanly by favoring
+\fIour\fR
+version\&. Changes from the other tree that do not conflict with our side are reflected to the merge result\&.
+.sp
+This should not be confused with the
+\fIours\fR
+merge strategy, which does not even look at what the other tree contains at all\&. It discards everything the other tree did, declaring
+\fIour\fR
+history contains all that happened in it\&.
+.RE
+.PP
+theirs
+.RS 4
+This is opposite of
+\fIours\fR\&.
+.RE
+.PP
+subtree[=path]
+.RS 4
+This option is a more advanced form of
+\fIsubtree\fR
+strategy, where the strategy makes a guess on how two trees must be shifted to match with each other when merging\&. Instead, the specified path is prefixed (or stripped from the beginning) to make the shape of two trees to match\&.
+.RE
 .RE
 .PP
 octopus
@@ -698,7 +737,9 @@ This resolves cases with more than two heads, but refuses to do a complex merge 
 .PP
 ours
 .RS 4
-This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&.
+This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&. Note that this is different from the \-Xours option to the
+\fIrecursive\fR
+merge strategy\&.
 .RE
 .PP
 subtree
@@ -833,7 +874,7 @@ $ git merge origin/next
 .sp
 .RE
 .sp
-If you tried a pull which resulted in a complex conflicts and would want to start over, you can recover with \fIgit\-reset\fR\&.
+If you tried a pull which resulted in a complex conflicts and would want to start over, you can recover with \fIgit reset\fR\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-fetch\fR(1), \fBgit-merge\fR(1), \fBgit-config\fR(1)

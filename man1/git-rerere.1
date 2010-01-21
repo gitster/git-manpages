@@ -2,12 +2,12 @@
 .\"     Title: git-rerere
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/06/2009
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.rc1.5.ge21a85
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-RERERE" "1" "12/06/2009" "Git 1\&.6\&.6\&.rc1\&.5\&.ge21" "Git Manual"
+.TH "GIT\-RERERE" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -46,14 +46,14 @@ You need to set the configuration variable rerere\&.enabled in order to enable t
 .RE
 .SH "COMMANDS"
 .sp
-Normally, \fIgit\-rerere\fR is run without arguments or user\-intervention\&. However, it has several commands that allow it to interact with its working state\&.
+Normally, \fIgit rerere\fR is run without arguments or user\-intervention\&. However, it has several commands that allow it to interact with its working state\&.
 .PP
 \fIclear\fR
 .RS 4
 This resets the metadata used by rerere if a merge resolution is to be aborted\&. Calling
-\fIgit\-am [\-\-skip|\-\-abort]\fR
+\fIgit am [\-\-skip|\-\-abort]\fR
 or
-\fIgit\-rebase [\-\-skip|\-\-abort]\fR
+\fIgit rebase [\-\-skip|\-\-abort]\fR
 will automatically invoke this command\&.
 .RE
 .PP
@@ -160,17 +160,17 @@ As an alternative, to keep the topic branch clean of test merges, you could blow
 .\}
 .sp
 .sp
-This would leave only one merge commit when your topic branch is finally ready and merged into the master branch\&. This merge would require you to resolve the conflict, introduced by the commits marked with *\&. However, this conflict is often the same conflict you resolved when you created the test merge you blew away\&. \fIgit\-rerere\fR helps you resolve this final conflicted merge using the information from your earlier hand resolve\&.
+This would leave only one merge commit when your topic branch is finally ready and merged into the master branch\&. This merge would require you to resolve the conflict, introduced by the commits marked with *\&. However, this conflict is often the same conflict you resolved when you created the test merge you blew away\&. \fIgit rerere\fR helps you resolve this final conflicted merge using the information from your earlier hand resolve\&.
 .sp
-Running the \fIgit\-rerere\fR command immediately after a conflicted automerge records the conflicted working tree files, with the usual conflict markers <<<<<<<, =======, and >>>>>>> in them\&. Later, after you are done resolving the conflicts, running \fIgit\-rerere\fR again will record the resolved state of these files\&. Suppose you did this when you created the test merge of master into the topic branch\&.
+Running the \fIgit rerere\fR command immediately after a conflicted automerge records the conflicted working tree files, with the usual conflict markers <<<<<<<, =======, and >>>>>>> in them\&. Later, after you are done resolving the conflicts, running \fIgit rerere\fR again will record the resolved state of these files\&. Suppose you did this when you created the test merge of master into the topic branch\&.
 .sp
-Next time, after seeing the same conflicted automerge, running \fIgit\-rerere\fR will perform a three\-way merge between the earlier conflicted automerge, the earlier manual resolution, and the current conflicted automerge\&. If this three\-way merge resolves cleanly, the result is written out to your working tree file, so you do not have to manually resolve it\&. Note that \fIgit\-rerere\fR leaves the index file alone, so you still need to do the final sanity checks with git diff (or git diff \-c) and \fIgit\-add\fR when you are satisfied\&.
+Next time, after seeing the same conflicted automerge, running \fIgit rerere\fR will perform a three\-way merge between the earlier conflicted automerge, the earlier manual resolution, and the current conflicted automerge\&. If this three\-way merge resolves cleanly, the result is written out to your working tree file, so you do not have to manually resolve it\&. Note that \fIgit rerere\fR leaves the index file alone, so you still need to do the final sanity checks with git diff (or git diff \-c) and \fIgit add\fR when you are satisfied\&.
 .sp
-As a convenience measure, \fIgit\-merge\fR automatically invokes \fIgit\-rerere\fR upon exiting with a failed automerge and \fIgit\-rerere\fR records the hand resolve when it is a new conflict, or reuses the earlier hand resolve when it is not\&. \fIgit\-commit\fR also invokes \fIgit\-rerere\fR when committing a merge result\&. What this means is that you do not have to do anything special yourself (besides enabling the rerere\&.enabled config variable)\&.
+As a convenience measure, \fIgit merge\fR automatically invokes \fIgit rerere\fR upon exiting with a failed automerge and \fIgit rerere\fR records the hand resolve when it is a new conflict, or reuses the earlier hand resolve when it is not\&. \fIgit commit\fR also invokes \fIgit rerere\fR when committing a merge result\&. What this means is that you do not have to do anything special yourself (besides enabling the rerere\&.enabled config variable)\&.
 .sp
 In our example, when you do the test merge, the manual resolution is recorded, and it will be reused when you do the actual merge later with the updated master and topic branch, as long as the recorded resolution is still applicable\&.
 .sp
-The information \fIgit\-rerere\fR records is also used when running \fIgit\-rebase\fR\&. After blowing away the test merge and continuing development on the topic branch:
+The information \fIgit rerere\fR records is also used when running \fIgit rebase\fR\&. After blowing away the test merge and continuing development on the topic branch:
 .sp
 .if n \{\
 .RS 4
@@ -191,7 +191,7 @@ The information \fIgit\-rerere\fR records is also used when running \fIgit\-reba
 .\}
 .sp
 .sp
-you could run git rebase master topic, to bring yourself up\-to\-date before your topic is ready to be sent upstream\&. This would result in falling back to a three\-way merge, and it would conflict the same way as the test merge you resolved earlier\&. \fIgit\-rerere\fR will be run by \fIgit\-rebase\fR to help you resolve this conflict\&.
+you could run git rebase master topic, to bring yourself up\-to\-date before your topic is ready to be sent upstream\&. This would result in falling back to a three\-way merge, and it would conflict the same way as the test merge you resolved earlier\&. \fIgit rerere\fR will be run by \fIgit rebase\fR to help you resolve this conflict\&.
 .SH "AUTHOR"
 .sp
 Written by Junio C Hamano <gitster@pobox\&.com>

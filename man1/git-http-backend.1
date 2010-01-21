@@ -2,12 +2,12 @@
 .\"     Title: git-http-backend
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/18/2010
+.\"      Date: 01/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.6.6.243.gff6d2
+.\"    Source: Git 1.6.6.1.383.g5a9f
 .\"  Language: English
 .\"
-.TH "GIT\-HTTP\-BACKEND" "1" "01/18/2010" "Git 1\&.6\&.6\&.243\&.gff6d2" "Git Manual"
+.TH "GIT\-HTTP\-BACKEND" "1" "01/21/2010" "Git 1\&.6\&.6\&.1\&.383\&.g5a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -23,7 +23,7 @@ git-http-backend \- Server side implementation of Git over HTTP
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit\-http\-backend\fR
+\fIgit http\-backend\fR
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -32,7 +32,7 @@ A simple CGI program to serve the contents of a Git repository to Git clients ac
 .sp
 It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any git directory that hasn\(aqt explicitly been marked for export this way (unless the GIT_HTTP_EXPORT_ALL environmental variable is set)\&.
 .sp
-By default, only the upload\-pack service is enabled, which serves \fIgit\-fetch\-pack\fR and \fIgit\-ls\-remote\fR clients, which are invoked from \fIgit\-fetch\fR, \fIgit\-pull\fR, and \fIgit\-clone\fR\&. If the client is authenticated, the receive\-pack service is enabled, which serves \fIgit\-send\-pack\fR clients, which is invoked from \fIgit\-push\fR\&.
+By default, only the upload\-pack service is enabled, which serves \fIgit fetch\-pack\fR and \fIgit ls\-remote\fR clients, which are invoked from \fIgit fetch\fR, \fIgit pull\fR, and \fIgit clone\fR\&. If the client is authenticated, the receive\-pack service is enabled, which serves \fIgit send\-pack\fR clients, which is invoked from \fIgit push\fR\&.
 .SH "SERVICES"
 .sp
 These services can be enabled/disabled using the per\-repository configuration file:
@@ -46,9 +46,9 @@ false\&.
 http\&.uploadpack
 .RS 4
 This serves
-\fIgit\-fetch\-pack\fR
+\fIgit fetch\-pack\fR
 and
-\fIgit\-ls\-remote\fR
+\fIgit ls\-remote\fR
 clients\&. It is enabled by default, but a repository can disable it by setting this configuration item to
 false\&.
 .RE
@@ -56,14 +56,14 @@ false\&.
 http\&.receivepack
 .RS 4
 This serves
-\fIgit\-send\-pack\fR
+\fIgit send\-pack\fR
 clients, allowing push\&. It is disabled by default for anonymous users, and enabled by default for users authenticated by the web server\&. It can be disabled by setting this item to
 false, or enabled for all users, including anonymous users, by setting it to
 true\&.
 .RE
 .SH "URL TRANSLATION"
 .sp
-To determine the location of the repository on disk, \fIgit\-http\-backend\fR concatenates the environment variables PATH_INFO, which is set automatically by the web server, and GIT_PROJECT_ROOT, which must be set manually in the web server configuration\&. If GIT_PROJECT_ROOT is not set, \fIgit\-http\-backend\fR reads PATH_TRANSLATED, which is also set automatically by the web server\&.
+To determine the location of the repository on disk, \fIgit http\-backend\fR concatenates the environment variables PATH_INFO, which is set automatically by the web server, and GIT_PROJECT_ROOT, which must be set manually in the web server configuration\&. If GIT_PROJECT_ROOT is not set, \fIgit http\-backend\fR reads PATH_TRANSLATED, which is also set automatically by the web server\&.
 .SH "EXAMPLES"
 .sp
 All of the following examples map \fIhttp://$hostname/git/foo/bar\&.git\fR to \fI/var/www/git/foo/bar\&.git\fR\&.
@@ -119,7 +119,7 @@ To require authentication for both reads and writes, use a Location directive ar
 .\}
 .sp
 To serve gitweb at the same url, use a ScriptAliasMatch to only those URLs that
-\fIgit\-http\-backend\fR
+\fIgit http\-backend\fR
 can handle, and forward the rest to gitweb:
 .sp
 .if n \{\
@@ -186,7 +186,7 @@ ScriptAlias /git/ /var/www/cgi\-bin/gitweb\&.cgi/
 .RE
 .SH "ENVIRONMENT"
 .sp
-\fIgit\-http\-backend\fR relies upon the CGI environment variables set by the invoking web server, including:
+\fIgit http\-backend\fR relies upon the CGI environment variables set by the invoking web server, including:
 .sp
 .RS 4
 .ie n \{\
