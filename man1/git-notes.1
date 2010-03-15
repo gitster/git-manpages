@@ -2,12 +2,12 @@
 .\"     Title: git-notes
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/13/2010
+.\"      Date: 03/15/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.0
+.\"    Source: Git 1.7.0.2.273.gc2413
 .\"  Language: English
 .\"
-.TH "GIT\-NOTES" "1" "02/13/2010" "Git 1\&.7\&.0" "Git Manual"
+.TH "GIT\-NOTES" "1" "03/15/2010" "Git 1\&.7\&.0\&.2\&.273\&.gc24" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -19,54 +19,112 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-notes \- Add/inspect commit notes
+git-notes \- Add/inspect object notes
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit notes\fR (edit [\-F <file> | \-m <msg>] | show) [commit]
+\fIgit notes\fR [list [<object>]]
+\fIgit notes\fR add [\-f] [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
+\fIgit notes\fR copy [\-f] <from\-object> <to\-object>
+\fIgit notes\fR append [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
+\fIgit notes\fR edit [<object>]
+\fIgit notes\fR show [<object>]
+\fIgit notes\fR remove [<object>]
+\fIgit notes\fR prune
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-This command allows you to add notes to commit messages, without changing the commit\&. To discern these notes from the message stored in the commit object, the notes are indented like the message, after an unindented line saying "Notes:"\&.
+This command allows you to add/remove notes to/from objects, without changing the objects themselves\&.
 .sp
-To disable commit notes, you have to set the config variable core\&.notesRef to the empty string\&. Alternatively, you can set it to a different ref, something like "refs/notes/bugzilla"\&. This setting can be overridden by the environment variable "GIT_NOTES_REF"\&.
+A typical use of notes is to extend a commit message without having to change the commit itself\&. Such commit notes can be shown by git log along with the original commit message\&. To discern these notes from the message stored in the commit object, the notes are indented like the message, after an unindented line saying "Notes:"\&.
+.sp
+To disable notes, you have to set the config variable core\&.notesRef to the empty string\&. Alternatively, you can set it to a different ref, something like "refs/notes/bugzilla"\&. This setting can be overridden by the environment variable "GIT_NOTES_REF"\&.
 .SH "SUBCOMMANDS"
+.PP
+list
+.RS 4
+List the notes object for a given object\&. If no object is given, show a list of all note objects and the objects they annotate (in the format "<note object> <annotated object>")\&. This is the default subcommand if no subcommand is given\&.
+.RE
+.PP
+add
+.RS 4
+Add notes for a given object (defaults to HEAD)\&. Abort if the object already has notes (use
+\-f
+to overwrite an existing note)\&.
+.RE
+.PP
+copy
+.RS 4
+Copy the notes for the first object onto the second object\&. Abort if the second object already has notes, or if the first object has none (use \-f to overwrite existing notes to the second object)\&. This subcommand is equivalent to:
+git notes add [\-f] \-C $(git notes list <from\-object>) <to\-object>
+.RE
+.PP
+append
+.RS 4
+Append to the notes of an existing object (defaults to HEAD)\&. Creates a new notes object if needed\&.
+.RE
 .PP
 edit
 .RS 4
-Edit the notes for a given commit (defaults to HEAD)\&.
+Edit the notes for a given object (defaults to HEAD)\&.
 .RE
 .PP
 show
 .RS 4
-Show the notes for a given commit (defaults to HEAD)\&.
+Show the notes for a given object (defaults to HEAD)\&.
+.RE
+.PP
+remove
+.RS 4
+Remove the notes for a given object (defaults to HEAD)\&. This is equivalent to specifying an empty note message to the
+edit
+subcommand\&.
+.RE
+.PP
+prune
+.RS 4
+Remove all notes for non\-existing/unreachable objects\&.
 .RE
 .SH "OPTIONS"
 .PP
-\-m <msg>
+\-f, \-\-force
+.RS 4
+When adding notes to an object that already has notes, overwrite the existing notes (instead of aborting)\&.
+.RE
+.PP
+\-m <msg>, \-\-message=<msg>
 .RS 4
 Use the given note message (instead of prompting)\&. If multiple
 \-m
-(or
-\-F) options are given, their values are concatenated as separate paragraphs\&.
+options are given, their values are concatenated as separate paragraphs\&.
 .RE
 .PP
-\-F <file>
+\-F <file>, \-\-file=<file>
 .RS 4
 Take the note message from the given file\&. Use
 \fI\-\fR
-to read the note message from the standard input\&. If multiple
-\-F
-(or
-\-m) options are given, their values are concatenated as separate paragraphs\&.
+to read the note message from the standard input\&.
+.RE
+.PP
+\-C <object>, \-\-reuse\-message=<object>
+.RS 4
+Reuse the note message from the given note object\&.
+.RE
+.PP
+\-c <object>, \-\-reedit\-message=<object>
+.RS 4
+Like
+\fI\-C\fR, but with
+\fI\-c\fR
+the editor is invoked, so that the user can further edit the note message\&.
 .RE
 .SH "AUTHOR"
 .sp
-Written by Johannes Schindelin <johannes\&.schindelin@gmx\&.de>
+Written by Johannes Schindelin <johannes\&.schindelin@gmx\&.de> and Johan Herland <johan@herland\&.net>
 .SH "DOCUMENTATION"
 .sp
-Documentation by Johannes Schindelin
+Documentation by Johannes Schindelin and Johan Herland
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(7) suite
