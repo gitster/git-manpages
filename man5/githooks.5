@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/13/2010
+.\"      Date: 03/25/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.0
+.\"    Source: Git 1.7.0.3.291.g5e4f
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "02/13/2010" "Git 1\&.7\&.0" "Git Manual"
+.TH "GITHOOKS" "5" "03/25/2010" "Git 1\&.7\&.0\&.3\&.291\&.g5e4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -211,6 +211,41 @@ Both standard output and standard error output are forwarded to \fIgit send\-pac
 .SS "pre\-auto\-gc"
 .sp
 This hook is invoked by \fIgit gc \-\-auto\fR\&. It takes no parameter, and exiting with non\-zero status from this script causes the \fIgit gc \-\-auto\fR to abort\&.
+.SS "post\-rewrite"
+.sp
+This hook is invoked by commands that rewrite commits (git commit \-\-amend, \fIgit\-rebase\fR; currently \fIgit\-filter\-branch\fR does \fInot\fR call it!)\&. Its first argument denotes the command it was invoked by: currently one of amend or rebase\&. Further command\-dependent arguments may be passed in the future\&.
+.sp
+The hook receives a list of the rewritten commits on stdin, in the format
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<old\-sha1> SP <new\-sha1> [ SP <extra\-info> ] LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The \fIextra\-info\fR is again command\-dependent\&. If it is empty, the preceding SP is also omitted\&. Currently, no commands pass any \fIextra\-info\fR\&.
+.sp
+The hook always runs after the automatic note copying (see "notes\&.rewrite\&.<command>" in linkgit:git\-config\&.txt) has happened, and thus has access to these notes\&.
+.sp
+The following command\-specific comments apply:
+.PP
+rebase
+.RS 4
+For the
+\fIsquash\fR
+and
+\fIfixup\fR
+operation, all commits that were squashed are listed as being rewritten to the squashed commit\&. This means that there will be several lines sharing the same
+\fInew\-sha1\fR\&.
+.sp
+The commits are guaranteed to be listed in the order that they were processed by rebase\&.
+.RE
+.sp
+There is no default \fIpost\-rewrite\fR hook, but see the post\-receive\-copy\-notes script in contrib/hooks for an example that copies your git\-notes to the rewritten commits\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

@@ -2,12 +2,12 @@
 .\"     Title: git-notes
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/15/2010
+.\"      Date: 03/25/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.0.2.273.gc2413
+.\"    Source: Git 1.7.0.3.291.g5e4f
 .\"  Language: English
 .\"
-.TH "GIT\-NOTES" "1" "03/15/2010" "Git 1\&.7\&.0\&.2\&.273\&.gc24" "Git Manual"
+.TH "GIT\-NOTES" "1" "03/25/2010" "Git 1\&.7\&.0\&.3\&.291\&.g5e4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -25,7 +25,7 @@ git-notes \- Add/inspect object notes
 .nf
 \fIgit notes\fR [list [<object>]]
 \fIgit notes\fR add [\-f] [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
-\fIgit notes\fR copy [\-f] <from\-object> <to\-object>
+\fIgit notes\fR copy [\-f] ( \-\-stdin | <from\-object> <to\-object> )
 \fIgit notes\fR append [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
 \fIgit notes\fR edit [<object>]
 \fIgit notes\fR show [<object>]
@@ -37,9 +37,11 @@ git-notes \- Add/inspect object notes
 .sp
 This command allows you to add/remove notes to/from objects, without changing the objects themselves\&.
 .sp
-A typical use of notes is to extend a commit message without having to change the commit itself\&. Such commit notes can be shown by git log along with the original commit message\&. To discern these notes from the message stored in the commit object, the notes are indented like the message, after an unindented line saying "Notes:"\&.
+A typical use of notes is to extend a commit message without having to change the commit itself\&. Such commit notes can be shown by git log along with the original commit message\&. To discern these notes from the message stored in the commit object, the notes are indented like the message, after an unindented line saying "Notes (<refname>):" (or "Notes:" for the default setting)\&.
 .sp
-To disable notes, you have to set the config variable core\&.notesRef to the empty string\&. Alternatively, you can set it to a different ref, something like "refs/notes/bugzilla"\&. This setting can be overridden by the environment variable "GIT_NOTES_REF"\&.
+This command always manipulates the notes specified in "core\&.notesRef" (see \fBgit-config\fR(1)), which can be overridden by GIT_NOTES_REF\&. To change which notes are shown by \fIgit\-log\fR, see the "notes\&.displayRef" configuration\&.
+.sp
+See the description of "notes\&.rewrite\&.<command>" in \fBgit-config\fR(1) for a way of carrying your notes across commands that rewrite commits\&.
 .SH "SUBCOMMANDS"
 .PP
 list
@@ -58,6 +60,26 @@ copy
 .RS 4
 Copy the notes for the first object onto the second object\&. Abort if the second object already has notes, or if the first object has none (use \-f to overwrite existing notes to the second object)\&. This subcommand is equivalent to:
 git notes add [\-f] \-C $(git notes list <from\-object>) <to\-object>
+.sp
+In
+\-\-stdin
+mode, take lines in the format
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<from\-object> SP <to\-object> [ SP <rest> ] LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+on standard input, and copy the notes from each <from\-object> to its corresponding <to\-object>\&. (The optional
+<rest>
+is ignored so that the command can read the input given to the
+post\-rewrite
+hook\&.)
 .RE
 .PP
 append
@@ -119,6 +141,18 @@ Like
 \fI\-c\fR
 the editor is invoked, so that the user can further edit the note message\&.
 .RE
+.PP
+\-\-ref <ref>
+.RS 4
+Manipulate the notes tree in <ref>\&. This overrides both GIT_NOTES_REF and the "core\&.notesRef" configuration\&. The ref is taken to be in
+refs/notes/
+if it is not qualified\&.
+.RE
+.SH "NOTES"
+.sp
+Every notes change creates a new commit at the specified notes ref\&. You can therefore inspect the history of the notes by invoking, e\&.g\&., git log \-p notes/commits\&.
+.sp
+Currently the commit message only records which operation triggered the update, and the commit authorship is determined according to the usual rules (see \fBgit-commit\fR(1))\&. These details may change in the future\&.
 .SH "AUTHOR"
 .sp
 Written by Johannes Schindelin <johannes\&.schindelin@gmx\&.de> and Johan Herland <johan@herland\&.net>
