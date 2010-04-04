@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/13/2010
+.\"      Date: 04/04/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.0
+.\"    Source: Git 1.7.0.4.360.g1176
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "02/13/2010" "Git 1\&.7\&.0" "Git Manual"
+.TH "GIT\-REBASE" "1" "04/04/2010" "Git 1\&.7\&.0\&.4\&.360\&.g117" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -386,7 +386,11 @@ Ensure at least <n> lines of surrounding context match before and after each cha
 .PP
 \-f, \-\-force\-rebase
 .RS 4
-Force the rebase even if the current branch is a descendant of the commit you are rebasing onto\&. Normally the command will exit with the message "Current branch is up to date" in such a situation\&.
+Force the rebase even if the current branch is a descendant of the commit you are rebasing onto\&. Normally non\-interactive rebase will exit with the message "Current branch is up to date" in such a situation\&. Incompatible with the \-\-interactive option\&.
+.sp
+You may find this (or \-\-no\-ff with an interactive rebase) helpful after reverting a topic branch merge, as this option recreates the topic branch with fresh commits so it can be remerged successfully without needing to "revert the reversion" (see the
+\m[blue]\fBrevert\-a\-faulty\-merge How\-To\fR\m[]\&\s-2\u[1]\d\s+2
+for details)\&.
 .RE
 .PP
 \-\-ignore\-whitespace, \-\-whitespace=<option>
@@ -431,9 +435,20 @@ squash
 (or
 fixup)\&.
 .sp
-This option is only valid when
+This option is only valid when the
 \fI\-\-interactive\fR
 option is used\&.
+.RE
+.PP
+\-\-no\-ff
+.RS 4
+With \-\-interactive, cherry\-pick all rebased commits instead of fast\-forwarding over the unchanged ones\&. This ensures that the entire history of the rebased branch is composed of new commits\&.
+.sp
+Without \-\-interactive, this is a synonym for \-\-force\-rebase\&.
+.sp
+You may find this helpful after reverting a topic branch merge, as this option recreates the topic branch with fresh commits so it can be remerged successfully without needing to "revert the reversion" (see the
+\m[blue]\fBrevert\-a\-faulty\-merge How\-To\fR\m[]\&\s-2\u[1]\d\s+2
+for details)\&.
 .RE
 .SH "MERGE STRATEGIES"
 .sp
@@ -993,3 +1008,9 @@ Documentation by Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+revert-a-faulty-merge How-To
+.RS 4
+\%http://www.kernel.org/pub/software/scm/git/docs/howto/revert-a-faulty-merge.txt
+.RE
