@@ -2,12 +2,12 @@
 .\"     Title: git-push
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/10/2010
+.\"      Date: 04/19/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.1.rc0.27.g3b0c
+.\"    Source: Git 1.7.1.rc2
 .\"  Language: English
 .\"
-.TH "GIT\-PUSH" "1" "04/10/2010" "Git 1\&.7\&.1\&.rc0\&.27\&.g3b" "Git Manual"
+.TH "GIT\-PUSH" "1" "04/19/2010" "Git 1\&.7\&.1\&.rc2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -184,7 +184,9 @@ Progress status is reported on the standard error stream by default when it is a
 .RE
 .SH "GIT URLS"
 .sp
-One of the following notations can be used to name the remote repository:
+In general, URLs contain information about the transport protocol, the address of the remote server, and the path to the repository\&. Depending on the transport protocol, some of this information may be absent\&.
+.sp
+Git natively supports ssh, git, http, https, ftp, ftps, and rsync protocols\&. The following syntaxes may be used with them:
 .sp
 .RS 4
 .ie n \{\
@@ -194,29 +196,7 @@ One of the following notations can be used to name the remote repository:
 .sp -1
 .IP \(bu 2.3
 .\}
-rsync://host\&.xz/path/to/repo\&.git/
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-http://host\&.xz[:port]/path/to/repo\&.git/
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-https://host\&.xz[:port]/path/to/repo\&.git/
+ssh://[user@]host\&.xz[:port]/path/to/repo\&.git/
 .RE
 .sp
 .RS 4
@@ -238,7 +218,7 @@ git://host\&.xz[:port]/path/to/repo\&.git/
 .sp -1
 .IP \(bu 2.3
 .\}
-git://host\&.xz[:port]/~user/path/to/repo\&.git/
+http[s]://host\&.xz[:port]/path/to/repo\&.git/
 .RE
 .sp
 .RS 4
@@ -249,7 +229,7 @@ git://host\&.xz[:port]/~user/path/to/repo\&.git/
 .sp -1
 .IP \(bu 2.3
 .\}
-ssh://[user@]host\&.xz[:port]/path/to/repo\&.git/
+ftp[s]://host\&.xz[:port]/path/to/repo\&.git/
 .RE
 .sp
 .RS 4
@@ -260,7 +240,33 @@ ssh://[user@]host\&.xz[:port]/path/to/repo\&.git/
 .sp -1
 .IP \(bu 2.3
 .\}
-ssh://[user@]host\&.xz/path/to/repo\&.git/
+rsync://host\&.xz/path/to/repo\&.git/
+.RE
+.sp
+An alternative scp\-like syntax may also be used with the ssh protocol:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[user@]host\&.xz:path/to/repo\&.git/
+.RE
+.sp
+The ssh and git protocols additionally support ~username expansion:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ssh://[user@]host\&.xz[:port]/~[user]/path/to/repo\&.git/
 .RE
 .sp
 .RS 4
@@ -271,7 +277,7 @@ ssh://[user@]host\&.xz/path/to/repo\&.git/
 .sp -1
 .IP \(bu 2.3
 .\}
-ssh://[user@]host\&.xz/~user/path/to/repo\&.git/
+git://host\&.xz[:port]/~[user]/path/to/repo\&.git/
 .RE
 .sp
 .RS 4
@@ -282,45 +288,10 @@ ssh://[user@]host\&.xz/~user/path/to/repo\&.git/
 .sp -1
 .IP \(bu 2.3
 .\}
-ssh://[user@]host\&.xz/~/path/to/repo\&.git
+[user@]host\&.xz:/~[user]/path/to/repo\&.git/
 .RE
 .sp
-SSH is the default transport protocol over the network\&. You can optionally specify which user to log\-in as, and an alternate, scp\-like syntax is also supported\&. Both syntaxes support username expansion, as does the native git protocol, but only the former supports port specification\&. The following three are identical to the last three above, respectively:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[user@]host\&.xz:/path/to/repo\&.git/
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[user@]host\&.xz:~user/path/to/repo\&.git/
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[user@]host\&.xz:path/to/repo\&.git
-.RE
-.sp
-To sync with a local directory, you can use:
+For local respositories, also supported by git natively, the following syntaxes may be used:
 .sp
 .RS 4
 .ie n \{\
@@ -344,7 +315,22 @@ To sync with a local directory, you can use:
 file:///path/to/repo\&.git/
 .RE
 .sp
-They are mostly equivalent, except when cloning\&. See \fBgit-clone\fR(1) for details\&.
+These two syntaxes are mostly equivalent, except when cloning, when the former implies \-\-local option\&. See \fBgit-clone\fR(1) for details\&.
+.sp
+When git doesn\(aqt know how to handle a certain transport protocol, it attempts to use the \fIremote\-<transport>\fR remote helper, if one exists\&. To explicitly request a remote helper, the following syntax may be used:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+<transport>::<address>
+.RE
+.sp
+where <address> may be a path, a server and path, or an arbitrary URL\-like string recognized by the specific remote helper being invoked\&. See \fBgit-remote-helpers\fR(1) for details\&.
 .sp
 If there are a large number of similarly\-named remote repositories and you want to use a different format for them (such that the URLs you use will be rewritten into URLs that work), you can create a configuration section of the form:
 .sp
