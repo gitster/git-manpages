@@ -2,12 +2,12 @@
 .\"     Title: gitignore
 .\"    Author: [see the Documentation section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/24/2010
+.\"      Date: 06/13/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.1
+.\"    Source: Git 1.7.1.331.ga5080
 .\"  Language: English
 .\"
-.TH "GITIGNORE" "5" "04/24/2010" "Git 1\&.7\&.1" "Git Manual"
+.TH "GITIGNORE" "5" "06/13/2010" "Git 1\&.7\&.1\&.331\&.ga5080" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -148,7 +148,11 @@ foo
 .IP \(bu 2.3
 .\}
 If the pattern does not contain a slash
-\fI/\fR, git treats it as a shell glob pattern and checks for a match against the pathname without leading directories\&.
+\fI/\fR, git treats it as a shell glob pattern and checks for a match against the pathname relative to the location of the
+\&.gitignore
+file (relative to the toplevel of the work tree if not from a
+\&.gitignore
+file)\&.
 .RE
 .sp
 .RS 4
@@ -159,7 +163,18 @@ If the pattern does not contain a slash
 .sp -1
 .IP \(bu 2.3
 .\}
-Otherwise, git treats the pattern as a shell glob suitable for consumption by fnmatch(3) with the FNM_PATHNAME flag: wildcards in the pattern will not match a / in the pathname\&. For example, "Documentation/*\&.html" matches "Documentation/git\&.html" but not "Documentation/ppc/ppc\&.html"\&. A leading slash matches the beginning of the pathname; for example, "/*\&.c" matches "cat\-file\&.c" but not "mozilla\-sha1/sha1\&.c"\&.
+Otherwise, git treats the pattern as a shell glob suitable for consumption by fnmatch(3) with the FNM_PATHNAME flag: wildcards in the pattern will not match a / in the pathname\&. For example, "Documentation/*\&.html" matches "Documentation/git\&.html" but not "Documentation/ppc/ppc\&.html" or "tools/perf/Documentation/perf\&.html"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A leading slash matches the beginning of the pathname\&. For example, "/*\&.c" matches "cat\-file\&.c" but not "mozilla\-sha1/sha1\&.c"\&.
 .RE
 .sp
 An example:
