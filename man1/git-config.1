@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/19/2010
+.\"      Date: 06/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.1.422.g049e9
+.\"    Source: Git 1.7.1.524.g6df2
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "06/19/2010" "Git 1\&.7\&.1\&.422\&.g049e9" "Git Manual"
+.TH "GIT\-CONFIG" "1" "06/21/2010" "Git 1\&.7\&.1\&.524\&.g6df2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -724,45 +724,42 @@ option, will quote "unusual" characters in the pathname by enclosing the pathnam
 regardless of the setting of this variable\&.
 .RE
 .PP
-core\&.autocrlf
+core\&.eol
 .RS 4
-If true, makes git convert
-CRLF
-at the end of lines in text files to
-LF
-when reading from the work tree, and convert in reverse when writing to the work tree\&. The variable can be set to
-\fIinput\fR, in which case the conversion happens only while reading from the work tree but files are written out to the work tree with
-LF
-at the end of lines\&. A file is considered "text" (i\&.e\&. be subjected to the autocrlf mechanism) based on the file\(aqs
-crlf
-attribute, or if
-crlf
-is unspecified, based on the file\(aqs contents\&. See
-\fBgitattributes\fR(5)\&.
+Sets the line ending type to use in the working directory for files that have the
+text
+property set\&. Alternatives are
+\fIlf\fR,
+\fIcrlf\fR
+and
+\fInative\fR, which uses the platform\(aqs native line ending\&. The default value is
+native\&. See
+\fBgitattributes\fR(5)
+for more information on end\-of\-line conversion\&.
 .RE
 .PP
 core\&.safecrlf
 .RS 4
 If true, makes git check if converting
 CRLF
-as controlled by
-core\&.autocrlf
-is reversible\&. Git will verify if a command modifies a file in the work tree either directly or indirectly\&. For example, committing a file followed by checking out the same file should yield the original file in the work tree\&. If this is not the case for the current setting of
+is reversible when end\-of\-line conversion is active\&. Git will verify if a command modifies a file in the work tree either directly or indirectly\&. For example, committing a file followed by checking out the same file should yield the original file in the work tree\&. If this is not the case for the current setting of
 core\&.autocrlf, git will reject the file\&. The variable can be set to "warn", in which case git will only warn about an irreversible conversion but continue the operation\&.
 .sp
-CRLF conversion bears a slight chance of corrupting data\&. autocrlf=true will convert CRLF to LF during commit and LF to CRLF during checkout\&. A file that contains a mixture of LF and CRLF before the commit cannot be recreated by git\&. For text files this is the right thing to do: it corrects line endings such that we have only LF line endings in the repository\&. But for binary files that are accidentally classified as text the conversion can corrupt data\&.
+CRLF conversion bears a slight chance of corrupting data\&. When it is enabled, git will convert CRLF to LF during commit and LF to CRLF during checkout\&. A file that contains a mixture of LF and CRLF before the commit cannot be recreated by git\&. For text files this is the right thing to do: it corrects line endings such that we have only LF line endings in the repository\&. But for binary files that are accidentally classified as text the conversion can corrupt data\&.
 .sp
 If you recognize such corruption early you can easily fix it by setting the conversion type explicitly in \&.gitattributes\&. Right after committing you still have the original file in your work tree and this file is not yet corrupted\&. You can explicitly tell git that this file is binary and git will handle the file appropriately\&.
 .sp
 Unfortunately, the desired effect of cleaning up text files with mixed line endings and the undesired effect of corrupting binary files cannot be distinguished\&. In both cases CRLFs are removed in an irreversible way\&. For text files this is the right thing to do because CRLFs are line endings, while for binary files converting CRLFs corrupts data\&.
 .sp
 Note, this safety check does not mean that a checkout will generate a file identical to the original file for a different setting of
+core\&.eol
+and
 core\&.autocrlf, but only for the current one\&. For example, a text file with
 LF
 would be accepted with
-core\&.autocrlf=input
+core\&.eol=lf
 and could later be checked out with
-core\&.autocrlf=true, in which case the resulting file would contain
+core\&.eol=crlf, in which case the resulting file would contain
 CRLF, although the original file contained
 LF\&. However, in both work trees the line endings would be consistent, that is either all
 LF
@@ -770,6 +767,18 @@ or all
 CRLF, but never mixed\&. A file with mixed line endings would be reported by the
 core\&.safecrlf
 mechanism\&.
+.RE
+.PP
+core\&.autocrlf
+.RS 4
+Setting this variable to "true" is almost the same as setting the
+text
+attribute to "auto" on all files except that text files are not guaranteed to be normalized: files that contain
+CRLF
+in the repository will not be touched\&. Use this setting if you want to have
+CRLF
+line endings in your working directory even though the repository does not have normalized line endings\&. This variable can be set to
+\fIinput\fR, in which case no output conversion is performed\&.
 .RE
 .PP
 core\&.symlinks
@@ -1848,21 +1857,13 @@ Path to a log file where the CVS server interface well\&... logs various stuff\&
 .PP
 gitcvs\&.usecrlfattr
 .RS 4
-If true, the server will look up the
-crlf
-attribute for files to determine the
+If true, the server will look up the end\-of\-line conversion attributes for files to determine the
 \fI\-k\fR
-modes to use\&. If
-crlf
-is set, the
+modes to use\&. If the attributes force git to treat a file as text, the
 \fI\-k\fR
-mode will be left blank, so cvs clients will treat it as text\&. If
-crlf
-is explicitly unset, the file will be set with
+mode will be left blank so cvs clients will treat it as text\&. If they suppress text conversion, the file will be set with
 \fI\-kb\fR
-mode, which suppresses any newline munging the client might otherwise do\&. If
-crlf
-is not specified, then
+mode, which suppresses any newline munging the client might otherwise do\&. If the attributes do not allow the file type to be determined, then
 \fIgitcvs\&.allbinary\fR
 is used\&. See
 \fBgitattributes\fR(5)\&.

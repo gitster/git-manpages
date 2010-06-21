@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/02/2010
+.\"      Date: 06/21/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.1.244.gbdc4
+.\"    Source: Git 1.7.1.524.g6df2
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "06/02/2010" "Git 1\&.7\&.1\&.244\&.gbdc4" "Git Manual"
+.TH "GIT\-REBASE" "1" "06/21/2010" "Git 1\&.7\&.1\&.524\&.g6df2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -419,6 +419,12 @@ Make a list of the commits which are about to be rebased\&. Let the user edit th
 \-p, \-\-preserve\-merges
 .RS 4
 Instead of ignoring merges, try to recreate them\&.
+.sp
+This uses the
+\-\-interactive
+machinery internally, but combining it with the
+\-\-interactive
+option explicitly is generally not a good idea unless you know what you are doing (see BUGS below)\&.
 .RE
 .PP
 \-\-root
@@ -1001,6 +1007,50 @@ You can then transplant the old subsystem\&.\&.topic to the new tip by saying (f
 .sp
 .sp
 The ripple effect of a "hard case" recovery is especially bad: \fIeveryone\fR downstream from \fItopic\fR will now have to perform a "hard case" recovery too!
+.SH "BUGS"
+.sp
+The todo list presented by \-\-preserve\-merges \-\-interactive does not represent the topology of the revision graph\&. Editing commits and rewording their commit messages should work fine, but attempts to reorder commits tend to produce counterintuitive results\&.
+.sp
+For example, an attempt to rearrange
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+1 \-\-\- 2 \-\-\- 3 \-\-\- 4 \-\-\- 5
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+to
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+1 \-\-\- 2 \-\-\- 4 \-\-\- 3 \-\-\- 5
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+by moving the "pick 4" line will result in the following history:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        3
+       /
+1 \-\-\- 2 \-\-\- 4 \-\-\- 5
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "AUTHORS"
 .sp
 Written by Junio C Hamano <gitster@pobox\&.com> and Johannes E\&. Schindelin <johannes\&.schindelin@gmx\&.de>
