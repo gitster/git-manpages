@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/13/2010
+.\"      Date: 06/22/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.1.331.ga5080
+.\"    Source: Git 1.7.1.569.g6f426
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "06/13/2010" "Git 1\&.7\&.1\&.331\&.ga5080" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "06/22/2010" "Git 1\&.7\&.1\&.569\&.g6f426" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -549,6 +549,19 @@ Additional option to
 \fI\-\-full\-history\fR
 to remove some needless merges from the resulting history, as there are no selected commits contributing to this merge\&.
 .RE
+.PP
+\-\-ancestry\-path
+.RS 4
+When given a range of commits to display (e\&.g\&.
+\fIcommit1\&.\&.commit2\fR
+or
+\fIcommit2 ^commit1\fR), only display commits that exist directly on the ancestry chain between the
+\fIcommit1\fR
+and
+\fIcommit2\fR, i\&.e\&. commits that are both descendants of
+\fIcommit1\fR, and ancestors of
+\fIcommit2\fR\&.
+.RE
 .sp
 A more detailed explanation follows\&.
 .sp
@@ -693,7 +706,7 @@ This results in:
 .\}
 .nf
           \&.\-A\-\-\-N\-\-\-O
-         /         /
+         /     /   /
         I\-\-\-\-\-\-\-\-\-D
 .fi
 .if n \{\
@@ -791,8 +804,6 @@ All commits that are walked are included\&.
 Note that without
 \fI\-\-full\-history\fR, this still simplifies merges: if one of the parents is TREESAME, we follow only that one, so the other sides of the merge are never walked\&.
 .RE
-.sp
-Finally, there is a fourth simplification mode available:
 .PP
 \-\-simplify\-merges
 .RS 4
@@ -906,6 +917,78 @@ removed\&.
 P
 was then removed completely, because it had one parent and is TREESAME\&.
 .RE
+.RE
+.sp
+Finally, there is a fifth simplification mode available:
+.PP
+\-\-ancestry\-path
+.RS 4
+Limit the displayed commits to those directly on the ancestry chain between the "from" and "to" commits in the given commit range\&. I\&.e\&. only display commits that are ancestor of the "to" commit, and descendants of the "from" commit\&.
+.sp
+As an example use case, consider the following commit history:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+            D\-\-\-E\-\-\-\-\-\-\-F
+           /     \e       \e
+          B\-\-\-C\-\-\-G\-\-\-H\-\-\-I\-\-\-J
+         /                     \e
+        A\-\-\-\-\-\-\-K\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-L\-\-M
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+A regular
+\fID\&.\&.M\fR
+computes the set of commits that are ancestors of
+M, but excludes the ones that are ancestors of
+D\&. This is useful to see what happened to the history leading to
+M
+since
+D, in the sense that "what does
+M
+have that did not exist in
+D"\&. The result in this example would be all the commits, except
+A
+and
+B
+(and
+D
+itself, of course)\&.
+.sp
+When we want to find out what commits in
+M
+are contaminated with the bug introduced by
+D
+and need fixing, however, we might want to view only the subset of
+\fID\&.\&.M\fR
+that are actually descendants of
+D, i\&.e\&. excluding
+C
+and
+K\&. This is exactly what the
+\fI\-\-ancestry\-path\fR
+option does\&. Applied to the
+\fID\&.\&.M\fR
+range, it results in:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+                E\-\-\-\-\-\-\-F
+                 \e       \e
+                  G\-\-\-H\-\-\-I\-\-\-J
+                               \e
+                                L\-\-M
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .RE
 .sp
 The \fI\-\-simplify\-by\-decoration\fR option allows you to view only the big picture of the topology of the history, by omitting commits that are not referenced by tags\&. Commits are marked as !TREESAME (in other words, kept after history simplification rules described above) if (1) they are referenced by tags, or (2) they change the contents of the paths given on the command line\&. All other commits are marked as TREESAME (subject to be simplified away)\&.
@@ -1888,6 +1971,8 @@ Some placeholders may depend on other options given to the revision traversal en
 If you add a + (plus sign) after \fI%\fR of a placeholder, a line\-feed is inserted immediately before the expansion if and only if the placeholder expands to a non\-empty string\&.
 .sp
 If you add a \- (minus sign) after \fI%\fR of a placeholder, line\-feeds that immediately precede the expansion are deleted if and only if the placeholder expands to an empty string\&.
+.sp
+If you add a (space) after \fI%\fR of a placeholder, a space is inserted immediately before the expansion if and only if the placeholder expands to a non\-empty string\&.
 .sp
 .RS 4
 .ie n \{\

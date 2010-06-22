@@ -2,12 +2,12 @@
 .\"     Title: git-cherry-pick
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/24/2010
+.\"      Date: 06/22/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.1
+.\"    Source: Git 1.7.1.569.g6f426
 .\"  Language: English
 .\"
-.TH "GIT\-CHERRY\-PICK" "1" "04/24/2010" "Git 1\&.7\&.1" "Git Manual"
+.TH "GIT\-CHERRY\-PICK" "1" "06/22/2010" "Git 1\&.7\&.1\&.569\&.g6f426" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -19,19 +19,22 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-cherry-pick \- Apply the change introduced by an existing commit
+git-cherry-pick \- Apply the changes introduced by some existing commits
 .SH "SYNOPSIS"
 .sp
-\fIgit cherry\-pick\fR [\-\-edit] [\-n] [\-m parent\-number] [\-s] [\-x] [\-\-ff] <commit>
+\fIgit cherry\-pick\fR [\-\-edit] [\-n] [\-m parent\-number] [\-s] [\-x] [\-\-ff] <commit>\&...
 .SH "DESCRIPTION"
 .sp
-Given one existing commit, apply the change the patch introduces, and record a new commit that records it\&. This requires your working tree to be clean (no modifications from the HEAD commit)\&.
+Given one or more existing commits, apply the change each one introduces, recording a new commit for each\&. This requires your working tree to be clean (no modifications from the HEAD commit)\&.
 .SH "OPTIONS"
 .PP
-<commit>
+<commit>\&...
 .RS 4
-Commit to cherry\-pick\&. For a more complete list of ways to spell commits, see the "SPECIFYING REVISIONS" section in
-\fBgit-rev-parse\fR(1)\&.
+Commits to cherry\-pick\&. For a more complete list of ways to spell commits, see the "SPECIFYING REVISIONS" section in
+\fBgit-rev-parse\fR(1)\&. Sets of commits can be passed but no traversal is done by default, as if the
+\fI\-\-no\-walk\fR
+option was specified, see
+\fBgit-rev-list\fR(1)\&.
 .RE
 .PP
 \-e, \-\-edit
@@ -64,7 +67,7 @@ Usually you cannot cherry\-pick a merge because you do not know which side of th
 .PP
 \-n, \-\-no\-commit
 .RS 4
-Usually the command automatically creates a commit\&. This flag applies the change necessary to cherry\-pick the named commit to your working tree and the index, but does not make the commit\&. In addition, when this option is used, your index does not have to match the HEAD commit\&. The cherry\-pick is done against the beginning state of your index\&.
+Usually the command automatically creates a sequence of commits\&. This flag applies the changes necessary to cherry\-pick each named commit to your working tree and the index, without making any commit\&. In addition, when this option is used, your index does not have to match the HEAD commit\&. The cherry\-pick is done against the beginning state of your index\&.
 .sp
 This is useful when cherry\-picking more than one commits\(aq effect to your index in a row\&.
 .RE
@@ -78,12 +81,41 @@ Add Signed\-off\-by line at the end of the commit message\&.
 .RS 4
 If the current HEAD is the same as the parent of the cherry\-pick\(aqed commit, then a fast forward to this commit will be performed\&.
 .RE
+.SH "EXAMPLES"
+.PP
+git cherry\-pick master
+.RS 4
+Apply the change introduced by the commit at the tip of the master branch and create a new commit with this change\&.
+.RE
+.PP
+git cherry\-pick \&.\&.master, git cherry\-pick ^HEAD master
+.RS 4
+Apply the changes introduced by all commits that are ancestors of master but not of HEAD to produce new commits\&.
+.RE
+.PP
+git cherry\-pick master\e4 master2
+.RS 4
+Apply the changes introduced by the fifth and third last commits pointed to by master and create 2 new commits with these changes\&.
+.RE
+.PP
+git cherry\-pick \-n master~1 next
+.RS 4
+Apply to the working tree and the index the changes introduced by the second last commit pointed to by master and by the last commit pointed to by next, but do not create any commit with these changes\&.
+.RE
+.PP
+git cherry\-pick \-\-ff \&.\&.next
+.RS 4
+If history is linear and HEAD is an ancestor of next, update the working tree and advance the HEAD pointer to match next\&. Otherwise, apply the changes introduced by those commits that are in next but not HEAD to the current branch, creating a new commit for each new change\&.
+.RE
 .SH "AUTHOR"
 .sp
 Written by Junio C Hamano <gitster@pobox\&.com>
 .SH "DOCUMENTATION"
 .sp
 Documentation by Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
+.SH "SEE ALSO"
+.sp
+\fBgit-revert\fR(1)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
