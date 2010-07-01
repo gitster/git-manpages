@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/24/2010
+.\"      Date: 07/01/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.1
+.\"    Source: Git 1.7.2.rc1
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "04/24/2010" "Git 1\&.7\&.1" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "07/01/2010" "Git 1\&.7\&.2\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -474,7 +474,8 @@ to a ref (short form
 .\}
 A suffix
 \fI^\fR
-to a revision parameter means the first parent of that commit object\&.
+to a revision parameter (e\&.g\&.
+\fIHEAD^\fR) means the first parent of that commit object\&.
 \fI^<n>\fR
 means the <n>th parent (i\&.e\&.
 \fIrev^\fR
@@ -538,7 +539,8 @@ v0\&.99\&.8^{}) means the object could be a tag, and dereference the tag recursi
 .sp -1
 .IP \(bu 2.3
 .\}
-A colon, followed by a slash, followed by a text: this names a commit whose commit message starts with the specified text\&. This name returns the youngest matching commit which is reachable from any ref\&. If the commit message starts with a
+A colon, followed by a slash, followed by a text (e\&.g\&.
+:/fix nasty bug): this names a commit whose commit message starts with the specified text\&. This name returns the youngest matching commit which is reachable from any ref\&. If the commit message starts with a
 \fI!\fR, you have to repeat that; the special sequence
 \fI:/!\fR, followed by something else than
 \fI!\fR
@@ -555,7 +557,11 @@ is reserved for now\&.
 .\}
 A suffix
 \fI:\fR
-followed by a path; this names the blob or tree at the given path in the tree\-ish object named by the part before the colon\&.
+followed by a path (e\&.g\&.
+HEAD:README); this names the blob or tree at the given path in the tree\-ish object named by the part before the colon\&.
+\fI:path\fR
+(with an empty part before the colon, e\&.g\&.
+:README) is a special case of the syntax described next: content recorded in the index at the given path\&.
 .RE
 .sp
 .RS 4
@@ -566,7 +572,9 @@ followed by a path; this names the blob or tree at the given path in the tree\-i
 .sp -1
 .IP \(bu 2.3
 .\}
-A colon, optionally followed by a stage number (0 to 3) and a colon, followed by a path; this names a blob object in the index at the given path\&. Missing stage number (and the colon that follows it) names a stage 0 entry\&. During a merge, stage 1 is the common ancestor, stage 2 is the target branch\(aqs version (typically the current branch), and stage 3 is the version from the branch being merged\&.
+A colon, optionally followed by a stage number (0 to 3) and a colon, followed by a path (e\&.g\&.
+:0:README); this names a blob object in the index at the given path\&. Missing stage number (and the colon that follows it, e\&.g\&.
+:README) names a stage 0 entry\&. During a merge, stage 1 is the common ancestor, stage 2 is the target branch\(aqs version (typically the current branch), and stage 3 is the version from the branch being merged\&.
 .RE
 .sp
 Here is an illustration, by Jon Loeliger\&. Both commit nodes B and C are parents of commit node A\&. Parent commits are ordered left\-to\-right\&.
