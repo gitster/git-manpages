@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/21/2010
+.\"      Date: 08/03/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.2
+.\"    Source: Git 1.7.2.1.22.ge7bdd
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "07/21/2010" "Git 1\&.7\&.2" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "08/03/2010" "Git 1\&.7\&.2\&.1\&.22\&.ge7bd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -650,7 +650,9 @@ F^! D            G H D F
 .sp
 In \-\-parseopt mode, \fIgit rev\-parse\fR helps massaging options to bring to shell scripts the same facilities C builtins have\&. It works as an option normalizer (e\&.g\&. splits single switches aggregate values), a bit like getopt(1) does\&.
 .sp
-It takes on the standard input the specification of the options to parse and understand, and echoes on the standard output a line suitable for sh(1) eval to replace the arguments with normalized ones\&. In case of error, it outputs usage on the standard error stream, and exits with code 129\&.
+It takes on the standard input the specification of the options to parse and understand, and echoes on the standard output a string suitable for sh(1) eval to replace the arguments with normalized ones\&. In case of error, it outputs usage on the standard error stream, and exits with code 129\&.
+.sp
+Note: Make sure you quote the result when passing it to eval\&. See below for an example\&.
 .SS "Input Format"
 .sp
 \fIgit rev\-parse \-\-parseopt\fR input format is fully text based\&. It has two parts, separated by a line that contains only \-\-\&. The lines before the separator (should be more than one) are used for the usage\&. The lines after the separator describe the options\&.
@@ -770,7 +772,7 @@ bar=      some cool option \-\-bar with an argument
   An option group Header
 C?        option C with an optional argument"
 
-eval `echo "$OPTS_SPEC" | git rev\-parse \-\-parseopt \-\- "$@" || echo exit $?`
+eval "$(echo "$OPTS_SPEC" | git rev\-parse \-\-parseopt \-\- "$@" || echo exit $?)"
 .fi
 .if n \{\
 .RE
