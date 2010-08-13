@@ -2,12 +2,12 @@
 .\"     Title: git-pull
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/21/2010
+.\"      Date: 08/13/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.2
+.\"    Source: Git 1.7.2.1.95.g3d045
 .\"  Language: English
 .\"
-.TH "GIT\-PULL" "1" "07/21/2010" "Git 1\&.7\&.2" "Git Manual"
+.TH "GIT\-PULL" "1" "08/13/2010" "Git 1\&.7\&.2\&.1\&.95\&.g3d04" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -22,17 +22,55 @@
 git-pull \- Fetch from and merge with another repository or a local branch
 .SH "SYNOPSIS"
 .sp
-\fIgit pull\fR <options> <repository> <refspec>\&...
+\fIgit pull\fR [options] [<repository> [<refspec>\&...]]
 .SH "DESCRIPTION"
 .sp
-Runs \fIgit fetch\fR with the given parameters, and calls \fIgit merge\fR to merge the retrieved head(s) into the current branch\&. With \-\-rebase, calls \fIgit rebase\fR instead of \fIgit merge\fR\&.
+Incorporates changes from a remote repository into the current branch\&. In its default mode, git pull is shorthand for git fetch followed by git merge FETCH_HEAD\&.
 .sp
-Note that you can use \&. (current directory) as the <repository> to pull from the local repository \(em this is useful when merging local branches into the current branch\&.
+More precisely, \fIgit pull\fR runs \fIgit fetch\fR with the given parameters and calls \fIgit merge\fR to merge the retrieved branch heads into the current branch\&. With \-\-rebase, it runs \fIgit rebase\fR instead of \fIgit merge\fR\&.
 .sp
-Also note that options meant for \fIgit pull\fR itself and underlying \fIgit merge\fR must be given before the options meant for \fIgit fetch\fR\&.
+<repository> should be the name of a remote repository as passed to \fBgit-fetch\fR(1)\&. <refspec> can name an arbitrary remote ref (for example, the name of a tag) or even a collection of refs with corresponding remote tracking branches (e\&.g\&., refs/heads/\fB:refs/remotes/origin/\fR), but usually it is the name of a branch in the remote repository\&.
 .sp
-\fBWarning\fR: Running \fIgit pull\fR (actually, the underlying \fIgit merge\fR) with uncommitted changes is discouraged: while possible, it leaves you in a state that is hard to back out of in the case of a conflict\&.
+Default values for <repository> and <branch> are read from the "remote" and "merge" configuration for the current branch as set by \fBgit-branch\fR(1) \-\-track\&.
+.sp
+Assume the following history exists and the current branch is "master":
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+          A\-\-\-B\-\-\-C master on origin
+         /
+    D\-\-\-E\-\-\-F\-\-\-G master
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Then "git pull" will fetch and replay the changes from the remote master branch since it diverged from the local master (i\&.e\&., E) until its current commit (C) on top of master and record the result in a new commit along with the names of the two parent commits and a log message from the user describing the changes\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+          A\-\-\-B\-\-\-C remotes/origin/master
+         /         \e
+    D\-\-\-E\-\-\-F\-\-\-G\-\-\-H master
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+See \fBgit-merge\fR(1) for details, including how conflicts are presented and handled\&.
+.sp
+In git 1\&.7\&.0 or later, to cancel a conflicting merge, use git reset \-\-merge\&. \fBWarning\fR: In older versions of git, running \fIgit pull\fR with uncommitted changes is discouraged: while possible, it leaves you in a state that may be hard to back out of in the case of a conflict\&.
+.sp
+If any of the remote changes overlap with local uncommitted changes, the merge will be automatically cancelled and the work tree untouched\&. It is generally best to get any local changes in working order before pulling or stash them away with \fBgit-stash\fR(1)\&.
 .SH "OPTIONS"
+.sp
+Options meant for \fIgit pull\fR itself and the underlying \fIgit merge\fR must be given before the options meant for \fIgit fetch\fR\&.
 .PP
 \-q, \-\-quiet
 .RS 4

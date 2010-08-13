@@ -2,12 +2,12 @@
 .\"     Title: git-reset
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/21/2010
+.\"      Date: 08/13/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.2
+.\"    Source: Git 1.7.2.1.95.g3d045
 .\"  Language: English
 .\"
-.TH "GIT\-RESET" "1" "07/21/2010" "Git 1\&.7\&.2" "Git Manual"
+.TH "GIT\-RESET" "1" "08/13/2010" "Git 1\&.7\&.2\&.1\&.95\&.g3d04" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -23,32 +23,51 @@ git-reset \- Reset current HEAD to the specified state
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit reset\fR [\-\-mixed | \-\-soft | \-\-hard | \-\-merge | \-\-keep] [\-q] [<commit>]
 \fIgit reset\fR [\-q] [<commit>] [\-\-] <paths>\&...
 \fIgit reset\fR \-\-patch [<commit>] [\-\-] [<paths>\&...]
+\fIgit reset\fR [\-\-soft | \-\-mixed | \-\-hard | \-\-merge | \-\-keep] [\-q] [<commit>]
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-Sets the current head to the specified commit and optionally resets the index and working tree to match\&.
-.sp
-This command is useful if you notice some small error in a recent commit (or set of commits) and want to redo that part without showing the undo in the history\&.
-.sp
-If you want to undo a commit other than the latest on a branch, \fBgit-revert\fR(1) is your friend\&.
-.sp
-The second and third forms with \fIpaths\fR and/or \-\-patch are used to revert selected paths in the index from a given commit, without moving HEAD\&.
-.SH "OPTIONS"
+In the first and second form, copy entries from <commit> to the index\&. In the third form, set the current branch to <commit>, optionally modifying index and worktree to match\&. The <commit> defaults to HEAD in all forms\&.
 .PP
-\-\-mixed
+\fIgit reset\fR [\-q] [<commit>] [\-\-] <paths>\&...
 .RS 4
-Resets the index but not the working tree (i\&.e\&., the changed files are preserved but not marked for commit) and reports what has not been updated\&. This is the default action\&.
+This form resets the index entries for all <paths> to their state at the <commit>\&. (It does not affect the worktree, nor the current branch\&.)
+.sp
+This means that
+git reset <paths>
+is the opposite of
+git add <paths>\&.
 .RE
+.PP
+\fIgit reset\fR \-\-patch|\-p [<commit>] [\-\-] [<paths>\&...]
+.RS 4
+Interactively select hunks in the difference between the index and <commit> (defaults to HEAD)\&. The chosen hunks are applied in reverse to the index\&.
+.sp
+This means that
+git reset \-p
+is the opposite of
+git add \-p
+(see
+\fBgit-add\fR(1))\&.
+.RE
+.PP
+\fIgit reset\fR [\-\-<mode>] [<commit>]
+.RS 4
+This form points the current branch to <commit> and then updates index and working tree according to <mode>, which must be one of the following:
 .PP
 \-\-soft
 .RS 4
 Does not touch the index file nor the working tree at all, but requires them to be in a good order\&. This leaves all your changed files "Changes to be committed", as
 \fIgit status\fR
 would put it\&.
+.RE
+.PP
+\-\-mixed
+.RS 4
+Resets the index but not the working tree (i\&.e\&., the changed files are preserved but not marked for commit) and reports what has not been updated\&. This is the default action\&.
 .RE
 .PP
 \-\-hard
@@ -65,27 +84,257 @@ Resets the index to match the tree recorded by the named commit, and updates the
 .RS 4
 Reset the index to the given commit, keeping local changes in the working tree since the current commit, while updating working tree files without local changes to what appears in the given commit\&. If a file that is different between the current commit and the given commit has local changes, reset is aborted\&.
 .RE
-.PP
-\-p, \-\-patch
-.RS 4
-Interactively select hunks in the difference between the index and <commit> (defaults to HEAD)\&. The chosen hunks are applied in reverse to the index\&.
-.sp
-This means that
-git reset \-p
-is the opposite of
-git add \-p
-(see
-\fBgit-add\fR(1))\&.
 .RE
+.sp
+If you want to undo a commit other than the latest on a branch, \fBgit-revert\fR(1) is your friend\&.
+.SH "OPTIONS"
 .PP
 \-q, \-\-quiet
 .RS 4
 Be quiet, only report errors\&.
 .RE
+.SH "EXAMPLES"
 .PP
-<commit>
+Undo add
 .RS 4
-Commit to make the current HEAD\&. If not given defaults to HEAD\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ edit                                     \fB(1)\fR
+$ git add frotz\&.c filfre\&.c
+$ mailx                                    \fB(2)\fR
+$ git reset                                \fB(3)\fR
+$ git pull git://info\&.example\&.com/ nitfol  \fB(4)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRYou are happily working on something, and find the changes in these files are in good order\&. You do not want to see them when you run "git diff", because you plan to work on other files and changes with these files are distracting\&.
+.br
+\fB2. \fRSomebody asks you to pull, and the changes sounds worthy of merging\&.
+.br
+\fB3. \fRHowever, you already dirtied the index (i\&.e\&. your index does not match the HEAD commit)\&. But you know the pull you are going to make does not affect frotz\&.c nor filfre\&.c, so you revert the index changes for these two files\&. Your changes in working tree remain there\&.
+.br
+\fB4. \fRThen you can pull and merge, leaving frotz\&.c and filfre\&.c changes still in the working tree\&.
+.br
+.RE
+.PP
+Undo a commit and redo
+.RS 4
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git commit \&.\&.\&.
+$ git reset \-\-soft HEAD^      \fB(1)\fR
+$ edit                        \fB(2)\fR
+$ git commit \-a \-c ORIG_HEAD  \fB(3)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRThis is most often done when you remembered what you just committed is incomplete, or you misspelled your commit message, or both\&. Leaves working tree as it was before "reset"\&.
+.br
+\fB2. \fRMake corrections to working tree files\&.
+.br
+\fB3. \fR"reset" copies the old head to \&.git/ORIG_HEAD; redo the commit by starting with its log message\&. If you do not need to edit the message further, you can give \-C option instead\&.
+.sp
+See also the \-\-amend option to
+\fBgit-commit\fR(1)\&.
+.br
+.RE
+.PP
+Undo a commit, making it a topic branch
+.RS 4
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git branch topic/wip     \fB(1)\fR
+$ git reset \-\-hard HEAD~3  \fB(2)\fR
+$ git checkout topic/wip   \fB(3)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRYou have made some commits, but realize they were premature to be in the "master" branch\&. You want to continue polishing them in a topic branch, so create "topic/wip" branch off of the current HEAD\&.
+.br
+\fB2. \fRRewind the master branch to get rid of those three commits\&.
+.br
+\fB3. \fRSwitch to "topic/wip" branch and keep working\&.
+.br
+.RE
+.PP
+Undo commits permanently
+.RS 4
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git commit \&.\&.\&.
+$ git reset \-\-hard HEAD~3   \fB(1)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRThe last three commits (HEAD, HEAD^, and HEAD~2) were bad and you do not want to ever see them again\&. Do
+\fBnot\fR
+do this if you have already given these commits to somebody else\&. (See the "RECOVERING FROM UPSTREAM REBASE" section in
+\fBgit-rebase\fR(1)
+for the implications of doing so\&.)
+.br
+.RE
+.PP
+Undo a merge or pull
+.RS 4
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git pull                         \fB(1)\fR
+Auto\-merging nitfol
+CONFLICT (content): Merge conflict in nitfol
+Automatic merge failed; fix conflicts and then commit the result\&.
+$ git reset \-\-hard                 \fB(2)\fR
+$ git pull \&. topic/branch          \fB(3)\fR
+Updating from 41223\&.\&.\&. to 13134\&.\&.\&.
+Fast\-forward
+$ git reset \-\-hard ORIG_HEAD       \fB(4)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRTry to update from the upstream resulted in a lot of conflicts; you were not ready to spend a lot of time merging right now, so you decide to do that later\&.
+.br
+\fB2. \fR"pull" has not made merge commit, so "git reset \-\-hard" which is a synonym for "git reset \-\-hard HEAD" clears the mess from the index file and the working tree\&.
+.br
+\fB3. \fRMerge a topic branch into the current branch, which resulted in a fast\-forward\&.
+.br
+\fB4. \fRBut you decided that the topic branch is not ready for public consumption yet\&. "pull" or "merge" always leaves the original tip of the current branch in ORIG_HEAD, so resetting hard to it brings your index file and the working tree back to that state, and resets the tip of the branch to that commit\&.
+.br
+.RE
+.PP
+Undo a merge or pull inside a dirty work tree
+.RS 4
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git pull                         \fB(1)\fR
+Auto\-merging nitfol
+Merge made by recursive\&.
+ nitfol                |   20 +++++\-\-\-\-
+ \&.\&.\&.
+$ git reset \-\-merge ORIG_HEAD      \fB(2)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fREven if you may have local modifications in your working tree, you can safely say "git pull" when you know that the change in the other branch does not overlap with them\&.
+.br
+\fB2. \fRAfter inspecting the result of the merge, you may find that the change in the other branch is unsatisfactory\&. Running "git reset \-\-hard ORIG_HEAD" will let you go back to where you were, but it will discard your local changes, which you do not want\&. "git reset \-\-merge" keeps your local changes\&.
+.br
+.RE
+.PP
+Interrupted workflow
+.RS 4
+Suppose you are interrupted by an urgent fix request while you are in the middle of a large change\&. The files in your working tree are not in any shape to be committed yet, but you need to get to the other branch for a quick bugfix\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git checkout feature ;# you were working in "feature" branch and
+$ work work work       ;# got interrupted
+$ git commit \-a \-m "snapshot WIP"                 \fB(1)\fR
+$ git checkout master
+$ fix fix fix
+$ git commit ;# commit with real log
+$ git checkout feature
+$ git reset \-\-soft HEAD^ ;# go back to WIP state  \fB(2)\fR
+$ git reset                                       \fB(3)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRThis commit will get blown away so a throw\-away log message is OK\&.
+.br
+\fB2. \fRThis removes the
+\fIWIP\fR
+commit from the commit history, and sets your working tree to the state just before you made that snapshot\&.
+.br
+\fB3. \fRAt this point the index file still has all the WIP changes you committed as
+\fIsnapshot WIP\fR\&. This updates the index to show your WIP files as uncommitted\&.
+.sp
+See also
+\fBgit-stash\fR(1)\&.
+.br
+.RE
+.PP
+Reset a single file in the index
+.RS 4
+Suppose you have added a file to your index, but later decide you do not want to add it to your commit\&. You can remove the file from the index while keeping your changes with git reset\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git reset \-\- frotz\&.c                      \fB(1)\fR
+$ git commit \-m "Commit files in index"     \fB(2)\fR
+$ git add frotz\&.c                           \fB(3)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRThis removes the file from the index while keeping it in the working directory\&.
+.br
+\fB2. \fRThis commits all other changes in the index\&.
+.br
+\fB3. \fRAdds the file to the index again\&.
+.br
+.RE
+.PP
+Keep changes in working tree while discarding some previous commits
+.RS 4
+Suppose you are working on something and you commit it, and then you continue working a bit more, but now you think that what you have in your working tree should be in another branch that has nothing to do with what you commited previously\&. You can start a new branch and reset it while keeping the changes in your work tree\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git tag start
+$ git checkout \-b branch1
+$ edit
+$ git commit \&.\&.\&.                            \fB(1)\fR
+$ edit
+$ git checkout \-b branch2                   \fB(2)\fR
+$ git reset \-\-keep start                    \fB(3)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRThis commits your first edits in branch1\&.
+.br
+\fB2. \fRIn the ideal world, you could have realized that the earlier commit did not belong to the new topic when you created and switched to branch2 (i\&.e\&. "git checkout \-b branch2 start"), but nobody is perfect\&.
+.br
+\fB3. \fRBut you can use "reset \-\-keep" to remove the unwanted commit after you switched to "branch2"\&.
+.br
 .RE
 .SH "DISCUSSION"
 .sp
@@ -241,249 +490,6 @@ working index HEAD target         working index HEAD
 .\}
 .sp
 X means any state and U means an unmerged index\&.
-.SH "EXAMPLES"
-.PP
-Undo a commit and redo
-.RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git commit \&.\&.\&.
-$ git reset \-\-soft HEAD^      \fB(1)\fR
-$ edit                        \fB(2)\fR
-$ git commit \-a \-c ORIG_HEAD  \fB(3)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRThis is most often done when you remembered what you just committed is incomplete, or you misspelled your commit message, or both\&. Leaves working tree as it was before "reset"\&.
-.br
-\fB2. \fRMake corrections to working tree files\&.
-.br
-\fB3. \fR"reset" copies the old head to \&.git/ORIG_HEAD; redo the commit by starting with its log message\&. If you do not need to edit the message further, you can give \-C option instead\&.
-.sp
-See also the \-\-amend option to
-\fBgit-commit\fR(1)\&.
-.br
-.RE
-.PP
-Undo commits permanently
-.RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git commit \&.\&.\&.
-$ git reset \-\-hard HEAD~3   \fB(1)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRThe last three commits (HEAD, HEAD^, and HEAD~2) were bad and you do not want to ever see them again\&. Do
-\fBnot\fR
-do this if you have already given these commits to somebody else\&. (See the "RECOVERING FROM UPSTREAM REBASE" section in
-\fBgit-rebase\fR(1)
-for the implications of doing so\&.)
-.br
-.RE
-.PP
-Undo a commit, making it a topic branch
-.RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git branch topic/wip     \fB(1)\fR
-$ git reset \-\-hard HEAD~3  \fB(2)\fR
-$ git checkout topic/wip   \fB(3)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRYou have made some commits, but realize they were premature to be in the "master" branch\&. You want to continue polishing them in a topic branch, so create "topic/wip" branch off of the current HEAD\&.
-.br
-\fB2. \fRRewind the master branch to get rid of those three commits\&.
-.br
-\fB3. \fRSwitch to "topic/wip" branch and keep working\&.
-.br
-.RE
-.PP
-Undo add
-.RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ edit                                     \fB(1)\fR
-$ git add frotz\&.c filfre\&.c
-$ mailx                                    \fB(2)\fR
-$ git reset                                \fB(3)\fR
-$ git pull git://info\&.example\&.com/ nitfol  \fB(4)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRYou are happily working on something, and find the changes in these files are in good order\&. You do not want to see them when you run "git diff", because you plan to work on other files and changes with these files are distracting\&.
-.br
-\fB2. \fRSomebody asks you to pull, and the changes sounds worthy of merging\&.
-.br
-\fB3. \fRHowever, you already dirtied the index (i\&.e\&. your index does not match the HEAD commit)\&. But you know the pull you are going to make does not affect frotz\&.c nor filfre\&.c, so you revert the index changes for these two files\&. Your changes in working tree remain there\&.
-.br
-\fB4. \fRThen you can pull and merge, leaving frotz\&.c and filfre\&.c changes still in the working tree\&.
-.br
-.RE
-.PP
-Undo a merge or pull
-.RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git pull                         \fB(1)\fR
-Auto\-merging nitfol
-CONFLICT (content): Merge conflict in nitfol
-Automatic merge failed; fix conflicts and then commit the result\&.
-$ git reset \-\-hard                 \fB(2)\fR
-$ git pull \&. topic/branch          \fB(3)\fR
-Updating from 41223\&.\&.\&. to 13134\&.\&.\&.
-Fast\-forward
-$ git reset \-\-hard ORIG_HEAD       \fB(4)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRTry to update from the upstream resulted in a lot of conflicts; you were not ready to spend a lot of time merging right now, so you decide to do that later\&.
-.br
-\fB2. \fR"pull" has not made merge commit, so "git reset \-\-hard" which is a synonym for "git reset \-\-hard HEAD" clears the mess from the index file and the working tree\&.
-.br
-\fB3. \fRMerge a topic branch into the current branch, which resulted in a fast\-forward\&.
-.br
-\fB4. \fRBut you decided that the topic branch is not ready for public consumption yet\&. "pull" or "merge" always leaves the original tip of the current branch in ORIG_HEAD, so resetting hard to it brings your index file and the working tree back to that state, and resets the tip of the branch to that commit\&.
-.br
-.RE
-.PP
-Undo a merge or pull inside a dirty work tree
-.RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git pull                         \fB(1)\fR
-Auto\-merging nitfol
-Merge made by recursive\&.
- nitfol                |   20 +++++\-\-\-\-
- \&.\&.\&.
-$ git reset \-\-merge ORIG_HEAD      \fB(2)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fREven if you may have local modifications in your working tree, you can safely say "git pull" when you know that the change in the other branch does not overlap with them\&.
-.br
-\fB2. \fRAfter inspecting the result of the merge, you may find that the change in the other branch is unsatisfactory\&. Running "git reset \-\-hard ORIG_HEAD" will let you go back to where you were, but it will discard your local changes, which you do not want\&. "git reset \-\-merge" keeps your local changes\&.
-.br
-.RE
-.PP
-Interrupted workflow
-.RS 4
-Suppose you are interrupted by an urgent fix request while you are in the middle of a large change\&. The files in your working tree are not in any shape to be committed yet, but you need to get to the other branch for a quick bugfix\&.
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git checkout feature ;# you were working in "feature" branch and
-$ work work work       ;# got interrupted
-$ git commit \-a \-m "snapshot WIP"                 \fB(1)\fR
-$ git checkout master
-$ fix fix fix
-$ git commit ;# commit with real log
-$ git checkout feature
-$ git reset \-\-soft HEAD^ ;# go back to WIP state  \fB(2)\fR
-$ git reset                                       \fB(3)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRThis commit will get blown away so a throw\-away log message is OK\&.
-.br
-\fB2. \fRThis removes the
-\fIWIP\fR
-commit from the commit history, and sets your working tree to the state just before you made that snapshot\&.
-.br
-\fB3. \fRAt this point the index file still has all the WIP changes you committed as
-\fIsnapshot WIP\fR\&. This updates the index to show your WIP files as uncommitted\&.
-.sp
-See also
-\fBgit-stash\fR(1)\&.
-.br
-.RE
-.PP
-Reset a single file in the index
-.RS 4
-Suppose you have added a file to your index, but later decide you do not want to add it to your commit\&. You can remove the file from the index while keeping your changes with git reset\&.
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git reset \-\- frotz\&.c                      \fB(1)\fR
-$ git commit \-m "Commit files in index"     \fB(2)\fR
-$ git add frotz\&.c                           \fB(3)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRThis removes the file from the index while keeping it in the working directory\&.
-.br
-\fB2. \fRThis commits all other changes in the index\&.
-.br
-\fB3. \fRAdds the file to the index again\&.
-.br
-.RE
-.PP
-Keep changes in working tree while discarding some previous commits
-.RS 4
-Suppose you are working on something and you commit it, and then you continue working a bit more, but now you think that what you have in your working tree should be in another branch that has nothing to do with what you commited previously\&. You can start a new branch and reset it while keeping the changes in your work tree\&.
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git tag start
-$ git checkout \-b branch1
-$ edit
-$ git commit \&.\&.\&.                            \fB(1)\fR
-$ edit
-$ git checkout \-b branch2                   \fB(2)\fR
-$ git reset \-\-keep start                    \fB(3)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-\fB1. \fRThis commits your first edits in branch1\&.
-.br
-\fB2. \fRIn the ideal world, you could have realized that the earlier commit did not belong to the new topic when you created and switched to branch2 (i\&.e\&. "git checkout \-b branch2 start"), but nobody is perfect\&.
-.br
-\fB3. \fRBut you can use "reset \-\-keep" to remove the unwanted commit after you switched to "branch2"\&.
-.br
-.RE
 .SH "AUTHOR"
 .sp
 Written by Junio C Hamano <gitster@pobox\&.com> and Linus Torvalds <torvalds@osdl\&.org>
