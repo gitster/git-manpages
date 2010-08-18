@@ -2,12 +2,12 @@
 .\"     Title: git-checkout
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/21/2010
+.\"      Date: 08/18/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.2
+.\"    Source: Git 1.7.2.1.158.gbd3a97
 .\"  Language: English
 .\"
-.TH "GIT\-CHECKOUT" "1" "07/21/2010" "Git 1\&.7\&.2" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "08/18/2010" "Git 1\&.7\&.2\&.1\&.158\&.gbd3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -24,7 +24,7 @@ git-checkout \- Checkout a branch or paths to the working tree
 .sp
 .nf
 \fIgit checkout\fR [\-q] [\-f] [\-m] [<branch>]
-\fIgit checkout\fR [\-q] [\-f] [\-m] [[\-b|\-\-orphan] <new_branch>] [<start_point>]
+\fIgit checkout\fR [\-q] [\-f] [\-m] [[\-b|\-B|\-\-orphan] <new_branch>] [<start_point>]
 \fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <paths>\&...
 \fIgit checkout\fR \-\-patch [<tree\-ish>] [\-\-] [<paths>\&...]
 .fi
@@ -33,7 +33,7 @@ git-checkout \- Checkout a branch or paths to the working tree
 .sp
 Updates files in the working tree to match the version in the index or the specified tree\&. If no paths are given, \fIgit checkout\fR will also update HEAD to set the specified branch as the current branch\&.
 .PP
-\fIgit checkout\fR [<branch>], \fIgit checkout\fR \-b <new branch> [<start point>]
+\fIgit checkout\fR [<branch>], \fIgit checkout\fR \-b|\-B <new_branch> [<start point>]
 .RS 4
 This form switches branches by updating the index, working tree, and HEAD to reflect the specified branch\&.
 .sp
@@ -53,6 +53,23 @@ without
 implies branch creation; see the description of
 \-\-track
 below\&.
+.sp
+If
+\-B
+is given, <new_branch> is created if it doesn\(aqt exist; otherwise, it is reset\&. This is the transactional equivalent of
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git branch \-f <branch> [<start point>]
+$ git checkout <branch>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+that is to say, the branch is not reset/created unless "git checkout" is successful\&.
 .RE
 .PP
 \fIgit checkout\fR [\-\-patch] [<tree\-ish>] [\-\-] <pathspec>\&...
@@ -98,6 +115,13 @@ When checking out paths from the index, check out stage #2 (\fIours\fR) or #3 (\
 \-b
 .RS 4
 Create a new branch named <new_branch> and start it at <start_point>; see
+\fBgit-branch\fR(1)
+for details\&.
+.RE
+.PP
+\-B
+.RS 4
+Creates the branch <new_branch> and start it at <start_point>; if it already exists, then reset it to <start_point>\&. This is equivalent to running "git branch" with "\-f"; see
 \fBgit-branch\fR(1)
 for details\&.
 .RE

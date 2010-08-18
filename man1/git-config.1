@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/26/2010
+.\"      Date: 08/18/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.2.19.g9a302
+.\"    Source: Git 1.7.2.1.158.gbd3a97
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "07/26/2010" "Git 1\&.7\&.2\&.19\&.g9a302" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/18/2010" "Git 1\&.7\&.2\&.1\&.158\&.gbd3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -658,7 +658,7 @@ commitBeforeMerge
 .RS 4
 Advice shown when
 \fBgit-merge\fR(1)
-refuses to merge to avoid overwritting local changes\&. Default: true\&.
+refuses to merge to avoid overwriting local changes\&. Default: true\&.
 .RE
 .PP
 resolveConflict
@@ -935,7 +935,7 @@ are supported\&.
 .PP
 core\&.deltaBaseCacheLimit
 .RS 4
-Maximum number of bytes to reserve for caching base objects that multiple deltafied objects reference\&. By storing the entire decompressed base objects in a cache Git is able to avoid unpacking and decompressing frequently used base objects multiple times\&.
+Maximum number of bytes to reserve for caching base objects that may be referenced by multiple deltified objects\&. By storing the entire decompressed base objects in a cache Git is able to avoid unpacking and decompressing frequently used base objects multiple times\&.
 .sp
 Default is 16 MiB on all platforms\&. This should be reasonable for all users/operating systems, except on the largest projects\&. You probably do not need to adjust this value\&.
 .sp
@@ -1193,7 +1193,7 @@ If true, git\-am will call git\-mailsplit for patches in mbox format with parame
 \fI\-\-keep\-cr\fR\&. In this case git\-mailsplit will not remove
 \er
 from lines ending with
-\er\en\&. Can be overrriden by giving
+\er\en\&. Can be overridden by giving
 \fI\-\-no\-keep\-cr\fR
 from the command line\&. See
 \fBgit-am\fR(1),
@@ -1658,6 +1658,16 @@ diff\&.renames
 Tells git to detect renames\&. If set to any boolean value, it will enable basic rename detection\&. If set to "copies" or "copy", it will detect copies, as well\&.
 .RE
 .PP
+diff\&.ignoreSubmodules
+.RS 4
+Sets the default value of \-\-ignore\-submodules\&. Note that this affects only
+\fIgit diff\fR
+Porcelain, and not lower level
+\fIdiff\fR
+commands such as
+\fIgit diff\-files\fR\&.
+.RE
+.PP
 diff\&.suppressBlankEmpty
 .RS 4
 A boolean to inhibit the standard behavior of printing a space before each empty output line\&. Defaults to false\&.
@@ -1882,7 +1892,7 @@ If true, the server will look up the end\-of\-line conversion attributes for fil
 \fI\-k\fR
 modes to use\&. If the attributes force git to treat a file as text, the
 \fI\-k\fR
-mode will be left blank so cvs clients will treat it as text\&. If they suppress text conversion, the file will be set with
+mode will be left blank so CVS clients will treat it as text\&. If they suppress text conversion, the file will be set with
 \fI\-kb\fR
 mode, which suppresses any newline munging the client might otherwise do\&. If the attributes do not allow the file type to be determined, then
 \fIgitcvs\&.allbinary\fR
@@ -2269,8 +2279,9 @@ will be bound to the local IP (127\&.0\&.0\&.1)\&.
 .PP
 instaweb\&.modulepath
 .RS 4
-The module path for an apache httpd used by
-\fBgit-instaweb\fR(1)\&.
+The default module path for
+\fBgit-instaweb\fR(1)
+to use instead of /usr/lib/apache2/modules\&. Only used if httpd is Apache\&.
 .RE
 .PP
 instaweb\&.port
@@ -2963,6 +2974,11 @@ file\&. See
 and
 \fBgitmodules\fR(5)
 for details\&.
+.RE
+.PP
+submodule\&.<name>\&.ignore
+.RS 4
+Defines under what circumstances "git status" and the diff family show a submodule as modified\&. When set to "all", it will never be considered modified, "dirty" will ignore all changes to the submodules work tree and takes only differences between the HEAD of the submodule and the commit recorded in the superproject into account\&. "untracked" will additionally let submodules with modified tracked files in their work tree show up\&. Using "none" (the default when this option is not set) also shows submodules that have untracked files in their work tree as changed\&. This setting overrides any setting made in \&.gitmodules for this submodule, both settings can be overriden on the command line by using the "\-\-ignore\-submodules" option\&.
 .RE
 .PP
 tar\&.umask
