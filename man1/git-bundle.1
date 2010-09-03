@@ -2,12 +2,12 @@
 .\"     Title: git-bundle
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/21/2010
+.\"      Date: 09/03/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.2
+.\"    Source: Git 1.7.2.3.313.gcd15
 .\"  Language: English
 .\"
-.TH "GIT\-BUNDLE" "1" "07/21/2010" "Git 1\&.7\&.2" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "09/03/2010" "Git 1\&.7\&.2\&.3\&.313\&.gcd1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -23,7 +23,7 @@ git-bundle \- Move objects and refs by archive
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit bundle\fR create <file> <git\-rev\-list args>
+\fIgit bundle\fR create <file> <git\-rev\-list\-args>
 \fIgit bundle\fR verify <file>
 \fIgit bundle\fR list\-heads <file> [refname\&...]
 \fIgit bundle\fR unbundle <file> [refname\&...]
@@ -38,7 +38,7 @@ create <file>
 .RS 4
 Used to create a bundle named
 \fIfile\fR\&. This requires the
-\fIgit rev\-list\fR
+\fIgit\-rev\-list\-args\fR
 arguments to define the bundle contents\&.
 .RE
 .PP
@@ -62,13 +62,14 @@ for storage in the repository, then prints the names of all defined references\&
 \fIgit fetch\fR\&.
 .RE
 .PP
-[git\-rev\-list\-args\&...]
+<git\-rev\-list\-args>
 .RS 4
 A list of arguments, acceptable to
 \fIgit rev\-parse\fR
 and
-\fIgit rev\-list\fR, that specifies the specific objects and references to transport\&. For example,
-master\e~10\&.\&.master
+\fIgit rev\-list\fR
+(and containg a named ref, see SPECIFYING REFERENCES below), that specifies the specific objects and references to transport\&. For example,
+master~10\&.\&.master
 causes the current master reference to be packaged along with all objects added since its 10th ancestor commit\&. There is no explicit limit to the number of references and objects that may be packaged\&.
 .RE
 .PP
@@ -82,7 +83,7 @@ acts like
 .RE
 .SH "SPECIFYING REFERENCES"
 .sp
-\fIgit bundle\fR will only package references that are shown by \fIgit show\-ref\fR: this includes heads, tags, and remote heads\&. References such as master\e~1 cannot be packaged, but are perfectly suitable for defining the basis\&. More than one reference may be packaged, and more than one basis can be specified\&. The objects packaged are those not contained in the union of the given bases\&. Each basis can be specified explicitly (e\&.g\&. ^master\e~10), or implicitly (e\&.g\&. master\e~10\&.\&.master, \-\-since=10\&.days\&.ago master)\&.
+\fIgit bundle\fR will only package references that are shown by \fIgit show\-ref\fR: this includes heads, tags, and remote heads\&. References such as master~1 cannot be packaged, but are perfectly suitable for defining the basis\&. More than one reference may be packaged, and more than one basis can be specified\&. The objects packaged are those not contained in the union of the given bases\&. Each basis can be specified explicitly (e\&.g\&. ^master~10), or implicitly (e\&.g\&. master~10\&.\&.master, \-\-since=10\&.days\&.ago master)\&.
 .sp
 It is very important that the basis used be held by the destination\&. It is okay to err on the side of caution, causing the bundle file to contain objects already in the destination, as these are ignored when unpacking at the destination\&.
 .SH "EXAMPLE"
@@ -163,7 +164,7 @@ machineB$ git pull
 .\}
 .sp
 .sp
-If you know up to what commit the intended recipient repository should have the necessary objects, you can use that knowledge to specify the basis, giving a cut\-off point to limit the revisions and objects that go in the resulting bundle\&. The previous example used lastR2bundle tag for this purpose, but you can use any other options that you would give to the \fBgit-log\fR(1) command\&. Here are more examples:
+If you know up to what commit the intended recipient repository should have the necessary objects, you can use that knowledge to specify the basis, giving a cut\-off point to limit the revisions and objects that go in the resulting bundle\&. The previous example used the lastR2bundle tag for this purpose, but you can use any other options that you would give to the \fBgit-log\fR(1) command\&. Here are more examples:
 .sp
 You can use a tag that is present in both:
 .sp
@@ -232,7 +233,7 @@ $ git fetch mybundle master:localRef
 .\}
 .sp
 .sp
-You can also see what references it offers\&.
+You can also see what references it offers:
 .sp
 .if n \{\
 .RS 4
