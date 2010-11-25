@@ -2,12 +2,12 @@
 .\"     Title: git-add
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 09/18/2010
+.\"      Date: 11/25/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.3
+.\"    Source: Git 1.7.3.2.343.g7d43d
 .\"  Language: English
 .\"
-.TH "GIT\-ADD" "1" "09/18/2010" "Git 1\&.7\&.3" "Git Manual"
+.TH "GIT\-ADD" "1" "11/25/2010" "Git 1\&.7\&.3\&.2\&.343\&.g7d4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -57,7 +57,7 @@ dir/file2) can be given to add all files in the directory, recursively\&.
 .PP
 \-n, \-\-dry\-run
 .RS 4
-Don\(aqt actually add the file(s), just show if they exist and/or will be ignored\&.
+Don\(cqt actually add the file(s), just show if they exist and/or will be ignored\&.
 .RE
 .PP
 \-v, \-\-verbose
@@ -89,7 +89,7 @@ subcommand\&. See \(lqInteractive mode\(rq for details\&.
 .RS 4
 Open the diff vs\&. the index in an editor and let the user edit it\&. After the editor was closed, adjust the hunk headers and apply the patch to the index\&.
 .sp
-\fBNOTE\fR: Obviously, if you change anything else than the first character on lines beginning with a space or a minus, the patch will no longer apply\&.
+The intent of this option is to pick and choose lines of the patch to apply, or even to modify the contents of lines to be staged\&. This can be quicker and more flexible than using the interactive hunk selector\&. However, it is easy to confuse oneself and create a patch that does not apply to the index\&. See EDITING PATCHES below\&.
 .RE
 .PP
 \-u, \-\-update
@@ -115,7 +115,7 @@ git commit \-a\&.
 .PP
 \-\-refresh
 .RS 4
-Don\(aqt add the file(s), but only refresh their stat() information in the index\&.
+Don\(cqt add the file(s), but only refresh their stat() information in the index\&.
 .RE
 .PP
 \-\-ignore\-errors
@@ -330,15 +330,98 @@ diff
 .RS 4
 This lets you review what will be committed (i\&.e\&. between HEAD and index)\&.
 .RE
+.SH "EDITING PATCHES"
+.sp
+Invoking git add \-e or selecting e from the interactive hunk selector will open a patch in your editor; after the editor exits, the result is applied to the index\&. You are free to make arbitrary changes to the patch, but note that some changes may have confusing results, or even result in a patch that cannot be applied\&. If you want to abort the operation entirely (i\&.e\&., stage nothing new in the index), simply delete all lines of the patch\&. The list below describes some common things you may see in a patch, and which editing operations make sense on them\&.
+.PP
+added content
+.RS 4
+Added content is represented by lines beginning with "+"\&. You can prevent staging any addition lines by deleting them\&.
+.RE
+.PP
+removed content
+.RS 4
+Removed content is represented by lines beginning with "\-"\&. You can prevent staging their removal by converting the "\-" to a " " (space)\&.
+.RE
+.PP
+modified content
+.RS 4
+Modified content is represented by "\-" lines (removing the old content) followed by "+" lines (adding the replacement content)\&. You can prevent staging the modification by converting "\-" lines to " ", and removing "+" lines\&. Beware that modifying only half of the pair is likely to introduce confusing changes to the index\&.
+.RE
+.sp
+There are also more complex operations that can be performed\&. But beware that because the patch is applied only to the index and not the working tree, the working tree will appear to "undo" the change in the index\&. For example, introducing a a new line into the index that is in neither the HEAD nor the working tree will stage the new line for commit, but the line will appear to be reverted in the working tree\&.
+.sp
+Avoid using these constructs, or do so with extreme caution\&.
+.PP
+removing untouched content
+.RS 4
+Content which does not differ between the index and working tree may be shown on context lines, beginning with a " " (space)\&. You can stage context lines for removal by converting the space to a "\-"\&. The resulting working tree file will appear to re\-add the content\&.
+.RE
+.PP
+modifying existing content
+.RS 4
+One can also modify context lines by staging them for removal (by converting " " to "\-") and adding a "+" line with the new content\&. Similarly, one can modify "+" lines for existing additions or modifications\&. In all cases, the new modification will appear reverted in the working tree\&.
+.RE
+.PP
+new content
+.RS 4
+You may also add new content that does not exist in the patch; simply add new lines, each starting with "+"\&. The addition will appear reverted in the working tree\&.
+.RE
+.sp
+There are also several operations which should be avoided entirely, as they will make the patch impossible to apply:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+adding context (" ") or removal ("\-") lines
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+deleting context or removal lines
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+modifying the contents of context or removal lines
+.RE
 .SH "SEE ALSO"
 .sp
 \fBgit-status\fR(1) \fBgit-rm\fR(1) \fBgit-reset\fR(1) \fBgit-mv\fR(1) \fBgit-commit\fR(1) \fBgit-update-index\fR(1)
 .SH "AUTHOR"
 .sp
-Written by Linus Torvalds <torvalds@osdl\&.org>
+Written by Linus Torvalds <\m[blue]\fBtorvalds@osdl\&.org\fR\m[]\&\s-2\u[1]\d\s+2>
 .SH "DOCUMENTATION"
 .sp
-Documentation by Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
+Documentation by Junio C Hamano and the git\-list <\m[blue]\fBgit@vger\&.kernel\&.org\fR\m[]\&\s-2\u[2]\d\s+2>\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+torvalds@osdl.org
+.RS 4
+\%mailto:torvalds@osdl.org
+.RE
+.IP " 2." 4
+git@vger.kernel.org
+.RS 4
+\%mailto:git@vger.kernel.org
+.RE

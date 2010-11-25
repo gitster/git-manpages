@@ -2,12 +2,12 @@
 .\"     Title: git-send-email
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 11/06/2010
+.\"      Date: 11/25/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.3.2.161.g3089c
+.\"    Source: Git 1.7.3.2.343.g7d43d
 .\"  Language: English
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "11/06/2010" "Git 1\&.7\&.3\&.2\&.161\&.g308" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "11/25/2010" "Git 1\&.7\&.3\&.2\&.343\&.g7d4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -111,7 +111,37 @@ are set, then the user will be prompted for the value\&. The default for the pro
 .PP
 \-\-in\-reply\-to=<identifier>
 .RS 4
-Specify the contents of the first In\-Reply\-To header\&. Subsequent emails will refer to the previous email instead of this if \-\-chain\-reply\-to is set\&. Only necessary if \-\-compose is also set\&. If \-\-compose is not set, this will be prompted for\&.
+Make the first mail (or all the mails with
+\-\-no\-thread) appear as a reply to the given Message\-Id, which avoids breaking threads to provide a new patch series\&. The second and subsequent emails will be sent as replies according to the
+\-\-[no]\-chain\-reply\-to
+setting\&.
+.sp
+So for example when
+\-\-thread
+and
+\-\-no\-chain\-reply\-to
+are specified, the second and subsequent patches will be replies to the first one like in the illustration below where
+[PATCH v2 0/3]
+is in reply to
+[PATCH 0/2]:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[PATCH 0/2] Here is what I did\&.\&.\&.
+  [PATCH 1/2] Clean up and tests
+  [PATCH 2/2] Implementation
+  [PATCH v2 0/3] Here is a reroll
+    [PATCH v2 1/3] Clean up
+    [PATCH v2 2/3] New tests
+    [PATCH v2 3/3] Implementation
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Only necessary if \-\-compose is also set\&. If \-\-compose is not set, this will be prompted for\&.
 .RE
 .PP
 \-\-subject=<string>
