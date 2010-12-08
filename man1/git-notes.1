@@ -2,12 +2,12 @@
 .\"     Title: git-notes
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 09/18/2010
+.\"      Date: 12/08/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.3
+.\"    Source: Git 1.7.3.3.464.gf80b6
 .\"  Language: English
 .\"
-.TH "GIT\-NOTES" "1" "09/18/2010" "Git 1\&.7\&.3" "Git Manual"
+.TH "GIT\-NOTES" "1" "12/08/2010" "Git 1\&.7\&.3\&.3\&.464\&.gf80" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -29,8 +29,12 @@ git-notes \- Add or inspect object notes
 \fIgit notes\fR append [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
 \fIgit notes\fR edit [<object>]
 \fIgit notes\fR show [<object>]
+\fIgit notes\fR merge [\-v | \-q] [\-s <strategy> ] <notes_ref>
+\fIgit notes\fR merge \-\-commit [\-v | \-q]
+\fIgit notes\fR merge \-\-abort [\-v | \-q]
 \fIgit notes\fR remove [<object>]
 \fIgit notes\fR prune [\-n | \-v]
+\fIgit notes\fR get\-ref
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -99,6 +103,15 @@ show
 Show the notes for a given object (defaults to HEAD)\&.
 .RE
 .PP
+merge
+.RS 4
+Merge the given notes ref into the current notes ref\&. This will try to merge the changes made by the given notes ref (called "remote") since the merge\-base (if any) into the current notes ref (called "local")\&.
+.sp
+If conflicts arise and a strategy for automatically resolving conflicting notes (see the \-s/\-\-strategy option) is not given, the "manual" resolver is used\&. This resolver checks out the conflicting notes in a special worktree (\&.git/NOTES_MERGE_WORKTREE), and instructs the user to manually resolve the conflicts there\&. When done, the user can either finalize the merge with
+\fIgit notes merge \-\-commit\fR, or abort the merge with
+\fIgit notes merge \-\-abort\fR\&.
+.RE
+.PP
 remove
 .RS 4
 Remove the notes for a given object (defaults to HEAD)\&. This is equivalent to specifying an empty note message to the
@@ -109,6 +122,11 @@ subcommand\&.
 prune
 .RS 4
 Remove all notes for non\-existing/unreachable objects\&.
+.RE
+.PP
+get\-ref
+.RS 4
+Print the current notes ref\&. This provides an easy way to retrieve the current notes ref (e\&.g\&. from scripts)\&.
 .RE
 .SH "OPTIONS"
 .PP
@@ -162,17 +180,54 @@ if it is not qualified\&.
 Do not remove anything; just report the object names whose notes would be removed\&.
 .RE
 .PP
+\-s <strategy>, \-\-strategy=<strategy>
+.RS 4
+When merging notes, resolve notes conflicts using the given strategy\&. The following strategies are recognized: "manual" (default), "ours", "theirs", "union" and "cat_sort_uniq"\&. See the "NOTES MERGE STRATEGIES" section below for more information on each notes merge strategy\&.
+.RE
+.PP
+\-\-commit
+.RS 4
+Finalize an in\-progress
+\fIgit notes merge\fR\&. Use this option when you have resolved the conflicts that
+\fIgit notes merge\fR
+stored in \&.git/NOTES_MERGE_WORKTREE\&. This amends the partial merge commit created by
+\fIgit notes merge\fR
+(stored in \&.git/NOTES_MERGE_PARTIAL) by adding the notes in \&.git/NOTES_MERGE_WORKTREE\&. The notes ref stored in the \&.git/NOTES_MERGE_REF symref is updated to the resulting commit\&.
+.RE
+.PP
+\-\-abort
+.RS 4
+Abort/reset a in\-progress
+\fIgit notes merge\fR, i\&.e\&. a notes merge with conflicts\&. This simply removes all files related to the notes merge\&.
+.RE
+.PP
+\-q, \-\-quiet
+.RS 4
+When merging notes, operate quietly\&.
+.RE
+.PP
 \-v, \-\-verbose
 .RS 4
-Report all object names whose notes are removed\&.
+When merging notes, be more verbose\&. When pruning notes, report all object names whose notes are removed\&.
 .RE
 .SH "DISCUSSION"
 .sp
-Commit notes are blobs containing extra information about an object (usually information to supplement a commit\(aqs message)\&. These blobs are taken from notes refs\&. A notes ref is usually a branch which contains "files" whose paths are the object names for the objects they describe, with some directory separators included for performance reasons \&\s-2\u[1]\d\s+2\&.
+Commit notes are blobs containing extra information about an object (usually information to supplement a commit\(cqs message)\&. These blobs are taken from notes refs\&. A notes ref is usually a branch which contains "files" whose paths are the object names for the objects they describe, with some directory separators included for performance reasons \&\s-2\u[1]\d\s+2\&.
 .sp
 Every notes change creates a new commit at the specified notes ref\&. You can therefore inspect the history of the notes by invoking, e\&.g\&., git log \-p notes/commits\&. Currently the commit message only records which operation triggered the update, and the commit authorship is determined according to the usual rules (see \fBgit-commit\fR(1))\&. These details may change in the future\&.
 .sp
 It is also permitted for a notes ref to point directly to a tree object, in which case the history of the notes can be read with git log \-p \-g <refname>\&.
+.SH "NOTES MERGE STRATEGIES"
+.sp
+The default notes merge strategy is "manual", which checks out conflicting notes in a special work tree for resolving notes conflicts (\&.git/NOTES_MERGE_WORKTREE), and instructs the user to resolve the conflicts in that work tree\&. When done, the user can either finalize the merge with \fIgit notes merge \-\-commit\fR, or abort the merge with \fIgit notes merge \-\-abort\fR\&.
+.sp
+"ours" automatically resolves conflicting notes in favor of the local version (i\&.e\&. the current notes ref)\&.
+.sp
+"theirs" automatically resolves notes conflicts in favor of the remote version (i\&.e\&. the given notes ref being merged into the current notes ref)\&.
+.sp
+"union" automatically resolves notes conflicts by concatenating the local and remote versions\&.
+.sp
+"cat_sort_uniq" is similar to "union", but in addition to concatenating the local and remote versions, this strategy also sorts the resulting lines, and removes duplicate lines from the result\&. This is equivalent to applying the "cat | sort | uniq" shell pipeline to the local and remote versions\&. This strategy is useful if the notes follow a line\-based format where one wants to avoid duplicated lines in the merge result\&. Note that if either the local or remote version contain duplicate lines prior to the merge, these will also be removed by this notes merge strategy\&.
 .SH "EXAMPLES"
 .sp
 You can use notes to add annotations with information that was not available at the time a commit was written\&.
@@ -209,7 +264,7 @@ $ git notes \-\-ref=built add \-C "$blob" HEAD
 .\}
 .sp
 .sp
-Of course, it doesn\(aqt make much sense to display non\-text\-format notes with \fIgit log\fR, so if you use such notes, you\(aqll probably need to write some special\-purpose tools to do something useful with them\&.
+Of course, it doesn\(cqt make much sense to display non\-text\-format notes with \fIgit log\fR, so if you use such notes, you\(cqll probably need to write some special\-purpose tools to do something useful with them\&.
 .SH "CONFIGURATION"
 .PP
 core\&.notesRef
@@ -312,7 +367,7 @@ settings\&.
 .RE
 .SH "AUTHOR"
 .sp
-Written by Johannes Schindelin <johannes\&.schindelin@gmx\&.de> and Johan Herland <johan@herland\&.net>
+Written by Johannes Schindelin <\m[blue]\fBjohannes\&.schindelin@gmx\&.de\fR\m[]\&\s-2\u[2]\d\s+2> and Johan Herland <\m[blue]\fBjohan@herland\&.net\fR\m[]\&\s-2\u[3]\d\s+2>
 .SH "DOCUMENTATION"
 .sp
 Documentation by Johannes Schindelin and Johan Herland
@@ -323,4 +378,13 @@ Part of the \fBgit\fR(7) suite
 .IP " 1." 4
 .sp
 Permitted pathnames have the form \fIab\fR/\fIcd\fR/\fIef\fR/\fI\&...\fR/\fIabcdef\&...\fR: a sequence of directory names of two hexadecimal digits each followed by a filename with the rest of the object ID.
-
+.IP " 2." 4
+johannes.schindelin@gmx.de
+.RS 4
+\%mailto:johannes.schindelin@gmx.de
+.RE
+.IP " 3." 4
+johan@herland.net
+.RS 4
+\%mailto:johan@herland.net
+.RE

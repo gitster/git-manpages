@@ -2,12 +2,12 @@
 .\"     Title: git-merge
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 11/06/2010
+.\"      Date: 12/08/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.3.2.161.g3089c
+.\"    Source: Git 1.7.3.3.464.gf80b6
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "11/06/2010" "Git 1\&.7\&.3\&.2\&.161\&.g308" "Git Manual"
+.TH "GIT\-MERGE" "1" "12/08/2010" "Git 1\&.7\&.3\&.3\&.464\&.gf80" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -27,6 +27,7 @@ git-merge \- Join two or more development histories together
         [\-s <strategy>] [\-X <strategy\-option>]
         [\-\-[no\-]rerere\-autoupdate] [\-m <msg>] <commit>\&...
 \fIgit merge\fR <msg> HEAD <commit>\&...
+\fIgit merge\fR \-\-abort
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -64,6 +65,8 @@ Then "git merge topic" will replay the changes made on the topic branch since it
 .sp
 .sp
 The second syntax (<msg> HEAD <commit>\&...) is supported for historical reasons\&. Do not use it from the command line or in new scripts\&. It is the same as git merge \-m <msg> <commit>\&...\&.
+.sp
+The third syntax ("git merge \-\-abort") can only be run after the merge has resulted in conflicts\&. \fIgit merge \-\-abort\fR will abort the merge process and try to reconstruct the pre\-merge state\&. However, if there were uncommitted changes when the merge started (and especially if those changes were further modified after the merge was started), \fIgit merge \-\-abort\fR will in some cases be unable to reconstruct the original (pre\-merge) changes\&. Therefore:
 .sp
 \fBWarning\fR: Running \fIgit merge\fR with uncommitted changes is discouraged: while possible, it leaves you in a state that is hard to back out of in the case of a conflict\&.
 .SH "OPTIONS"
@@ -166,6 +169,23 @@ invocations\&.
 Allow the rerere mechanism to update the index with the result of auto\-conflict resolution if possible\&.
 .RE
 .PP
+\-\-abort
+.RS 4
+Abort the current conflict resolution process, and try to reconstruct the pre\-merge state\&.
+.sp
+If there were uncommitted worktree changes present when the merge started,
+\fIgit merge \-\-abort\fR
+will in some cases be unable to reconstruct these changes\&. It is therefore recommended to always commit or stash your changes before running
+\fIgit merge\fR\&.
+.sp
+\fIgit merge \-\-abort\fR
+is equivalent to
+\fIgit reset \-\-merge\fR
+when
+MERGE_HEAD
+is present\&.
+.RE
+.PP
 <commit>\&...
 .RS 4
 Commits, usually other branch heads, to merge into our branch\&. You need at least one <commit>\&. Specifying more than one <commit> obviously means you are trying an Octopus\&.
@@ -257,7 +277,7 @@ No other changes are made\&. In particular, the local modifications you had befo
 HEAD\&.
 .RE
 .sp
-If you tried a merge which resulted in complex conflicts and want to start over, you can recover with git reset \-\-merge\&.
+If you tried a merge which resulted in complex conflicts and want to start over, you can recover with git merge \-\-abort\&.
 .SH "HOW CONFLICTS ARE PRESENTED"
 .sp
 During a merge, the working tree files are updated to reflect the result of the merge\&. Among the changes made to the common ancestor\(cqs version, non\-overlapping ones (that is, you changed an area of the file while the other side left that area intact, or vice versa) are incorporated in the final result verbatim\&. When both sides made changes to the same area, however, git cannot randomly pick one side over the other, and asks you to resolve it by leaving what both sides did to that area\&.
@@ -326,7 +346,7 @@ After seeing a conflict, you can do two things:
 Decide not to merge\&. The only clean\-ups you need are to reset the index file to the
 HEAD
 commit to reverse 2\&. and to clean up working tree changes made by 2\&. and 3\&.;
-git\-reset \-\-hard
+git merge \-\-abort
 can be used for this\&.
 .RE
 .sp

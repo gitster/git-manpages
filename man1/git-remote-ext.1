@@ -1,0 +1,132 @@
+'\" t
+.\"     Title: git-remote-ext
+.\"    Author: [see the Documentation section]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 12/08/2010
+.\"    Manual: Git Manual
+.\"    Source: Git 1.7.3.3.464.gf80b6
+.\"  Language: English
+.\"
+.TH "GIT\-REMOTE\-EXT" "1" "12/08/2010" "Git 1\&.7\&.3\&.3\&.464\&.gf80" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-remote-ext \- Bridge smart transport to external command\&.
+.SH "SYNOPSIS"
+.sp
+git remote add nick "ext::<command>[ <arguments>\&...]"
+.SH "DESCRIPTION"
+.sp
+This remote helper uses the specified \fIprogram\fR to connect to a remote git server\&.
+.sp
+Data written to stdin of this specified \fIprogram\fR is assumed to be sent to git:// server, git\-upload\-pack, git\-receive\-pack or git\-upload\-archive (depending on situation), and data read from stdout of this program is assumed to be received from the same service\&.
+.sp
+Command and arguments are separated by unescaped space\&.
+.sp
+The following sequences have a special meaning:
+.PP
+\(aq% \(aq
+.RS 4
+Literal space in command or argument\&.
+.RE
+.PP
+\fI%%\fR
+.RS 4
+Literal percent sign\&.
+.RE
+.PP
+\fI%s\fR
+.RS 4
+Replaced with name (receive\-pack, upload\-pack, or upload\-archive) of the service git wants to invoke\&.
+.RE
+.PP
+\fI%S\fR
+.RS 4
+Replaced with long name (git\-receive\-pack, git\-upload\-pack, or git\-upload\-archive) of the service git wants to invoke\&.
+.RE
+.PP
+\fI%G\fR (must be first characters in argument)
+.RS 4
+This argument will not be passed to
+\fIprogram\fR\&. Instead, it will cause helper to start by sending git:// service request to remote side with service field set to approiate value and repository field set to rest of the argument\&. Default is not to send such request\&.
+.sp
+This is useful if remote side is git:// server accessed over some tunnel\&.
+.RE
+.PP
+\fI%V\fR (must be first characters in argument)
+.RS 4
+This argument will not be passed to
+\fIprogram\fR\&. Instead it sets the vhost field in git:// service request (to rest of the argument)\&. Default is not to send vhost in such request (if sent)\&.
+.RE
+.SH "ENVIRONMENT VARIABLES:"
+.PP
+GIT_TRANSLOOP_DEBUG
+.RS 4
+If set, prints debugging information about various reads/writes\&.
+.RE
+.SH "ENVIRONMENT VARIABLES PASSED TO COMMAND:"
+.PP
+GIT_EXT_SERVICE
+.RS 4
+Set to long name (git\-upload\-pack, etc\&...) of service helper needs to invoke\&.
+.RE
+.PP
+GIT_EXT_SERVICE_NOPREFIX
+.RS 4
+Set to long name (upload\-pack, etc\&...) of service helper needs to invoke\&.
+.RE
+.SH "EXAMPLES:"
+.sp
+This remote helper is transparently used by git when you use commands such as "git fetch <URL>", "git clone <URL>", , "git push <URL>" or "git remote add nick <URL>", where <URL> begins with ext::\&. Examples:
+.PP
+"ext::ssh \-i /home/foo/\&.ssh/somekey user@host\&.example %S \fIfoo/repo\fR"
+.RS 4
+Like host\&.example:foo/repo, but use /home/foo/\&.ssh/somekey as keypair and user as user on remote side\&. This avoids needing to edit \&.ssh/config\&.
+.RE
+.PP
+"ext::socat \-t3600 \- ABSTRACT\-CONNECT:/git\-server %G/somerepo"
+.RS 4
+Represents repository with path /somerepo accessable over git protocol at abstract namespace address /git\-server\&.
+.RE
+.PP
+"ext::git\-server\-alias foo %G/repo"
+.RS 4
+Represents a repository with path /repo accessed using the helper program "git\-server\-alias foo"\&. The path to the repository and type of request are not passed on the command line but as part of the protocol stream, as usual with git:// protocol\&.
+.RE
+.PP
+"ext::git\-server\-alias foo %G/repo %Vfoo"
+.RS 4
+Represents a repository with path /repo accessed using the helper program "git\-server\-alias foo"\&. The hostname for the remote server passed in the protocol stream will be "foo" (this allows multiple virtual git servers to share a link\-level address)\&.
+.RE
+.PP
+"ext::git\-server\-alias foo %G/repo% with% spaces %Vfoo"
+.RS 4
+Represents a repository with path
+\fI/repo with spaces\fR
+accessed using the helper program "git\-server\-alias foo"\&. The hostname for the remote server passed in the protocol stream will be "foo" (this allows multiple virtual git servers to share a link\-level address)\&.
+.RE
+.PP
+"ext::git\-ssl foo\&.example /bar"
+.RS 4
+Represents a repository accessed using the helper program "git\-ssl foo\&.example /bar"\&. The type of request can be determined by the helper using environment variables (see above)\&.
+.RE
+.SH "DOCUMENTATION"
+.sp
+Documentation by Ilari Liusvaara, Jonathan Nieder and the git list <\m[blue]\fBgit@vger\&.kernel\&.org\fR\m[]\&\s-2\u[1]\d\s+2>
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+git@vger.kernel.org
+.RS 4
+\%mailto:git@vger.kernel.org
+.RE
