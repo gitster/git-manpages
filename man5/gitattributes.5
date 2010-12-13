@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 09/30/2010
+.\"      Date: 12/13/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.3.1.45.g9855
+.\"    Source: Git 1.7.3.3.557.gb5c17
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "09/30/2010" "Git 1\&.7\&.3\&.1\&.45\&.g9855" "Git Manual"
+.TH "GITATTRIBUTES" "5" "12/13/2010" "Git 1\&.7\&.3\&.3\&.557\&.gb5c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -71,7 +71,7 @@ When more than one pattern matches the path, a later line overrides an earlier l
 .sp
 When deciding what attributes are assigned to a path, git consults $GIT_DIR/info/attributes file (which has the highest precedence), \&.gitattributes file in the same directory as the path in question, and its parent directories up to the toplevel of the work tree (the further the directory that contains \&.gitattributes is from the path in question, the lower its precedence)\&. Finally global and system\-wide files are considered (they have the lowest precedence)\&.
 .sp
-If you wish to affect only a single repository (i\&.e\&., to assign attributes to files that are particular to one user\(aqs workflow for that repository), then attributes should be placed in the $GIT_DIR/info/attributes file\&. Attributes which should be version\-controlled and distributed to other repositories (i\&.e\&., attributes of interest to all users) should go into \&.gitattributes files\&. Attributes that should affect all repositories for a single user should be placed in a file specified by the core\&.attributesfile configuration option (see \fBgit-config\fR(1))\&. Attributes for all users on a system should be placed in the $(prefix)/etc/gitattributes file\&.
+If you wish to affect only a single repository (i\&.e\&., to assign attributes to files that are particular to one user\(cqs workflow for that repository), then attributes should be placed in the $GIT_DIR/info/attributes file\&. Attributes which should be version\-controlled and distributed to other repositories (i\&.e\&., attributes of interest to all users) should go into \&.gitattributes files\&. Attributes that should affect all repositories for a single user should be placed in a file specified by the core\&.attributesfile configuration option (see \fBgit-config\fR(1))\&. Attributes for all users on a system should be placed in the $(prefix)/etc/gitattributes file\&.
 .sp
 Sometimes you would need to override an setting of an attribute for a path to unspecified state\&. This can be done by listing the name of the attribute prefixed with an exclamation point !\&.
 .SH "EFFECTS"
@@ -213,7 +213,7 @@ If you simply want to have CRLF line endings in your working directory regardles
 .sp
 This does not force normalization of all text files, but does ensure that text files that you introduce to the repository have their line endings normalized to LF when they are added, and that files that are already normalized in the repository stay normalized\&.
 .sp
-If you want to interoperate with a source code management system that enforces end\-of\-line normalization, or you simply want all text files in your repository to be normalized, you should instead set the text attribute to "auto" for _all_ files\&.
+If you want to interoperate with a source code management system that enforces end\-of\-line normalization, or you simply want all text files in your repository to be normalized, you should instead set the text attribute to "auto" for \fIall\fR files\&.
 .sp
 .if n \{\
 .RS 4
@@ -385,9 +385,9 @@ Then you would define a "filter\&.indent\&.clean" and "filter\&.indent\&.smudge"
 .\}
 .sp
 .sp
-For best results, clean should not alter its output further if it is run twice ("clean\->clean" should be equivalent to "clean"), and multiple smudge commands should not alter clean\(aqs output ("smudge\->smudge\->clean" should be equivalent to "clean")\&. See the section on merging below\&.
+For best results, clean should not alter its output further if it is run twice ("clean\(->clean" should be equivalent to "clean"), and multiple smudge commands should not alter clean\(aqs output ("smudge\(->smudge\(->clean" should be equivalent to "clean")\&. See the section on merging below\&.
 .sp
-The "indent" filter is well\-behaved in this regard: it will not modify input that is already correctly indented\&. In this case, the lack of a smudge filter means that the clean filter _must_ accept its own output without modifying it\&.
+The "indent" filter is well\-behaved in this regard: it will not modify input that is already correctly indented\&. In this case, the lack of a smudge filter means that the clean filter \fImust\fR accept its own output without modifying it\&.
 .RE
 .sp
 .it 1 an-trap
@@ -415,7 +415,7 @@ If you have added attributes to a file that cause the canonical repository forma
 .sp
 To prevent these unnecessary merge conflicts, git can be told to run a virtual check\-out and check\-in of all three stages of a file when resolving a three\-way merge by setting the merge\&.renormalize configuration variable\&. This prevents changes caused by check\-in conversion from causing spurious merge conflicts when a converted file is merged with an unconverted file\&.
 .sp
-As long as a "smudge\->clean" results in the same output as a "clean" even on files that are already smudged, this strategy will automatically resolve all filter\-related conflicts\&. Filters that do not act in this way may cause additional merge conflicts that must be resolved manually\&.
+As long as a "smudge\(->clean" results in the same output as a "clean" even on files that are already smudged, this strategy will automatically resolve all filter\-related conflicts\&. Filters that do not act in this way may cause additional merge conflicts that must be resolved manually\&.
 .RE
 .SS "Generating diff text"
 .sp
@@ -759,11 +759,11 @@ For example, to show the diff of the exif information of a file instead of the b
 .ps -1
 .br
 .sp
-The text conversion is generally a one\-way conversion; in this example, we lose the actual image contents and focus just on the text data\&. This means that diffs generated by textconv are _not_ suitable for applying\&. For this reason, only git diff and the git log family of commands (i\&.e\&., log, whatchanged, show) will perform text conversion\&. git format\-patch will never generate this output\&. If you want to send somebody a text\-converted diff of a binary file (e\&.g\&., because it quickly conveys the changes you have made), you should generate it separately and send it as a comment _in addition to_ the usual binary diff that you might send\&.
+The text conversion is generally a one\-way conversion; in this example, we lose the actual image contents and focus just on the text data\&. This means that diffs generated by textconv are \fInot\fR suitable for applying\&. For this reason, only git diff and the git log family of commands (i\&.e\&., log, whatchanged, show) will perform text conversion\&. git format\-patch will never generate this output\&. If you want to send somebody a text\-converted diff of a binary file (e\&.g\&., because it quickly conveys the changes you have made), you should generate it separately and send it as a comment \fIin addition to\fR the usual binary diff that you might send\&.
 .sp .5v
 .RE
 .sp
-Because text conversion can be slow, especially when doing a large number of them with git log \-p, git provides a mechanism to cache the output and use it in future diffs\&. To enable caching, set the "cachetextconv" variable in your diff driver\(aqs config\&. For example:
+Because text conversion can be slow, especially when doing a large number of them with git log \-p, git provides a mechanism to cache the output and use it in future diffs\&. To enable caching, set the "cachetextconv" variable in your diff driver\(cqs config\&. For example:
 .sp
 .if n \{\
 .RS 4
@@ -885,7 +885,7 @@ To define a custom merge driver filfre, add a section to your $GIT_DIR/config fi
 .sp
 The merge\&.*\&.name variable gives the driver a human\-readable name\&.
 .sp
-The merge\&.*\&.driver variable\(aqs value is used to construct a command to run to merge ancestor\(aqs version (%O), current version (%A) and the other branches\(aq version (%B)\&. These three tokens are replaced with the names of temporary files that hold the contents of these versions when the command line is built\&. Additionally, %L will be replaced with the conflict marker size (see below)\&.
+The \(oqmerge\&.*\&.driver` variable\(cqs value is used to construct a command to run to merge ancestor\(cqs version (%O), current version (%A) and the other branches\(cq version (%B)\&. These three tokens are replaced with the names of temporary files that hold the contents of these versions when the command line is built\&. Additionally, %L will be replaced with the conflict marker size (see below)\&.
 .sp
 The merge driver is expected to leave the result of the merge in the file named with %A by overwriting it, and exit with zero status if it managed to merge them cleanly, or non\-zero if there were conflicts\&.
 .sp
@@ -929,7 +929,9 @@ The core\&.whitespace configuration variable allows you to define what \fIdiff\f
 .PP
 Set
 .RS 4
-Notice all types of potential whitespace errors known to git\&.
+Notice all types of potential whitespace errors known to git\&. The tab width is taken from the value of the
+core\&.whitespace
+configuration variable\&.
 .RE
 .PP
 Unset
@@ -939,14 +941,14 @@ Do not notice anything as error\&.
 .PP
 Unspecified
 .RS 4
-Use the value of
+Use the value of the
 core\&.whitespace
 configuration variable to decide what to notice as error\&.
 .RE
 .PP
 String
 .RS 4
-Specify a comma separate list of common whitespace problems to notice in the same format as
+Specify a comma separate list of common whitespace problems to notice in the same format as the
 core\&.whitespace
 configuration variable\&.
 .RE
@@ -961,7 +963,7 @@ configuration variable\&.
 \fBexport-ignore\fR
 .RS 4
 .sp
-Files and directories with the attribute export\-ignore won\(aqt be added to archive files\&.
+Files and directories with the attribute export\-ignore won\(cqt be added to archive files\&.
 .RE
 .sp
 .it 1 an-trap
