@@ -2,12 +2,12 @@
 .\"     Title: git-read-tree
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 09/30/2010
+.\"      Date: 12/23/2010
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.3.1.45.g9855
+.\"    Source: Git 1.7.3.4.621.g48e0ad
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "09/30/2010" "Git 1\&.7\&.3\&.1\&.45\&.g9855" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "12/23/2010" "Git 1\&.7\&.3\&.4\&.621\&.g48e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -157,7 +157,7 @@ The id of the tree object(s) to be read/merged\&.
 If \-m is specified, \fIgit read\-tree\fR can perform 3 kinds of merge, a single tree merge if only 1 tree is given, a fast\-forward merge with 2 trees, or a 3\-way merge if 3 trees are provided\&.
 .SS "Single Tree Merge"
 .sp
-If only 1 tree is specified, \fIgit read\-tree\fR operates as if the user did not specify \-m, except that if the original index has an entry for a given pathname, and the contents of the path match with the tree being read, the stat info from the index is used\&. (In other words, the index\(aqs stat()s take precedence over the merged tree\(aqs)\&.
+If only 1 tree is specified, \fIgit read\-tree\fR operates as if the user did not specify \-m, except that if the original index has an entry for a given pathname, and the contents of the path match with the tree being read, the stat info from the index is used\&. (In other words, the index\(cqs stat()s take precedence over the merged tree\(cqs)\&.
 .sp
 That means that if you do a git read\-tree \-m <newtree> followed by a git checkout\-index \-f \-u \-a, the \fIgit checkout\-index\fR only checks out the stuff that really changed\&.
 .sp
@@ -286,7 +286,7 @@ When this form of \fIgit read\-tree\fR returns successfully, you can see which o
 Case 3 is slightly tricky and needs explanation\&. The result from this rule logically should be to remove the path if the user staged the removal of the path and then switching to a new branch\&. That however will prevent the initial checkout from happening, so the rule is modified to use M (new tree) only when the content of the index is empty\&. Otherwise the removal of the path is kept as long as $H and $M are the same\&.
 .SS "3\-Way Merge"
 .sp
-Each "index" entry has two bits worth of "stage" state\&. stage 0 is the normal one, and is the only one you\(aqd see in any kind of normal use\&.
+Each "index" entry has two bits worth of "stage" state\&. stage 0 is the normal one, and is the only one you\(cqd see in any kind of normal use\&.
 .sp
 However, when you do \fIgit read\-tree\fR with three trees, the "stage" starts out at 1\&.
 .sp
@@ -342,7 +342,7 @@ stage 1 and stage 3 are the same and stage 2 is different take stage 2 (we did s
 .sp
 The \fIgit write\-tree\fR command refuses to write a nonsensical tree, and it will complain about unmerged entries if it sees a single entry that is not stage 0\&.
 .sp
-OK, this all sounds like a collection of totally nonsensical rules, but it\(aqs actually exactly what you want in order to do a fast merge\&. The different stages represent the "result tree" (stage 0, aka "merged"), the original tree (stage 1, aka "orig"), and the two trees you are trying to merge (stage 2 and 3 respectively)\&.
+OK, this all sounds like a collection of totally nonsensical rules, but it\(cqs actually exactly what you want in order to do a fast merge\&. The different stages represent the "result tree" (stage 0, aka "merged"), the original tree (stage 1, aka "orig"), and the two trees you are trying to merge (stage 2 and 3 respectively)\&.
 .sp
 The order of stages 1, 2 and 3 (hence the order of three <tree\-ish> command line arguments) are significant when you start a 3\-way merge with an index file that is already populated\&. Here is an outline of how the algorithm works:
 .sp
@@ -366,7 +366,9 @@ if a file exists in identical format in all three trees, it will automatically c
 .sp -1
 .IP \(bu 2.3
 .\}
-a file that has _any_ difference what\-so\-ever in the three trees will stay as separate entries in the index\&. It\(aqs up to "porcelain policy" to determine how to remove the non\-0 stages, and insert a merged version\&.
+a file that has
+\fIany\fR
+difference what\-so\-ever in the three trees will stay as separate entries in the index\&. It\(cqs up to "porcelain policy" to determine how to remove the non\-0 stages, and insert a merged version\&.
 .RE
 .sp
 .RS 4
@@ -377,7 +379,7 @@ a file that has _any_ difference what\-so\-ever in the three trees will stay as 
 .sp -1
 .IP \(bu 2.3
 .\}
-the index file saves and restores with all this information, so you can merge things incrementally, but as long as it has entries in stages 1/2/3 (i\&.e\&., "unmerged entries") you can\(aqt write the result\&. So now the merge algorithm ends up being really simple:
+the index file saves and restores with all this information, so you can merge things incrementally, but as long as it has entries in stages 1/2/3 (i\&.e\&., "unmerged entries") you can\(cqt write the result\&. So now the merge algorithm ends up being really simple:
 .sp
 .RS 4
 .ie n \{\
@@ -387,7 +389,7 @@ the index file saves and restores with all this information, so you can merge th
 .sp -1
 .IP \(bu 2.3
 .\}
-you walk the index in order, and ignore all entries of stage 0, since they\(aqve already been done\&.
+you walk the index in order, and ignore all entries of stage 0, since they\(cqve already been done\&.
 .RE
 .sp
 .RS 4
@@ -398,7 +400,7 @@ you walk the index in order, and ignore all entries of stage 0, since they\(aqve
 .sp -1
 .IP \(bu 2.3
 .\}
-if you find a "stage1", but no matching "stage2" or "stage3", you know it\(aqs been removed from both trees (it only existed in the original tree), and you remove that entry\&.
+if you find a "stage1", but no matching "stage2" or "stage3", you know it\(cqs been removed from both trees (it only existed in the original tree), and you remove that entry\&.
 .RE
 .sp
 .RS 4
@@ -445,7 +447,7 @@ $ LT=`cat \&.git/FETCH_HEAD`
 .\}
 .sp
 .sp
-Your work tree is still based on your HEAD ($JC), but you have some edits since\&. Three\-way merge makes sure that you have not added or modified index entries since $JC, and if you haven\(aqt, then does the right thing\&. So with the following sequence:
+Your work tree is still based on your HEAD ($JC), but you have some edits since\&. Three\-way merge makes sure that you have not added or modified index entries since $JC, and if you haven\(cqt, then does the right thing\&. So with the following sequence:
 .sp
 .if n \{\
 .RS 4
@@ -474,7 +476,7 @@ In other words, there is no need to worry about what exists only in the working 
 .sp
 Then it compares the new skip\-worktree value with the previous one\&. If skip\-worktree turns from unset to set, it will add the corresponding file back\&. If it turns from set to unset, that file will be removed\&.
 .sp
-While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are in\&. You can also specify what files are _not_ in, using negate patterns\&. For example, to remove file "unwanted":
+While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are in\&. You can also specify what files are \fInot\fR in, using negate patterns\&. For example, to remove file "unwanted":
 .sp
 .if n \{\
 .RS 4
@@ -502,18 +504,26 @@ Another tricky thing is fully repopulating working directory when you no longer 
 .sp
 .sp
 Then you can disable sparse checkout\&. Sparse checkout support in "git read\-tree" and similar commands is disabled by default\&. You need to turn core\&.sparseCheckout on in order to have sparse checkout support\&.
-.SH "BUGS"
-.sp
-In order to match a directory with $GIT_DIR/info/sparse\-checkout, trailing slash must be used\&. The form without trailing slash, while works with \&.gitignore, does not work with sparse checkout\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-write-tree\fR(1); \fBgit-ls-files\fR(1); \fBgitignore\fR(5)
 .SH "AUTHOR"
 .sp
-Written by Linus Torvalds <torvalds@osdl\&.org>
+Written by Linus Torvalds <\m[blue]\fBtorvalds@osdl\&.org\fR\m[]\&\s-2\u[1]\d\s+2>
 .SH "DOCUMENTATION"
 .sp
-Documentation by David Greaves, Junio C Hamano and the git\-list <git@vger\&.kernel\&.org>\&.
+Documentation by David Greaves, Junio C Hamano and the git\-list <\m[blue]\fBgit@vger\&.kernel\&.org\fR\m[]\&\s-2\u[2]\d\s+2>\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+torvalds@osdl.org
+.RS 4
+\%mailto:torvalds@osdl.org
+.RE
+.IP " 2." 4
+git@vger.kernel.org
+.RS 4
+\%mailto:git@vger.kernel.org
+.RE
