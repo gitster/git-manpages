@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/06/2011
+.\"      Date: 01/14/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.4.rc1
+.\"    Source: Git 1.7.4.rc2
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "01/06/2011" "Git 1\&.7\&.4\&.rc1" "Git Manual"
+.TH "GITATTRIBUTES" "5" "01/14/2011" "Git 1\&.7\&.4\&.rc2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -667,6 +667,19 @@ suitable for source code in the Pascal/Delphi language\&.
 .IP \(bu 2.3
 .\}
 
+perl
+suitable for source code in the Perl language\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 php
 suitable for source code in the PHP language\&.
 .RE
@@ -794,6 +807,47 @@ Because text conversion can be slow, especially when doing a large number of the
 .sp
 .sp
 This will cache the result of running "exif" on each blob indefinitely\&. If you change the textconv config variable for a diff driver, git will automatically invalidate the cache entries and re\-run the textconv filter\&. If you want to invalidate the cache manually (e\&.g\&., because your version of "exif" was updated and now produces better output), you can remove the cache manually with git update\-ref \-d refs/notes/textconv/jpg (where "jpg" is the name of the diff driver, as in the example above)\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBMarking files as binary\fR
+.RS 4
+.sp
+Git usually guesses correctly whether a blob contains text or binary data by examining the beginning of the contents\&. However, sometimes you may want to override its decision, either because a blob contains binary data later in the file, or because the content, while technically composed of text characters, is opaque to a human reader\&. For example, many postscript files contain only ascii characters, but produce noisy and meaningless diffs\&.
+.sp
+The simplest way to mark a file as binary is to unset the diff attribute in the \&.gitattributes file:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+*\&.ps \-diff
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+This will cause git to generate Binary files differ (or a binary patch, if binary patches are enabled) instead of a regular diff\&.
+.sp
+However, one may also want to specify other diff driver attributes\&. For example, you might want to use textconv to convert postscript files to an ascii representation for human viewing, but otherwise treat them as binary files\&. You cannot specify both \-diff and diff=ps attributes\&. The solution is to use the diff\&.*\&.binary config option:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[diff "ps"]
+  textconv = ps2ascii
+  binary = true
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .RE
 .SS "Performing a three\-way merge"
 .sp
