@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [see the "Author" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/10/2011
+.\"      Date: 03/01/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.4.45.g1a9f
+.\"    Source: Git 1.7.4.1.174.gf70f7
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "02/10/2011" "Git 1\&.7\&.4\&.45\&.g1a9f" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "03/01/2011" "Git 1\&.7\&.4\&.1\&.174\&.gf70" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -140,7 +140,7 @@ fast\-import does not use or alter the current working directory, or any file wi
 .sp
 With the exception of raw file data (which Git does not interpret) the fast\-import input format is text (ASCII) based\&. This text based format simplifies development and debugging of frontend programs, especially when a higher level language such as Perl, Python or Ruby is being used\&.
 .sp
-fast\-import is very strict about its input\&. Where we say SP below we mean \fBexactly\fR one space\&. Likewise LF means one (and only one) linefeed\&. Supplying additional whitespace characters will cause unexpected results, such as branch names or file names with leading or trailing spaces in their name, or early termination of fast\-import when it encounters unexpected input\&.
+fast\-import is very strict about its input\&. Where we say SP below we mean \fBexactly\fR one space\&. Likewise LF means one (and only one) linefeed and HT one (and only one) horizontal tab\&. Supplying additional whitespace characters will cause unexpected results, such as branch names or file names with leading or trailing spaces in their name, or early termination of fast\-import when it encounters unexpected input\&.
 .SS "Stream Comments"
 .sp
 To aid in debugging frontends fast\-import ignores any line that begins with # (ASCII pound/hash) up to and including the line ending LF\&. A comment line may contain any sequence of bytes that does not contain an LF and therefore may be used to include any detailed debugging information that might be specific to the frontend and useful when inspecting a fast\-import data stream\&.
@@ -256,6 +256,17 @@ cat\-blob
 .RS 4
 Causes fast\-import to print a blob in
 \fIcat\-file \-\-batch\fR
+format to the file descriptor set with
+\-\-cat\-blob\-fd
+or
+stdout
+if unspecified\&.
+.RE
+.PP
+ls
+.RS 4
+Causes fast\-import to print a line describing a directory entry in
+\fIls\-tree\fR
 format to the file descriptor set with
 \-\-cat\-blob\-fd
 or
@@ -1044,6 +1055,73 @@ Output uses the same format as git cat\-file \-\-batch:
 .\}
 .sp
 This command can be used anywhere in the stream that comments are accepted\&. In particular, the cat\-blob command can be used in the middle of a commit but not in the middle of a data command\&.
+.SS "ls"
+.sp
+Prints information about the object at a path to a file descriptor previously arranged with the \-\-cat\-blob\-fd argument\&. This allows printing a blob from the active commit (with cat\-blob) or copying a blob or tree from a previous commit for use in the current one (with filemodify)\&.
+.sp
+The ls command can be used anywhere in the stream that comments are accepted, including the middle of a commit\&.
+.PP
+Reading from the active commit
+.RS 4
+This form can only be used in the middle of a
+commit\&. The path names a directory entry within fast\-import\(cqs active commit\&. The path must be quoted in this case\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        \(aqls\(aq SP <path> LF
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.PP
+Reading from a named tree
+.RS 4
+The
+<dataref>
+can be a mark reference (:<idnum>) or the full 40\-byte SHA\-1 of a Git tag, commit, or tree object, preexisting or waiting to be written\&. The path is relative to the top level of the tree named by
+<dataref>\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        \(aqls\(aq SP <dataref> SP <path> LF
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+See filemodify above for a detailed description of <path>\&.
+.sp
+Output uses the same format as git ls\-tree <tree> \-\- <path>:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<mode> SP (\(aqblob\(aq | \(aqtree\(aq | \(aqcommit\(aq) SP <dataref> HT <path> LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The <dataref> represents the blob, tree, or commit object at <path> and can be used in later \fIcat\-blob\fR, \fIfilemodify\fR, or \fIls\fR commands\&.
+.sp
+If there is no file or subtree at that path, \fIgit fast\-import\fR will instead report
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+missing SP <path> LF
+.fi
+.if n \{\
+.RE
+.\}
 .SS "feature"
 .sp
 Require that fast\-import supports the specified feature, or abort if it does not\&.
@@ -1072,9 +1150,13 @@ import\-marks
 Like \-\-import\-marks except in two respects: first, only one "feature import\-marks" command is allowed per stream; second, an \-\-import\-marks= command\-line option overrides any "feature import\-marks" command in the stream\&.
 .RE
 .PP
-cat\-blob
+cat\-blob, ls
 .RS 4
-Ignored\&. Versions of fast\-import not supporting the "cat\-blob" command will exit with a message indicating so\&. This lets the import error out early with a clear message, rather than wasting time on the early part of an import before the unsupported command is detected\&.
+Require that the backend support the
+\fIcat\-blob\fR
+or
+\fIls\fR
+command\&. Versions of fast\-import not supporting the specified command will exit with a message indicating so\&. This lets the import error out early with a clear message, rather than wasting time on the early part of an import before the unsupported command is detected\&.
 .RE
 .PP
 notes
