@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/15/2011
+.\"      Date: 03/20/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.4.1.266.ga62ea
+.\"    Source: Git 1.7.4.1.343.ga91df
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "03/15/2011" "Git 1\&.7\&.4\&.1\&.266\&.ga62" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "03/20/2011" "Git 1\&.7\&.4\&.1\&.343\&.ga91" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -115,210 +115,9 @@ Another special notation is "\fI<commit1>\fR\&...\fI<commit2>\fR" which is usefu
 .sp
 \fIrev\-list\fR is a very essential git command, since it provides the ability to build and traverse commit ancestry graphs\&. For this reason, it has a lot of different options that enables it to be used by commands as different as \fIgit bisect\fR and \fIgit repack\fR\&.
 .SH "OPTIONS"
-.SS "Commit Formatting"
-.sp
-Using these options, \fBgit-rev-list\fR(1) will act similar to the more specialized family of commit log tools: \fBgit-log\fR(1), \fBgit-show\fR(1), and \fBgit-whatchanged\fR(1)
-.PP
-\-\-pretty[=<format>], \-\-format=<format>
-.RS 4
-Pretty\-print the contents of the commit logs in a given format, where
-\fI<format>\fR
-can be one of
-\fIoneline\fR,
-\fIshort\fR,
-\fImedium\fR,
-\fIfull\fR,
-\fIfuller\fR,
-\fIemail\fR,
-\fIraw\fR
-and
-\fIformat:<string>\fR\&. See the "PRETTY FORMATS" section for some additional details for each format\&. When omitted, the format defaults to
-\fImedium\fR\&.
-.sp
-Note: you can specify the default pretty format in the repository configuration (see
-\fBgit-config\fR(1))\&.
-.RE
-.PP
-\-\-abbrev\-commit
-.RS 4
-Instead of showing the full 40\-byte hexadecimal commit object name, show only a partial prefix\&. Non default number of digits can be specified with "\-\-abbrev=<n>" (which also modifies diff output, if it is displayed)\&.
-.sp
-This should make "\-\-pretty=oneline" a whole lot more readable for people using 80\-column terminals\&.
-.RE
-.PP
-\-\-oneline
-.RS 4
-This is a shorthand for "\-\-pretty=oneline \-\-abbrev\-commit" used together\&.
-.RE
-.PP
-\-\-encoding[=<encoding>]
-.RS 4
-The commit objects record the encoding used for the log message in their encoding header; this option can be used to tell the command to re\-code the commit log message in the encoding preferred by the user\&. For non plumbing commands this defaults to UTF\-8\&.
-.RE
-.PP
-\-\-no\-notes, \-\-show\-notes[=<ref>]
-.RS 4
-Show the notes (see
-\fBgit-notes\fR(1)) that annotate the commit, when showing the commit log message\&. This is the default for
-git log,
-git show
-and
-git whatchanged
-commands when there is no
-\-\-pretty,
-\-\-format
-nor
-\-\-oneline
-option is given on the command line\&.
-.sp
-With an optional argument, add this ref to the list of notes\&. The ref is taken to be in
-refs/notes/
-if it is not qualified\&.
-.RE
-.PP
-\-\-[no\-]standard\-notes
-.RS 4
-Enable or disable populating the notes ref list from the
-\fIcore\&.notesRef\fR
-and
-\fInotes\&.displayRef\fR
-variables (or corresponding environment overrides)\&. Enabled by default\&. See
-\fBgit-config\fR(1)\&.
-.RE
-.PP
-\-\-relative\-date
-.RS 4
-Synonym for
-\-\-date=relative\&.
-.RE
-.PP
-\-\-date=(relative|local|default|iso|rfc|short|raw)
-.RS 4
-Only takes effect for dates shown in human\-readable format, such as when using "\-\-pretty"\&.
-log\&.date
-config variable sets a default value for log command\(cqs \-\-date option\&.
-.sp
-\-\-date=relative
-shows dates relative to the current time, e\&.g\&. "2 hours ago"\&.
-.sp
-\-\-date=local
-shows timestamps in user\(cqs local timezone\&.
-.sp
-\-\-date=iso
-(or
-\-\-date=iso8601) shows timestamps in ISO 8601 format\&.
-.sp
-\-\-date=rfc
-(or
-\-\-date=rfc2822) shows timestamps in RFC 2822 format, often found in E\-mail messages\&.
-.sp
-\-\-date=short
-shows only date but not time, in
-YYYY\-MM\-DD
-format\&.
-.sp
-\-\-date=raw
-shows the date in the internal raw git format
-%s %z
-format\&.
-.sp
-\-\-date=default
-shows timestamps in the original timezone (either committer\(cqs or author\(cqs)\&.
-.RE
-.PP
-\-\-header
-.RS 4
-Print the contents of the commit in raw\-format; each record is separated with a NUL character\&.
-.RE
-.PP
-\-\-parents
-.RS 4
-Print also the parents of the commit (in the form "commit parent\&...")\&. Also enables parent rewriting, see
-\fIHistory Simplification\fR
-below\&.
-.RE
-.PP
-\-\-children
-.RS 4
-Print also the children of the commit (in the form "commit child\&...")\&. Also enables parent rewriting, see
-\fIHistory Simplification\fR
-below\&.
-.RE
-.PP
-\-\-timestamp
-.RS 4
-Print the raw commit timestamp\&.
-.RE
-.PP
-\-\-left\-right
-.RS 4
-Mark which side of a symmetric diff a commit is reachable from\&. Commits from the left side are prefixed with
-<
-and those from the right with
->\&. If combined with
-\-\-boundary, those commits are prefixed with
-\-\&.
-.sp
-For example, if you have this topology:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-             y\-\-\-b\-\-\-b  branch B
-            / \e /
-           /   \&.
-          /   / \e
-         o\-\-\-x\-\-\-a\-\-\-a  branch A
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-you would get an output like this:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-        $ git rev\-list \-\-left\-right \-\-boundary \-\-pretty=oneline A\&.\&.\&.B
-
-        >bbbbbbb\&.\&.\&. 3rd on b
-        >bbbbbbb\&.\&.\&. 2nd on b
-        <aaaaaaa\&.\&.\&. 3rd on a
-        <aaaaaaa\&.\&.\&. 2nd on a
-        \-yyyyyyy\&.\&.\&. 1st on b
-        \-xxxxxxx\&.\&.\&. 1st on a
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.RE
-.PP
-\-\-graph
-.RS 4
-Draw a text\-based graphical representation of the commit history on the left hand side of the output\&. This may cause extra lines to be printed in between commits, in order for the graph history to be drawn properly\&.
-.sp
-This enables parent rewriting, see
-\fIHistory Simplification\fR
-below\&.
-.sp
-This implies the
-\fI\-\-topo\-order\fR
-option by default, but the
-\fI\-\-date\-order\fR
-option may also be specified\&.
-.RE
-.PP
-\-\-count
-.RS 4
-Print a number stating how many commits would have been listed, and suppress all other output\&. When used together with
-\fI\-\-left\-right\fR, instead print the counts for left and right commits, separated by a tab\&.
-.RE
 .SS "Commit Limiting"
 .sp
-Besides specifying a range of commits that should be listed using the special notations explained in the description, additional commit limiting may be applied\&.
+Besides specifying a range of commits that should be listed using the special notations explained in the description, additional commit limiting may be applied\&. Note that they are applied before commit ordering and formatting options, such as \fI\-\-reverse\fR\&.
 .PP
 \-n \fInumber\fR, \-\-max\-count=<number>
 .RS 4
@@ -1127,6 +926,207 @@ Only show the given revs, but do not traverse their ancestors\&.
 \-\-do\-walk
 .RS 4
 Overrides a previous \-\-no\-walk\&.
+.RE
+.SS "Commit Formatting"
+.sp
+Using these options, \fBgit-rev-list\fR(1) will act similar to the more specialized family of commit log tools: \fBgit-log\fR(1), \fBgit-show\fR(1), and \fBgit-whatchanged\fR(1)
+.PP
+\-\-pretty[=<format>], \-\-format=<format>
+.RS 4
+Pretty\-print the contents of the commit logs in a given format, where
+\fI<format>\fR
+can be one of
+\fIoneline\fR,
+\fIshort\fR,
+\fImedium\fR,
+\fIfull\fR,
+\fIfuller\fR,
+\fIemail\fR,
+\fIraw\fR
+and
+\fIformat:<string>\fR\&. See the "PRETTY FORMATS" section for some additional details for each format\&. When omitted, the format defaults to
+\fImedium\fR\&.
+.sp
+Note: you can specify the default pretty format in the repository configuration (see
+\fBgit-config\fR(1))\&.
+.RE
+.PP
+\-\-abbrev\-commit
+.RS 4
+Instead of showing the full 40\-byte hexadecimal commit object name, show only a partial prefix\&. Non default number of digits can be specified with "\-\-abbrev=<n>" (which also modifies diff output, if it is displayed)\&.
+.sp
+This should make "\-\-pretty=oneline" a whole lot more readable for people using 80\-column terminals\&.
+.RE
+.PP
+\-\-oneline
+.RS 4
+This is a shorthand for "\-\-pretty=oneline \-\-abbrev\-commit" used together\&.
+.RE
+.PP
+\-\-encoding[=<encoding>]
+.RS 4
+The commit objects record the encoding used for the log message in their encoding header; this option can be used to tell the command to re\-code the commit log message in the encoding preferred by the user\&. For non plumbing commands this defaults to UTF\-8\&.
+.RE
+.PP
+\-\-no\-notes, \-\-show\-notes[=<ref>]
+.RS 4
+Show the notes (see
+\fBgit-notes\fR(1)) that annotate the commit, when showing the commit log message\&. This is the default for
+git log,
+git show
+and
+git whatchanged
+commands when there is no
+\-\-pretty,
+\-\-format
+nor
+\-\-oneline
+option is given on the command line\&.
+.sp
+With an optional argument, add this ref to the list of notes\&. The ref is taken to be in
+refs/notes/
+if it is not qualified\&.
+.RE
+.PP
+\-\-[no\-]standard\-notes
+.RS 4
+Enable or disable populating the notes ref list from the
+\fIcore\&.notesRef\fR
+and
+\fInotes\&.displayRef\fR
+variables (or corresponding environment overrides)\&. Enabled by default\&. See
+\fBgit-config\fR(1)\&.
+.RE
+.PP
+\-\-relative\-date
+.RS 4
+Synonym for
+\-\-date=relative\&.
+.RE
+.PP
+\-\-date=(relative|local|default|iso|rfc|short|raw)
+.RS 4
+Only takes effect for dates shown in human\-readable format, such as when using "\-\-pretty"\&.
+log\&.date
+config variable sets a default value for log command\(cqs \-\-date option\&.
+.sp
+\-\-date=relative
+shows dates relative to the current time, e\&.g\&. "2 hours ago"\&.
+.sp
+\-\-date=local
+shows timestamps in user\(cqs local timezone\&.
+.sp
+\-\-date=iso
+(or
+\-\-date=iso8601) shows timestamps in ISO 8601 format\&.
+.sp
+\-\-date=rfc
+(or
+\-\-date=rfc2822) shows timestamps in RFC 2822 format, often found in E\-mail messages\&.
+.sp
+\-\-date=short
+shows only date but not time, in
+YYYY\-MM\-DD
+format\&.
+.sp
+\-\-date=raw
+shows the date in the internal raw git format
+%s %z
+format\&.
+.sp
+\-\-date=default
+shows timestamps in the original timezone (either committer\(cqs or author\(cqs)\&.
+.RE
+.PP
+\-\-header
+.RS 4
+Print the contents of the commit in raw\-format; each record is separated with a NUL character\&.
+.RE
+.PP
+\-\-parents
+.RS 4
+Print also the parents of the commit (in the form "commit parent\&...")\&. Also enables parent rewriting, see
+\fIHistory Simplification\fR
+below\&.
+.RE
+.PP
+\-\-children
+.RS 4
+Print also the children of the commit (in the form "commit child\&...")\&. Also enables parent rewriting, see
+\fIHistory Simplification\fR
+below\&.
+.RE
+.PP
+\-\-timestamp
+.RS 4
+Print the raw commit timestamp\&.
+.RE
+.PP
+\-\-left\-right
+.RS 4
+Mark which side of a symmetric diff a commit is reachable from\&. Commits from the left side are prefixed with
+<
+and those from the right with
+>\&. If combined with
+\-\-boundary, those commits are prefixed with
+\-\&.
+.sp
+For example, if you have this topology:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+             y\-\-\-b\-\-\-b  branch B
+            / \e /
+           /   \&.
+          /   / \e
+         o\-\-\-x\-\-\-a\-\-\-a  branch A
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+you would get an output like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        $ git rev\-list \-\-left\-right \-\-boundary \-\-pretty=oneline A\&.\&.\&.B
+
+        >bbbbbbb\&.\&.\&. 3rd on b
+        >bbbbbbb\&.\&.\&. 2nd on b
+        <aaaaaaa\&.\&.\&. 3rd on a
+        <aaaaaaa\&.\&.\&. 2nd on a
+        \-yyyyyyy\&.\&.\&. 1st on b
+        \-xxxxxxx\&.\&.\&. 1st on a
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.PP
+\-\-graph
+.RS 4
+Draw a text\-based graphical representation of the commit history on the left hand side of the output\&. This may cause extra lines to be printed in between commits, in order for the graph history to be drawn properly\&.
+.sp
+This enables parent rewriting, see
+\fIHistory Simplification\fR
+below\&.
+.sp
+This implies the
+\fI\-\-topo\-order\fR
+option by default, but the
+\fI\-\-date\-order\fR
+option may also be specified\&.
+.RE
+.PP
+\-\-count
+.RS 4
+Print a number stating how many commits would have been listed, and suppress all other output\&. When used together with
+\fI\-\-left\-right\fR, instead print the counts for left and right commits, separated by a tab\&.
 .RE
 .SH "PRETTY FORMATS"
 .sp
