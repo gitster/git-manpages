@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/20/2011
+.\"      Date: 03/23/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.4.1.343.ga91df
+.\"    Source: Git 1.7.4.1.415.g5e839
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "03/20/2011" "Git 1\&.7\&.4\&.1\&.343\&.ga91" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "03/23/2011" "Git 1\&.7\&.4\&.1\&.415\&.g5e8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -45,6 +45,9 @@ git-rev-list \- Lists commit objects in reverse chronological order
              [ \-\-parents ]
              [ \-\-timestamp ]
              [ \-\-left\-right ]
+             [ \-\-left\-only ]
+             [ \-\-right\-only ]
+             [ \-\-cherry\-mark ]
              [ \-\-cherry\-pick ]
              [ \-\-encoding[=<encoding>] ]
              [ \-\-(author|committer|grep)=<pattern> ]
@@ -277,6 +280,16 @@ separator is seen, stop reading commits and start reading paths to limit the res
 Don\(cqt print anything to standard output\&. This form is primarily meant to allow the caller to test the exit status to see if a range of objects is fully connected (or not)\&. It is faster than redirecting stdout to /dev/null as the output does not have to be formatted\&.
 .RE
 .PP
+\-\-cherry\-mark
+.RS 4
+Like
+\-\-cherry\-pick
+(see below) but mark equivalent commits with
+=
+rather than omitting them, and inequivalent ones with
++\&.
+.RE
+.PP
 \-\-cherry\-pick
 .RS 4
 Omit any commit that introduces the same change as another commit on the "other side" when the set of commits are limited with symmetric difference\&.
@@ -286,6 +299,38 @@ A
 and
 B, a usual way to list all commits on only one side of them is with
 \-\-left\-right, like the example above in the description of that option\&. It however shows the commits that were cherry\-picked from the other branch (for example, "3rd on b" may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
+.RE
+.PP
+\-\-left\-only, \-\-right\-only
+.RS 4
+List only commits on the respective side of a symmetric range, i\&.e\&. only those which would be marked
+<
+resp\&.
+>
+by
+\-\-left\-right\&.
+.sp
+For example,
+\-\-cherry\-pick \-\-right\-only A\&...B
+omits those commits from
+B
+which are in
+A
+or are patch\-equivalent to a commit in
+A\&. In other words, this lists the
++
+commits from
+git cherry A B\&. More precisely,
+\-\-cherry\-pick \-\-right\-only \-\-no\-merges
+gives the exact list\&.
+.RE
+.PP
+\-\-cherry
+.RS 4
+A synonym for
+\-\-right\-only \-\-cherry\-mark \-\-no\-merges; useful to limit the output to the commits on our side and mark those that have been applied to the other side of a forked history with
+git log \-\-cherry upstream\&...mybranch, similar to
+git cherry upstream mybranch\&.
 .RE
 .PP
 \-g, \-\-walk\-reflogs
