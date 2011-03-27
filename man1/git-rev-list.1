@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/23/2011
+.\"      Date: 03/27/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.4.1.415.g5e839
+.\"    Source: Git 1.7.4.2.406.gbe91
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "03/23/2011" "Git 1\&.7\&.4\&.1\&.415\&.g5e8" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "03/27/2011" "Git 1\&.7\&.4\&.2\&.406\&.gbe9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -30,6 +30,10 @@ git-rev-list \- Lists commit objects in reverse chronological order
              [ \-\-sparse ]
              [ \-\-merges ]
              [ \-\-no\-merges ]
+             [ \-\-min\-parents=<number> ]
+             [ \-\-no\-min\-parents ]
+             [ \-\-max\-parents=<number> ]
+             [ \-\-no\-max\-parents ]
              [ \-\-first\-parent ]
              [ \-\-remove\-empty ]
              [ \-\-full\-history ]
@@ -186,12 +190,38 @@ Stop when a given path disappears from the tree\&.
 .PP
 \-\-merges
 .RS 4
-Print only merge commits\&.
+Print only merge commits\&. This is exactly the same as
+\-\-min\-parents=2\&.
 .RE
 .PP
 \-\-no\-merges
 .RS 4
-Do not print commits with more than one parent\&.
+Do not print commits with more than one parent\&. This is exactly the same as
+\-\-max\-parents=1\&.
+.RE
+.PP
+\-\-min\-parents=<number>, \-\-max\-parents=<number>, \-\-no\-min\-parents, \-\-no\-max\-parents
+.RS 4
+Show only commits which have at least (or at most) that many commits\&. In particular,
+\-\-max\-parents=1
+is the same as
+\-\-no\-merges,
+\-\-min\-parents=2
+is the same as
+\-\-merges\&.
+\-\-max\-parents=0
+gives all root commits and
+\-\-min\-parents=3
+all octopus merges\&.
+.sp
+\-\-no\-min\-parents
+and
+\-\-no\-max\-parents
+reset these limits (to no limit) again\&. Equivalent forms are
+\-\-min\-parents=0
+(any commit has 0 or more parents) and
+\-\-max\-parents=\-1
+(negative numbers denote no upper limit)\&.
 .RE
 .PP
 \-\-first\-parent
