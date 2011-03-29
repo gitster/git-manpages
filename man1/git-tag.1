@@ -2,12 +2,12 @@
 .\"     Title: git-tag
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/15/2011
+.\"      Date: 03/29/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.4.1.266.ga62ea
+.\"    Source: Git 1.7.4.2.412.g61e8a
 .\"  Language: English
 .\"
-.TH "GIT\-TAG" "1" "03/15/2011" "Git 1\&.7\&.4\&.1\&.266\&.ga62" "Git Manual"
+.TH "GIT\-TAG" "1" "03/29/2011" "Git 1\&.7\&.4\&.2\&.412\&.g61e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -199,21 +199,21 @@ You can test which tag you have by doing
 
 which should return 0123456789abcdef\&.\&. if you have the new version\&.
 
-Sorry for inconvenience\&.
+Sorry for the inconvenience\&.
 .fi
 .if n \{\
 .RE
 .\}
 .sp
 .sp
-Does this seem a bit complicated? It \fBshould\fR be\&. There is no way that it would be correct to just "fix" it behind peoples backs\&. People need to know that their tags might have been changed\&.
+Does this seem a bit complicated? It \fBshould\fR be\&. There is no way that it would be correct to just "fix" it automatically\&. People need to know that their tags might have been changed\&.
 .SS "On Automatic following"
 .sp
 If you are following somebody else\(cqs tree, you are most likely using remote\-tracking branches (refs/heads/origin in traditional layout, or refs/remotes/origin/master in the separate\-remote layout)\&. You usually want the tags from the other end\&.
 .sp
 On the other hand, if you are fetching because you would want a one\-shot merge from somebody else, you typically do not want to get tags from there\&. This happens more often for people near the toplevel but not limited to them\&. Mere mortals when pulling from each other do not necessarily want to automatically get private anchor point tags from the other person\&.
 .sp
-You would notice "please pull" messages on the mailing list says repo URL and branch name alone\&. This is designed to be easily cut&pasted to a \fIgit fetch\fR command line:
+Often, "please pull" messages on the mailing list just provide two pieces of information: a repo URL and a branch name; this is designed to be easily cut&pasted at the end of a \fIgit fetch\fR command line:
 .sp
 .if n \{\
 .RS 4
@@ -243,20 +243,20 @@ $ git pull git://git\&.\&.\&.\&./proj\&.git master
 .\}
 .sp
 .sp
-In such a case, you do not want to automatically follow other\(cqs tags\&.
+In such a case, you do not want to automatically follow the other person\(cqs tags\&.
 .sp
-One important aspect of git is it is distributed, and being distributed largely means there is no inherent "upstream" or "downstream" in the system\&. On the face of it, the above example might seem to indicate that the tag namespace is owned by upper echelon of people and tags only flow downwards, but that is not the case\&. It only shows that the usage pattern determines who are interested in whose tags\&.
+One important aspect of git is its distributed nature, which largely means there is no inherent "upstream" or "downstream" in the system\&. On the face of it, the above example might seem to indicate that the tag namespace is owned by the upper echelon of people and that tags only flow downwards, but that is not the case\&. It only shows that the usage pattern determines who are interested in whose tags\&.
 .sp
 A one\-shot pull is a sign that a commit history is now crossing the boundary between one circle of people (e\&.g\&. "people who are primarily interested in the networking part of the kernel") who may have their own set of tags (e\&.g\&. "this is the third release candidate from the networking group to be proposed for general consumption with 2\&.6\&.21 release") to another circle of people (e\&.g\&. "people who integrate various subsystem improvements")\&. The latter are usually not interested in the detailed tags used internally in the former group (that is what "internal" means)\&. That is why it is desirable not to follow tags automatically in this case\&.
 .sp
-It may well be that among networking people, they may want to exchange the tags internal to their group, but in that workflow they are most likely tracking with each other\(cqs progress by having remote\-tracking branches\&. Again, the heuristic to automatically follow such tags is a good thing\&.
+It may well be that among networking people, they may want to exchange the tags internal to their group, but in that workflow they are most likely tracking each other\(cqs progress by having remote\-tracking branches\&. Again, the heuristic to automatically follow such tags is a good thing\&.
 .SS "On Backdating Tags"
 .sp
-If you have imported some changes from another VCS and would like to add tags for major releases of your work, it is useful to be able to specify the date to embed inside of the tag object\&. The data in the tag object affects, for example, the ordering of tags in the gitweb interface\&.
+If you have imported some changes from another VCS and would like to add tags for major releases of your work, it is useful to be able to specify the date to embed inside of the tag object; such data in the tag object affects, for example, the ordering of tags in the gitweb interface\&.
 .sp
-To set the date used in future tag objects, set the environment variable GIT_COMMITTER_DATE to one or more of the date and time\&. The date and time can be specified in a number of ways; the most common is "YYYY\-MM\-DD HH:MM"\&.
+To set the date used in future tag objects, set the environment variable GIT_COMMITTER_DATE (see the later discussion of possible values; the most common form is "YYYY\-MM\-DD HH:MM")\&.
 .sp
-An example follows\&.
+For example:
 .sp
 .if n \{\
 .RS 4
@@ -268,6 +268,53 @@ $ GIT_COMMITTER_DATE="2006\-10\-02 10:31" git tag \-s v1\&.0\&.1
 .RE
 .\}
 .sp
+.SH "DATE FORMATS"
+.sp
+The GIT_AUTHOR_DATE, GIT_COMMITTER_DATE environment variables support the following date formats:
+.PP
+Git internal format
+.RS 4
+It is
+<unix timestamp> <timezone offset>, where
+<unix timestamp>
+is the number of seconds since the UNIX epoch\&.
+<timezone offset>
+is a positive or negative offset from UTC\&. For example CET (which is 2 hours ahead UTC) is
++0200\&.
+.RE
+.PP
+RFC 2822
+.RS 4
+The standard email format as described by RFC 2822, for example
+Thu, 07 Apr 2005 22:13:13 +0200\&.
+.RE
+.PP
+ISO 8601
+.RS 4
+Time and date specified by the ISO 8601 standard, for example
+2005\-04\-07T22:13:13\&. The parser accepts a space instead of the
+T
+character as well\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+In addition, the date part is accepted in the following formats:
+YYYY\&.MM\&.DD,
+MM/DD/YYYY
+and
+DD\&.MM\&.YYYY\&.
+.sp .5v
+.RE
+.RE
 .SH "SEE ALSO"
 .sp
 \fBgit-check-ref-format\fR(1)\&.
