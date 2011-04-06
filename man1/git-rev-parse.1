@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/15/2011
+.\"      Date: 04/06/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.4.1.266.ga62ea
+.\"    Source: Git 1.7.5.rc1
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "03/15/2011" "Git 1\&.7\&.4\&.1\&.266\&.ga62" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "04/06/2011" "Git 1\&.7\&.5\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -239,46 +239,32 @@ Flags and parameters to be parsed\&.
 .RE
 .SH "SPECIFYING REVISIONS"
 .sp
-A revision parameter typically, but not necessarily, names a commit object\&. They use what is called an \fIextended SHA1\fR syntax\&. Here are various ways to spell object names\&. The ones listed near the end of this list are to name trees and blobs contained in a commit\&.
-.sp
+A revision parameter \fI<rev>\fR typically, but not necessarily, names a commit object\&. It uses what is called an \fIextended SHA1\fR syntax\&. Here are various ways to spell object names\&. The ones listed near the end of this list name trees and blobs contained in a commit\&.
+.PP
+\fI<sha1>\fR, e\&.g\&. \fIdae86e1950b1277e545cee180551750029cfe735\fR, \fIdae86e\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-The full SHA1 object name (40\-byte hexadecimal string), or a substring of such that is unique within the repository\&. E\&.g\&. dae86e1950b1277e545cee180551750029cfe735 and dae86e both name the same commit object if there are no other object in your repository whose object name starts with dae86e\&.
+The full SHA1 object name (40\-byte hexadecimal string), or a leading substring that is unique within the repository\&. E\&.g\&. dae86e1950b1277e545cee180551750029cfe735 and dae86e both name the same commit object if there is no other object in your repository whose object name starts with dae86e\&.
 .RE
-.sp
+.PP
+\fI<describeOutput>\fR, e\&.g\&. \fIv1\&.7\&.4\&.2\-679\-g3bee7fb\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-An output from
-\fIgit describe\fR; i\&.e\&. a closest tag, optionally followed by a dash and a number of commits, followed by a dash, a
-g, and an abbreviated object name\&.
+Output from
+git describe; i\&.e\&. a closest tag, optionally followed by a dash and a number of commits, followed by a dash, a
+\fIg\fR, and an abbreviated object name\&.
 .RE
-.sp
+.PP
+\fI<refname>\fR, e\&.g\&. \fImaster\fR, \fIheads/master\fR, \fIrefs/heads/master\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A symbolic ref name\&. E\&.g\&.
 \fImaster\fR
-typically means the commit object referenced by refs/heads/master\&. If you happen to have both heads/master and tags/master, you can explicitly say
+typically means the commit object referenced by
+\fIrefs/heads/master\fR\&. If you happen to have both
+\fIheads/master\fR
+and
+\fItags/master\fR, you can explicitly say
 \fIheads/master\fR
 to tell git which one you mean\&. When ambiguous, a
-<name>
+\fI<name>\fR
 is disambiguated by taking the first match in the following rules:
 .sp
 .RS 4
@@ -289,15 +275,15 @@ is disambiguated by taking the first match in the following rules:
 .sp -1
 .IP "  1." 4.2
 .\}
-if
-$GIT_DIR/<name>
+If
+\fI$GIT_DIR/<name>\fR
 exists, that is what you mean (this is usually useful only for
-HEAD,
-FETCH_HEAD,
-ORIG_HEAD,
-MERGE_HEAD
+\fIHEAD\fR,
+\fIFETCH_HEAD\fR,
+\fIORIG_HEAD\fR,
+\fIMERGE_HEAD\fR
 and
-CHERRY_PICK_HEAD);
+\fICHERRY_PICK_HEAD\fR);
 .RE
 .sp
 .RS 4
@@ -309,8 +295,8 @@ CHERRY_PICK_HEAD);
 .IP "  2." 4.2
 .\}
 otherwise,
-refs/<name>
-if exists;
+\fIrefs/<name>\fR
+if it exists;
 .RE
 .sp
 .RS 4
@@ -322,8 +308,8 @@ if exists;
 .IP "  3." 4.2
 .\}
 otherwise,
-refs/tags/<name>
-if exists;
+\fIrefs/tags/<refname>\fR
+if it exists;
 .RE
 .sp
 .RS 4
@@ -335,8 +321,8 @@ if exists;
 .IP "  4." 4.2
 .\}
 otherwise,
-refs/heads/<name>
-if exists;
+\fIrefs/heads/<name>\fR
+if it exists;
 .RE
 .sp
 .RS 4
@@ -348,8 +334,8 @@ if exists;
 .IP "  5." 4.2
 .\}
 otherwise,
-refs/remotes/<name>
-if exists;
+\fIrefs/remotes/<name>\fR
+if it exists;
 .RE
 .sp
 .RS 4
@@ -361,248 +347,182 @@ if exists;
 .IP "  6." 4.2
 .\}
 otherwise,
-refs/remotes/<name>/HEAD
-if exists\&.
+\fIrefs/remotes/<name>/HEAD\fR
+if it exists\&.
 .sp
-HEAD names the commit your changes in the working tree is based on\&. FETCH_HEAD records the branch you fetched from a remote repository with your last
-\fIgit fetch\fR
-invocation\&. ORIG_HEAD is created by commands that moves your HEAD in a drastic way, to record the position of the HEAD before their operation, so that you can change the tip of the branch back to the state before you ran them easily\&. MERGE_HEAD records the commit(s) you are merging into your branch when you run
-\fIgit merge\fR\&. CHERRY_PICK_HEAD records the commit you are cherry\-picking when you run
-\fIgit cherry\-pick\fR\&.
+\fIHEAD\fR
+names the commit on which you based the changes in the working tree\&.
+\fIFETCH_HEAD\fR
+records the branch which you fetched from a remote repository with your last
+git fetch
+invocation\&.
+\fIORIG_HEAD\fR
+is created by commands that move your
+\fIHEAD\fR
+in a drastic way, to record the position of the
+\fIHEAD\fR
+before their operation, so that you can easily change the tip of the branch back to the state before you ran them\&.
+\fIMERGE_HEAD\fR
+records the commit(s) which you are merging into your branch when you run
+git merge\&.
+\fICHERRY_PICK_HEAD\fR
+records the commit which you are cherry\-picking when you run
+git cherry\-pick\&.
 .sp
 Note that any of the
-refs/*
+\fIrefs/*\fR
 cases above may come either from the
-$GIT_DIR/refs
+\fI$GIT_DIR/refs\fR
 directory or from the
-$GIT_DIR/packed\-refs
+\fI$GIT_DIR/packed\-refs\fR
 file\&.
 .RE
 .RE
-.sp
+.PP
+\fI<refname>@{<date>}\fR, e\&.g\&. \fImaster@{yesterday}\fR, \fIHEAD@{5 minutes ago}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A ref followed by the suffix
 \fI@\fR
 with a date specification enclosed in a brace pair (e\&.g\&.
 \fI{yesterday}\fR,
 \fI{1 month 2 weeks 3 days 1 hour 1 second ago}\fR
 or
-\fI{1979\-02\-26 18:30:00}\fR) to specify the value of the ref at a prior point in time\&. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>)\&. Note that this looks up the state of your
+\fI{1979\-02\-26 18:30:00}\fR) specifies the value of the ref at a prior point in time\&. This suffix may only be used immediately following a ref name and the ref must have an existing log (\fI$GIT_DIR/logs/<ref>\fR)\&. Note that this looks up the state of your
 \fBlocal\fR
 ref at a given time; e\&.g\&., what was in your local
-master
+\fImaster\fR
 branch last week\&. If you want to look at commits made during certain times, see
-\-\-since
+\fI\-\-since\fR
 and
-\-\-until\&.
+\fI\-\-until\fR\&.
 .RE
-.sp
+.PP
+\fI<refname>@{<n>}\fR, e\&.g\&. \fImaster@{1}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A ref followed by the suffix
 \fI@\fR
 with an ordinal specification enclosed in a brace pair (e\&.g\&.
 \fI{1}\fR,
-\fI{15}\fR) to specify the n\-th prior value of that ref\&. For example
+\fI{15}\fR) specifies the n\-th prior value of that ref\&. For example
 \fImaster@{1}\fR
 is the immediate prior value of
 \fImaster\fR
 while
 \fImaster@{5}\fR
 is the 5th prior value of
-\fImaster\fR\&. This suffix may only be used immediately following a ref name and the ref must have an existing log ($GIT_DIR/logs/<ref>)\&.
+\fImaster\fR\&. This suffix may only be used immediately following a ref name and the ref must have an existing log (\fI$GIT_DIR/logs/<refname>\fR)\&.
 .RE
-.sp
+.PP
+\fI@{<n>}\fR, e\&.g\&. \fI@{1}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 You can use the
 \fI@\fR
-construct with an empty ref part to get at a reflog of the current branch\&. For example, if you are on the branch
-\fIblabla\fR, then
+construct with an empty ref part to get at a reflog entry of the current branch\&. For example, if you are on branch
+\fIblabla\fR
+then
 \fI@{1}\fR
 means the same as
 \fIblabla@{1}\fR\&.
 .RE
-.sp
+.PP
+\fI@{\-<n>}\fR, e\&.g\&. \fI@{\-1}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-The special construct
+The construct
 \fI@{\-<n>}\fR
 means the <n>th branch checked out before the current one\&.
 .RE
-.sp
+.PP
+\fI<refname>@{upstream}\fR, e\&.g\&. \fImaster@{upstream}\fR, \fI@{u}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 The suffix
 \fI@{upstream}\fR
 to a ref (short form
-\fIref@{u}\fR) refers to the branch the ref is set to build on top of\&. Missing ref defaults to the current branch\&.
+\fI<refname>@{u}\fR) refers to the branch the ref is set to build on top of\&. A missing ref defaults to the current branch\&.
 .RE
-.sp
+.PP
+\fI<rev>^\fR, e\&.g\&. \fIHEAD^, v1\&.5\&.1^0\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A suffix
 \fI^\fR
-to a revision parameter (e\&.g\&.
-\fIHEAD^\fR) means the first parent of that commit object\&.
+to a revision parameter means the first parent of that commit object\&.
 \fI^<n>\fR
 means the <n>th parent (i\&.e\&.
-\fIrev^\fR
+\fI<rev>^\fR
 is equivalent to
-\fIrev^1\fR)\&. As a special rule,
-\fIrev^0\fR
+\fI<rev>^1\fR)\&. As a special rule,
+\fI<rev>^0\fR
 means the commit itself and is used when
-\fIrev\fR
+\fI<rev>\fR
 is the object name of a tag object that refers to a commit object\&.
 .RE
-.sp
+.PP
+\fI<rev>~<n>\fR, e\&.g\&. \fImaster~3\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A suffix
 \fI~<n>\fR
-to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parent\&. I\&.e\&. rev~3 is equivalent to rev^^^ which is equivalent to rev^1^1^1\&. See below for a illustration of the usage of this form\&.
+to a revision parameter means the commit object that is the <n>th generation grand\-parent of the named commit object, following only the first parents\&. I\&.e\&.
+\fI<rev>~3\fR
+is equivalent to
+\fI<rev>^^^\fR
+which is equivalent to
+\fI<rev>^1^1^1\fR\&. See below for an illustration of the usage of this form\&.
 .RE
-.sp
+.PP
+\fI<rev>^{<type>}\fR, e\&.g\&. \fIv0\&.99\&.8^{commit}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A suffix
 \fI^\fR
-followed by an object type name enclosed in brace pair (e\&.g\&.
-v0\&.99\&.8^{commit}) means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf)\&.
-rev^0
-introduced earlier is a short\-hand for
-rev^{commit}\&.
+followed by an object type name enclosed in brace pair means the object could be a tag, and dereference the tag recursively until an object of that type is found or the object cannot be dereferenced anymore (in which case, barf)\&.
+\fI<rev>^0\fR
+is a short\-hand for
+\fI<rev>^{commit}\fR\&.
 .RE
-.sp
+.PP
+\fI<rev>^{}\fR, e\&.g\&. \fIv0\&.99\&.8^{}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A suffix
 \fI^\fR
-followed by an empty brace pair (e\&.g\&.
-v0\&.99\&.8^{}) means the object could be a tag, and dereference the tag recursively until a non\-tag object is found\&.
+followed by an empty brace pair means the object could be a tag, and dereference the tag recursively until a non\-tag object is found\&.
 .RE
-.sp
+.PP
+\fI<rev>^{/<text>}\fR, e\&.g\&. \fIHEAD^{/fix nasty bug}\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A suffix
 \fI^\fR
-to a revision parameter followed by a brace pair that contains a text led by a slash (e\&.g\&.
-HEAD^{/fix nasty bug}): this is the same as
-:/fix nasty bug
-syntax below except that it returns the youngest matching commit which is reachable from the ref before
+to a revision parameter, followed by a brace pair that contains a text led by a slash, is the same as the
+\fI:/fix nasty bug\fR
+syntax below except that it returns the youngest matching commit which is reachable from the
+\fI<rev>\fR
+before
 \fI^\fR\&.
 .RE
-.sp
+.PP
+\fI:/<text>\fR, e\&.g\&. \fI:/fix nasty bug\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-A colon, followed by a slash, followed by a text (e\&.g\&.
-:/fix nasty bug): this names a commit whose commit message matches the specified regular expression\&. This name returns the youngest matching commit which is reachable from any ref\&. If the commit message starts with a
-\fI!\fR, you have to repeat that; the special sequence
-\fI:/!\fR, followed by something else than
+A colon, followed by a slash, followed by a text, names a commit whose commit message matches the specified regular expression\&. This name returns the youngest matching commit which is reachable from any ref\&. If the commit message starts with a
 \fI!\fR
-is reserved for now\&. The regular expression can match any part of the commit message\&. To match messages starting with a string, one can use e\&.g\&.
-:/^foo\&.
+you have to repeat that; the special sequence
+\fI:/!\fR, followed by something else than
+\fI!\fR, is reserved for now\&. The regular expression can match any part of the commit message\&. To match messages starting with a string, one can use e\&.g\&.
+\fI:/^foo\fR\&.
 .RE
-.sp
+.PP
+\fI<rev>:<path>\fR, e\&.g\&. \fIHEAD:README\fR, \fI:README\fR, \fImaster:\&./README\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 A suffix
 \fI:\fR
-followed by a path (e\&.g\&.
-HEAD:README); this names the blob or tree at the given path in the tree\-ish object named by the part before the colon\&.
+followed by a path names the blob or tree at the given path in the tree\-ish object named by the part before the colon\&.
 \fI:path\fR
-(with an empty part before the colon, e\&.g\&.
-:README) is a special case of the syntax described next: content recorded in the index at the given path\&. A path starting with
+(with an empty part before the colon) is a special case of the syntax described next: content recorded in the index at the given path\&. A path starting with
 \fI\&./\fR
 or
 \fI\&.\&./\fR
-is relative to current working directory\&. The given path will be converted to be relative to working tree\(cqs root directory\&. This is most useful to address a blob or tree from a commit or tree that has the same tree structure with the working tree\&.
+is relative to the current working directory\&. The given path will be converted to be relative to the working tree\(cqs root directory\&. This is most useful to address a blob or tree from a commit or tree that has the same tree structure as the working tree\&.
 .RE
-.sp
+.PP
+\fI:<n>:<path>\fR, e\&.g\&. \fI:0:README\fR, \fI:README\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-A colon, optionally followed by a stage number (0 to 3) and a colon, followed by a path (e\&.g\&.
-:0:README); this names a blob object in the index at the given path\&. Missing stage number (and the colon that follows it, e\&.g\&.
-:README) names a stage 0 entry\&. During a merge, stage 1 is the common ancestor, stage 2 is the target branch\(cqs version (typically the current branch), and stage 3 is the version from the branch being merged\&.
+A colon, optionally followed by a stage number (0 to 3) and a colon, followed by a path, names a blob object in the index at the given path\&. A missing stage number (and the colon that follows it) names a stage 0 entry\&. During a merge, stage 1 is the common ancestor, stage 2 is the target branch\(cqs version (typically the current branch), and stage 3 is the version from the branch which is being merged\&.
 .RE
 .sp
 Here is an illustration, by Jon Loeliger\&. Both commit nodes B and C are parents of commit node A\&. Parent commits are ordered left\-to\-right\&.
@@ -646,15 +566,15 @@ J = F^2  = B^3^2   = A^^3^2
 .\}
 .SH "SPECIFYING RANGES"
 .sp
-History traversing commands such as \fIgit log\fR operate on a set of commits, not just a single commit\&. To these commands, specifying a single revision with the notation described in the previous section means the set of commits reachable from that commit, following the commit ancestry chain\&.
+History traversing commands such as git log operate on a set of commits, not just a single commit\&. To these commands, specifying a single revision with the notation described in the previous section means the set of commits reachable from that commit, following the commit ancestry chain\&.
 .sp
-To exclude commits reachable from a commit, a prefix ^ notation is used\&. E\&.g\&. ^r1 r2 means commits reachable from r2 but exclude the ones reachable from r1\&.
+To exclude commits reachable from a commit, a prefix \fI^\fR notation is used\&. E\&.g\&. \fI^r1 r2\fR means commits reachable from \fIr2\fR but exclude the ones reachable from \fIr1\fR\&.
 .sp
-This set operation appears so often that there is a shorthand for it\&. When you have two commits r1 and r2 (named according to the syntax explained in SPECIFYING REVISIONS above), you can ask for commits that are reachable from r2 excluding those that are reachable from r1 by ^r1 r2 and it can be written as r1\&.\&.r2\&.
+This set operation appears so often that there is a shorthand for it\&. When you have two commits \fIr1\fR and \fIr2\fR (named according to the syntax explained in SPECIFYING REVISIONS above), you can ask for commits that are reachable from r2 excluding those that are reachable from r1 by \fI^r1 r2\fR and it can be written as \fIr1\&.\&.r2\fR\&.
 .sp
-A similar notation r1\&.\&.\&.r2 is called symmetric difference of r1 and r2 and is defined as r1 r2 \-\-not $(git merge\-base \-\-all r1 r2)\&. It is the set of commits that are reachable from either one of r1 or r2 but not from both\&.
+A similar notation \fIr1\&.\&.\&.r2\fR is called symmetric difference of \fIr1\fR and \fIr2\fR and is defined as \fIr1 r2 \-\-not $(git merge\-base \-\-all r1 r2)\fR\&. It is the set of commits that are reachable from either one of \fIr1\fR or \fIr2\fR but not from both\&.
 .sp
-Two other shorthands for naming a set that is formed by a commit and its parent commits exist\&. The r1^@ notation means all parents of r1\&. r1^! includes commit r1 but excludes all of its parents\&.
+Two other shorthands for naming a set that is formed by a commit and its parent commits exist\&. The \fIr1^@\fR notation means all parents of \fIr1\fR\&. \fIr1^!\fR includes commit \fIr1\fR but excludes all of its parents\&.
 .sp
 Here are a handful of examples:
 .sp
