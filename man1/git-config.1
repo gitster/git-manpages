@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/24/2011
+.\"      Date: 04/27/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5
+.\"    Source: Git 1.7.5.52.ge839f
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "04/24/2011" "Git 1\&.7\&.5" "Git Manual"
+.TH "GIT\-CONFIG" "1" "04/27/2011" "Git 1\&.7\&.5\&.52\&.ge839f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -957,10 +957,6 @@ Common unit suffixes of
 \fIm\fR, or
 \fIg\fR
 are supported\&.
-.sp
-Currently only
-\fBgit-fast-import\fR(1)
-honors this setting\&.
 .RE
 .PP
 core\&.excludesfile
@@ -1649,6 +1645,18 @@ If this config variable is set, diff generation is not performed using the inter
 instead\&.
 .RE
 .PP
+diff\&.ignoreSubmodules
+.RS 4
+Sets the default value of \-\-ignore\-submodules\&. Note that this affects only
+\fIgit diff\fR
+Porcelain, and not lower level
+\fIdiff\fR
+commands such as
+\fIgit diff\-files\fR\&.
+\fIgit checkout\fR
+also honors this setting when reporting uncommitted changes\&.
+.RE
+.PP
 diff\&.mnemonicprefix
 .RS 4
 If set,
@@ -1701,34 +1709,62 @@ diff\&.renames
 Tells git to detect renames\&. If set to any boolean value, it will enable basic rename detection\&. If set to "copies" or "copy", it will detect copies, as well\&.
 .RE
 .PP
-diff\&.ignoreSubmodules
-.RS 4
-Sets the default value of \-\-ignore\-submodules\&. Note that this affects only
-\fIgit diff\fR
-Porcelain, and not lower level
-\fIdiff\fR
-commands such as
-\fIgit diff\-files\fR\&.
-\fIgit checkout\fR
-also honors this setting when reporting uncommitted changes\&.
-.RE
-.PP
 diff\&.suppressBlankEmpty
 .RS 4
 A boolean to inhibit the standard behavior of printing a space before each empty output line\&. Defaults to false\&.
 .RE
 .PP
+diff\&.<driver>\&.command
+.RS 4
+The custom diff driver command\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
+diff\&.<driver>\&.xfuncname
+.RS 4
+The regular expression that the diff driver should use to recognize the hunk header\&. A built\-in pattern may also be used\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
+diff\&.<driver>\&.binary
+.RS 4
+Set this option to true to make the diff driver treat files as binary\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
+diff\&.<driver>\&.textconv
+.RS 4
+The command that the diff driver should call to generate the text\-converted version of a file\&. The result of the conversion is used to generate a human\-readable diff\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
+diff\&.<driver>\&.wordregex
+.RS 4
+The regular expression that the diff driver should use to split words in a line\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
+diff\&.<driver>\&.cachetextconv
+.RS 4
+Set this option to true to make the diff driver cache the text conversion outputs\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
 diff\&.tool
 .RS 4
-Controls which diff tool is used\&.
-diff\&.tool
-overrides
+The diff tool to be used by
+\fBgit-difftool\fR(1)\&. This option overrides
+merge\&.tool, and has the same valid built\-in values as
 merge\&.tool
-when used by
-\fBgit-difftool\fR(1)
-and has the same valid values as
-merge\&.tool
-minus "tortoisemerge" and plus "kompare"\&.
+minus "tortoisemerge" and plus "kompare"\&. Any other value is treated as a custom diff tool, and there must be a corresponding
+difftool\&.<tool>\&.cmd
+option\&.
 .RE
 .PP
 difftool\&.<tool>\&.path
@@ -1847,6 +1883,20 @@ option of format\-patch by default\&.
 Adding the Signed\-off\-by: line to a patch should be a conscious act and means that you certify you have the rights to submit this work under the same open source license\&. Please see the
 \fISubmittingPatches\fR
 document for further discussion\&.
+.RE
+.PP
+filter\&.<driver>\&.clean
+.RS 4
+The command which is used to convert the content of a worktree file to a blob upon checkin\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
+filter\&.<driver>\&.smudge
+.RS 4
+The command which is used to convert the content of a blob object to a worktree file upon checkout\&. See
+\fBgitattributes\fR(5)
+for details\&.
 .RE
 .PP
 gc\&.aggressiveWindow
