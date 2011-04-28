@@ -2,12 +2,12 @@
 .\"     Title: git-diff
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/24/2011
+.\"      Date: 04/28/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5
+.\"    Source: Git 1.7.5.128.g50d30
 .\"  Language: English
 .\"
-.TH "GIT\-DIFF" "1" "04/24/2011" "Git 1\&.7\&.5" "Git Manual"
+.TH "GIT\-DIFF" "1" "04/28/2011" "Git 1\&.7\&.5\&.128\&.g50d30" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -130,6 +130,10 @@ Output the distribution of relative amount of changes (number of lines added or 
 \-\-dirstat=<limit>\&. Changes in a child directory are not counted for the parent directory, unless
 \-\-cumulative
 is used\&.
+.sp
+Note that the
+\-\-dirstat
+option computes the changes while ignoring the amount of pure code movements within a file\&. In other words, rearranging lines in a file is not counted as much as other changes\&.
 .RE
 .PP
 \-\-dirstat\-by\-file[=<limit>]
@@ -338,6 +342,18 @@ For performance reasons, by default,
 option finds copies only if the original file of the copy was modified in the same changeset\&. This flag makes the command inspect unmodified files as candidates for the source of copy\&. This is a very expensive operation for large projects, so use it with caution\&. Giving more than one
 \-C
 option has the same effect\&.
+.RE
+.PP
+\-D, \-\-irreversible\-delete
+.RS 4
+Omit the preimage for deletes, i\&.e\&. print only the header but not the diff between the preimage and
+/dev/null\&. The resulting patch is not meant to be applied with
+patch
+nor
+git apply; this is solely for people who want to just concentrate on reviewing the text after the change\&. In addition, the output obviously lack enough information to apply such a patch in reverse, even manually, hence the name of the option\&.
+.sp
+When used together with
+\-B, omit also the preimage in the deletion part of a delete/create pair\&.
 .RE
 .PP
 \-l<num>
