@@ -2,12 +2,12 @@
 .\"     Title: git-imap-send
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/24/2011
+.\"      Date: 05/05/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5
+.\"    Source: Git 1.7.5.1.169.g505a1
 .\"  Language: English
 .\"
-.TH "GIT\-IMAP\-SEND" "1" "04/24/2011" "Git 1\&.7\&.5" "Git Manual"
+.TH "GIT\-IMAP\-SEND" "1" "05/05/2011" "Git 1\&.7\&.5\&.1\&.169\&.g505" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -136,11 +136,49 @@ Using direct mode with SSL:
 .if n \{\
 .RE
 .\}
+.SH "EXAMPLE"
+.sp
+To submit patches using GMail\(cqs IMAP interface, first, edit your ~/\&.gitconfig to specify your account settings:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[imap]
+        folder = "[Gmail]/Drafts"
+        host = imaps://imap\&.gmail\&.com
+        user = user@gmail\&.com
+        port = 993
+        sslverify = false
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+You might need to instead use: folder = "[Google Mail]/Drafts" if you get an error that the "Folder doesn\(cqt exist"\&.
+.sp
+Once the commits are ready to be sent, run the following command:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git format\-patch \-\-cover\-letter \-M \-\-stdout origin/master | git imap\-send
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Just make sure to disable line wrapping in the email client (GMail\(cqs web interface will wrap lines no matter what, so you need to use a real IMAP client)\&.
 .SH "CAUTION"
 .sp
 It is still your responsibility to make sure that the email message sent by your email program meets the standards of your project\&. Many projects do not like patches to be attached\&. Some mail agents will transform patches (e\&.g\&. wrap lines, send them as format=flowed) in ways that make them fail\&. You will get angry flames ridiculing you if you don\(cqt check this\&.
 .sp
 Thunderbird in particular is known to be problematic\&. Thunderbird users may wish to visit this web page for more information: \m[blue]\fBhttp://kb\&.mozillazine\&.org/Plain_text_e\-mail_\-_Thunderbird#Completely_plain_email\fR\m[]
+.SH "SEE ALSO"
+.sp
+\fBgit-format-patch\fR(1), \fBgit-send-email\fR(1), mbox(5)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

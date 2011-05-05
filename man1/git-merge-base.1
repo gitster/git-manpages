@@ -2,12 +2,12 @@
 .\"     Title: git-merge-base
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/24/2011
+.\"      Date: 05/05/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5
+.\"    Source: Git 1.7.5.1.169.g505a1
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE\-BASE" "1" "04/24/2011" "Git 1\&.7\&.5" "Git Manual"
+.TH "GIT\-MERGE\-BASE" "1" "05/05/2011" "Git 1\&.7\&.5\&.1\&.169\&.g505" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -23,23 +23,21 @@ git-merge-base \- Find as good common ancestors as possible for a merge
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit merge\-base\fR [\-a|\-\-all] [\-\-octopus] <commit> <commit>\&...
+\fIgit merge\-base\fR [\-a|\-\-all] <commit> <commit>\&...
+\fIgit merge\-base\fR [\-a|\-\-all] \-\-octopus <commit>\&...
 \fIgit merge\-base\fR \-\-independent <commit>\&...
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
 \fIgit merge\-base\fR finds best common ancestor(s) between two commits to use in a three\-way merge\&. One common ancestor is \fIbetter\fR than another common ancestor if the latter is an ancestor of the former\&. A common ancestor that does not have any better common ancestor is a \fIbest common ancestor\fR, i\&.e\&. a \fImerge base\fR\&. Note that there can be more than one merge base for a pair of commits\&.
+.SH "OPERATION MODE"
 .sp
-Unless \-\-octopus is given, among the two commits to compute the merge base from, one is specified by the first commit argument on the command line; the other commit is a (possibly hypothetical) commit that is a merge across all the remaining commits on the command line\&. As the most common special case, specifying only two commits on the command line means computing the merge base between the given two commits\&.
+As the most common special case, specifying only two commits on the command line means computing the merge base between the given two commits\&.
+.sp
+More generally, among the two commits to compute the merge base from, one is specified by the first commit argument on the command line; the other commit is a (possibly hypothetical) commit that is a merge across all the remaining commits on the command line\&.
 .sp
 As a consequence, the \fImerge base\fR is not necessarily contained in each of the commit arguments if more than two commits are specified\&. This is different from \fBgit-show-branch\fR(1) when used with the \-\-merge\-base option\&.
-.SH "OPTIONS"
-.PP
-\-a, \-\-all
-.RS 4
-Output all merge bases for the commits, instead of just one\&.
-.RE
 .PP
 \-\-octopus
 .RS 4
@@ -51,6 +49,12 @@ Compute the best common ancestors of all supplied commits, in preparation for an
 .RS 4
 Instead of printing merge bases, print a minimal subset of the supplied commits with the same ancestors\&. In other words, among the commits given, list those which cannot be reached from any other\&. This mimics the behavior of
 \fIgit show\-branch \-\-independent\fR\&.
+.RE
+.SH "OPTIONS"
+.PP
+\-a, \-\-all
+.RS 4
+Output all merge bases for the commits, instead of just one\&.
 .RE
 .SH "DISCUSSION"
 .sp
@@ -105,6 +109,8 @@ the result of git merge\-base A B C is \fI1\fR\&. This is because the equivalent
 .\}
 .sp
 and the result of git merge\-base A M is \fI1\fR\&. Commit \fI2\fR is also a common ancestor between \fIA\fR and \fIM\fR, but \fI1\fR is a better common ancestor, because \fI2\fR is an ancestor of \fI1\fR\&. Hence, \fI2\fR is not a merge base\&.
+.sp
+The result of git merge\-base \-\-octopus A B C is \fI2\fR, because \fI2\fR is the best common ancestor of all commits\&.
 .sp
 When the history involves criss\-cross merges, there can be more than one \fIbest\fR common ancestor for two commits\&. For example, with this topology:
 .sp

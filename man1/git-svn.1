@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/01/2011
+.\"      Date: 05/05/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5.141.g791a
+.\"    Source: Git 1.7.5.1.169.g505a1
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "05/01/2011" "Git 1\&.7\&.5\&.141\&.g791a" "Git Manual"
+.TH "GIT\-SVN" "1" "05/05/2011" "Git 1\&.7\&.5\&.1\&.169\&.g505" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -1055,14 +1055,14 @@ The initial \fIgit svn clone\fR can be quite time\-consuming (especially for lar
 Originally, \fIgit svn\fR recommended that the \fIremotes/git\-svn\fR branch be pulled or merged from\&. This is because the author favored git svn set\-tree B to commit a single head rather than the git svn set\-tree A\&.\&.B notation to commit multiple commits\&.
 .sp
 If you use git svn set\-tree A\&.\&.B to commit several diffs and you do not have the latest remotes/git\-svn merged into my\-branch, you should use git svn rebase to update your work branch instead of git pull or git merge\&. pull/merge can cause non\-linear history to be flattened when committing into SVN, which can lead to merge commits reversing previous commits in SVN\&.
-.SH "DESIGN PHILOSOPHY"
+.SH "MERGE TRACKING"
 .sp
-Merge tracking in Subversion is lacking and doing branched development with Subversion can be cumbersome as a result\&. While \fIgit svn\fR can track copy history (including branches and tags) for repositories adopting a standard layout, it cannot yet represent merge history that happened inside git back upstream to SVN users\&. Therefore it is advised that users keep history as linear as possible inside git to ease compatibility with SVN (see the CAVEATS section below)\&.
+While \fIgit svn\fR can track copy history (including branches and tags) for repositories adopting a standard layout, it cannot yet represent merge history that happened inside git back upstream to SVN users\&. Therefore it is advised that users keep history as linear as possible inside git to ease compatibility with SVN (see the CAVEATS section below)\&.
 .SH "CAVEATS"
 .sp
-For the sake of simplicity and interoperating with a less\-capable system (SVN), it is recommended that all \fIgit svn\fR users clone, fetch and dcommit directly from the SVN server, and avoid all \fIgit clone\fR/\fIpull\fR/\fImerge\fR/\fIpush\fR operations between git repositories and branches\&. The recommended method of exchanging code between git branches and users is \fIgit format\-patch\fR and \fIgit am\fR, or just \(aqdcommit\(cqing to the SVN repository\&.
+For the sake of simplicity and interoperating with Subversion, it is recommended that all \fIgit svn\fR users clone, fetch and dcommit directly from the SVN server, and avoid all \fIgit clone\fR/\fIpull\fR/\fImerge\fR/\fIpush\fR operations between git repositories and branches\&. The recommended method of exchanging code between git branches and users is \fIgit format\-patch\fR and \fIgit am\fR, or just \(aqdcommit\(cqing to the SVN repository\&.
 .sp
-Running \fIgit merge\fR or \fIgit pull\fR is NOT recommended on a branch you plan to \fIdcommit\fR from\&. Subversion does not represent merges in any reasonable or useful fashion; so users using Subversion cannot see any merges you\(cqve made\&. Furthermore, if you merge or pull from a git branch that is a mirror of an SVN branch, \fIdcommit\fR may commit to the wrong branch\&.
+Running \fIgit merge\fR or \fIgit pull\fR is NOT recommended on a branch you plan to \fIdcommit\fR from because Subversion users cannot see any merges you\(cqve made\&. Furthermore, if you merge or pull from a git branch that is a mirror of an SVN branch, \fIdcommit\fR may commit to the wrong branch\&.
 .sp
 If you do merge, note the following rule: \fIgit svn dcommit\fR will attempt to commit on top of the SVN commit named in
 .sp
@@ -1101,7 +1101,7 @@ branches = debug/*:refs/remotes/svn/debug/*
 .sp
 We ignore all SVN properties except svn:executable\&. Any unhandled properties are logged to $GIT_DIR/svn/<refname>/unhandled\&.log
 .sp
-Renamed and copied directories are not detected by git and hence not tracked when committing to SVN\&. I do not plan on adding support for this as it\(cqs quite difficult and time\-consuming to get working for all the possible corner cases (git doesn\(cqt do it, either)\&. Committing renamed and copied files are fully supported if they\(cqre similar enough for git to detect them\&.
+Renamed and copied directories are not detected by git and hence not tracked when committing to SVN\&. I do not plan on adding support for this as it\(cqs quite difficult and time\-consuming to get working for all the possible corner cases (git doesn\(cqt do it, either)\&. Committing renamed and copied files is fully supported if they\(cqre similar enough for git to detect them\&.
 .SH "CONFIGURATION"
 .sp
 \fIgit svn\fR stores [svn\-remote] configuration information in the repository \&.git/config file\&. It is similar the core git [remote] sections except \fIfetch\fR keys do not accept glob arguments; but they are instead handled by the \fIbranches\fR and \fItags\fR keys\&. Since some SVN repositories are oddly configured with multiple projects glob expansions such those listed below are allowed:
