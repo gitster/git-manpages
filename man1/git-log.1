@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/06/2011
+.\"      Date: 05/13/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5.1.217.g4e3aa
+.\"    Source: Git 1.7.5.1.289.g2de58b
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "05/06/2011" "Git 1\&.7\&.5\&.1\&.217\&.g4e3" "Git Manual"
+.TH "GIT\-LOG" "1" "05/13/2011" "Git 1\&.7\&.5\&.1\&.289\&.g2de" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -2088,22 +2088,53 @@ Output only the last line of the
 format containing total number of modified files, as well as number of added and deleted lines\&.
 .RE
 .PP
-\-\-dirstat[=<limit>]
+\-\-dirstat[=<param1,param2,\&...>]
 .RS 4
-Output the distribution of relative amount of changes (number of lines added or removed) for each sub\-directory\&. Directories with changes below a cut\-off percent (3% by default) are not shown\&. The cut\-off percent can be set with
-\-\-dirstat=<limit>\&. Changes in a child directory are not counted for the parent directory, unless
-\-\-cumulative
-is used\&.
-.sp
-Note that the
+Output the distribution of relative amount of changes for each sub\-directory\&. The behavior of
 \-\-dirstat
-option computes the changes while ignoring the amount of pure code movements within a file\&. In other words, rearranging lines in a file is not counted as much as other changes\&.
+can be customized by passing it a comma separated list of parameters\&. The defaults are controlled by the
+diff\&.dirstat
+configuration variable (see
+\fBgit-config\fR(1))\&. The following parameters are available:
+.PP
+changes
+.RS 4
+Compute the dirstat numbers by counting the lines that have been removed from the source, or added to the destination\&. This ignores the amount of pure code movements within a file\&. In other words, rearranging lines in a file is not counted as much as other changes\&. This is the default behavior when no parameter is given\&.
 .RE
 .PP
-\-\-dirstat\-by\-file[=<limit>]
+lines
 .RS 4
-Same as
-\-\-dirstat, but counts changed files instead of lines\&.
+Compute the dirstat numbers by doing the regular line\-based diff analysis, and summing the removed/added line counts\&. (For binary files, count 64\-byte chunks instead, since binary files have no natural concept of lines)\&. This is a more expensive
+\-\-dirstat
+behavior than the
+changes
+behavior, but it does count rearranged lines within a file as much as other changes\&. The resulting output is consistent with what you get from the other
+\-\-*stat
+options\&.
+.RE
+.PP
+files
+.RS 4
+Compute the dirstat numbers by counting the number of files changed\&. Each changed file counts equally in the dirstat analysis\&. This is the computationally cheapest
+\-\-dirstat
+behavior, since it does not have to look at the file contents at all\&.
+.RE
+.PP
+cumulative
+.RS 4
+Count changes in a child directory for the parent directory as well\&. Note that when using
+cumulative, the sum of the percentages reported may exceed 100%\&. The default (non\-cumulative) behavior can be specified with the
+noncumulative
+parameter\&.
+.RE
+.PP
+<limit>
+.RS 4
+An integer parameter specifies a cut\-off percent (3% by default)\&. Directories contributing less than this percentage of the changes are not shown in the output\&.
+.RE
+.sp
+Example: The following will count changed files, while ignoring directories with less than 10% of the total amount of changed files, and accumulating child directory counts in the parent directories:
+\-\-dirstat=files,10,cumulative\&.
 .RE
 .PP
 \-\-summary
