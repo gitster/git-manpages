@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/17/2011
+.\"      Date: 05/23/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5.1.339.gb602ed
+.\"    Source: Git 1.7.5.2.353.g5df3e
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "05/17/2011" "Git 1\&.7\&.5\&.1\&.339\&.gb60" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/23/2011" "Git 1\&.7\&.5\&.2\&.353\&.g5df" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -49,7 +49,7 @@ The type specifier can be either \fI\-\-int\fR or \fI\-\-bool\fR, to make \fIgit
 .sp
 The file\-option can be one of \fI\-\-system\fR, \fI\-\-global\fR or \fI\-\-file\fR which specify where the values will be read from or written to\&. The default is to assume the config file of the current repository, \&.git/config unless defined otherwise with GIT_DIR and GIT_CONFIG (see the section called \(lqFILES\(rq)\&.
 .sp
-This command will fail if:
+This command will fail (with exit code ret) if:
 .sp
 .RS 4
 .ie n \{\
@@ -59,7 +59,7 @@ This command will fail if:
 .sp -1
 .IP "  1." 4.2
 .\}
-The config file is invalid,
+The config file is invalid (ret=3),
 .RE
 .sp
 .RS 4
@@ -70,7 +70,7 @@ The config file is invalid,
 .sp -1
 .IP "  2." 4.2
 .\}
-Can not write to the config file,
+can not write to the config file (ret=4),
 .RE
 .sp
 .RS 4
@@ -81,7 +81,7 @@ Can not write to the config file,
 .sp -1
 .IP "  3." 4.2
 .\}
-no section was provided,
+no section or name was provided (ret=2),
 .RE
 .sp
 .RS 4
@@ -92,7 +92,7 @@ no section was provided,
 .sp -1
 .IP "  4." 4.2
 .\}
-the section or key is invalid,
+the section or key is invalid (ret=1),
 .RE
 .sp
 .RS 4
@@ -103,7 +103,7 @@ the section or key is invalid,
 .sp -1
 .IP "  5." 4.2
 .\}
-you try to unset an option which does not exist,
+you try to unset an option which does not exist (ret=5),
 .RE
 .sp
 .RS 4
@@ -114,7 +114,7 @@ you try to unset an option which does not exist,
 .sp -1
 .IP "  6." 4.2
 .\}
-you try to unset/set an option for which multiple lines match, or
+you try to unset/set an option for which multiple lines match (ret=5),
 .RE
 .sp
 .RS 4
@@ -125,10 +125,23 @@ you try to unset/set an option for which multiple lines match, or
 .sp -1
 .IP "  7." 4.2
 .\}
+you try to use an invalid regexp (ret=6), or
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 8.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  8." 4.2
+.\}
 you use
 \fI\-\-global\fR
-option without $HOME being properly set\&.
+option without $HOME being properly set (ret=128)\&.
 .RE
+.sp
+On success, the command returns the exit code 0\&.
 .SH "OPTIONS"
 .PP
 \-\-replace\-all

@@ -2,12 +2,12 @@
 .\"     Title: git-blame
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/27/2011
+.\"      Date: 05/23/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.5.52.ge839f
+.\"    Source: Git 1.7.5.2.353.g5df3e
 .\"  Language: English
 .\"
-.TH "GIT\-BLAME" "1" "04/27/2011" "Git 1\&.7\&.5\&.52\&.ge839f" "Git Manual"
+.TH "GIT\-BLAME" "1" "05/23/2011" "Git 1\&.7\&.5\&.2\&.353\&.g5df" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -139,6 +139,11 @@ Walk history forward instead of backward\&. Instead of showing the revision in w
 \-p, \-\-porcelain
 .RS 4
 Show in a format designed for machine consumption\&.
+.RE
+.PP
+\-\-line\-porcelain
+.RS 4
+Show the porcelain format, but output commit information for each line, not just the first time a commit is referenced\&. Implies \-\-porcelain\&.
 .RE
 .PP
 \-\-incremental
@@ -323,6 +328,21 @@ the first line of the commit log message ("summary")\&.
 .RE
 .sp
 The contents of the actual line is output after the above header, prefixed by a TAB\&. This is to allow adding more header elements later\&.
+.sp
+The porcelain format generally suppresses commit information that has already been seen\&. For example, two lines that are blamed to the same commit will both be shown, but the details for that commit will be shown only once\&. This is more efficient, but may require more state be kept by the reader\&. The \-\-line\-porcelain option can be used to output full commit information for each line, allowing simpler (but less efficient) usage like:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# count the number of lines attributed to each author
+git blame \-\-line\-porcelain file |
+sed \-n \(aqs/^author //p\(aq |
+sort | uniq \-c | sort \-rn
+.fi
+.if n \{\
+.RE
+.\}
 .SH "SPECIFYING RANGES"
 .sp
 Unlike \fIgit blame\fR and \fIgit annotate\fR in older versions of git, the extent of the annotation can be limited to both line ranges and revision ranges\&. When you are interested in finding the origin for lines 40\-60 for file foo, you can use the \-L option like so (they mean the same thing \(em both ask for 21 lines starting at line 40):
