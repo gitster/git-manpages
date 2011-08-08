@@ -2,12 +2,12 @@
 .\"     Title: git-submodule
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/23/2011
+.\"      Date: 08/08/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.6.345.g5c2f8
+.\"    Source: Git 1.7.6.433.g1421f
 .\"  Language: English
 .\"
-.TH "GIT\-SUBMODULE" "1" "07/23/2011" "Git 1\&.7\&.6\&.345\&.g5c2f8" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "08/08/2011" "Git 1\&.7\&.6\&.433\&.g1421f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -29,7 +29,8 @@ git-submodule \- Initialize, update or inspect submodules
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-N|\-\-no\-fetch] [\-\-rebase]
               [\-\-reference <repository>] [\-\-merge] [\-\-recursive] [\-\-] [<path>\&...]
-\fIgit submodule\fR [\-\-quiet] summary [\-\-cached|\-\-files] [\-\-summary\-limit <n>] [commit] [\-\-] [<path>\&...]
+\fIgit submodule\fR [\-\-quiet] summary [\-\-cached|\-\-files] [(\-n|\-\-summary\-limit) <n>]
+              [commit] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] foreach [\-\-recursive] <command>
 \fIgit submodule\fR [\-\-quiet] sync [\-\-] [<path>\&...]
 .fi
@@ -72,8 +73,14 @@ if the submodule has merge conflicts\&. This command is the default command for
 \fIgit submodule\fR\&.
 .sp
 If
-\fI\-\-recursive\fR
+\-\-recursive
 is specified, this command will recurse into nested submodules, and show their status as well\&.
+.sp
+If you are only interested in changes of the currently initialized submodules with respect to the commit recorded in the index or the HEAD,
+\fBgit-status\fR(1)
+and
+\fBgit-diff\fR(1)
+will provide that information too (and can also report changes to a submodule\(cqs work tree)\&.
 .RE
 .PP
 init
@@ -90,9 +97,9 @@ step if you do not intend to customize any submodule locations\&.
 update
 .RS 4
 Update the registered submodules, i\&.e\&. clone missing submodules and checkout the commit specified in the index of the containing repository\&. This will make the submodules HEAD be detached unless
-\fI\-\-rebase\fR
+\-\-rebase
 or
-\fI\-\-merge\fR
+\-\-merge
 is specified or the key
 submodule\&.$name\&.update
 is set to
@@ -100,21 +107,37 @@ rebase
 or
 merge\&.
 .sp
-If the submodule is not yet initialized, and you just want to use the setting as stored in \&.gitmodules, you can automatically initialize the submodule with the \-\-init option\&.
+If the submodule is not yet initialized, and you just want to use the setting as stored in \&.gitmodules, you can automatically initialize the submodule with the
+\-\-init
+option\&.
 .sp
 If
-\fI\-\-recursive\fR
+\-\-recursive
 is specified, this command will recurse into the registered submodules, and update any nested submodules within\&.
 .RE
 .PP
 summary
 .RS 4
-Show commit summary between the given commit (defaults to HEAD) and working tree/index\&. For a submodule in question, a series of commits in the submodule between the given super project commit and the index or working tree (switched by \-\-cached) are shown\&. If the option \-\-files is given, show the series of commits in the submodule between the index of the super project and the working tree of the submodule (this option doesn\(cqt allow to use the \-\-cached option or to provide an explicit commit)\&.
+Show commit summary between the given commit (defaults to HEAD) and working tree/index\&. For a submodule in question, a series of commits in the submodule between the given super project commit and the index or working tree (switched by
+\-\-cached) are shown\&. If the option
+\-\-files
+is given, show the series of commits in the submodule between the index of the super project and the working tree of the submodule (this option doesn\(cqt allow to use the
+\-\-cached
+option or to provide an explicit commit)\&.
+.sp
+Using the
+\-\-submodule=log
+option with
+\fBgit-diff\fR(1)
+will provide that information too\&.
 .RE
 .PP
 foreach
 .RS 4
-Evaluates an arbitrary shell command in each checked out submodule\&. The command has access to the variables $name, $path, $sha1 and $toplevel: $name is the name of the relevant submodule section in \&.gitmodules, $path is the name of the submodule directory relative to the superproject, $sha1 is the commit as recorded in the superproject, and $toplevel is the absolute path to the top\-level of the superproject\&. Any submodules defined in the superproject but not checked out are ignored by this command\&. Unless given \-\-quiet, foreach prints the name of each submodule before evaluating the command\&. If \-\-recursive is given, submodules are traversed recursively (i\&.e\&. the given shell command is evaluated in nested submodules as well)\&. A non\-zero return from the command in any submodule causes the processing to terminate\&. This can be overridden by adding
+Evaluates an arbitrary shell command in each checked out submodule\&. The command has access to the variables $name, $path, $sha1 and $toplevel: $name is the name of the relevant submodule section in \&.gitmodules, $path is the name of the submodule directory relative to the superproject, $sha1 is the commit as recorded in the superproject, and $toplevel is the absolute path to the top\-level of the superproject\&. Any submodules defined in the superproject but not checked out are ignored by this command\&. Unless given
+\-\-quiet, foreach prints the name of each submodule before evaluating the command\&. If
+\-\-recursive
+is given, submodules are traversed recursively (i\&.e\&. the given shell command is evaluated in nested submodules as well)\&. A non\-zero return from the command in any submodule causes the processing to terminate\&. This can be overridden by adding
 \fI|| :\fR
 to the end of the command\&.
 .sp
@@ -183,6 +206,11 @@ is set to
 rebase, this option is implicit\&.
 .RE
 .PP
+\-\-init
+.RS 4
+This option is only valid for the update command\&. Initialize all submodules for which "git submodule init" has not been called so far before updating\&.
+.RE
+.PP
 \-\-reference <repository>
 .RS 4
 This option is only valid for add and update commands\&. These commands sometimes need to clone a remote repository\&. In this case, this option will be passed to the
@@ -192,7 +220,11 @@ command\&.
 \fBNOTE\fR: Do
 \fBnot\fR
 use this option unless you have read the note for
-\fBgit-clone\fR(1)\(aqs \-\-reference and \-\-shared options carefully\&.
+\fBgit-clone\fR(1)\(aqs
+\-\-reference
+and
+\-\-shared
+options carefully\&.
 .RE
 .PP
 \-\-recursive
