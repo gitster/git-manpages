@@ -1,13 +1,22 @@
 '\" t
 .\"     Title: git-bisect
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
-.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/23/2011
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 08/18/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.6.345.g5c2f8
+.\"    Source: Git 1.7.6.549.gf85a0
 .\"  Language: English
 .\"
-.TH "GIT\-BISECT" "1" "07/23/2011" "Git 1\&.7\&.6\&.345\&.g5c2f8" "Git Manual"
+.TH "GIT\-BISECT" "1" "08/18/2011" "Git 1\&.7\&.6\&.549\&.gf85a0" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -35,7 +44,7 @@ The command takes various subcommands, and different options depending on the su
 .\}
 .nf
 git bisect help
-git bisect start [<bad> [<good>\&.\&.\&.]] [\-\-] [<paths>\&.\&.\&.]
+git bisect start [\-\-no\-checkout] [<bad> [<good>\&.\&.\&.]] [\-\-] [<paths>\&.\&.\&.]
 git bisect bad [<rev>]
 git bisect good [<rev>\&.\&.\&.]
 git bisect skip [(<rev>|<range>)\&.\&.\&.]
@@ -322,6 +331,20 @@ The special exit code 125 should be used when the current source code cannot be 
 You may often find that during a bisect session you want to have temporary modifications (e\&.g\&. s/#define DEBUG 0/#define DEBUG 1/ in a header file, or "revision that does not have this commit needs this patch applied to work around another problem this bisection is not interested in") applied to the revision being tested\&.
 .sp
 To cope with such a situation, after the inner \fIgit bisect\fR finds the next revision to test, the script can apply the patch before compiling, run the real test, and afterwards decide if the revision (possibly with the needed patch) passed the test and then rewind the tree to the pristine state\&. Finally the script should exit with the status of the real test to let the "git bisect run" command loop determine the eventual outcome of the bisect session\&.
+.SH "OPTIONS"
+.PP
+\-\-no\-checkout
+.RS 4
+Do not checkout the new working tree at each iteration of the bisection process\&. Instead just update a special reference named
+\fIBISECT_HEAD\fR
+to make it point to the commit that should be tested\&.
+.sp
+This option may be useful when the test you would perform in each step does not require a checked out tree\&.
+.sp
+If the repository is bare,
+\-\-no\-checkout
+is assumed\&.
+.RE
 .SH "EXAMPLES"
 .sp
 .RS 4
@@ -468,6 +491,39 @@ $ git bisect run sh \-c "make || exit 125; ~/check_test_case\&.sh"
 .\}
 .sp
 This shows that you can do without a run script if you write the test on a single line\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Locate a good region of the object graph in a damaged repository
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git bisect start HEAD <known\-good\-commit> [ <boundary\-commit> \&.\&.\&. ] \-\-no\-checkout
+$ git bisect run sh \-c \(aq
+        GOOD=$(git for\-each\-ref "\-\-format=%(objectname)" refs/bisect/good\-*) &&
+        git rev\-list \-\-objects BISECT_HEAD \-\-not $GOOD >tmp\&.$$ &&
+        git pack\-objects \-\-stdout >/dev/null <tmp\&.$$
+        rc=$?
+        rm \-f tmp\&.$$
+        test $rc = 0\(aq
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+In this case, when
+\fIgit bisect run\fR
+finishes, bisect/bad will refer to a commit that has at least one parent whose reachable graph is fully traversable in the sense required by
+\fIgit pack objects\fR\&.
 .RE
 .SH "SEE ALSO"
 .sp
