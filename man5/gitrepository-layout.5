@@ -1,13 +1,22 @@
 '\" t
 .\"     Title: gitrepository-layout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
-.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/26/2011
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 08/29/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.6
+.\"    Source: Git 1.7.7.rc0.70.g82660
 .\"  Language: English
 .\"
-.TH "GITREPOSITORY\-LAYOU" "5" "06/26/2011" "Git 1\&.7\&.6" "Git Manual"
+.TH "GITREPOSITORY\-LAYOU" "5" "08/29/2011" "Git 1\&.7\&.7\&.rc0\&.70\&.g82" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -29,7 +38,7 @@ You may find these things in your git repository (\&.git directory for a reposit
 .PP
 objects
 .RS 4
-Object store associated with this repository\&. Usually an object store is self sufficient (i\&.e\&. all the objects that are referred to by an object found in it are also found in it), but there are couple of ways to violate it\&.
+Object store associated with this repository\&. Usually an object store is self sufficient (i\&.e\&. all the objects that are referred to by an object found in it are also found in it), but there are a few ways to violate it\&.
 .sp
 .RS 4
 .ie n \{\
@@ -39,9 +48,8 @@ Object store associated with this repository\&. Usually an object store is self 
 .sp -1
 .IP "  1." 4.2
 .\}
-You could populate the repository by running a commit walker without
-\-a
-option\&. Depending on which options are given, you could have only commit objects without associated blobs and trees this way, for example\&. A repository with this kind of incomplete object store is not suitable to be published to the outside world but sometimes useful for private repository\&.
+You could have an incomplete but locally usable repository by creating a shallow clone\&. See
+\fBgit-clone\fR(1)\&.
 .RE
 .sp
 .RS 4
@@ -52,35 +60,23 @@ option\&. Depending on which options are given, you could have only commit objec
 .sp -1
 .IP "  2." 4.2
 .\}
-You also could have an incomplete but locally usable repository by cloning shallowly\&. See
-\fBgit-clone\fR(1)\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04' 3.\h'+01'\c
-.\}
-.el \{\
-.sp -1
-.IP "  3." 4.2
-.\}
-You can be using
+You could be using the
 objects/info/alternates
-mechanism, or
+or
 $GIT_ALTERNATE_OBJECT_DIRECTORIES
-mechanism to
+mechanisms to
 \fIborrow\fR
 objects from other object stores\&. A repository with this kind of incomplete object store is not suitable to be published for use with dumb transports but otherwise is OK as long as
 objects/info/alternates
-points at the right object stores it borrows from\&.
+points at the object stores it borrows from\&.
 .RE
 .RE
 .PP
 objects/[0\-9a\-f][0\-9a\-f]
 .RS 4
-Traditionally, each object is stored in its own file\&. They are split into 256 subdirectories using the first two letters from its object name to keep the number of directory entries
+A newly created object is stored in its own file\&. The objects are splayed over 256 subdirectories using the first two characters of the sha1 object name to keep the number of directory entries in
 objects
-directory itself needs to hold\&. Objects found here are often called
+itself to a manageable number\&. Objects found here are often called
 \fIunpacked\fR
 (or
 \fIloose\fR) objects\&.
@@ -120,7 +116,7 @@ refs
 .RS 4
 References are stored in subdirectories of this directory\&. The
 \fIgit prune\fR
-command knows to keep objects reachable from refs found in this directory and its subdirectories\&.
+command knows to preserve objects reachable from refs found in this directory and its subdirectories\&.
 .RE
 .PP
 refs/heads/name
@@ -159,25 +155,27 @@ have the HEAD file; some porcelains may use it to guess the designated "default"
 does not (yet) exist\&. In some legacy setups, it is a symbolic link instead of a symref that points at the current branch\&.
 .sp
 HEAD can also record a specific commit directly, instead of being a symref to point at the current branch\&. Such a state is often called
-\fIdetached HEAD\fR, and almost all commands work identically as normal\&. See
+\fIdetached HEAD\&.\fR
+See
 \fBgit-checkout\fR(1)
 for details\&.
 .RE
 .PP
 branches
 .RS 4
-A slightly deprecated way to store shorthands to be used to specify URL to
+A slightly deprecated way to store shorthands to be used to specify a URL to
 \fIgit fetch\fR,
 \fIgit pull\fR
 and
-\fIgit push\fR
-commands is to store a file in
+\fIgit push\fR\&. A file can be stored as
 branches/<name>
-and give
+and then
 \fIname\fR
-to these commands in place of
+can be given to these commands in place of
 \fIrepository\fR
-argument\&.
+argument\&. See the REMOTES section in
+\fBgit-fetch\fR(1)
+for details\&. This mechanism is legacy and not likely to be found in modern repositories\&.
 .RE
 .PP
 hooks
@@ -235,12 +233,14 @@ look at it but the core git commands do not look at it\&. See also:
 .PP
 remotes
 .RS 4
-Stores shorthands to be used to give URL and default refnames to interact with remote repository to
+Stores shorthands for URL and default refnames for use when interacting with remote repositories via
 \fIgit fetch\fR,
 \fIgit pull\fR
 and
 \fIgit push\fR
-commands\&.
+commands\&. See the REMOTES section in
+\fBgit-fetch\fR(1)
+for details\&. This mechanism is legacy and not likely to be found in modern repositories\&.
 .RE
 .PP
 logs
