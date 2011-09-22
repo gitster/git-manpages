@@ -2,12 +2,21 @@
 .\"     Title: git-remote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 08/02/2011
+.\"      Date: 09/21/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.6.396.ge0613
+.\"    Source: Git 1.7.7.rc2.4.g5ec82
 .\"  Language: English
 .\"
-.TH "GIT\-REMOTE\-HELPERS" "1" "08/02/2011" "Git 1\&.7\&.6\&.396\&.ge0613" "Git Manual"
+.TH "GIT\-REMOTE\-HELPERS" "1" "09/21/2011" "Git 1\&.7\&.7\&.rc2\&.4\&.g5ec" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -30,11 +39,141 @@ git-remote-helpers \- Helper programs to interact with remote repositories
 .sp
 Remote helper programs are normally not used directly by end users, but they are invoked by git when it needs to interact with remote repositories git does not support natively\&. A given helper will implement a subset of the capabilities documented here\&. When git needs to interact with a repository using a remote helper, it spawns the helper as an independent process, sends commands to the helper\(cqs standard input, and expects results from the helper\(cqs standard output\&. Because a remote helper runs as an independent process from git, there is no need to re\-link git to add a new helper, nor any need to link the helper with the implementation of git\&.
 .sp
-Every helper must support the "capabilities" command, which git will use to determine what other commands the helper will accept\&. Other commands generally concern facilities like discovering and updating remote refs, transporting objects between the object database and the remote repository, and updating the local object store\&.
-.sp
-Helpers supporting the \fIfetch\fR capability can discover refs from the remote repository and transfer objects reachable from those refs to the local object store\&. Helpers supporting the \fIpush\fR capability can transfer local objects to the remote repository and update remote refs\&.
+Every helper must support the "capabilities" command, which git uses to determine what other commands the helper will accept\&. Those other commands can be used to discover and update remote refs, transport objects between the object database and the remote repository, and update the local object store\&.
 .sp
 Git comes with a "curl" family of remote helpers, that handle various transport protocols, such as \fIgit\-remote\-http\fR, \fIgit\-remote\-https\fR, \fIgit\-remote\-ftp\fR and \fIgit\-remote\-ftps\fR\&. They implement the capabilities \fIfetch\fR, \fIoption\fR, and \fIpush\fR\&.
+.SH "INPUT FORMAT"
+.sp
+Git sends the remote helper a list of commands on standard input, one per line\&. The first command is always the \fIcapabilities\fR command, in response to which the remote helper must print a list of the capabilities it supports (see below) followed by a blank line\&. The response to the capabilities command determines what commands Git uses in the remainder of the command stream\&.
+.sp
+The command stream is terminated by a blank line\&. In some cases (indicated in the documentation of the relevant commands), this blank line is followed by a payload in some other protocol (e\&.g\&., the pack protocol), while in others it indicates the end of input\&.
+.SS "Capabilities"
+.sp
+Each remote helper is expected to support only a subset of commands\&. The operations a helper supports are declared to git in the response to the capabilities command (see COMMANDS, below)\&.
+.PP
+\fIoption\fR
+.RS 4
+For specifying settings like
+verbosity
+(how much output to write to stderr) and
+depth
+(how much history is wanted in the case of a shallow clone) that affect how other commands are carried out\&.
+.RE
+.PP
+\fIconnect\fR
+.RS 4
+For fetching and pushing using git\(cqs native packfile protocol that requires a bidirectional, full\-duplex connection\&.
+.RE
+.PP
+\fIpush\fR
+.RS 4
+For listing remote refs and pushing specified objects from the local object store to remote refs\&.
+.RE
+.PP
+\fIfetch\fR
+.RS 4
+For listing remote refs and fetching the associated history to the local object store\&.
+.RE
+.PP
+\fIimport\fR
+.RS 4
+For listing remote refs and fetching the associated history as a fast\-import stream\&.
+.RE
+.PP
+\fIrefspec\fR <refspec>
+.RS 4
+This modifies the
+\fIimport\fR
+capability, allowing the produced fast\-import stream to modify refs in a private namespace instead of writing to refs/heads or refs/remotes directly\&. It is recommended that all importers providing the
+\fIimport\fR
+capability use this\&.
+.sp
+A helper advertising the capability
+refspec refs/heads/*:refs/svn/origin/branches/*
+is saying that, when it is asked to
+import refs/heads/topic, the stream it outputs will update the
+refs/svn/origin/branches/topic
+ref\&.
+.sp
+This capability can be advertised multiple times\&. The first applicable refspec takes precedence\&. The left\-hand of refspecs advertised with this capability must cover all refs reported by the list command\&. If no
+\fIrefspec\fR
+capability is advertised, there is an implied
+refspec *:*\&.
+.RE
+.SS "Capabilities for Pushing"
+.PP
+\fIconnect\fR
+.RS 4
+Can attempt to connect to
+\fIgit receive\-pack\fR
+(for pushing),
+\fIgit upload\-pack\fR, etc for communication using the packfile protocol\&.
+.sp
+Supported commands:
+\fIconnect\fR\&.
+.RE
+.PP
+\fIpush\fR
+.RS 4
+Can discover remote refs and push local commits and the history leading up to them to new or existing remote refs\&.
+.sp
+Supported commands:
+\fIlist for\-push\fR,
+\fIpush\fR\&.
+.RE
+.sp
+If a helper advertises both \fIconnect\fR and \fIpush\fR, git will use \fIconnect\fR if possible and fall back to \fIpush\fR if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&.
+.SS "Capabilities for Fetching"
+.PP
+\fIconnect\fR
+.RS 4
+Can try to connect to
+\fIgit upload\-pack\fR
+(for fetching),
+\fIgit receive\-pack\fR, etc for communication using the packfile protocol\&.
+.sp
+Supported commands:
+\fIconnect\fR\&.
+.RE
+.PP
+\fIfetch\fR
+.RS 4
+Can discover remote refs and transfer objects reachable from them to the local object store\&.
+.sp
+Supported commands:
+\fIlist\fR,
+\fIfetch\fR\&.
+.RE
+.PP
+\fIimport\fR
+.RS 4
+Can discover remote refs and output objects reachable from them as a stream in fast\-import format\&.
+.sp
+Supported commands:
+\fIlist\fR,
+\fIimport\fR\&.
+.RE
+.sp
+If a helper advertises \fIconnect\fR, git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIfetch\fR and \fIimport\fR, git prefers \fIfetch\fR\&. Other frontends may have some other order of preference\&.
+.PP
+\fIrefspec\fR <refspec>
+.RS 4
+This modifies the
+\fIimport\fR
+capability\&.
+.sp
+A helper advertising
+refspec refs/heads/*:refs/svn/origin/branches/*
+in its capabilities is saying that, when it handles
+import refs/heads/topic, the stream it outputs will update the
+refs/svn/origin/branches/topic
+ref\&.
+.sp
+This capability can be advertised multiple times\&. The first applicable refspec takes precedence\&. The left\-hand of refspecs advertised with this capability must cover all refs reported by the list command\&. If no
+\fIrefspec\fR
+capability is advertised, there is an implied
+refspec *:*\&.
+.RE
 .SH "INVOCATION"
 .sp
 Remote helper programs are invoked with one or (optionally) two arguments\&. The first argument specifies a remote repository as in git; it is either the name of a configured remote or a URL\&. The second argument specifies a URL; it is usually of the form \fI<transport>://<address>\fR, but any arbitrary string is possible\&. The \fIGIT_DIR\fR environment variable is set up for the remote helper and can be used to determine where to store additional data or from which directory to invoke auxiliary git commands\&.
@@ -93,7 +232,38 @@ Supported if the helper has the "fetch" capability\&.
 .PP
 \fIpush\fR +<src>:<dst>
 .RS 4
-Pushes the given local <src> commit or branch to the remote branch described by <dst>\&. A batch sequence of one or more push commands is terminated with a blank line\&.
+Pushes the given local <src> commit or branch to the remote branch described by <dst>\&. A batch sequence of one or more
+\fIpush\fR
+commands is terminated with a blank line (if there is only one reference to push, a single
+\fIpush\fR
+command is followed by a blank line)\&. For example, the following would be two batches of
+\fIpush\fR, the first asking the remote\-helper to push the local ref
+\fImaster\fR
+to the remote ref
+\fImaster\fR
+and the local
+\fIHEAD\fR
+to the remote
+\fIbranch\fR, and the second asking to push ref
+\fIfoo\fR
+to ref
+\fIbar\fR
+(forced update requested by the
+\fI+\fR)\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+push refs/heads/master:refs/heads/master
+push HEAD:refs/heads/branch
+\en
+push +refs/heads/foo:refs/heads/bar
+\en
+.fi
+.if n \{\
+.RE
+.\}
 .sp
 Zero or more protocol options may be entered after the last
 \fIpush\fR
@@ -114,6 +284,14 @@ Produces a fast\-import stream which imports the current value of the named ref\
 .sp
 Especially useful for interoperability with a foreign versioning system\&.
 .sp
+Just like
+\fIpush\fR, a batch sequence of one or more
+\fIimport\fR
+is terminated with a blank line\&. For each batch of
+\fIimport\fR, the remote helper should produce a fast\-import stream terminated by a
+\fIdone\fR
+command\&.
+.sp
 Supported if the helper has the "import" capability\&.
 .RE
 .PP
@@ -131,17 +309,6 @@ Supported if the helper has the "connect" capability\&.
 If a fatal error occurs, the program writes the error message to stderr and exits\&. The caller should expect that a suitable error message has been printed if the child closes the connection without completing a valid response for the current command\&.
 .sp
 Additional commands may be supported, as may be determined from capabilities reported by the helper\&.
-.SH "CAPABILITIES"
-.PP
-\fIfetch\fR, \fIoption\fR, \fIpush\fR, \fIimport\fR, \fIconnect\fR
-.RS 4
-This helper supports the corresponding command with the same name\&.
-.RE
-.PP
-\fIrefspec\fR \fIspec\fR
-.RS 4
-When using the import command, expect the source ref to have been written to the destination ref\&. The earliest applicable refspec takes precedence\&. For example "refs/heads/*:refs/svn/origin/branches/*" means that, after an "import refs/heads/name", the script has written to refs/svn/origin/branches/name\&. If this capability is used at all, it must cover all refs reported by the list command; if it is not used, it is effectively "*:*"
-.RE
 .SH "REF LIST ATTRIBUTES"
 .PP
 \fIfor\-push\fR
@@ -184,6 +351,8 @@ Sets service path (\-\-upload\-pack, \-\-receive\-pack etc\&.) for next connect\
 .SH "SEE ALSO"
 .sp
 \fBgit-remote\fR(1)
+.sp
+\fBgit-remote-testgit\fR(1)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
