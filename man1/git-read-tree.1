@@ -2,12 +2,12 @@
 .\"     Title: git-read-tree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 09/30/2011
+.\"      Date: 10/05/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.7
+.\"    Source: Git 1.7.7.138.g7f41b6
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "09/30/2011" "Git 1\&.7\&.7" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "10/05/2011" "Git 1\&.7\&.7\&.138\&.g7f41b6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -64,7 +64,7 @@ After a successful merge, update the files in the work tree with the result of t
 .PP
 \-i
 .RS 4
-Usually a merge requires the index file as well as the files in the working tree are up to date with the current head commit, in order not to lose local changes\&. This flag disables the check with the working tree and is meant to be used when creating a merge of trees that are not directly related to the current working tree status into a temporary index file\&.
+Usually a merge requires the index file as well as the files in the working tree to be up to date with the current head commit, in order not to lose local changes\&. This flag disables the check with the working tree and is meant to be used when creating a merge of trees that are not directly related to the current working tree status into a temporary index file\&.
 .RE
 .PP
 \-n, \-\-dry\-run
@@ -88,7 +88,7 @@ to happen only if there is no file\-level merging required, instead of resolving
 .RS 4
 Usually a three\-way merge by
 \fIgit read\-tree\fR
-resolves the merge for really trivial cases and leaves other cases unresolved in the index, so that Porcelains can implement different merge policies\&. This flag makes the command to resolve a few more cases internally:
+resolves the merge for really trivial cases and leaves other cases unresolved in the index, so that porcelains can implement different merge policies\&. This flag makes the command resolve a few more cases internally:
 .sp
 .RS 4
 .ie n \{\
@@ -120,16 +120,16 @@ when both sides remove a path\&. The resolution is to remove that path\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-when both sides adds a path identically\&. The resolution is to add that path\&.
+when both sides add a path identically\&. The resolution is to add that path\&.
 .RE
 .RE
 .PP
 \-\-prefix=<prefix>/
 .RS 4
-Keep the current index contents, and read the contents of named tree\-ish under directory at
+Keep the current index contents, and read the contents of the named tree\-ish under the directory at
 <prefix>\&. The original index file cannot have anything at the path
 <prefix>
-itself, and have nothing in
+itself, nor anything in the
 <prefix>/
 directory\&. Note that the
 <prefix>/
@@ -490,13 +490,13 @@ However, if you have local changes in the working tree that would be overwritten
 In other words, there is no need to worry about what exists only in the working tree\&. When you have local changes in a part of the project that is not involved in the merge, your changes do not interfere with the merge, and are kept intact\&. When they \fBdo\fR interfere, the merge does not even start (\fIgit read\-tree\fR complains loudly and fails without modifying anything)\&. In such a case, you can simply continue doing what you were in the middle of doing, and when your working tree is ready (i\&.e\&. you have finished your work\-in\-progress), attempt the merge again\&.
 .SH "SPARSE CHECKOUT"
 .sp
-"Sparse checkout" allows to sparsely populate working directory\&. It uses skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file on working directory is worth looking at\&.
+"Sparse checkout" allows populating the working directory sparsely\&. It uses the skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file in the working directory is worth looking at\&.
 .sp
-"git read\-tree" and other merge\-based commands ("git merge", "git checkout"\&...) can help maintaining skip\-worktree bitmap and working directory update\&. $GIT_DIR/info/sparse\-checkout is used to define the skip\-worktree reference bitmap\&. When "git read\-tree" needs to update working directory, it will reset skip\-worktree bit in index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, skip\-worktree will be set on that entry\&. Otherwise, skip\-worktree will be unset\&.
+\fIgit read\-tree\fR and other merge\-based commands (\fIgit merge\fR, \fIgit checkout\fR\&...) can help maintaining the skip\-worktree bitmap and working directory update\&. $GIT_DIR/info/sparse\-checkout is used to define the skip\-worktree reference bitmap\&. When \fIgit read\-tree\fR needs to update the working directory, it resets the skip\-worktree bit in the index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, skip\-worktree will not be set on that entry\&. Otherwise, skip\-worktree will be set\&.
 .sp
-Then it compares the new skip\-worktree value with the previous one\&. If skip\-worktree turns from unset to set, it will add the corresponding file back\&. If it turns from set to unset, that file will be removed\&.
+Then it compares the new skip\-worktree value with the previous one\&. If skip\-worktree turns from set to unset, it will add the corresponding file back\&. If it turns from unset to set, that file will be removed\&.
 .sp
-While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are in\&. You can also specify what files are \fInot\fR in, using negate patterns\&. For example, to remove file "unwanted":
+While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are in, you can also specify what files are \fInot\fR in, using negate patterns\&. For example, to remove the file unwanted:
 .sp
 .if n \{\
 .RS 4
@@ -510,7 +510,7 @@ While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are i
 .\}
 .sp
 .sp
-Another tricky thing is fully repopulating working directory when you no longer want sparse checkout\&. You cannot just disable "sparse checkout" because skip\-worktree are still in the index and you working directory is still sparsely populated\&. You should re\-populate working directory with the $GIT_DIR/info/sparse\-checkout file content as follows:
+Another tricky thing is fully repopulating the working directory when you no longer want sparse checkout\&. You cannot just disable "sparse checkout" because skip\-worktree bits are still in the index and your working directory is still sparsely populated\&. You should re\-populate the working directory with the $GIT_DIR/info/sparse\-checkout file content as follows:
 .sp
 .if n \{\
 .RS 4
@@ -523,7 +523,7 @@ Another tricky thing is fully repopulating working directory when you no longer 
 .\}
 .sp
 .sp
-Then you can disable sparse checkout\&. Sparse checkout support in "git read\-tree" and similar commands is disabled by default\&. You need to turn core\&.sparseCheckout on in order to have sparse checkout support\&.
+Then you can disable sparse checkout\&. Sparse checkout support in \fIgit read\-tree\fR and similar commands is disabled by default\&. You need to turn core\&.sparseCheckout on in order to have sparse checkout support\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-write-tree\fR(1); \fBgit-ls-files\fR(1); \fBgitignore\fR(5)

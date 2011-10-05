@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 09/30/2011
+.\"      Date: 10/05/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.7
+.\"    Source: Git 1.7.7.138.g7f41b6
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "09/30/2011" "Git 1\&.7\&.7" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/05/2011" "Git 1\&.7\&.7\&.138\&.g7f41b6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -703,7 +703,7 @@ to move to the detach HEAD state, to instruct how to create a local branch after
 .PP
 core\&.fileMode
 .RS 4
-If false, the executable bit differences between the index and the working copy are ignored; useful on broken filesystems like FAT\&. See
+If false, the executable bit differences between the index and the working tree are ignored; useful on broken filesystems like FAT\&. See
 \fBgit-update-index\fR(1)\&.
 .sp
 The default is true, except
@@ -731,7 +731,7 @@ will probe and set core\&.ignorecase true if appropriate when the repository is 
 .PP
 core\&.trustctime
 .RS 4
-If false, the ctime differences between the index and the working copy are ignored; useful when the inode change time is regularly modified by something outside Git (file system crawlers and some backup systems)\&. See
+If false, the ctime differences between the index and the working tree are ignored; useful when the inode change time is regularly modified by something outside Git (file system crawlers and some backup systems)\&. See
 \fBgit-update-index\fR(1)\&. True by default\&.
 .RE
 .PP
@@ -834,7 +834,7 @@ can be used as the proxy command to specify that no proxy be used for a given do
 .PP
 core\&.ignoreStat
 .RS 4
-If true, commands which modify both the working tree and the index will mark the updated paths with the "assume unchanged" bit in the index\&. These marked files are then assumed to stay unchanged in the working copy, until you mark them otherwise manually \- Git will not detect the file changes by lstat() calls\&. This is useful on systems where those are very slow, such as Microsoft Windows\&. See
+If true, commands which modify both the working tree and the index will mark the updated paths with the "assume unchanged" bit in the index\&. These marked files are then assumed to stay unchanged in the working tree, until you mark them otherwise manually \- Git will not detect the file changes by lstat() calls\&. This is useful on systems where those are very slow, such as Microsoft Windows\&. See
 \fBgit-update-index\fR(1)\&. False by default\&.
 .RE
 .PP
@@ -1904,6 +1904,13 @@ This option can be either set to a boolean value or to
 (the default value), fetch and pull will only recurse into a populated submodule when its superproject retrieves a commit that updates the submodule\(cqs reference\&.
 .RE
 .PP
+fetch\&.fsckObjects
+.RS 4
+If it is set to true, git\-fetch\-pack will check all fetched objects\&. It will abort in the case of a malformed object or a broken link\&. The result of an abort are only dangling objects\&. Defaults to false\&. If not set, the value of
+transfer\&.fsckObjects
+is used instead\&.
+.RE
+.PP
 fetch\&.unpackLimit
 .RS 4
 If the number of objects fetched over the git native transfer is below this limit, then the objects will be unpacked into loose object files\&. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases\&. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems\&. If not set, the value of
@@ -2794,7 +2801,9 @@ notes\&.rewriteRef
 .RS 4
 When copying notes during a rewrite, specifies the (fully qualified) ref whose notes should be copied\&. The ref may be a glob, in which case notes in all matching refs will be copied\&. You may also specify this configuration several times\&.
 .sp
-Does not have a default value; you must configure this variable to enable note rewriting\&.
+Does not have a default value; you must configure this variable to enable note rewriting\&. Set it to
+refs/notes/commits
+to enable rewriting for the default commit notes\&.
 .sp
 This setting can be overridden with the
 GIT_NOTES_REWRITE_REF
@@ -3007,7 +3016,9 @@ By default, git\-receive\-pack will run "git\-gc \-\-auto" after receiving data 
 .PP
 receive\&.fsckObjects
 .RS 4
-If it is set to true, git\-receive\-pack will check all received objects\&. It will abort in the case of a malformed object or a broken link\&. The result of an abort are only dangling objects\&. Defaults to false\&.
+If it is set to true, git\-receive\-pack will check all received objects\&. It will abort in the case of a malformed object or a broken link\&. The result of an abort are only dangling objects\&. Defaults to false\&. If not set, the value of
+transfer\&.fsckObjects
+is used instead\&.
 .RE
 .PP
 receive\&.unpackLimit
@@ -3307,6 +3318,15 @@ tar\&.umask
 .RS 4
 This variable can be used to restrict the permission bits of tar archive entries\&. The default is 0002, which turns off the world write bit\&. The special value "user" indicates that the archiving user\(cqs umask will be used instead\&. See umask(2) and
 \fBgit-archive\fR(1)\&.
+.RE
+.PP
+transfer\&.fsckObjects
+.RS 4
+When
+fetch\&.fsckObjects
+or
+receive\&.fsckObjects
+are not set, the value of this variable is used instead\&. Defaults to false\&.
 .RE
 .PP
 transfer\&.unpackLimit

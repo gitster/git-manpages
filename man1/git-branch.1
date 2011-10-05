@@ -2,12 +2,12 @@
 .\"     Title: git-branch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 09/30/2011
+.\"      Date: 10/05/2011
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.7
+.\"    Source: Git 1.7.7.138.g7f41b6
 .\"  Language: English
 .\"
-.TH "GIT\-BRANCH" "1" "09/30/2011" "Git 1\&.7\&.7" "Git Manual"
+.TH "GIT\-BRANCH" "1" "10/05/2011" "Git 1\&.7\&.7\&.138\&.g7f41b6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,8 +33,8 @@ git-branch \- List, create, or delete branches
 .sp
 .nf
 \fIgit branch\fR [\-\-color[=<when>] | \-\-no\-color] [\-r | \-a]
-        [\-v [\-\-abbrev=<length> | \-\-no\-abbrev]]
-        [(\-\-merged | \-\-no\-merged | \-\-contains) [<commit>]]
+        [\-\-list] [\-v [\-\-abbrev=<length> | \-\-no\-abbrev]]
+        [(\-\-merged | \-\-no\-merged | \-\-contains) [<commit>]] [<pattern>\&...]
 \fIgit branch\fR [\-\-set\-upstream | \-\-track | \-\-no\-track] [\-l] [\-f] <branchname> [<start\-point>]
 \fIgit branch\fR (\-m | \-M) [<oldbranch>] <newbranch>
 \fIgit branch\fR (\-d | \-D) [\-r] <branchname>\&...
@@ -42,7 +42,7 @@ git-branch \- List, create, or delete branches
 .sp
 .SH "DESCRIPTION"
 .sp
-With no arguments, existing branches are listed and the current branch will be highlighted with an asterisk\&. Option \-r causes the remote\-tracking branches to be listed, and option \-a shows both\&.
+With no arguments, existing branches are listed and the current branch will be highlighted with an asterisk\&. Option \-r causes the remote\-tracking branches to be listed, and option \-a shows both\&. This list mode is also activated by the \-\-list option (see below)\&. <pattern> restricts the output to matching branches, the pattern is a shell wildcard (i\&.e\&., matched using fnmatch(3)) Multiple patterns may be given; if any of them matches, the tag is shown\&.
 .sp
 With \-\-contains, shows only the branches that contain the named commit (in other words, the branches whose tip commits are descendants of the named commit)\&. With \-\-merged, only branches merged into the named commit (i\&.e\&. the branches whose tip commits are reachable from the named commit) will be listed\&. With \-\-no\-merged only branches not merged into the named commit will be listed\&. If the <commit> argument is missing it defaults to \fIHEAD\fR (i\&.e\&. the tip of the current branch)\&.
 .sp
@@ -59,7 +59,7 @@ With a \-d or \-D option, <branchname> will be deleted\&. You may specify more t
 Use \-r together with \-d to delete remote\-tracking branches\&. Note, that it only makes sense to delete remote\-tracking branches if they no longer exist in the remote repository or if \fIgit fetch\fR was configured not to fetch them again\&. See also the \fIprune\fR subcommand of \fBgit-remote\fR(1) for a way to clean up all obsolete remote\-tracking branches\&.
 .SH "OPTIONS"
 .PP
-\-d
+\-d, \-\-delete
 .RS 4
 Delete a branch\&. The branch must be fully merged in its upstream branch, or in
 HEAD
@@ -74,7 +74,7 @@ or
 Delete a branch irrespective of its merged status\&.
 .RE
 .PP
-\-l
+\-l, \-\-create\-reflog
 .RS 4
 Create the branch\(cqs reflog\&. This activates recording of all changes made to the branch ref, enabling use of date based sha1 expressions such as "<branchname>@{yesterday}"\&. Note that in non\-bare repositories, reflogs are usually enabled by default by the
 core\&.logallrefupdates
@@ -89,7 +89,7 @@ Reset <branchname> to <startpoint> if <branchname> exists already\&. Without
 refuses to change an existing branch\&.
 .RE
 .PP
-\-m
+\-m, \-\-move
 .RS 4
 Move/rename a branch and the corresponding reflog\&.
 .RE
@@ -110,19 +110,28 @@ Turn off branch colors, even when the configuration file gives the default to co
 \-\-color=never\&.
 .RE
 .PP
-\-r
+\-r, \-\-remotes
 .RS 4
 List or delete (if used with \-d) the remote\-tracking branches\&.
 .RE
 .PP
-\-a
+\-a, \-\-all
 .RS 4
 List both remote\-tracking branches and local branches\&.
 .RE
 .PP
+\-\-list
+.RS 4
+Activate the list mode\&.
+git branch <pattern>
+would try to create a branch, use
+git branch \-\-list <pattern>
+to list matching branches\&.
+.RE
+.PP
 \-v, \-\-verbose
 .RS 4
-Show sha1 and commit subject line for each head, along with relationship to upstream branch (if any)\&. If given twice, print the name of the upstream branch, as well\&.
+When in list mode, show sha1 and commit subject line for each head, along with relationship to upstream branch (if any)\&. If given twice, print the name of the upstream branch, as well\&.
 .RE
 .PP
 \-\-abbrev=<length>
