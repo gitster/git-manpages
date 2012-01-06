@@ -2,12 +2,12 @@
 .\"     Title: git-p4
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/03/2012
+.\"      Date: 01/06/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.8.2.321.g4570a
+.\"    Source: Git 1.7.9.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-P4" "1" "01/03/2012" "Git 1\&.7\&.8\&.2\&.321\&.g457" "Git Manual"
+.TH "GIT\-P4" "1" "01/06/2012" "Git 1\&.7\&.9\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -407,11 +407,7 @@ The mapping of file names from the p4 depot path to git, by default, involves re
 .PP
 \-\-use\-client\-spec
 .RS 4
-Use a client spec to find the list of interesting files in p4\&. The client spec is discovered using
-\fIp4 client \-o\fR
-which checks the
-\fIP4CLIENT\fR
-environment variable and returns a mapping of depot files to workspace files\&. Note that a depot path is still required, but files found in the path that match in the client spec view will be laid out according to the client spec\&.
+Use a client spec to find the list of interesting files in p4\&. See the "CLIENT SPEC" section below\&.
 .RE
 .SS "Clone options"
 .sp
@@ -488,6 +484,13 @@ option when specifying more than one depot path\&. The revision specifier must b
 .RE
 .sp
 See \fIp4 help revisions\fR for the full syntax of p4 revision specifiers\&.
+.SH "CLIENT SPEC"
+.sp
+The p4 client specification is maintained with the \fIp4 client\fR command and contains among other fields, a View that specifies how the depot is mapped into the client repository\&. Git\-p4 can consult the client spec when given the \fI\-\-use\-client\-spec\fR option or useClientSpec variable\&.
+.sp
+The full syntax for a p4 view is documented in \fIp4 help views\fR\&. Git\-p4 knows only a subset of the view syntax\&. It understands multi\-line mappings, overlays with \fI+\fR, exclusions with \fI\-\fR and double\-quotes around whitespace\&. Of the possible wildcards, git\-p4 only handles \fI\&...\fR, and only when it is at the end of the path\&. Git\-p4 will complain if it encounters an unhandled wildcard\&.
+.sp
+The name of the client can be given to git\-p4 in multiple ways\&. The variable \fIgit\-p4\&.client\fR takes precedence if it exists\&. Otherwise, normal p4 mechanisms of determining the client are used: environment variable P4CLIENT, a file referenced by P4CONFIG, or the local host name\&.
 .SH "BRANCH DETECTION"
 .sp
 P4 does not have the same concept of a branch as git\&. Instead, p4 organizes its content as a directory tree, where by convention different logical branches are in different locations in the tree\&. The \fIp4 branch\fR command is used to maintain mappings between different areas in the tree, and indicate related content\&. \fIgit p4\fR can use these mappings to determine branch relationships\&.
@@ -592,11 +595,7 @@ can be used instead\&.
 git\-p4\&.client
 .RS 4
 Client specified as an option to all p4 commands, with
-\fI\-c <client>\fR\&. This can also be used as a way to find the client spec for the
-\fIuseClientSpec\fR
-option\&. The environment variable
-\fIP4CLIENT\fR
-can be used instead\&.
+\fI\-c <client>\fR, including the client spec\&.
 .RE
 .SS "Clone and sync variables"
 .PP
@@ -632,10 +631,8 @@ git config \-\-add git\-p4\&.branchList main:branchB
 .PP
 git\-p4\&.useClientSpec
 .RS 4
-Specify that the p4 client spec to be used to identify p4 depot paths of interest\&. This is equivalent to specifying the option
-\fI\-\-use\-client\-spec\fR\&. The variable
-\fIgit\-p4\&.client\fR
-can be used to specify the name of the client\&.
+Specify that the p4 client spec should be used to identify p4 depot paths of interest\&. This is equivalent to specifying the option
+\fI\-\-use\-client\-spec\fR\&. See the "CLIENT SPEC" section above\&. This variable is a boolean, not the name of a p4 client\&.
 .RE
 .SS "Submit variables"
 .PP
