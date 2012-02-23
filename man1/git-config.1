@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/27/2012
+.\"      Date: 02/23/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.9
+.\"    Source: Git 1.7.9.2.262.gba998
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "01/27/2012" "Git 1\&.7\&.9" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/23/2012" "Git 1\&.7\&.9\&.2\&.262\&.gba9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -308,6 +308,13 @@ Opens an editor to modify the specified config file; either
 \fI\-\-system\fR,
 \fI\-\-global\fR, or repository (default)\&.
 .RE
+.PP
+\-\-includes, \-\-no\-includes
+.RS 4
+Respect
+include\&.*
+directives in config files when looking up values\&. Defaults to on\&.
+.RE
 .SH "FILES"
 .sp
 If not set explicitly with \fI\-\-file\fR, there are three files where \fIgit config\fR will search for configuration options:
@@ -600,6 +607,9 @@ The following escape sequences (beside \e" and \e\e) are recognized: \en for new
 Variable values ending in a \e are continued on the next line in the customary UNIX fashion\&.
 .sp
 Some variables may require a special value format\&.
+.SS "Includes"
+.sp
+You can include one config file from another by setting the special include\&.path variable to the name of the file to be included\&. The included file is expanded immediately, as if its contents had been found at the location of the include directive\&. If the value of the include\&.path variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. See below for examples\&.
 .SS "Example"
 .sp
 .if n \{\
@@ -648,6 +658,18 @@ Some variables may require a special value format\&.
 [core]
         gitProxy="ssh" for "kernel\&.org"
         gitProxy=default\-proxy ; for the rest
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[include]
+        path = /path/to/foo\&.inc ; include by absolute path
+        path = foo ; expand "foo" relative to the current file
 .fi
 .if n \{\
 .RE
