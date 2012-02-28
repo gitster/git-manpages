@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/27/2012
+.\"      Date: 02/28/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.9
+.\"    Source: Git 1.7.9.2.323.gf051a
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "01/27/2012" "Git 1\&.7\&.9" "Git Manual"
+.TH "GITATTRIBUTES" "5" "02/28/2012" "Git 1\&.7\&.9\&.2\&.323\&.gf05" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -362,9 +362,13 @@ A filter attribute can be set to a string value that names a filter driver speci
 .sp
 A filter driver consists of a clean command and a smudge command, either of which can be left unspecified\&. Upon checkout, when the smudge command is specified, the command is fed the blob object from its standard input, and its standard output is used to update the worktree file\&. Similarly, the clean command is used to convert the contents of worktree file upon checkin\&.
 .sp
-A missing filter driver definition in the config is not an error but makes the filter a no\-op passthru\&.
+One use of the content filtering is to massage the content into a shape that is more convenient for the platform, filesystem, and the user to use\&. For this mode of operation, the key phrase here is "more convenient" and not "turning something unusable into usable"\&. In other words, the intent is that if someone unsets the filter driver definition, or does not have the appropriate filter program, the project should still be usable\&.
 .sp
-The content filtering is done to massage the content into a shape that is more convenient for the platform, filesystem, and the user to use\&. The key phrase here is "more convenient" and not "turning something unusable into usable"\&. In other words, the intent is that if someone unsets the filter driver definition, or does not have the appropriate filter program, the project should still be usable\&.
+Another use of the content filtering is to store the content that cannot be directly used in the repository (e\&.g\&. a UUID that refers to the true content stored outside git, or an encrypted content) and turn it into a usable form upon checkout (e\&.g\&. download the external content, or decrypt the encrypted content)\&.
+.sp
+These two filters behave differently, and by default, a filter is taken as the former, massaging the contents into more convenient shape\&. A missing filter driver definition in the config, or a filter driver that exits with a non\-zero status, is not an error but makes the filter a no\-op passthru\&.
+.sp
+You can declare that a filter turns a content that by itself is unusable into a usable content by setting the filter\&.<driver>\&.required configuration variable to true\&.
 .sp
 For example, in \&.gitattributes, you would assign the filter attribute for paths\&.
 .sp
@@ -397,6 +401,22 @@ Then you would define a "filter\&.indent\&.clean" and "filter\&.indent\&.smudge"
 For best results, clean should not alter its output further if it is run twice ("clean\(->clean" should be equivalent to "clean"), and multiple smudge commands should not alter clean\(aqs output ("smudge\(->smudge\(->clean" should be equivalent to "clean")\&. See the section on merging below\&.
 .sp
 The "indent" filter is well\-behaved in this regard: it will not modify input that is already correctly indented\&. In this case, the lack of a smudge filter means that the clean filter \fImust\fR accept its own output without modifying it\&.
+.sp
+If a filter \fImust\fR succeed in order to make the stored contents usable, you can declare that the filter is required, in the configuration:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[filter "crypt"]
+        clean = openssl enc \&.\&.\&.
+        smudge = openssl enc \-d \&.\&.\&.
+        required
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .sp
 Sequence "%f" on the filter command line is replaced with the name of the file the filter is working on\&. A filter might use this in keyword substitution\&. For example:
 .sp
