@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/20/2012
+.\"      Date: 04/23/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.10.207.g0bb2e
+.\"    Source: Git 1.7.10.280.gaa39
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "04/20/2012" "Git 1\&.7\&.10\&.207\&.g0bb2e" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "04/23/2012" "Git 1\&.7\&.10\&.280\&.gaa39" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -107,10 +107,14 @@ Negates a previous \-\-relative\-marks\&. Allows for combining relative and non\
 .PP
 \-\-cat\-blob\-fd=<fd>
 .RS 4
-Specify the file descriptor that will be written to when the
+Write responses to
 cat\-blob
-command is encountered in the stream\&. The default behaviour is to write to
-stdout\&.
+and
+ls
+queries to the file descriptor <fd> instead of
+stdout\&. Allows
+progress
+output intended for the end\-user to be separated from other output\&.
 .RE
 .PP
 \-\-done
@@ -1085,6 +1089,8 @@ Output uses the same format as git cat\-file \-\-batch:
 .\}
 .sp
 This command can be used anywhere in the stream that comments are accepted\&. In particular, the cat\-blob command can be used in the middle of a commit but not in the middle of a data command\&.
+.sp
+See \(lqResponses To Commands\(rq below for details about how to read this output safely\&.
 .SS "ls"
 .sp
 Prints information about the object at a path to a file descriptor previously arranged with the \-\-cat\-blob\-fd argument\&. This allows printing a blob from the active commit (with cat\-blob) or copying a blob or tree from a previous commit for use in the current one (with filemodify)\&.
@@ -1152,6 +1158,8 @@ missing SP <path> LF
 .if n \{\
 .RE
 .\}
+.sp
+See \(lqResponses To Commands\(rq below for details about how to read this output safely\&.
 .SS "feature"
 .sp
 Require that fast\-import supports the specified feature, or abort if it does not\&.
@@ -1283,6 +1291,27 @@ force
 If the done feature is not in use, treated as if EOF was read\&. This can be used to tell fast\-import to finish early\&.
 .sp
 If the \-\-done command line option or feature done command is in use, the done command is mandatory and marks the end of the stream\&.
+.SH "RESPONSES TO COMMANDS"
+.sp
+New objects written by fast\-import are not available immediately\&. Most fast\-import commands have no visible effect until the next checkpoint (or completion)\&. The frontend can send commands to fill fast\-import\(cqs input pipe without worrying about how quickly they will take effect, which improves performance by simplifying scheduling\&.
+.sp
+For some frontends, though, it is useful to be able to read back data from the current repository as it is being updated (for example when the source material describes objects in terms of patches to be applied to previously imported objects)\&. This can be accomplished by connecting the frontend and fast\-import via bidirectional pipes:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+mkfifo fast\-import\-output
+frontend <fast\-import\-output |
+git fast\-import >fast\-import\-output
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+A frontend set up this way can use progress, ls, and cat\-blob commands to read information from the import in progress\&.
+.sp
+To avoid deadlock, such frontends must completely consume any pending output from progress, ls, and cat\-blob before performing writes to fast\-import that might block\&.
 .SH "CRASH REPORTS"
 .sp
 If fast\-import is supplied invalid input it will terminate with a non\-zero exit status and create a crash report in the top level of the Git repository it was importing into\&. Crash reports contain a snapshot of the internal fast\-import state as well as the most recent commands that lead up to the crash\&.
