@@ -2,12 +2,12 @@
 .\"     Title: git-p4
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/29/2012
+.\"      Date: 04/30/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.10.385.g2e330
+.\"    Source: Git 1.7.10.420.g9768c
 .\"  Language: English
 .\"
-.TH "GIT\-P4" "1" "04/29/2012" "Git 1\&.7\&.10\&.385\&.g2e330" "Git Manual"
+.TH "GIT\-P4" "1" "04/30/2012" "Git 1\&.7\&.10\&.420\&.g9768c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -287,7 +287,7 @@ The p4 changes will be created as the user invoking \fIgit p4 submit\fR\&. The \
 .SH "OPTIONS"
 .SS "General options"
 .sp
-All commands except clone accept this option\&.
+All commands except clone accept these options\&.
 .PP
 \-\-git\-dir <dir>
 .RS 4
@@ -295,6 +295,11 @@ Set the
 \fIGIT_DIR\fR
 environment variable\&. See
 \fBgit\fR(1)\&.
+.RE
+.PP
+\-\-verbose
+.RS 4
+Provide more progress information\&.
 .RE
 .SS "Sync options"
 .sp
@@ -341,14 +346,14 @@ inspects the current p4 repository state and detects the changes it should impor
 Do not print any progress information\&.
 .RE
 .PP
-\-\-verbose
-.RS 4
-Provide more progress information\&.
-.RE
-.PP
 \-\-detect\-labels
 .RS 4
-Query p4 for labels associated with the depot paths, and add them as tags in git\&.
+Query p4 for labels associated with the depot paths, and add them as tags in git\&. Limited usefulness as only imports labels associated with new changelists\&. Deprecated\&.
+.RE
+.PP
+\-\-import\-labels
+.RS 4
+Import labels from p4 into git\&.
 .RE
 .PP
 \-\-import\-local
@@ -407,11 +412,6 @@ Exclude selected depot paths when cloning\&.
 .sp
 These options can be used to modify \fIgit p4 submit\fR behavior\&.
 .PP
-\-\-verbose
-.RS 4
-Provide more progress information\&.
-.RE
-.PP
 \-\-origin <commit>
 .RS 4
 Upstream location from which commits are identified to submit to p4\&. By default, this is the most recent p4 commit reachable from
@@ -429,6 +429,19 @@ operations\&. There is no corresponding option to detect copies, but there are v
 \-\-preserve\-user
 .RS 4
 Re\-author p4 changes before submitting to p4\&. This option requires p4 admin privileges\&.
+.RE
+.PP
+\-\-export\-labels
+.RS 4
+Export tags from git as p4 labels\&. Tags found in git are applied to the perforce working directory\&.
+.RE
+.SS "Rebase options"
+.sp
+These options can be used to modify \fIgit p4 rebase\fR behavior\&.
+.PP
+\-\-import\-labels
+.RS 4
+Import p4 labels\&.
 .RE
 .SH "DEPOT PATH SYNTAX"
 .sp
@@ -606,6 +619,22 @@ git config \-\-add git\-p4\&.branchList main:branchB
 .\}
 .sp
 .PP
+git\-p4\&.ignoredP4Labels
+.RS 4
+List of p4 labels to ignore\&. This is built automatically as unimportable labels are discovered\&.
+.RE
+.PP
+git\-p4\&.importLabels
+.RS 4
+Import p4 labels into git, as per \-\-import\-labels\&.
+.RE
+.PP
+git\-p4\&.labelImportRegexp
+.RS 4
+Only p4 labels matching this regular expression will be imported\&. The default value is
+\fI[a\-zA\-Z0\-9_\e\-\&.]+$\fR\&.
+.RE
+.PP
 git\-p4\&.useClientSpec
 .RS 4
 Specify that the p4 client spec should be used to identify p4 depot paths of interest\&. This is equivalent to specifying the option
@@ -675,6 +704,17 @@ exits\&. This option can be used to force submission regardless\&.
 .RE
 .sp
 git\-p4\&.attemptRCSCleanup: If enabled, \fIgit p4 submit\fR will attempt to cleanup RCS keywords ($Header$, etc)\&. These would otherwise cause merge conflicts and prevent the submit going ahead\&. This option should be considered experimental at present\&.
+.PP
+git\-p4\&.exportLabels
+.RS 4
+Export git tags to p4 labels, as per \-\-export\-labels\&.
+.RE
+.PP
+git\-p4\&.labelExportRegexp
+.RS 4
+Only p4 labels matching this regular expression will be exported\&. The default value is
+\fI[a\-zA\-Z0\-9_\e\-\&.]+$\fR\&.
+.RE
 .SH "IMPLEMENTATION DETAILS"
 .sp
 .RS 4
