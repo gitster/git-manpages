@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/06/2012
+.\"      Date: 05/17/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.10
+.\"    Source: Git 1.7.10.2.548.g9de9681
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "04/06/2012" "Git 1\&.7\&.10" "Git Manual"
+.TH "GIT\-SVN" "1" "05/17/2012" "Git 1\&.7\&.10\&.2\&.548\&.g9d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -263,13 +263,15 @@ against the last fetched commit from the upstream SVN\&.
 .PP
 \fIdcommit\fR
 .RS 4
-Commit each diff from a specified head directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head)\&. This will create a revision in SVN for each commit in git\&. It is recommended that you run
-\fIgit svn\fR
-fetch and rebase (not pull or merge) your commits against the latest changes in the SVN repository\&. An optional revision or branch argument may be specified, and causes
-\fIgit svn\fR
-to do all work on that revision/branch instead of HEAD\&. This is advantageous over
+Commit each diff from the current branch directly to the SVN repository, and then rebase or reset (depending on whether or not there is a diff between SVN and head)\&. This will create a revision in SVN for each commit in git\&.
+.sp
+When an optional git branch name (or a git commit object name) is specified as an argument, the subcommand works on the specified branch, not on the current branch\&.
+.sp
+Use of
+\fIdcommit\fR
+is preferred to
 \fIset\-tree\fR
-(below) because it produces cleaner, more linear history\&.
+(below)\&.
 .PP
 \-\-no\-rebase
 .RS 4
@@ -814,7 +816,7 @@ config key: svn\&.repackflags
 .sp
 .RE
 .PP
-\-m, \-\-merge, \-s<strategy>, \-\-strategy=<strategy>
+\-m, \-\-merge, \-s<strategy>, \-\-strategy=<strategy>, \-p, \-\-preserve\-merges
 .RS 4
 These are only used with the
 \fIdcommit\fR
@@ -1092,9 +1094,9 @@ The initial \fIgit svn clone\fR can be quite time\-consuming (especially for lar
 .sp
 .SH "REBASE VS. PULL/MERGE"
 .sp
-Originally, \fIgit svn\fR recommended that the \fIremotes/git\-svn\fR branch be pulled or merged from\&. This is because the author favored git svn set\-tree B to commit a single head rather than the git svn set\-tree A\&.\&.B notation to commit multiple commits\&.
+Prefer to use \fIgit svn rebase\fR or \fIgit rebase\fR, rather than \fIgit pull\fR or \fIgit merge\fR to synchronize unintegrated commits with a \fIgit svn\fR branch\&. Doing so will keep the history of unintegrated commits linear with respect to the upstream SVN repository and allow the use of the preferred \fIgit svn dcommit\fR subcommand to push unintegrated commits back into SVN\&.
 .sp
-If you use git svn set\-tree A\&.\&.B to commit several diffs and you do not have the latest remotes/git\-svn merged into my\-branch, you should use git svn rebase to update your work branch instead of git pull or git merge\&. pull/merge can cause non\-linear history to be flattened when committing into SVN, which can lead to merge commits reversing previous commits in SVN\&.
+Originally, \fIgit svn\fR recommended that developers pulled or merged from the \fIgit svn\fR branch\&. This was because the author favored git svn set\-tree B to commit a single head rather than the git svn set\-tree A\&.\&.B notation to commit multiple commits\&. Use of \fIgit pull\fR or \fIgit merge\fR with git svn set\-tree A\&.\&.B will cause non\-linear history to be flattened when committing into SVN and this can lead to merge commits unexpectedly reversing previous commits in SVN\&.
 .SH "MERGE TRACKING"
 .sp
 While \fIgit svn\fR can track copy history (including branches and tags) for repositories adopting a standard layout, it cannot yet represent merge history that happened inside git back upstream to SVN users\&. Therefore it is advised that users keep history as linear as possible inside git to ease compatibility with SVN (see the CAVEATS section below)\&.
