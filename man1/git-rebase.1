@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/21/2012
+.\"      Date: 06/28/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.10.1.433.g34875f4
+.\"    Source: Git 1.7.11.1.104.ge7b44f1
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "06/21/2012" "Git 1\&.7\&.10\&.1\&.433\&.g34" "Git Manual"
+.TH "GIT\-REBASE" "1" "06/28/2012" "Git 1\&.7\&.11\&.1\&.104\&.ge7" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,9 +32,9 @@ git-rebase \- Forward\-port local commits to the updated upstream head
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit rebase\fR [\-i | \-\-interactive] [options] [\-\-onto <newbase>]
+\fIgit rebase\fR [\-i | \-\-interactive] [options] [\-\-exec <cmd>] [\-\-onto <newbase>]
         [<upstream>] [<branch>]
-\fIgit rebase\fR [\-i | \-\-interactive] [options] \-\-onto <newbase>
+\fIgit rebase\fR [\-i | \-\-interactive] [options] [\-\-exec <cmd>] \-\-onto <newbase>
         \-\-root [<branch>]
 \fIgit rebase\fR \-\-continue | \-\-skip | \-\-abort
 .fi
@@ -314,7 +314,7 @@ option by default\&.
 .RE
 .SH "OPTIONS"
 .PP
-<newbase>
+\-\-onto <newbase>
 .RS 4
 Starting point at which to create the new commits\&. If the \-\-onto option is not specified, the starting point is <upstream>\&. May be any valid commit, and not just an existing branch name\&.
 .sp
@@ -467,6 +467,46 @@ This uses the
 machinery internally, but combining it with the
 \-\-interactive
 option explicitly is generally not a good idea unless you know what you are doing (see BUGS below)\&.
+.RE
+.PP
+\-x <cmd>, \-\-exec <cmd>
+.RS 4
+Append "exec <cmd>" after each line creating a commit in the final history\&. <cmd> will be interpreted as one or more shell commands\&.
+.sp
+This option can only be used with the
+\-\-interactive
+option (see INTERACTIVE MODE below)\&.
+.sp
+You may execute several commands by either using one instance of
+\-\-exec
+with several commands:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rebase \-i \-\-exec "cmd1 && cmd2 && \&.\&.\&."
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+or by giving more than one
+\-\-exec:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rebase \-i \-\-exec "cmd1" \-\-exec "cmd2" \-\-exec \&.\&.\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+If
+\-\-autosquash
+is used, "exec" lines will not be appended for the intermediate commits, and will only appear at the end of each squash/fixup series\&.
 .RE
 .PP
 \-\-root
@@ -873,6 +913,37 @@ exec cd subdir; make test
 The interactive rebase will stop when a command fails (i\&.e\&. exits with non\-0 status) to give you an opportunity to fix the problem\&. You can continue with git rebase \-\-continue\&.
 .sp
 The "exec" command launches the command in a shell (the one specified in $SHELL, or the default shell if $SHELL is not set), so you can use shell features (like "cd", ">", ";" \&...)\&. The command is run from the root of the working tree\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git rebase \-i \-\-exec "make test"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+This command lets you check that intermediate commits are compilable\&. The todo list becomes like that:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+pick 5928aea one
+exec make test
+pick 04d0fda two
+exec make test
+pick ba46169 three
+exec make test
+pick f4593f9 four
+exec make test
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "SPLITTING COMMITS"
 .sp
 In interactive mode, you can mark commits with the action "edit"\&. However, this does not necessarily mean that \fIgit rebase\fR expects the result of this edit to be exactly one commit\&. Indeed, you can undo the commit, or you can add other commits\&. This can be used to split a commit into two:
