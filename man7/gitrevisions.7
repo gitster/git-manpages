@@ -2,12 +2,12 @@
 .\"     Title: gitrevisions
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/21/2012
+.\"      Date: 07/25/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.10
+.\"    Source: Git 1.7.12.rc0.22.gcdd159b
 .\"  Language: English
 .\"
-.TH "GITREVISIONS" "7" "06/21/2012" "Git 1\&.7\&.10" "Git Manual"
+.TH "GITREVISIONS" "7" "07/25/2012" "Git 1\&.7\&.12\&.rc0\&.22\&.gc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -64,7 +64,7 @@ and
 \fItags/master\fR, you can explicitly say
 \fIheads/master\fR
 to tell git which one you mean\&. When ambiguous, a
-\fI<name>\fR
+\fI<refname>\fR
 is disambiguated by taking the first match in the following rules:
 .sp
 .RS 4
@@ -76,7 +76,7 @@ is disambiguated by taking the first match in the following rules:
 .IP "  1." 4.2
 .\}
 If
-\fI$GIT_DIR/<name>\fR
+\fI$GIT_DIR/<refname>\fR
 exists, that is what you mean (this is usually useful only for
 \fIHEAD\fR,
 \fIFETCH_HEAD\fR,
@@ -95,7 +95,7 @@ and
 .IP "  2." 4.2
 .\}
 otherwise,
-\fIrefs/<name>\fR
+\fIrefs/<refname>\fR
 if it exists;
 .RE
 .sp
@@ -121,7 +121,7 @@ if it exists;
 .IP "  4." 4.2
 .\}
 otherwise,
-\fIrefs/heads/<name>\fR
+\fIrefs/heads/<refname>\fR
 if it exists;
 .RE
 .sp
@@ -134,7 +134,7 @@ if it exists;
 .IP "  5." 4.2
 .\}
 otherwise,
-\fIrefs/remotes/<name>\fR
+\fIrefs/remotes/<refname>\fR
 if it exists;
 .RE
 .sp
@@ -147,7 +147,7 @@ if it exists;
 .IP "  6." 4.2
 .\}
 otherwise,
-\fIrefs/remotes/<name>/HEAD\fR
+\fIrefs/remotes/<refname>/HEAD\fR
 if it exists\&.
 .sp
 \fIHEAD\fR
@@ -376,6 +376,48 @@ A similar notation \fIr1\&.\&.\&.r2\fR is called symmetric difference of \fIr1\f
 .sp
 Two other shorthands for naming a set that is formed by a commit and its parent commits exist\&. The \fIr1^@\fR notation means all parents of \fIr1\fR\&. \fIr1^!\fR includes commit \fIr1\fR but excludes all of its parents\&.
 .sp
+To summarize:
+.PP
+\fI<rev>\fR
+.RS 4
+Include commits that are reachable from (i\&.e\&. ancestors of) <rev>\&.
+.RE
+.PP
+\fI^<rev>\fR
+.RS 4
+Exclude commits that are reachable from (i\&.e\&. ancestors of) <rev>\&.
+.RE
+.PP
+\fI<rev1>\&.\&.<rev2>\fR
+.RS 4
+Include commits that are reachable from <rev2> but exclude those that are reachable from <rev1>\&.
+.RE
+.PP
+\fI<rev1>\&.\&.\&.<rev2>\fR
+.RS 4
+Include commits that are reachable from either <rev1> or <rev2> but exclude those that are reachable from both\&.
+.RE
+.PP
+\fI<rev>^@\fR, e\&.g\&. \fIHEAD^@\fR
+.RS 4
+A suffix
+\fI^\fR
+followed by an at sign is the same as listing all parents of
+\fI<rev>\fR
+(meaning, include anything reachable from its parents, but not the commit itself)\&.
+.RE
+.PP
+\fI<rev>^!\fR, e\&.g\&. \fIHEAD^!\fR
+.RS 4
+A suffix
+\fI^\fR
+followed by an exclamation mark is the same as giving commit
+\fI<rev>\fR
+and then all its parents prefixed with
+\fI^\fR
+to exclude them (and their ancestors)\&.
+.RE
+.sp
 Here are a handful of examples:
 .sp
 .if n \{\
@@ -386,9 +428,12 @@ D                G H D
 D F              G H I J D F
 ^G D             H D
 ^D B             E I J F B
+B\&.\&.C             C
 B\&.\&.\&.C            G H D E B C
 ^D B C           E I J F B C
+C                I J F C
 C^@              I J F
+C^!              C
 F^! D            G H D F
 .fi
 .if n \{\
