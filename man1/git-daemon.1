@@ -2,12 +2,12 @@
 .\"     Title: git-daemon
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 08/27/2012
+.\"      Date: 09/04/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.7.12
+.\"    Source: Git 1.7.12.176.g3fc0e4c
 .\"  Language: English
 .\"
-.TH "GIT\-DAEMON" "1" "08/27/2012" "Git 1\&.7\&.12" "Git Manual"
+.TH "GIT\-DAEMON" "1" "09/04/2012" "Git 1\&.7\&.12\&.176\&.g3fc0e4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,6 +40,7 @@ git-daemon \- A really simple server for git repositories
              [\-\-reuseaddr] [\-\-detach] [\-\-pid\-file=<file>]
              [\-\-enable=<service>] [\-\-disable=<service>]
              [\-\-allow\-override=<service>] [\-\-forbid\-override=<service>]
+             [\-\-access\-hook=<path>]
              [\-\-inetd | [\-\-listen=<host_or_ipaddr>] [\-\-port=<n>] [\-\-user=<user> [\-\-group=<group>]]
              [<directory>\&...]
 .fi
@@ -204,6 +205,13 @@ Allow/forbid overriding the site\-wide default with per repository configuration
 \-\-informative\-errors, \-\-no\-informative\-errors
 .RS 4
 When informative errors are turned on, git\-daemon will report more verbose errors to the client, differentiating conditions like "no such repository" from "repository not exported"\&. This is more convenient for clients, but may leak information about the existence of unexported repositories\&. When informative errors are not enabled, all errors report "access denied" to the client\&. The default is \-\-no\-informative\-errors\&.
+.RE
+.PP
+\-\-access\-hook=<path>
+.RS 4
+Every time a client connects, first run an external command specified by the <path> with service name (e\&.g\&. "upload\-pack"), path to the repository, hostname (%H), canonical hostname (%CH), ip address (%IP), and tcp port (%P) as its command line arguments\&. The external command can decide to decline the service by exiting with a non\-zero status (or to allow it by exiting with a zero status)\&. It can also look at the $REMOTE_ADDR and $REMOTE_PORT environment variables to learn about the requestor when making this decision\&.
+.sp
+The external command can optionally write a single line to its standard output to be sent to the requestor as an error message when it declines the service\&.
 .RE
 .PP
 <directory>
