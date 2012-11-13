@@ -2,12 +2,12 @@
 .\"     Title: git-remote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 10/21/2012
+.\"      Date: 11/13/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.0
+.\"    Source: Git 1.8.0.150.gb0b00a3
 .\"  Language: English
 .\"
-.TH "GIT\-REMOTE\-HELPERS" "1" "10/21/2012" "Git 1\&.8\&.0" "Git Manual"
+.TH "GIT\-REMOTE\-HELPERS" "1" "11/13/2012" "Git 1\&.8\&.0\&.150\&.gb0b00a3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -99,6 +99,19 @@ This capability can be advertised multiple times\&. The first applicable refspec
 \fIrefspec\fR
 capability is advertised, there is an implied
 refspec *:*\&.
+.RE
+.PP
+\fIbidi\-import\fR
+.RS 4
+The fast\-import commands
+\fIcat\-blob\fR
+and
+\fIls\fR
+can be used by remote\-helpers to retrieve information about blobs and trees that already exist in fast\-import\(cqs memory\&. This requires a channel from fast\-import to the remote\-helper\&. If it is advertised in addition to "import", git establishes a pipe from fast\-import to the remote\-helper\(cqs stdin\&. It follows that git and fast\-import are both connected to the remote\-helper\(cqs stdin\&. Because git can send multiple commands to the remote\-helper it is required that helpers that use
+\fIbidi\-import\fR
+buffer all
+\fIimport\fR
+commands of a batch before sending data to fast\-import\&. This is to prevent mixing commands and fast\-import responses on the helper\(cqs stdin\&.
 .RE
 .SS "Capabilities for Pushing"
 .PP
@@ -292,7 +305,13 @@ is terminated with a blank line\&. For each batch of
 \fIdone\fR
 command\&.
 .sp
-Supported if the helper has the "import" capability\&.
+Note that if the
+\fIbidi\-import\fR
+capability is used the complete batch sequence has to be buffered before starting to send data to fast\-import to prevent mixing of commands and fast\-import responses on the helper\(cqs stdin\&.
+.sp
+Supported if the helper has the
+\fIimport\fR
+capability\&.
 .RE
 .PP
 \fIconnect\fR <service>
