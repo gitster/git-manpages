@@ -2,12 +2,12 @@
 .\"     Title: git-remote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 11/13/2012
+.\"      Date: 12/13/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.0.150.gb0b00a3
+.\"    Source: Git 1.8.1.rc1.30.g790c83c
 .\"  Language: English
 .\"
-.TH "GIT\-REMOTE\-HELPERS" "1" "11/13/2012" "Git 1\&.8\&.0\&.150\&.gb0b00a3" "Git Manual"
+.TH "GIT\-REMOTE\-HELPERS" "1" "12/13/2012" "Git 1\&.8\&.1\&.rc1\&.30\&.g79" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,6 +42,15 @@ Remote helper programs are normally not used directly by end users, but they are
 Every helper must support the "capabilities" command, which git uses to determine what other commands the helper will accept\&. Those other commands can be used to discover and update remote refs, transport objects between the object database and the remote repository, and update the local object store\&.
 .sp
 Git comes with a "curl" family of remote helpers, that handle various transport protocols, such as \fIgit\-remote\-http\fR, \fIgit\-remote\-https\fR, \fIgit\-remote\-ftp\fR and \fIgit\-remote\-ftps\fR\&. They implement the capabilities \fIfetch\fR, \fIoption\fR, and \fIpush\fR\&.
+.SH "INVOCATION"
+.sp
+Remote helper programs are invoked with one or (optionally) two arguments\&. The first argument specifies a remote repository as in git; it is either the name of a configured remote or a URL\&. The second argument specifies a URL; it is usually of the form \fI<transport>://<address>\fR, but any arbitrary string is possible\&. The \fIGIT_DIR\fR environment variable is set up for the remote helper and can be used to determine where to store additional data or from which directory to invoke auxiliary git commands\&.
+.sp
+When git encounters a URL of the form \fI<transport>://<address>\fR, where \fI<transport>\fR is a protocol that it cannot handle natively, it automatically invokes \fIgit remote\-<transport>\fR with the full URL as the second argument\&. If such a URL is encountered directly on the command line, the first argument is the same as the second, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
+.sp
+A URL of the form \fI<transport>::<address>\fR explicitly instructs git to invoke \fIgit remote\-<transport>\fR with \fI<address>\fR as the second argument\&. If such a URL is encountered directly on the command line, the first argument is \fI<address>\fR, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
+.sp
+Additionally, when a configured remote has \fIremote\&.<name>\&.vcs\fR set to \fI<transport>\fR, git explicitly invokes \fIgit remote\-<transport>\fR with \fI<name>\fR as the first argument\&. If set, the second argument is \fIremote\&.<name>\&.url\fR; otherwise, the second argument is omitted\&.
 .SH "INPUT FORMAT"
 .sp
 Git sends the remote helper a list of commands on standard input, one per line\&. The first command is always the \fIcapabilities\fR command, in response to which the remote helper must print a list of the capabilities it supports (see below) followed by a blank line\&. The response to the capabilities command determines what commands Git uses in the remainder of the command stream\&.
@@ -50,6 +59,96 @@ The command stream is terminated by a blank line\&. In some cases (indicated in 
 .SS "Capabilities"
 .sp
 Each remote helper is expected to support only a subset of commands\&. The operations a helper supports are declared to git in the response to the capabilities command (see COMMANDS, below)\&.
+.sp
+In the following, we list all defined capabilities and for each we list which commands a helper with that capability must provide\&.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBCapabilities for Pushing\fR
+.RS 4
+.PP
+\fIconnect\fR
+.RS 4
+Can attempt to connect to
+\fIgit receive\-pack\fR
+(for pushing),
+\fIgit upload\-pack\fR, etc for communication using git\(cqs native packfile protocol\&. This requires a bidirectional, full\-duplex connection\&.
+.sp
+Supported commands:
+\fIconnect\fR\&.
+.RE
+.PP
+\fIpush\fR
+.RS 4
+Can discover remote refs and push local commits and the history leading up to them to new or existing remote refs\&.
+.sp
+Supported commands:
+\fIlist for\-push\fR,
+\fIpush\fR\&.
+.RE
+.PP
+\fIexport\fR
+.RS 4
+Can discover remote refs and push specified objects from a fast\-import stream to remote refs\&.
+.sp
+Supported commands:
+\fIlist for\-push\fR,
+\fIexport\fR\&.
+.RE
+.sp
+If a helper advertises \fIconnect\fR, git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIpush\fR and \fIexport\fR, git prefers \fIpush\fR\&. Other frontends may have some other order of preference\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBCapabilities for Fetching\fR
+.RS 4
+.PP
+\fIconnect\fR
+.RS 4
+Can try to connect to
+\fIgit upload\-pack\fR
+(for fetching),
+\fIgit receive\-pack\fR, etc for communication using the git\(cqs native packfile protocol\&. This requires a bidirectional, full\-duplex connection\&.
+.sp
+Supported commands:
+\fIconnect\fR\&.
+.RE
+.PP
+\fIfetch\fR
+.RS 4
+Can discover remote refs and transfer objects reachable from them to the local object store\&.
+.sp
+Supported commands:
+\fIlist\fR,
+\fIfetch\fR\&.
+.RE
+.PP
+\fIimport\fR
+.RS 4
+Can discover remote refs and output objects reachable from them as a stream in fast\-import format\&.
+.sp
+Supported commands:
+\fIlist\fR,
+\fIimport\fR\&.
+.RE
+.sp
+If a helper advertises \fIconnect\fR, git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIfetch\fR and \fIimport\fR, git prefers \fIfetch\fR\&. Other frontends may have some other order of preference\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBMiscellaneous capabilities\fR
+.RS 4
 .PP
 \fIoption\fR
 .RS 4
@@ -58,26 +157,6 @@ verbosity
 (how much output to write to stderr) and
 depth
 (how much history is wanted in the case of a shallow clone) that affect how other commands are carried out\&.
-.RE
-.PP
-\fIconnect\fR
-.RS 4
-For fetching and pushing using git\(cqs native packfile protocol that requires a bidirectional, full\-duplex connection\&.
-.RE
-.PP
-\fIpush\fR
-.RS 4
-For listing remote refs and pushing specified objects from the local object store to remote refs\&.
-.RE
-.PP
-\fIfetch\fR
-.RS 4
-For listing remote refs and fetching the associated history to the local object store\&.
-.RE
-.PP
-\fIimport\fR
-.RS 4
-For listing remote refs and fetching the associated history as a fast\-import stream\&.
 .RE
 .PP
 \fIrefspec\fR <refspec>
@@ -103,7 +182,9 @@ refspec *:*\&.
 .PP
 \fIbidi\-import\fR
 .RS 4
-The fast\-import commands
+This modifies the
+\fIimport\fR
+capability\&. The fast\-import commands
 \fIcat\-blob\fR
 and
 \fIls\fR
@@ -113,89 +194,27 @@ buffer all
 \fIimport\fR
 commands of a batch before sending data to fast\-import\&. This is to prevent mixing commands and fast\-import responses on the helper\(cqs stdin\&.
 .RE
-.SS "Capabilities for Pushing"
 .PP
-\fIconnect\fR
-.RS 4
-Can attempt to connect to
-\fIgit receive\-pack\fR
-(for pushing),
-\fIgit upload\-pack\fR, etc for communication using the packfile protocol\&.
-.sp
-Supported commands:
-\fIconnect\fR\&.
-.RE
-.PP
-\fIpush\fR
-.RS 4
-Can discover remote refs and push local commits and the history leading up to them to new or existing remote refs\&.
-.sp
-Supported commands:
-\fIlist for\-push\fR,
-\fIpush\fR\&.
-.RE
-.sp
-If a helper advertises both \fIconnect\fR and \fIpush\fR, git will use \fIconnect\fR if possible and fall back to \fIpush\fR if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&.
-.SS "Capabilities for Fetching"
-.PP
-\fIconnect\fR
-.RS 4
-Can try to connect to
-\fIgit upload\-pack\fR
-(for fetching),
-\fIgit receive\-pack\fR, etc for communication using the packfile protocol\&.
-.sp
-Supported commands:
-\fIconnect\fR\&.
-.RE
-.PP
-\fIfetch\fR
-.RS 4
-Can discover remote refs and transfer objects reachable from them to the local object store\&.
-.sp
-Supported commands:
-\fIlist\fR,
-\fIfetch\fR\&.
-.RE
-.PP
-\fIimport\fR
-.RS 4
-Can discover remote refs and output objects reachable from them as a stream in fast\-import format\&.
-.sp
-Supported commands:
-\fIlist\fR,
-\fIimport\fR\&.
-.RE
-.sp
-If a helper advertises \fIconnect\fR, git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIfetch\fR and \fIimport\fR, git prefers \fIfetch\fR\&. Other frontends may have some other order of preference\&.
-.PP
-\fIrefspec\fR <refspec>
+\fIexport\-marks\fR <file>
 .RS 4
 This modifies the
-\fIimport\fR
-capability\&.
-.sp
-A helper advertising
-refspec refs/heads/*:refs/svn/origin/branches/*
-in its capabilities is saying that, when it handles
-import refs/heads/topic, the stream it outputs will update the
-refs/svn/origin/branches/topic
-ref\&.
-.sp
-This capability can be advertised multiple times\&. The first applicable refspec takes precedence\&. The left\-hand of refspecs advertised with this capability must cover all refs reported by the list command\&. If no
-\fIrefspec\fR
-capability is advertised, there is an implied
-refspec *:*\&.
+\fIexport\fR
+capability, instructing git to dump the internal marks table to <file> when complete\&. For details, read up on
+\fI\-\-export\-marks=<file>\fR
+in
+\fBgit-fast-export\fR(1)\&.
 .RE
-.SH "INVOCATION"
-.sp
-Remote helper programs are invoked with one or (optionally) two arguments\&. The first argument specifies a remote repository as in git; it is either the name of a configured remote or a URL\&. The second argument specifies a URL; it is usually of the form \fI<transport>://<address>\fR, but any arbitrary string is possible\&. The \fIGIT_DIR\fR environment variable is set up for the remote helper and can be used to determine where to store additional data or from which directory to invoke auxiliary git commands\&.
-.sp
-When git encounters a URL of the form \fI<transport>://<address>\fR, where \fI<transport>\fR is a protocol that it cannot handle natively, it automatically invokes \fIgit remote\-<transport>\fR with the full URL as the second argument\&. If such a URL is encountered directly on the command line, the first argument is the same as the second, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
-.sp
-A URL of the form \fI<transport>::<address>\fR explicitly instructs git to invoke \fIgit remote\-<transport>\fR with \fI<address>\fR as the second argument\&. If such a URL is encountered directly on the command line, the first argument is \fI<address>\fR, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
-.sp
-Additionally, when a configured remote has \fIremote\&.<name>\&.vcs\fR set to \fI<transport>\fR, git explicitly invokes \fIgit remote\-<transport>\fR with \fI<name>\fR as the first argument\&. If set, the second argument is \fIremote\&.<name>\&.url\fR; otherwise, the second argument is omitted\&.
+.PP
+\fIimport\-marks\fR <file>
+.RS 4
+This modifies the
+\fIexport\fR
+capability, instructing git to load the marks specified in <file> before processing any input\&. For details, read up on
+\fI\-\-import\-marks=<file>\fR
+in
+\fBgit-fast-export\fR(1)\&.
+.RE
+.RE
 .SH "COMMANDS"
 .sp
 Commands are given by the caller on the helper\(cqs standard input, one per line\&.
@@ -203,20 +222,28 @@ Commands are given by the caller on the helper\(cqs standard input, one per line
 \fIcapabilities\fR
 .RS 4
 Lists the capabilities of the helper, one per line, ending with a blank line\&. Each capability may be preceded with
-\fI*\fR, which marks them mandatory for git version using the remote helper to understand (unknown mandatory capability is fatal error)\&.
+\fI*\fR, which marks them mandatory for git versions using the remote helper to understand\&. Any unknown mandatory capability is a fatal error\&.
+.sp
+Support for this command is mandatory\&.
 .RE
 .PP
 \fIlist\fR
 .RS 4
 Lists the refs, one per line, in the format "<value> <name> [<attr> \&...]"\&. The value may be a hex sha1 hash, "@<dest>" for a symref, or "?" to indicate that the helper could not get the value of the ref\&. A space\-separated list of attributes follows the name; unrecognized attributes are ignored\&. The list ends with a blank line\&.
 .sp
-If
-\fIpush\fR
-is supported this may be called as
+See REF LIST ATTRIBUTES for a list of currently defined attributes\&.
+.sp
+Supported if the helper has the "fetch" or "import" capability\&.
+.RE
+.PP
 \fIlist for\-push\fR
-to obtain the current refs prior to sending one or more
-\fIpush\fR
-commands to the helper\&.
+.RS 4
+Similar to
+\fIlist\fR, except that it is used if and only if the caller wants to the resulting ref list to prepare push commands\&. A helper supporting both push and fetch can use this to distinguish for which operation the output of
+\fIlist\fR
+is going to be used, possibly reducing the amount of work that needs to be performed\&.
+.sp
+Supported if the helper has the "push" or "export" capability\&.
 .RE
 .PP
 \fIoption\fR <name> <value>
@@ -229,12 +256,16 @@ Sets the transport helper option <name> to <value>\&. Outputs a single line cont
 \fIerror <msg>\fR
 (option <name> is supported but <value> is not valid for it)\&. Options should be set before other commands, and may influence the behavior of those commands\&.
 .sp
+See OPTIONS for a list of currently defined options\&.
+.sp
 Supported if the helper has the "option" capability\&.
 .RE
 .PP
 \fIfetch\fR <sha1> <name>
 .RS 4
-Fetches the given object, writing the necessary objects to the database\&. Fetch commands are sent in a batch, one per line, terminated with a blank line\&. Outputs a single blank line when all fetch commands in the same batch are complete\&. Only objects which were reported in the ref list with a sha1 may be fetched this way\&.
+Fetches the given object, writing the necessary objects to the database\&. Fetch commands are sent in a batch, one per line, terminated with a blank line\&. Outputs a single blank line when all fetch commands in the same batch are complete\&. Only objects which were reported in the output of
+\fIlist\fR
+with a sha1 may be fetched this way\&.
 .sp
 Optionally may output a
 \fIlock <file>\fR
@@ -309,9 +340,24 @@ Note that if the
 \fIbidi\-import\fR
 capability is used the complete batch sequence has to be buffered before starting to send data to fast\-import to prevent mixing of commands and fast\-import responses on the helper\(cqs stdin\&.
 .sp
-Supported if the helper has the
-\fIimport\fR
-capability\&.
+Supported if the helper has the "import" capability\&.
+.RE
+.PP
+\fIexport\fR
+.RS 4
+Instructs the remote helper that any subsequent input is part of a fast\-import stream (generated by
+\fIgit fast\-export\fR) containing objects which should be pushed to the remote\&.
+.sp
+Especially useful for interoperability with a foreign versioning system\&.
+.sp
+The
+\fIexport\-marks\fR
+and
+\fIimport\-marks\fR
+capabilities, if specified, affect this command in so far as they are passed on to
+\fIgit fast\-export\fR, which then will load/store a table of marks for local objects\&. This can be used to implement for incremental operations\&.
+.sp
+Supported if the helper has the "export" capability\&.
 .RE
 .PP
 \fIconnect\fR <service>
@@ -329,17 +375,16 @@ If a fatal error occurs, the program writes the error message to stderr and exit
 .sp
 Additional commands may be supported, as may be determined from capabilities reported by the helper\&.
 .SH "REF LIST ATTRIBUTES"
-.PP
-\fIfor\-push\fR
-.RS 4
-The caller wants to use the ref list to prepare push commands\&. A helper might chose to acquire the ref list by opening a different type of connection to the destination\&.
-.RE
+.sp
+The \fIlist\fR command produces a list of refs in which each ref may be followed by a list of attributes\&. The following ref list attributes are defined\&.
 .PP
 \fIunchanged\fR
 .RS 4
 This ref is unchanged since the last import or fetch, although the helper cannot necessarily determine what value that produced\&.
 .RE
 .SH "OPTIONS"
+.sp
+The following options are defined and (under suitable circumstances) set by git if the remote helper has the \fIoption\fR capability\&.
 .PP
 \fIoption verbosity\fR <n>
 .RS 4
