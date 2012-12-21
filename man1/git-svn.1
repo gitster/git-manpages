@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/18/2012
+.\"      Date: 12/21/2012
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.1.rc2.5.g252f922
+.\"    Source: Git 1.8.1.rc2.38.gb10c4ad
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "12/18/2012" "Git 1\&.8\&.1\&.rc2\&.5\&.g252" "Git Manual"
+.TH "GIT\-SVN" "1" "12/21/2012" "Git 1\&.8\&.1\&.rc2\&.38\&.gb1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -911,7 +911,9 @@ Specify the [svn\-remote "<remote name>"] section to use, this allows SVN multip
 .PP
 \-\-follow\-parent
 .RS 4
-This is especially helpful when we\(cqre tracking a directory that has been moved around within the repository, or if we started tracking a branch and never tracked the trunk it was descended from\&. This feature is enabled by default, use \-\-no\-follow\-parent to disable it\&.
+This option is only relevant if we are tracking branches (using one of the repository layout options \-\-trunk, \-\-tags, \-\-branches, \-\-stdlayout)\&. For each tracked branch, try to find out where its revision was copied from, and set a suitable parent in the first git commit for the branch\&. This is especially helpful when we\(cqre tracking a directory that has been moved around within the repository\&. If this feature is disabled, the branches created by
+\fIgit svn\fR
+will all be linear and not share any history, meaning that there will be no information on where branches were branched off or merged\&. However, following long/convoluted histories can take a long time, so disabling this feature may speed up the cloning process\&. This feature is enabled by default, use \-\-no\-follow\-parent to disable it\&.
 .sp
 .if n \{\
 .RS 4
@@ -1019,7 +1021,7 @@ Since the noMetadata, rewriteRoot, rewriteUUID, useSvnsyncProps and useSvmProps 
 Additionally, only one of these options can be used per svn\-remote section because they affect the \fIgit\-svn\-id:\fR metadata line, except for rewriteRoot and rewriteUUID which can be used together\&.
 .SH "BASIC EXAMPLES"
 .sp
-Tracking and contributing to the trunk of a Subversion\-managed project:
+Tracking and contributing to the trunk of a Subversion\-managed project (ignoring tags and branches):
 .sp
 .if n \{\
 .RS 4
@@ -1053,8 +1055,10 @@ Tracking and contributing to an entire Subversion\-managed project (complete wit
 .RS 4
 .\}
 .nf
-# Clone a repo (like git clone):
-        git svn clone http://svn\&.example\&.com/project \-T trunk \-b branches \-t tags
+# Clone a repo with standard SVN directory layout (like git clone):
+        git svn clone http://svn\&.example\&.com/project \-\-stdlayout
+# Or, if the repo uses a non\-standard directory layout:
+        git svn clone http://svn\&.example\&.com/project \-T tr \-b branch \-t tag
 # View all branches and tags you have cloned:
         git branch \-r
 # Create a new branch in SVN
@@ -1107,6 +1111,17 @@ Originally, \fIgit svn\fR recommended that developers pulled or merged from the 
 .SH "MERGE TRACKING"
 .sp
 While \fIgit svn\fR can track copy history (including branches and tags) for repositories adopting a standard layout, it cannot yet represent merge history that happened inside git back upstream to SVN users\&. Therefore it is advised that users keep history as linear as possible inside git to ease compatibility with SVN (see the CAVEATS section below)\&.
+.SH "HANDLING OF SVN BRANCHES"
+.sp
+If \fIgit svn\fR is configured to fetch branches (and \-\-follow\-branches is in effect), it sometimes creates multiple git branches for one SVN branch, where the addtional branches have names of the form \fIbranchname@nnn\fR (with nnn an SVN revision number)\&. These additional branches are created if \fIgit svn\fR cannot find a parent commit for the first commit in an SVN branch, to connect the branch to the history of the other branches\&.
+.sp
+Normally, the first commit in an SVN branch consists of a copy operation\&. \fIgit svn\fR will read this commit to get the SVN revision the branch was created from\&. It will then try to find the git commit that corresponds to this SVN revision, and use that as the parent of the branch\&. However, it is possible that there is no suitable git commit to serve as parent\&. This will happen, among other reasons, if the SVN branch is a copy of a revision that was not fetched by \fIgit svn\fR (e\&.g\&. because it is an old revision that was skipped with \fI\-\-revision\fR), or if in SVN a directory was copied that is not tracked by \fIgit svn\fR (such as a branch that is not tracked at all, or a subdirectory of a tracked branch)\&. In these cases, \fIgit svn\fR will still create a git branch, but instead of using an existing git commit as the parent of the branch, it will read the SVN history of the directory the branch was copied from and create appropriate git commits\&. This is indicated by the message "Initializing parent: <branchname>"\&.
+.sp
+Additionally, it will create a special branch named \fI<branchname>@<SVN\-Revision>\fR, where <SVN\-Revision> is the SVN revision number the branch was copied from\&. This branch will point to the newly created parent commit of the branch\&. If in SVN the branch was deleted and later recreated from a different version, there will be multiple such branches with an \fI@\fR\&.
+.sp
+Note that this may mean that multiple git commits are created for a single SVN revision\&.
+.sp
+An example: in an SVN repository with a standard trunk/tags/branches layout, a directory trunk/sub is created in r\&.100\&. In r\&.200, trunk/sub is branched by copying it to branches/\&. \fIgit svn clone \-s\fR will then create a branch \fIsub\fR\&. It will also create new git commits for r\&.100 through r\&.199 and use these as the history of branch \fIsub\fR\&. Thus there will be two git commits for each revision from r\&.100 to r\&.199 (one containing trunk/, one containing trunk/sub/)\&. Finally, it will create a branch \fIsub@200\fR pointing to the new parent commit of branch \fIsub\fR (i\&.e\&. the commit for r\&.200 and trunk/sub/)\&.
 .SH "CAVEATS"
 .sp
 For the sake of simplicity and interoperating with Subversion, it is recommended that all \fIgit svn\fR users clone, fetch and dcommit directly from the SVN server, and avoid all \fIgit clone\fR/\fIpull\fR/\fImerge\fR/\fIpush\fR operations between git repositories and branches\&. The recommended method of exchanging code between git branches and users is \fIgit format\-patch\fR and \fIgit am\fR, or just \(aqdcommit\(cqing to the SVN repository\&.
@@ -1134,6 +1149,8 @@ Since \fIdcommit\fR uses rebase internally, any git branches you \fIgit push\fR 
 .sp
 Do not use the \-\-amend option of \fBgit-commit\fR(1) on a change you\(cqve already dcommitted\&. It is considered bad practice to \-\-amend commits you\(cqve already pushed to a remote repository for other users, and dcommit with SVN is analogous to that\&.
 .sp
+When cloning an SVN repository, if none of the options for describing the repository layout is used (\-\-trunk, \-\-tags, \-\-branches, \-\-stdlayout), \fIgit svn clone\fR will create a git repository with completely linear history, where branches and tags appear as separate directories in the working copy\&. While this is the easiest way to get a copy of a complete repository, for projects with many branches it will lead to a working copy many times larger than just the trunk\&. Thus for projects using the standard directory structure (trunk/branches/tags), it is recommended to clone with option \fI\-\-stdlayout\fR\&. If the project uses a non\-standard structure, and/or if branches and tags are not required, it is easiest to only clone one directory (typically trunk), without giving any repository layout options\&. If the full history with branches and tags is required, the options \fI\-\-trunk\fR / \fI\-\-branches\fR / \fI\-\-tags\fR must be used\&.
+.sp
 When using multiple \-\-branches or \-\-tags, \fIgit svn\fR does not automatically handle name collisions (for example, if two branches from different paths have the same name, or if a branch and a tag have the same name)\&. In these cases, use \fIinit\fR to set up your git repository then, before your first \fIfetch\fR, edit the \&.git/config file so that the branches and tags are associated with different name spaces\&. For example:
 .sp
 .if n \{\
@@ -1151,6 +1168,8 @@ branches = debug/*:refs/remotes/svn/debug/*
 We ignore all SVN properties except svn:executable\&. Any unhandled properties are logged to $GIT_DIR/svn/<refname>/unhandled\&.log
 .sp
 Renamed and copied directories are not detected by git and hence not tracked when committing to SVN\&. I do not plan on adding support for this as it\(cqs quite difficult and time\-consuming to get working for all the possible corner cases (git doesn\(cqt do it, either)\&. Committing renamed and copied files is fully supported if they\(cqre similar enough for git to detect them\&.
+.sp
+In SVN, it is possible (though discouraged) to commit changes to a tag (because a tag is just a directory copy, thus technically the same as a branch)\&. When cloning an SVN repository, \fIgit svn\fR cannot know if such a commit to a tag will happen in the future\&. Thus it acts conservatively and imports all SVN tags as branches, prefixing the tag name with \fItags/\fR\&.
 .SH "CONFIGURATION"
 .sp
 \fIgit svn\fR stores [svn\-remote] configuration information in the repository \&.git/config file\&. It is similar the core git [remote] sections except \fIfetch\fR keys do not accept glob arguments; but they are instead handled by the \fIbranches\fR and \fItags\fR keys\&. Since some SVN repositories are oddly configured with multiple projects glob expansions such those listed below are allowed:
