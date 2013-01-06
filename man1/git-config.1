@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/31/2012
+.\"      Date: 01/06/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.1
+.\"    Source: Git 1.8.1.151.g32238ae
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/31/2012" "Git 1\&.8\&.1" "Git Manual"
+.TH "GIT\-CONFIG" "1" "01/06/2013" "Git 1\&.8\&.1\&.151\&.g32238ae" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -682,14 +682,15 @@ variables default to
 \fItrue\fR, and you can tell Git that you do not need help by setting these to
 \fIfalse\fR:
 .PP
-pushNonFastForward
+pushUpdateRejected
 .RS 4
 Set this variable to
 \fIfalse\fR
 if you want to disable
 \fIpushNonFFCurrent\fR,
-\fIpushNonFFDefault\fR, and
-\fIpushNonFFMatching\fR
+\fIpushNonFFDefault\fR,
+\fIpushNonFFMatching\fR, and
+\fIpushAlreadyExists\fR
 simultaneously\&.
 .RE
 .PP
@@ -725,6 +726,13 @@ and pushed
 \fImatching refs\fR
 explicitly (i\&.e\&. you used
 \fI:\fR, or specified a refspec that isn\(cqt your current branch) and it resulted in a non\-fast\-forward error\&.
+.RE
+.PP
+pushAlreadyExists
+.RS 4
+Shown when
+\fBgit-push\fR(1)
+rejects an update that does not qualify for fast\-forwarding (e\&.g\&., a tag\&.)
 .RE
 .PP
 statusHints
@@ -2846,6 +2854,19 @@ and
 \fBgit-blame\fR(1)\&.
 .RE
 .PP
+mailmap\&.blob
+.RS 4
+Like
+mailmap\&.file, but consider the value as a reference to a blob in the repository\&. If both
+mailmap\&.file
+and
+mailmap\&.blob
+are given, both are parsed, with entries from
+mailmap\&.file
+taking precedence\&. In a bare repository, this defaults to
+HEAD:\&.mailmap\&. In a non\-bare repository, it defaults to empty\&.
+.RE
+.PP
 man\&.viewer
 .RS 4
 Specify the programs that may be used to display help in the
@@ -3565,6 +3586,18 @@ submodule\&.<name>\&.path, submodule\&.<name>\&.url, submodule\&.<name>\&.update
 .RS 4
 The path within this project, URL, and the updating strategy for a submodule\&. These variables are initially populated by
 \fIgit submodule init\fR; edit them to override the URL and other values found in the
+\&.gitmodules
+file\&. See
+\fBgit-submodule\fR(1)
+and
+\fBgitmodules\fR(5)
+for details\&.
+.RE
+.PP
+submodule\&.<name>\&.branch
+.RS 4
+The remote branch name for a submodule, used by
+git submodule update \-\-remote\&. Set this option to override the value found in the
 \&.gitmodules
 file\&. See
 \fBgit-submodule\fR(1)

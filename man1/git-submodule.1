@@ -2,12 +2,12 @@
 .\"     Title: git-submodule
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/31/2012
+.\"      Date: 01/06/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.1
+.\"    Source: Git 1.8.1.151.g32238ae
 .\"  Language: English
 .\"
-.TH "GIT\-SUBMODULE" "1" "12/31/2012" "Git 1\&.8\&.1" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "01/06/2013" "Git 1\&.8\&.1\&.151\&.g32238ae" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,7 +36,7 @@ git-submodule \- Initialize, update or inspect submodules
               [\-\-reference <repository>] [\-\-] <repository> [<path>]
 \fIgit submodule\fR [\-\-quiet] status [\-\-cached] [\-\-recursive] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
-\fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-N|\-\-no\-fetch] [\-\-rebase]
+\fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-\-remote] [\-N|\-\-no\-fetch] [\-\-rebase]
               [\-\-reference <repository>] [\-\-merge] [\-\-recursive] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] summary [\-\-cached|\-\-files] [(\-n|\-\-summary\-limit) <n>]
               [commit] [\-\-] [<path>\&...]
@@ -188,7 +188,12 @@ Only print error messages\&.
 .PP
 \-b, \-\-branch
 .RS 4
-Branch of repository to add as submodule\&.
+Branch of repository to add as submodule\&. The name of the branch is recorded as
+submodule\&.<path>\&.branch
+in
+\&.gitmodules
+for
+update \-\-remote\&.
 .RE
 .PP
 \-f, \-\-force
@@ -209,6 +214,33 @@ This option is only valid for the summary command\&. This command compares the c
 \-n, \-\-summary\-limit
 .RS 4
 This option is only valid for the summary command\&. Limit the summary size (number of commits shown in total)\&. Giving 0 will disable the summary; a negative number means unlimited (the default)\&. This limit only applies to modified submodules\&. The size is always limited to 1 for added/deleted/typechanged submodules\&.
+.RE
+.PP
+\-\-remote
+.RS 4
+This option is only valid for the update command\&. Instead of using the superproject\(cqs recorded SHA\-1 to update the submodule, use the status of the submodule\(cqs remote tracking branch\&. The remote used is branch\(cqs remote (branch\&.<name>\&.remote), defaulting to
+origin\&. The remote branch used defaults to
+master, but the branch name may be overridden by setting the
+submodule\&.<name>\&.branch
+option in either
+\&.gitmodules
+or
+\&.git/config
+(with
+\&.git/config
+taking precedence)\&.
+.sp
+This works for any of the supported update procedures (\-\-checkout,
+\-\-rebase, etc\&.)\&. The only change is the source of the target SHA\-1\&. For example,
+submodule update \-\-remote \-\-merge
+will merge upstream submodule changes into the submodules, while
+submodule update \-\-merge
+will merge superproject gitlink changes into the submodules\&.
+.sp
+In order to ensure a current tracking branch state,
+update \-\-remote
+fetches the submodule\(cqs remote repository before calculating the SHA\-1\&. If you don\(cqt want to fetch, you should use
+submodule update \-\-remote \-\-no\-fetch\&.
 .RE
 .PP
 \-N, \-\-no\-fetch
