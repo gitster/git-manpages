@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/08/2013
+.\"      Date: 01/12/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.1.191.g414c78c
+.\"    Source: Git 1.8.1.336.g94702dd
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "01/08/2013" "Git 1\&.8\&.1\&.191\&.g414c78c" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "01/12/2013" "Git 1\&.8\&.1\&.336\&.g94702dd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -44,6 +44,34 @@ fast\-import reads a mixed command/data stream from standard input and writes on
 The fast\-import backend itself can import into an empty repository (one that has already been initialized by \fIgit init\fR) or incrementally update an existing populated repository\&. Whether or not incremental imports are supported from a particular foreign source depends on the frontend program in use\&.
 .SH "OPTIONS"
 .PP
+\-\-force
+.RS 4
+Force updating modified existing branches, even if doing so would cause commits to be lost (as the new commit does not contain the old commit)\&.
+.RE
+.PP
+\-\-quiet
+.RS 4
+Disable all non\-fatal output, making fast\-import silent when it is successful\&. This option disables the output shown by \-\-stats\&.
+.RE
+.PP
+\-\-stats
+.RS 4
+Display some basic statistics about the objects fast\-import has created, the packfiles they were stored into, and the memory used by fast\-import during this run\&. Showing this output is currently the default, but can be disabled with \-\-quiet\&.
+.RE
+.SS "Options for Frontends"
+.PP
+\-\-cat\-blob\-fd=<fd>
+.RS 4
+Write responses to
+cat\-blob
+and
+ls
+queries to the file descriptor <fd> instead of
+stdout\&. Allows
+progress
+output intended for the end\-user to be separated from other output\&.
+.RE
+.PP
 \-\-date\-format=<fmt>
 .RS 4
 Specify the type of dates the frontend will supply to fast\-import within
@@ -54,30 +82,13 @@ tagger
 commands\&. See \(lqDate Formats\(rq below for details about which formats are supported, and their syntax\&.
 .RE
 .PP
-\-\-force
+\-\-done
 .RS 4
-Force updating modified existing branches, even if doing so would cause commits to be lost (as the new commit does not contain the old commit)\&.
+Terminate with error if there is no
+done
+command at the end of the stream\&. This option might be useful for detecting errors that cause the frontend to terminate before it has started to write a stream\&.
 .RE
-.PP
-\-\-max\-pack\-size=<n>
-.RS 4
-Maximum size of each output packfile\&. The default is unlimited\&.
-.RE
-.PP
-\-\-big\-file\-threshold=<n>
-.RS 4
-Maximum size of a blob that fast\-import will attempt to create a delta for, expressed in bytes\&. The default is 512m (512 MiB)\&. Some importers may wish to lower this on systems with constrained memory\&.
-.RE
-.PP
-\-\-depth=<n>
-.RS 4
-Maximum delta depth, for blob and tree deltification\&. Default is 10\&.
-.RE
-.PP
-\-\-active\-branches=<n>
-.RS 4
-Maximum number of branches to maintain active at once\&. See \(lqMemory Utilization\(rq below for details\&. Default is 5\&.
-.RE
+.SS "Locations of Marks Files"
 .PP
 \-\-export\-marks=<file>
 .RS 4
@@ -95,33 +106,27 @@ Before processing any input, load the marks specified in <file>\&. The input fil
 Like \-\-import\-marks but instead of erroring out, silently skips the file if it does not exist\&.
 .RE
 .PP
-\-\-relative\-marks
+\-\-[no\-]relative\-marks
 .RS 4
 After specifying \-\-relative\-marks the paths specified with \-\-import\-marks= and \-\-export\-marks= are relative to an internal directory in the current repository\&. In git\-fast\-import this means that the paths are relative to the \&.git/info/fast\-import directory\&. However, other importers may use a different location\&.
+.sp
+Relative and non\-relative marks may be combined by interweaving \-\-(no\-)\-relative\-marks with the \-\-(import|export)\-marks= options\&.
+.RE
+.SS "Performance and Compression Tuning"
+.PP
+\-\-active\-branches=<n>
+.RS 4
+Maximum number of branches to maintain active at once\&. See \(lqMemory Utilization\(rq below for details\&. Default is 5\&.
 .RE
 .PP
-\-\-no\-relative\-marks
+\-\-big\-file\-threshold=<n>
 .RS 4
-Negates a previous \-\-relative\-marks\&. Allows for combining relative and non\-relative marks by interweaving \-\-(no\-)\-relative\-marks with the \-\-(import|export)\-marks= options\&.
+Maximum size of a blob that fast\-import will attempt to create a delta for, expressed in bytes\&. The default is 512m (512 MiB)\&. Some importers may wish to lower this on systems with constrained memory\&.
 .RE
 .PP
-\-\-cat\-blob\-fd=<fd>
+\-\-depth=<n>
 .RS 4
-Write responses to
-cat\-blob
-and
-ls
-queries to the file descriptor <fd> instead of
-stdout\&. Allows
-progress
-output intended for the end\-user to be separated from other output\&.
-.RE
-.PP
-\-\-done
-.RS 4
-Terminate with error if there is no
-done
-command at the end of the stream\&. This option might be useful for detecting errors that cause the frontend to terminate before it has started to write a stream\&.
+Maximum delta depth, for blob and tree deltification\&. Default is 10\&.
 .RE
 .PP
 \-\-export\-pack\-edges=<file>
@@ -130,14 +135,9 @@ After creating a packfile, print a line of data to <file> listing the filename o
 \fIgit pack\-objects\fR\&.
 .RE
 .PP
-\-\-quiet
+\-\-max\-pack\-size=<n>
 .RS 4
-Disable all non\-fatal output, making fast\-import silent when it is successful\&. This option disables the output shown by \-\-stats\&.
-.RE
-.PP
-\-\-stats
-.RS 4
-Display some basic statistics about the objects fast\-import has created, the packfiles they were stored into, and the memory used by fast\-import during this run\&. Showing this output is currently the default, but can be disabled with \-\-quiet\&.
+Maximum size of each output packfile\&. The default is unlimited\&.
 .RE
 .SH "PERFORMANCE"
 .sp
