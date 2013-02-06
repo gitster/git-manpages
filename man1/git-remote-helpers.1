@@ -2,12 +2,12 @@
 .\"     Title: git-remote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/31/2012
+.\"      Date: 02/05/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.1
+.\"    Source: Git 1.8.1.2.545.g2f19ada
 .\"  Language: English
 .\"
-.TH "GIT\-REMOTE\-HELPERS" "1" "12/31/2012" "Git 1\&.8\&.1" "Git Manual"
+.TH "GIT\-REMOTE\-HELPERS" "1" "02/05/2013" "Git 1\&.8\&.1\&.2\&.545\&.g2f1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,20 +37,20 @@ git-remote-helpers \- Helper programs to interact with remote repositories
 .sp
 .SH "DESCRIPTION"
 .sp
-Remote helper programs are normally not used directly by end users, but they are invoked by git when it needs to interact with remote repositories git does not support natively\&. A given helper will implement a subset of the capabilities documented here\&. When git needs to interact with a repository using a remote helper, it spawns the helper as an independent process, sends commands to the helper\(cqs standard input, and expects results from the helper\(cqs standard output\&. Because a remote helper runs as an independent process from git, there is no need to re\-link git to add a new helper, nor any need to link the helper with the implementation of git\&.
+Remote helper programs are normally not used directly by end users, but they are invoked by Git when it needs to interact with remote repositories Git does not support natively\&. A given helper will implement a subset of the capabilities documented here\&. When Git needs to interact with a repository using a remote helper, it spawns the helper as an independent process, sends commands to the helper\(cqs standard input, and expects results from the helper\(cqs standard output\&. Because a remote helper runs as an independent process from Git, there is no need to re\-link Git to add a new helper, nor any need to link the helper with the implementation of Git\&.
 .sp
-Every helper must support the "capabilities" command, which git uses to determine what other commands the helper will accept\&. Those other commands can be used to discover and update remote refs, transport objects between the object database and the remote repository, and update the local object store\&.
+Every helper must support the "capabilities" command, which Git uses to determine what other commands the helper will accept\&. Those other commands can be used to discover and update remote refs, transport objects between the object database and the remote repository, and update the local object store\&.
 .sp
 Git comes with a "curl" family of remote helpers, that handle various transport protocols, such as \fIgit\-remote\-http\fR, \fIgit\-remote\-https\fR, \fIgit\-remote\-ftp\fR and \fIgit\-remote\-ftps\fR\&. They implement the capabilities \fIfetch\fR, \fIoption\fR, and \fIpush\fR\&.
 .SH "INVOCATION"
 .sp
-Remote helper programs are invoked with one or (optionally) two arguments\&. The first argument specifies a remote repository as in git; it is either the name of a configured remote or a URL\&. The second argument specifies a URL; it is usually of the form \fI<transport>://<address>\fR, but any arbitrary string is possible\&. The \fIGIT_DIR\fR environment variable is set up for the remote helper and can be used to determine where to store additional data or from which directory to invoke auxiliary git commands\&.
+Remote helper programs are invoked with one or (optionally) two arguments\&. The first argument specifies a remote repository as in Git; it is either the name of a configured remote or a URL\&. The second argument specifies a URL; it is usually of the form \fI<transport>://<address>\fR, but any arbitrary string is possible\&. The \fIGIT_DIR\fR environment variable is set up for the remote helper and can be used to determine where to store additional data or from which directory to invoke auxiliary Git commands\&.
 .sp
-When git encounters a URL of the form \fI<transport>://<address>\fR, where \fI<transport>\fR is a protocol that it cannot handle natively, it automatically invokes \fIgit remote\-<transport>\fR with the full URL as the second argument\&. If such a URL is encountered directly on the command line, the first argument is the same as the second, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
+When Git encounters a URL of the form \fI<transport>://<address>\fR, where \fI<transport>\fR is a protocol that it cannot handle natively, it automatically invokes \fIgit remote\-<transport>\fR with the full URL as the second argument\&. If such a URL is encountered directly on the command line, the first argument is the same as the second, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
 .sp
-A URL of the form \fI<transport>::<address>\fR explicitly instructs git to invoke \fIgit remote\-<transport>\fR with \fI<address>\fR as the second argument\&. If such a URL is encountered directly on the command line, the first argument is \fI<address>\fR, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
+A URL of the form \fI<transport>::<address>\fR explicitly instructs Git to invoke \fIgit remote\-<transport>\fR with \fI<address>\fR as the second argument\&. If such a URL is encountered directly on the command line, the first argument is \fI<address>\fR, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
 .sp
-Additionally, when a configured remote has \fIremote\&.<name>\&.vcs\fR set to \fI<transport>\fR, git explicitly invokes \fIgit remote\-<transport>\fR with \fI<name>\fR as the first argument\&. If set, the second argument is \fIremote\&.<name>\&.url\fR; otherwise, the second argument is omitted\&.
+Additionally, when a configured remote has \fIremote\&.<name>\&.vcs\fR set to \fI<transport>\fR, Git explicitly invokes \fIgit remote\-<transport>\fR with \fI<name>\fR as the first argument\&. If set, the second argument is \fIremote\&.<name>\&.url\fR; otherwise, the second argument is omitted\&.
 .SH "INPUT FORMAT"
 .sp
 Git sends the remote helper a list of commands on standard input, one per line\&. The first command is always the \fIcapabilities\fR command, in response to which the remote helper must print a list of the capabilities it supports (see below) followed by a blank line\&. The response to the capabilities command determines what commands Git uses in the remainder of the command stream\&.
@@ -58,7 +58,7 @@ Git sends the remote helper a list of commands on standard input, one per line\&
 The command stream is terminated by a blank line\&. In some cases (indicated in the documentation of the relevant commands), this blank line is followed by a payload in some other protocol (e\&.g\&., the pack protocol), while in others it indicates the end of input\&.
 .SS "Capabilities"
 .sp
-Each remote helper is expected to support only a subset of commands\&. The operations a helper supports are declared to git in the response to the capabilities command (see COMMANDS, below)\&.
+Each remote helper is expected to support only a subset of commands\&. The operations a helper supports are declared to Git in the response to the capabilities command (see COMMANDS, below)\&.
 .sp
 In the following, we list all defined capabilities and for each we list which commands a helper with that capability must provide\&.
 .sp
@@ -99,7 +99,7 @@ Supported commands:
 \fIexport\fR\&.
 .RE
 .sp
-If a helper advertises \fIconnect\fR, git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIpush\fR and \fIexport\fR, git prefers \fIpush\fR\&. Other frontends may have some other order of preference\&.
+If a helper advertises \fIconnect\fR, Git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIpush\fR and \fIexport\fR, Git prefers \fIpush\fR\&. Other frontends may have some other order of preference\&.
 .RE
 .sp
 .it 1 an-trap
@@ -115,7 +115,7 @@ If a helper advertises \fIconnect\fR, git will use it if possible and fall back 
 Can try to connect to
 \fIgit upload\-pack\fR
 (for fetching),
-\fIgit receive\-pack\fR, etc for communication using the git\(cqs native packfile protocol\&. This requires a bidirectional, full\-duplex connection\&.
+\fIgit receive\-pack\fR, etc for communication using the Git\(cqs native packfile protocol\&. This requires a bidirectional, full\-duplex connection\&.
 .sp
 Supported commands:
 \fIconnect\fR\&.
@@ -139,7 +139,7 @@ Supported commands:
 \fIimport\fR\&.
 .RE
 .sp
-If a helper advertises \fIconnect\fR, git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIfetch\fR and \fIimport\fR, git prefers \fIfetch\fR\&. Other frontends may have some other order of preference\&.
+If a helper advertises \fIconnect\fR, Git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIfetch\fR and \fIimport\fR, Git prefers \fIfetch\fR\&. Other frontends may have some other order of preference\&.
 .RE
 .sp
 .it 1 an-trap
@@ -188,7 +188,7 @@ capability\&. The fast\-import commands
 \fIcat\-blob\fR
 and
 \fIls\fR
-can be used by remote\-helpers to retrieve information about blobs and trees that already exist in fast\-import\(cqs memory\&. This requires a channel from fast\-import to the remote\-helper\&. If it is advertised in addition to "import", git establishes a pipe from fast\-import to the remote\-helper\(cqs stdin\&. It follows that git and fast\-import are both connected to the remote\-helper\(cqs stdin\&. Because git can send multiple commands to the remote\-helper it is required that helpers that use
+can be used by remote\-helpers to retrieve information about blobs and trees that already exist in fast\-import\(cqs memory\&. This requires a channel from fast\-import to the remote\-helper\&. If it is advertised in addition to "import", Git establishes a pipe from fast\-import to the remote\-helper\(cqs stdin\&. It follows that Git and fast\-import are both connected to the remote\-helper\(cqs stdin\&. Because Git can send multiple commands to the remote\-helper it is required that helpers that use
 \fIbidi\-import\fR
 buffer all
 \fIimport\fR
@@ -199,7 +199,7 @@ commands of a batch before sending data to fast\-import\&. This is to prevent mi
 .RS 4
 This modifies the
 \fIexport\fR
-capability, instructing git to dump the internal marks table to <file> when complete\&. For details, read up on
+capability, instructing Git to dump the internal marks table to <file> when complete\&. For details, read up on
 \fI\-\-export\-marks=<file>\fR
 in
 \fBgit-fast-export\fR(1)\&.
@@ -209,7 +209,7 @@ in
 .RS 4
 This modifies the
 \fIexport\fR
-capability, instructing git to load the marks specified in <file> before processing any input\&. For details, read up on
+capability, instructing Git to load the marks specified in <file> before processing any input\&. For details, read up on
 \fI\-\-import\-marks=<file>\fR
 in
 \fBgit-fast-export\fR(1)\&.
@@ -222,7 +222,7 @@ Commands are given by the caller on the helper\(cqs standard input, one per line
 \fIcapabilities\fR
 .RS 4
 Lists the capabilities of the helper, one per line, ending with a blank line\&. Each capability may be preceded with
-\fI*\fR, which marks them mandatory for git versions using the remote helper to understand\&. Any unknown mandatory capability is a fatal error\&.
+\fI*\fR, which marks them mandatory for Git versions using the remote helper to understand\&. Any unknown mandatory capability is a fatal error\&.
 .sp
 Support for this command is mandatory\&.
 .RE
@@ -384,7 +384,7 @@ This ref is unchanged since the last import or fetch, although the helper cannot
 .RE
 .SH "OPTIONS"
 .sp
-The following options are defined and (under suitable circumstances) set by git if the remote helper has the \fIoption\fR capability\&.
+The following options are defined and (under suitable circumstances) set by Git if the remote helper has the \fIoption\fR capability\&.
 .PP
 \fIoption verbosity\fR <n>
 .RS 4

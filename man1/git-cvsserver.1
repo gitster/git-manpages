@@ -2,12 +2,12 @@
 .\"     Title: git-cvsserver
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 01/25/2013
+.\"      Date: 02/05/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.1.1.439.g50a6b54
+.\"    Source: Git 1.8.1.2.545.g2f19ada
 .\"  Language: English
 .\"
-.TH "GIT\-CVSSERVER" "1" "01/25/2013" "Git 1\&.8\&.1\&.1\&.439\&.g50a" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "02/05/2013" "Git 1\&.8\&.1\&.2\&.545\&.g2f1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,7 +28,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-cvsserver \- A CVS server emulator for git
+git-cvsserver \- A CVS server emulator for Git
 .SH "SYNOPSIS"
 .sp
 SSH:
@@ -95,16 +95,16 @@ was given, too\&.
 .RE
 .SH "DESCRIPTION"
 .sp
-This application is a CVS emulation layer for git\&.
+This application is a CVS emulation layer for Git\&.
 .sp
 It is highly functional\&. However, not all methods are implemented, and for those methods that are implemented, not all switches are implemented\&.
 .sp
 Testing has been done using both the CLI CVS client, and the Eclipse CVS plugin\&. Most functionality works fine with both of these clients\&.
 .SH "LIMITATIONS"
 .sp
-CVS clients cannot tag, branch or perform GIT merges\&.
+CVS clients cannot tag, branch or perform Git merges\&.
 .sp
-\fIgit\-cvsserver\fR maps GIT branches to CVS modules\&. This is very different from what most CVS users would expect since in CVS modules usually represent one or more directories\&.
+\fIgit\-cvsserver\fR maps Git branches to CVS modules\&. This is very different from what most CVS users would expect since in CVS modules usually represent one or more directories\&.
 .SH "INSTALLATION"
 .sp
 .RS 4
@@ -193,7 +193,7 @@ Then provide your password via the pserver method, for example:
 .RE
 .\}
 .sp
-No special setup is needed for SSH access, other than having GIT tools in the PATH\&. If you have clients that do not accept the CVS_SERVER environment variable, you can rename
+No special setup is needed for SSH access, other than having Git tools in the PATH\&. If you have clients that do not accept the CVS_SERVER environment variable, you can rename
 \fIgit\-cvsserver\fR
 to
 cvs\&.
@@ -251,9 +251,9 @@ For each repo that you want accessible from CVS you need to edit config in the r
 Note: you need to ensure each user that is going to invoke
 \fIgit\-cvsserver\fR
 has write access to the log file and to the database (see
-Database Backend\&. If you want to offer write access over SSH, the users of course also need write access to the git repository itself\&.
+Database Backend\&. If you want to offer write access over SSH, the users of course also need write access to the Git repository itself\&.
 .sp
-You also need to ensure that each repository is "bare" (without a git index file) for
+You also need to ensure that each repository is "bare" (without a Git index file) for
 cvs commit
 to work\&. See
 \fBgitcvs-migration\fR(7)\&.
@@ -286,7 +286,7 @@ All configuration variables can also be overridden for a specific method of acce
 .\}
 If you didn\(cqt specify the CVSROOT/CVS_SERVER directly in the checkout command, automatically saving it in your
 \fICVS/Root\fR
-files, then you need to set them explicitly in your environment\&. CVSROOT should be set as per normal, but the directory should point at the appropriate git repo\&. As above, for SSH clients
+files, then you need to set them explicitly in your environment\&. CVSROOT should be set as per normal, but the directory should point at the appropriate Git repo\&. As above, for SSH clients
 \fInot\fR
 restricted to
 \fIgit\-shell\fR, CVS_SERVER should be set to
@@ -326,7 +326,7 @@ For SSH clients that will make commits, make sure their server\-side \&.ssh/envi
 .\}
 Clients should now be able to check out the project\&. Use the CVS
 \fImodule\fR
-name to indicate what GIT
+name to indicate what Git
 \fIhead\fR
 you want to check out\&. This also sets the name of your newly checked\-out directory, unless you tell it otherwise with
 \-d <dir_name>\&. For example, this checks out
@@ -348,13 +348,13 @@ directory:
 .RE
 .SH "DATABASE BACKEND"
 .sp
-\fIgit\-cvsserver\fR uses one database per git head (i\&.e\&. CVS module) to store information about the repository to maintain consistent CVS revision numbers\&. The database needs to be updated (i\&.e\&. written to) after every commit\&.
+\fIgit\-cvsserver\fR uses one database per Git head (i\&.e\&. CVS module) to store information about the repository to maintain consistent CVS revision numbers\&. The database needs to be updated (i\&.e\&. written to) after every commit\&.
 .sp
 If the commit is done directly by using git (as opposed to using \fIgit\-cvsserver\fR) the update will need to happen on the next repository access by \fIgit\-cvsserver\fR, independent of access method and requested operation\&.
 .sp
 That means that even if you offer only read access (e\&.g\&. by using the pserver method), \fIgit\-cvsserver\fR should have write access to the database to work reliably (otherwise you need to make sure that the database is up\-to\-date any time \fIgit\-cvsserver\fR is executed)\&.
 .sp
-By default it uses SQLite databases in the git directory, named gitcvs\&.<module_name>\&.sqlite\&. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using \fIgit\-cvsserver\fR write access to the database file without granting them write access to the directory, too\&.
+By default it uses SQLite databases in the Git directory, named gitcvs\&.<module_name>\&.sqlite\&. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using \fIgit\-cvsserver\fR write access to the database file without granting them write access to the directory, too\&.
 .sp
 The database can not be reliably regenerated in a consistent form after the branch it is tracking has changed\&. Example: For merged branches, \fIgit\-cvsserver\fR only tracks one branch of development, and after a \fIgit merge\fR an incrementally updated database may track a different branch than a database regenerated from scratch, causing inconsistent CVS revision numbers\&. git\-cvsserver has no way of knowing which branch it would have picked if it had been run incrementally pre\-merge\&. So if you have to fully or partially (from old backup) regenerate the database, you should be suspicious of pre\-existing CVS sandboxes\&.
 .sp
@@ -411,12 +411,12 @@ In dbdriver and dbuser you can use the following variables:
 .PP
 %G
 .RS 4
-git directory name
+Git directory name
 .RE
 .PP
 %g
 .RS 4
-git directory name, where all characters except for alpha\-numeric ones,
+Git directory name, where all characters except for alpha\-numeric ones,
 \&., and
 \-
 are replaced with
@@ -426,7 +426,7 @@ _
 .PP
 %m
 .RS 4
-CVS module/git head name
+CVS module/Git head name
 .RE
 .PP
 %a
