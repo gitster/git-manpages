@@ -2,12 +2,12 @@
 .\"     Title: git-shell
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/13/2013
+.\"      Date: 03/21/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.2
+.\"    Source: Git 1.8.2.135.g7b592fa
 .\"  Language: English
 .\"
-.TH "GIT\-SHELL" "1" "03/13/2013" "Git 1\&.8\&.2" "Git Manual"
+.TH "GIT\-SHELL" "1" "03/21/2013" "Git 1\&.8\&.2\&.135\&.g7b592fa" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,16 +32,70 @@ git-shell \- Restricted login shell for Git\-only SSH access
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit shell\fR [\-c <command> <argument>]
+\fIchsh\fR \-s $(command \-v git\-shell) <user>
+\fIgit clone\fR <user>@localhost:/path/to/repo\&.git
+\fIssh\fR <user>@localhost
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-A login shell for SSH accounts to provide restricted Git access\&. When \fI\-c\fR is given, the program executes <command> non\-interactively; <command> can be one of \fIgit receive\-pack\fR, \fIgit upload\-pack\fR, \fIgit upload\-archive\fR, \fIcvs server\fR, or a command in COMMAND_DIR\&. The shell is started in interactive mode when no arguments are given; in this case, COMMAND_DIR must exist, and any of the executables in it can be invoked\&.
+This is a login shell for SSH accounts to provide restricted Git access\&. It permits execution only of server\-side Git commands implementing the pull/push functionality, plus custom commands present in a subdirectory named git\-shell\-commands in the user\(cqs home directory\&.
+.SH "COMMANDS"
 .sp
-\fIcvs server\fR is a special command which executes git\-cvsserver\&.
+\fIgit shell\fR accepts the following commands after the \fI\-c\fR option:
+.PP
+\fIgit receive\-pack <argument>\fR, \fIgit upload\-pack <argument>\fR, \fIgit upload\-archive <argument>\fR
+.RS 4
+Call the corresponding server\-side command to support the client\(cqs
+\fIgit push\fR,
+\fIgit fetch\fR, or
+\fIgit archive \-\-remote\fR
+request\&.
+.RE
+.PP
+\fIcvs server\fR
+.RS 4
+Imitate a CVS server\&. See
+\fBgit-cvsserver\fR(1)\&.
+.RE
 .sp
-COMMAND_DIR is the path "$HOME/git\-shell\-commands"\&. The user must have read and execute permissions to the directory in order to execute the programs in it\&. The programs are executed with a cwd of $HOME, and <argument> is parsed as a command\-line string\&.
+If a ~/git\-shell\-commands directory is present, \fIgit shell\fR will also handle other, custom commands by running "git\-shell\-commands/<command> <arguments>" from the user\(cqs home directory\&.
+.SH "INTERACTIVE USE"
+.sp
+By default, the commands above can be executed only with the \fI\-c\fR option; the shell is not interactive\&.
+.sp
+If a ~/git\-shell\-commands directory is present, \fIgit shell\fR can also be run interactively (with no arguments)\&. If a help command is present in the git\-shell\-commands directory, it is run to provide the user with an overview of allowed actions\&. Then a "git> " prompt is presented at which one can enter any of the commands from the git\-shell\-commands directory, or exit to close the connection\&.
+.sp
+Generally this mode is used as an administrative interface to allow users to list repositories they have access to, create, delete, or rename repositories, or change repository descriptions and permissions\&.
+.sp
+If a no\-interactive\-login command exists, then it is run and the interactive shell is aborted\&.
+.SH "EXAMPLE"
+.sp
+To disable interactive logins, displaying a greeting instead:
+.sp
++
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ chsh \-s /usr/bin/git\-shell
+$ mkdir $HOME/git\-shell\-commands
+$ cat >$HOME/git\-shell\-commands/no\-interactive\-login <<\eEOF
+#!/bin/sh
+printf \(aq%s\en\(aq "Hi $USER! You\(aqve successfully authenticated, but I do not"
+printf \(aq%s\en\(aq "provide interactive shell access\&."
+exit 128
+EOF
+$ chmod +x $HOME/git\-shell\-commands/no\-interactive\-login
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.SH "SEE ALSO"
+.sp
+ssh(1), \fBgit-daemon\fR(1), contrib/git\-shell\-commands/README
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
