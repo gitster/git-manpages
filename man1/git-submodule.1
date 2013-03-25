@@ -2,12 +2,12 @@
 .\"     Title: git-submodule
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 03/13/2013
+.\"      Date: 03/25/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.2
+.\"    Source: Git 1.8.2.200.g7632cd2
 .\"  Language: English
 .\"
-.TH "GIT\-SUBMODULE" "1" "03/13/2013" "Git 1\&.8\&.2" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "03/25/2013" "Git 1\&.8\&.2\&.200\&.g7632cd2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,6 +36,7 @@ git-submodule \- Initialize, update or inspect submodules
               [\-\-reference <repository>] [\-\-] <repository> [<path>]
 \fIgit submodule\fR [\-\-quiet] status [\-\-cached] [\-\-recursive] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
+\fIgit submodule\fR [\-\-quiet] deinit [\-f|\-\-force] [\-\-] <path>\&...
 \fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-\-remote] [\-N|\-\-no\-fetch]
               [\-f|\-\-force] [\-\-rebase] [\-\-reference <repository>]
               [\-\-merge] [\-\-recursive] [\-\-] [<path>\&...]
@@ -110,6 +111,24 @@ git submodule update \-\-init
 without the explicit
 \fIinit\fR
 step if you do not intend to customize any submodule locations\&.
+.RE
+.PP
+deinit
+.RS 4
+Unregister the given submodules, i\&.e\&. remove the whole
+submodule\&.$name
+section from \&.git/config together with their work tree\&. Further calls to
+git submodule update,
+git submodule foreach
+and
+git submodule sync
+will skip any unregistered submodules until they are initialized again, so use this command if you don\(cqt want to have a local checkout of the submodule in your work tree anymore\&. If you really want to remove a submodule from the repository and commit that use
+\fBgit-rm\fR(1)
+instead\&.
+.sp
+If
+\-\-force
+is specified, the submodule\(cqs work tree will be removed even if it contains local modifications\&.
 .RE
 .PP
 update
@@ -199,7 +218,7 @@ update \-\-remote\&.
 .PP
 \-f, \-\-force
 .RS 4
-This option is only valid for add and update commands\&. When running add, allow adding an otherwise ignored submodule path\&. When running update, throw away local changes in submodules when switching to a different commit; and always run a checkout operation in the submodule, even if the commit listed in the index of the containing repository matches the commit checked out in the submodule\&.
+This option is only valid for add, deinit and update commands\&. When running add, allow adding an otherwise ignored submodule path\&. When running deinit the submodule work trees will be removed even if they contain local changes\&. When running update, throw away local changes in submodules when switching to a different commit; and always run a checkout operation in the submodule, even if the commit listed in the index of the containing repository matches the commit checked out in the submodule\&.
 .RE
 .PP
 \-\-cached
