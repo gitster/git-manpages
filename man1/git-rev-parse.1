@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 04/03/2013
+.\"      Date: 04/05/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.2.444.g8d994db
+.\"    Source: Git 1.8.2.470.g21ccebe
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "04/03/2013" "Git 1\&.8\&.2\&.444\&.g8d994db" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "04/05/2013" "Git 1\&.8\&.2\&.470\&.g21ccebe" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -105,7 +105,17 @@ instead\&.
 .PP
 \-\-verify
 .RS 4
-The parameter given must be usable as a single, valid object name\&. Otherwise barf and abort\&.
+Verify that exactly one parameter is provided, and that it can be turned into a raw 20\-byte SHA\-1 that can be used to access the object database\&. If so, emit it to the standard output; otherwise, error out\&.
+.sp
+If you want to make sure that the output actually names an object in your object database and/or can be used as a specific type of object For example,
+git rev\-parse "$VAR^{commit}"
+will make sure
+$VAR
+names an existing object that is a commit\-ish (i\&.e\&. a commit, or an annotated tag that points at a commit)\&. To make sure that
+$VAR
+names an existing object of any type,
+git rev\-parse "$VAR^{object}"
+can be used\&.
 .RE
 .PP
 \-q, \-\-quiet
@@ -866,7 +876,7 @@ Print the commit object name from the revision in the $REV shell variable:
 .RS 4
 .\}
 .nf
-$ git rev\-parse \-\-verify $REV
+$ git rev\-parse \-\-verify $REV^{commit}
 .fi
 .if n \{\
 .RE
@@ -883,7 +893,7 @@ This will error out if $REV is empty or not a valid revision\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-Same as above:
+Similar to above:
 .sp
 .if n \{\
 .RS 4
