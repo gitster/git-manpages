@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/12/2013
+.\"      Date: 05/20/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3.rc1.49.g8d97506
+.\"    Source: Git 1.8.3.rc3.5.g9134a46
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "05/12/2013" "Git 1\&.8\&.3\&.rc1\&.49\&.g8d" "Git Manual"
+.TH "GIT\-SVN" "1" "05/20/2013" "Git 1\&.8\&.3\&.rc3\&.5\&.g913" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -380,13 +380,13 @@ Allows to specify the commit message\&.
 Create a tag by using the tags_subdir instead of the branches_subdir specified during git svn init\&.
 .RE
 .PP
-\-d, \-\-destination
+\-d<path>, \-\-destination=<path>
 .RS 4
 If more than one \-\-branches (or \-\-tags) option was given to the
 \fIinit\fR
 or
 \fIclone\fR
-command, you must provide the location of the branch (or tag) you wish to create in the SVN repository\&. The value of this option must match one of the paths specified by a \-\-branches (or \-\-tags) option\&. You can see these paths with the commands
+command, you must provide the location of the branch (or tag) you wish to create in the SVN repository\&. <path> specifies which path to use to create the branch or tag and should match the pattern on the left\-hand side of one of the configured branches or tags refspecs\&. You can see these refspecs with the commands
 .sp
 .if n \{\
 .RS 4
@@ -425,6 +425,11 @@ git config \-\-get\-all svn\-remote\&.<name>\&.commiturl
 .if n \{\
 .RE
 .\}
+.RE
+.PP
+\-\-parents
+.RS 4
+Create parent folders\&. This parameter is equivalent to the parameter \-\-parents on svn cp commands and is useful for non\-standard repository layouts\&.
 .RE
 .RE
 .PP
@@ -1239,6 +1244,38 @@ It is also possible to fetch a subset of branches or tags by using a comma\-sepa
         fetch = trunk/src:refs/remotes/trunk
         branches = branches/{red,green}/src:refs/remotes/branches/*
         tags = tags/{1\&.0,2\&.0}/src:refs/remotes/tags/*
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Multiple fetch, branches, and tags keys are supported:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[svn\-remote "messy\-repo"]
+        url = http://server\&.org/svn
+        fetch = trunk/project\-a:refs/remotes/project\-a/trunk
+        fetch = branches/demos/june\-project\-a\-demo:refs/remotes/project\-a/demos/june\-demo
+        branches = branches/server/*:refs/remotes/project\-a/branches/*
+        branches = branches/demos/2011/*:refs/remotes/project\-a/2011\-demos/*
+        tags = tags/server/*:refs/remotes/project\-a/tags/*
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Creating a branch in such a configuration requires disambiguating which location to use using the \-d or \-\-destination flag:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git svn branch \-d branches/server release\-2\-3\-0
 .fi
 .if n \{\
 .RE
