@@ -2,12 +2,12 @@
 .\"     Title: git-check-ignore
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/24/2013
+.\"      Date: 05/29/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3
+.\"    Source: Git 1.8.3.101.g727a46b
 .\"  Language: English
 .\"
-.TH "GIT\-CHECK\-IGNORE" "1" "05/24/2013" "Git 1\&.8\&.3" "Git Manual"
+.TH "GIT\-CHECK\-IGNORE" "1" "05/29/2013" "Git 1\&.8\&.3\&.101\&.g727a46b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -62,6 +62,13 @@ The output format is modified to be machine\-parseable (see below)\&. If
 \-\-stdin
 is also given, input paths are separated with a NUL character instead of a linefeed character\&.
 .RE
+.PP
+\-n, \-\-non\-matching
+.RS 4
+Show given paths which don\(cqt match any pattern\&. This only makes sense when
+\-\-verbose
+is enabled, otherwise it would not be possible to distinguish between paths which match a pattern and those which don\(cqt\&.
+.RE
 .SH "OUTPUT"
 .sp
 By default, any of the given pathnames which match an ignore pattern will be output, one per line\&. If no pattern matches a given path, nothing will be output for that path; this means that path will not be ignored\&.
@@ -75,6 +82,10 @@ If \-\-verbose is specified, the output is a series of lines of the form:
 If \-z is specified, the pathnames in the output are delimited by the null character; if \-\-verbose is also specified then null characters are also used instead of colons and hard tabs:
 .sp
 <source> <NULL> <linenum> <NULL> <pattern> <NULL> <pathname> <NULL>
+.sp
+If \-n or \-\-non\-matching are specified, non\-matching pathnames will also be output, in which case all fields in each output record except for <pathname> will be empty\&. This can be useful when running non\-interactively, so that files can be incrementally streamed to STDIN of a long\-running check\-ignore process, and for each of these files, STDOUT will indicate whether that file matched a pattern or not\&. (Without this option, it would be impossible to tell whether the absence of output for a given file meant that it didn\(cqt match any pattern, or that the output hadn\(cqt been generated yet\&.)
+.sp
+Buffering happens as documented under the GIT_FLUSH option in \fBgit\fR(1)\&. The caller is responsible for avoiding deadlocks caused by overfilling an input buffer or reading from an empty output buffer\&.
 .SH "EXIT STATUS"
 .PP
 0
