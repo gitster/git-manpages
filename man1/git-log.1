@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/29/2013
+.\"      Date: 06/02/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3.101.g727a46b
+.\"    Source: Git 1.8.3.182.gb2edae0
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "05/29/2013" "Git 1\&.8\&.3\&.101\&.g727a46b" "Git Manual"
+.TH "GIT\-LOG" "1" "06/02/2013" "Git 1\&.8\&.3\&.182\&.gb2edae0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -83,6 +83,65 @@ Note that this affects all diff\-based output types, e\&.g\&. those produced by 
 \-\-log\-size
 .RS 4
 Before the log message print out its size in bytes\&. Intended mainly for porcelain tools consumption\&. If Git is unable to produce a valid value size is set to zero\&. Note that only message is considered, if also a diff is shown its size is not included\&.
+.RE
+.PP
+\-L <start>,<end>:<file>, \-L :<regex>:<file>
+.RS 4
+Trace the evolution of the line range given by "<start>,<end>" (or the funcname regex <regex>) within the <file>\&. You may not give any pathspec limiters\&. This is currently limited to a walk starting from a single revision, i\&.e\&., you may only give zero or one positive revision arguments\&. You can specify this option more than once\&.
+.sp
+<start> and <end> can take one of these forms:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+number
+.sp
+If <start> or <end> is a number, it specifies an absolute line number (lines count from 1)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+/regex/
+.sp
+This form will use the first line matching the given POSIX regex\&. If <end> is a regex, it will search starting at the line given by <start>\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
++offset or \-offset
+.sp
+This is only valid for <end> and will specify a number of lines before or after the line given by <start>\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+:regex
+.sp
+If the option\(cqs argument is of the form :regex, it denotes the range from the first funcname line that matches <regex>, up to the next funcname line\&.
+.RE
 .RE
 .PP
 <revision range>
@@ -3222,6 +3281,15 @@ Shows all commits that are in local master but not in any remote repository mast
 git log \-p \-m \-\-first\-parent
 .RS 4
 Shows the history including change diffs, but only from the "main branch" perspective, skipping commits that come from merged branches, and showing full diffs of changes introduced by the merges\&. This makes sense only when following a strict policy of merging all topic branches when staying on a single integration branch\&.
+.RE
+.PP
+git log \-L \fI/int main/\fR,/^}/:main\&.c
+.RS 4
+Shows how the function
+main()
+in the file
+\fImain\&.c\fR
+evolved over time\&.
 .RE
 .PP
 git log \-3
