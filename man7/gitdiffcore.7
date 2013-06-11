@@ -2,12 +2,12 @@
 .\"     Title: gitdiffcore
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/24/2013
+.\"      Date: 06/11/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3
+.\"    Source: Git 1.8.3.1.377.g4d1c565
 .\"  Language: English
 .\"
-.TH "GITDIFFCORE" "7" "05/24/2013" "Git 1\&.8\&.3" "Git Manual"
+.TH "GITDIFFCORE" "7" "06/11/2013" "Git 1\&.8\&.3\&.1\&.377\&.g4d1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -299,11 +299,13 @@ The "extent of changes" parameter can be tweaked from the default 80% (that is, 
 Note that earlier implementation left a broken pair as a separate creation and deletion patches\&. This was an unnecessary hack and the latest implementation always merges all the broken pairs back into modifications, but the resulting patch output is formatted differently for easier review in case of such a complete rewrite by showing the entire contents of old version prefixed with \fI\-\fR, followed by the entire contents of new version prefixed with \fI+\fR\&.
 .SH "DIFFCORE-PICKAXE: FOR DETECTING ADDITION/DELETION OF SPECIFIED STRING"
 .sp
-This transformation is used to find filepairs that represent changes that touch a specified string, and is controlled by the \-S option and the \-\-pickaxe\-all option to the \fIgit diff\-*\fR commands\&.
+This transformation limits the set of filepairs to those that change specified strings between the preimage and the postimage in a certain way\&. \-S<block of text> and \-G<regular expression> options are used to specify different ways these strings are sought\&.
 .sp
-When diffcore\-pickaxe is in use, it checks if there are filepairs whose "result" side and whose "origin" side have different number of specified string\&. Such a filepair represents "the string appeared in this changeset"\&. It also checks for the opposite case that loses the specified string\&.
+"\-S<block of text>" detects filepairs whose preimage and postimage have different number of occurrences of the specified block of text\&. By definition, it will not detect in\-file moves\&. Also, when a changeset moves a file wholesale without affecting the interesting string, diffcore\-rename kicks in as usual, and \-S omits the filepair (since the number of occurrences of that string didn\(cqt change in that rename\-detected filepair)\&. When used with \-\-pickaxe\-regex, treat the <block of text> as an extended POSIX regular expression to match, instead of a literal string\&.
 .sp
-When \-\-pickaxe\-all is not in effect, diffcore\-pickaxe leaves only such filepairs that touch the specified string in its output\&. When \-\-pickaxe\-all is used, diffcore\-pickaxe leaves all filepairs intact if there is such a filepair, or makes the output empty otherwise\&. The latter behaviour is designed to make reviewing of the changes in the context of the whole changeset easier\&.
+"\-G<regular expression>" (mnemonic: grep) detects filepairs whose textual diff has an added or a deleted line that matches the given regular expression\&. This means that it will detect in\-file (or what rename\-detection considers the same file) moves, which is noise\&. The implementation runs diff twice and greps, and this can be quite expensive\&.
+.sp
+When \-S or \-G are used without \-\-pickaxe\-all, only filepairs that match their respective criterion are kept in the output\&. When \-\-pickaxe\-all is used, if even one filepair matches their respective criterion in a changeset, the entire changeset is kept\&. This behavior is designed to make reviewing changes in the context of the whole changeset easier\&.
 .SH "DIFFCORE-ORDER: FOR SORTING THE OUTPUT BASED ON FILENAMES"
 .sp
 This is used to reorder the filepairs according to the user\(cqs (or project\(cqs) taste, and is controlled by the \-O option to the \fIgit diff\-*\fR commands\&.

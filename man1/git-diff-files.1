@@ -2,12 +2,12 @@
 .\"     Title: git-diff-files
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/29/2013
+.\"      Date: 06/11/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3.101.g727a46b
+.\"    Source: Git 1.8.3.1.377.g4d1c565
 .\"  Language: English
 .\"
-.TH "GIT\-DIFF\-FILES" "1" "05/29/2013" "Git 1\&.8\&.3\&.101\&.g727a46b" "Git Manual"
+.TH "GIT\-DIFF\-FILES" "1" "06/11/2013" "Git 1\&.8\&.3\&.1\&.377\&.g4d1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -452,16 +452,44 @@ Select only files that are Added (A), Copied (C), Deleted (D), Modified (M), Ren
 .PP
 \-S<string>
 .RS 4
-Look for differences that introduce or remove an instance of <string>\&. Note that this is different than the string simply appearing in diff output; see the
-\fIpickaxe\fR
-entry in
-\fBgitdiffcore\fR(7)
-for more details\&.
+Look for differences that change the number of occurrences of the specified string (i\&.e\&. addition/deletion) in a file\&. Intended for the scripter\(cqs use\&.
+.sp
+It is useful when you\(cqre looking for an exact block of code (like a struct), and want to know the history of that block since it first came into being: use the feature iteratively to feed the interesting block in the preimage back into
+\-S, and keep going until you get the very first version of the block\&.
 .RE
 .PP
 \-G<regex>
 .RS 4
-Look for differences whose added or removed line matches the given <regex>\&.
+Look for differences whose patch text contains added/removed lines that match <regex>\&.
+.sp
+To illustrate the difference between
+\-S<regex> \-\-pickaxe\-regex
+and
+\-G<regex>, consider a commit with the following diff in the same file:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
++    return !regexec(regexp, two\->ptr, 1, &regmatch, 0);
+\&.\&.\&.
+\-    hit = !regexec(regexp, mf2\&.ptr, 1, &regmatch, 0);
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+While
+git log \-G"regexec\e(regexp"
+will show this commit,
+git log \-S"regexec\e(regexp" \-\-pickaxe\-regex
+will not (because the number of occurrences of that string did not change)\&.
+.sp
+See the
+\fIpickaxe\fR
+entry in
+\fBgitdiffcore\fR(7)
+for more information\&.
 .RE
 .PP
 \-\-pickaxe\-all
@@ -475,7 +503,9 @@ finds a change, show all the changes in that changeset, not just the files that 
 .PP
 \-\-pickaxe\-regex
 .RS 4
-Make the <string> not a plain string but an extended POSIX regex to match\&.
+Treat the <string> given to
+\-S
+as an extended POSIX regular expression to match\&.
 .RE
 .PP
 \-O<orderfile>
