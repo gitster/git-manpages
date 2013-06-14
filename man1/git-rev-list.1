@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 05/24/2013
+.\"      Date: 06/14/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3
+.\"    Source: Git 1.8.3.1.436.gbdff0e3
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "05/24/2013" "Git 1\&.8\&.3" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "06/14/2013" "Git 1\&.8\&.3\&.1\&.436\&.gbdf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -447,7 +447,8 @@ After a failed merge, show refs that touch files having a conflict and don\(cqt 
 .PP
 \-\-boundary
 .RS 4
-Output uninteresting commits at the boundary, which are usually not shown\&.
+Output excluded boundary commits\&. Boundary commits are prefixed with
+\-\&.
 .RE
 .SS "History Simplification"
 .sp
@@ -519,18 +520,18 @@ In the following, we will always refer to the same example history to illustrate
 .RS 4
 .\}
 .nf
-          \&.\-A\-\-\-M\-\-\-N\-\-\-O\-\-\-P
-         /     /   /   /   /
-        I     B   C   D   E
-         \e   /   /   /   /
-          `\-\-\-\-\-\-\-\-\-\-\-\-\-\(aq
+          \&.\-A\-\-\-M\-\-\-N\-\-\-O\-\-\-P\-\-\-Q
+         /     /   /   /   /   /
+        I     B   C   D   E   Y
+         \e   /   /   /   /   /
+          `\-\-\-\-\-\-\-\-\-\-\-\-\-\(aq   X
 .fi
 .if n \{\
 .RE
 .\}
 .sp
 .sp
-The horizontal line of history A\-\-\-P is taken to be the first parent of each merge\&. The commits are:
+The horizontal line of history A\-\-\-Q is taken to be the first parent of each merge\&. The commits are:
 .sp
 .RS 4
 .ie n \{\
@@ -632,9 +633,39 @@ changes
 quux
 to "xyzzy", and its merge
 P
-combines the strings to "quux xyzzy"\&. Despite appearing interesting,
+combines the strings to "quux xyzzy"\&.
 P
-is TREESAME to all parents\&.
+is TREESAME to
+O, but not to
+E\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+X
+is an indpendent root commit that added a new file
+side, and
+Y
+modified it\&.
+Y
+is TREESAME to
+X\&. Its merge
+Q
+added
+side
+to
+P, and
+Q
+is TREESAME to
+P, but not to
+Y\&.
 .RE
 .sp
 \fIrev\-list\fR walks backwards through history, including or excluding commits based on whether \fI\-\-full\-history\fR and/or parent rewriting (via \fI\-\-parents\fR or \fI\-\-children\fR) are used\&. The following settings are available\&.
@@ -679,16 +710,14 @@ This mode differs from the default in one point: always follow all parents of a 
 .RS 4
 .\}
 .nf
-        I  A  B  N  D  O
+        I  A  B  N  D  O  P  Q
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-P
-and
 M
-were excluded because they are TREESAME to a parent\&.
+was excluded because it is TREESAME to both parents\&.
 E,
 C
 and
@@ -712,7 +741,7 @@ Merges are always included\&. However, their parent list is rewritten: Along eac
 .RS 4
 .\}
 .nf
-          \&.\-A\-\-\-M\-\-\-N\-\-\-O\-\-\-P
+          \&.\-A\-\-\-M\-\-\-N\-\-\-O\-\-\-P\-\-\-Q
          /     /   /   /   /
         I     B   /   D   /
          \e   /   /   /   /
@@ -731,9 +760,11 @@ E\(aqs parent
 I\&. The same happened for
 C
 and
-N\&. Note also that
-P
-was included despite being TREESAME\&.
+N, and
+X,
+Y
+and
+Q\&.
 .RE
 .sp
 In addition to the above settings, you can change whether TREESAME affects inclusion:
@@ -790,7 +821,7 @@ P
 of
 C\(aq
 with its simplification
-P\(aq\&. In the process, drop parents that are ancestors of other parents, and remove duplicates\&.
+P\(aq\&. In the process, drop parents that are ancestors of other parents or that are root commits TREESAME to an empty tree, and remove duplicates, but take care to never drop all parents that we are TREESAME to\&.
 .RE
 .sp
 .RS 4
@@ -825,9 +856,10 @@ with parent rewriting\&. The example turns into:
 .\}
 .sp
 Note the major differences in
-N
-and
+N,
 P
+and
+Q
 over
 \fI\-\-full\-history\fR:
 .sp
@@ -861,6 +893,25 @@ P\(aqs parent list similarly had
 I
 removed\&.
 P
+was then removed completely, because it had one parent and is TREESAME\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+Q\(aqs parent list had
+Y
+simplified to
+X\&.
+X
+was then removed, because it was a TREESAME root\&.
+Q
 was then removed completely, because it had one parent and is TREESAME\&.
 .RE
 .RE
