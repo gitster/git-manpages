@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/03/2013
+.\"      Date: 07/11/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3.2.721.g56df44a
+.\"    Source: Git 1.8.3.2.768.g911011a
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "07/03/2013" "Git 1\&.8\&.3\&.2\&.721\&.g56d" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/11/2013" "Git 1\&.8\&.3\&.2\&.768\&.g911" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3766,7 +3766,9 @@ push\&.default
 .RS 4
 Defines the action
 git push
-should take if no refspec is given on the command line, no refspec is configured in the remote, and no refspec is implied by any of the options given on the command line\&. Possible values are:
+should take if no refspec is explicitly given\&. Different values are well\-suited for specific workflows; for instance, in a purely central workflow (i\&.e\&. the fetch source is equal to the push destination),
+upstream
+is probably what you want\&. Possible values are:
 .sp
 .RS 4
 .ie n \{\
@@ -3778,7 +3780,7 @@ should take if no refspec is given on the command line, no refspec is configured
 .\}
 
 nothing
-\- do not push anything\&.
+\- do not push anything (error out) unless a refspec is explicitly given\&. This is primarily meant for people who want to avoid mistakes by always being explicit\&.
 .RE
 .sp
 .RS 4
@@ -3790,11 +3792,8 @@ nothing
 .IP \(bu 2.3
 .\}
 
-matching
-\- push all branches having the same name in both ends\&. This is for those who prepare all the branches into a publishable shape and then push them out with a single command\&. It is not appropriate for pushing into a repository shared by multiple users, since locally stalled branches will attempt a non\-fast forward push if other users updated the branch\&.
-
-This is currently the default, but Git 2\&.0 will change the default to
-simple\&.
+current
+\- push the current branch to update a branch with the same name on the receiving end\&. Works in both central and non\-central workflows\&.
 .RE
 .sp
 .RS 4
@@ -3807,15 +3806,8 @@ simple\&.
 .\}
 
 upstream
-\- push the current branch to its upstream branch (tracking
-is a deprecated synonym for this)\&. With this,
-git push
-will update the same remote ref as the one which is merged by
-git pull, making
-push
-and
-pull
-symmetrical\&. See "branch\&.<name>\&.merge" for how to configure the upstream branch\&.
+\- push the current branch back to the branch whose changes are usually integrated into the current branch (which is called
+@{upstream})\&. This mode only makes sense if you are pushing to the same repository you would normally pull from (i\&.e\&. central workflow)\&.
 .RE
 .sp
 .RS 4
@@ -3828,8 +3820,14 @@ symmetrical\&. See "branch\&.<name>\&.merge" for how to configure the upstream b
 .\}
 
 simple
-\- like
-upstream, but refuses to push if the upstream branch\(cqs name is different from the local one\&. This is the safest option and is well\-suited for beginners\&. It will become the default in Git 2\&.0\&.
+\- in centralized workflow, work like
+upstream
+with an added safety to refuse to push if the upstream branch\(cqs name is different from the local one\&.
+.sp
+When pushing to a remote that is different from the remote you normally pull from, work as
+current\&. This is the safest option and is suited for beginners\&.
+.sp
+This mode will become the default in Git 2\&.0\&.
 .RE
 .sp
 .RS 4
@@ -3841,16 +3839,25 @@ upstream, but refuses to push if the upstream branch\(cqs name is different from
 .IP \(bu 2.3
 .\}
 
-current
-\- push the current branch to a branch of the same name\&.
-.RE
-.sp
-The
-simple,
-current
+matching
+\- push all branches having the same name on both ends\&. This makes the repository you are pushing to remember the set of branches that will be pushed out (e\&.g\&. if you always push
+\fImaint\fR
 and
-upstream
-modes are for those who want to push out a single branch after finishing work, even when the other branches are not yet ready to be pushed out\&. If you are working with other people to push into the same shared repository, you would want to use one of these\&.
+\fImaster\fR
+there and no other branches, the repository you push to will have these two branches, and your local
+\fImaint\fR
+and
+\fImaster\fR
+will be pushed there)\&.
+.sp
+To use this mode effectively, you have to make sure
+\fIall\fR
+the branches you would push out are ready to be pushed out before running
+\fIgit push\fR, as the whole point of this mode is to allow you to push all of the branches in one go\&. If you usually finish work on only one branch and push out the result, while other branches are unfinished, this mode is not for you\&. Also this mode is not suitable for pushing into a shared central repository, as other people may add new branches there, or update the tip of existing branches outside your control\&.
+.sp
+This is currently the default, but Git 2\&.0 will change the default to
+simple\&.
+.RE
 .RE
 .PP
 rebase\&.stat
@@ -4108,6 +4115,18 @@ By default,
 shows paths relative to the current directory\&. Setting this variable to
 false
 shows paths relative to the repository root (this was the default for Git prior to v1\&.5\&.4)\&.
+.RE
+.PP
+status\&.short
+.RS 4
+Set to true to enable \-\-short by default in
+\fBgit-status\fR(1)\&. The option \-\-no\-short takes precedence over this variable\&.
+.RE
+.PP
+status\&.branch
+.RS 4
+Set to true to enable \-\-branch by default in
+\fBgit-status\fR(1)\&. The option \-\-no\-branch takes precedence over this variable\&.
 .RE
 .PP
 status\&.showUntrackedFiles

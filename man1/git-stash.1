@@ -2,12 +2,12 @@
 .\"     Title: git-stash
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/27/2013
+.\"      Date: 07/11/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3.1.643.gebeea52
+.\"    Source: Git 1.8.3.2.768.g911011a
 .\"  Language: English
 .\"
-.TH "GIT\-STASH" "1" "06/27/2013" "Git 1\&.8\&.3\&.1\&.643\&.gebe" "Git Manual"
+.TH "GIT\-STASH" "1" "07/11/2013" "Git 1\&.8\&.3\&.2\&.768\&.g911" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -38,7 +38,8 @@ git-stash \- Stash the changes in a dirty working directory away
 \fIgit stash\fR ( pop | apply ) [\-\-index] [\-q|\-\-quiet] [<stash>]
 \fIgit stash\fR branch <branchname> [<stash>]
 \fIgit stash\fR [save [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-q|\-\-quiet]
-             [\-u|\-\-include\-untracked] [\-a|\-\-all] [<message>]]
+             [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-f|\-\-force]
+             [<message>]]
 \fIgit stash\fR clear
 \fIgit stash\fR create [<message>]
 \fIgit stash\fR store [\-m|\-\-message <message>] [\-q|\-\-quiet] <commit>
@@ -53,7 +54,7 @@ The modifications stashed away by this command can be listed with git stash list
 The latest stash you created is stored in refs/stash; older stashes are found in the reflog of this reference and can be named using the usual reflog syntax (e\&.g\&. stash@{0} is the most recently created stash, stash@{1} is the one before it, stash@{2\&.hours\&.ago} is also possible)\&.
 .SH "OPTIONS"
 .PP
-save [\-p|\-\-patch] [\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [<message>]
+save [\-p|\-\-patch] [\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [\-f|\-\-force] [<message>]
 .RS 4
 Save your local modifications to a new
 \fIstash\fR, and run
@@ -86,6 +87,13 @@ option implies
 \-\-keep\-index\&. You can use
 \-\-no\-keep\-index
 to override this\&.
+.sp
+In some cases, saving a stash could mean irretrievably removing some data \- if a directory with untracked files replaces a tracked file of the same name, the new untracked files are not saved (except in case of
+\-\-include\-untracked) but the original tracked file shall be restored\&. By default,
+stash save
+will abort in such a case;
+\-\-force
+will allow it to remove the untracked files\&.
 .RE
 .PP
 list [<options>]
