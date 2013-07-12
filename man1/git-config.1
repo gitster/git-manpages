@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 07/11/2013
+.\"      Date: 07/12/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.3.2.768.g911011a
+.\"    Source: Git 1.8.3.2.804.g0da7a53
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "07/11/2013" "Git 1\&.8\&.3\&.2\&.768\&.g911" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/12/2013" "Git 1\&.8\&.3\&.2\&.804\&.g0da" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -319,14 +319,9 @@ directives in config files when looking up values\&. Defaults to on\&.
 .sp
 If not set explicitly with \fI\-\-file\fR, there are four files where \fIgit config\fR will search for configuration options:
 .PP
-$GIT_DIR/config
+$(prefix)/etc/gitconfig
 .RS 4
-Repository specific configuration file\&.
-.RE
-.PP
-~/\&.gitconfig
-.RS 4
-User\-specific configuration file\&. Also called "global" configuration file\&.
+System\-wide configuration file\&.
 .RE
 .PP
 $XDG_CONFIG_HOME/git/config
@@ -334,12 +329,19 @@ $XDG_CONFIG_HOME/git/config
 Second user\-specific configuration file\&. If $XDG_CONFIG_HOME is not set or empty, $HOME/\&.config/git/config will be used\&. Any single\-valued variable set in this file will be overwritten by whatever is in ~/\&.gitconfig\&. It is a good idea not to create this file if you sometimes use older versions of Git, as support for this file was added fairly recently\&.
 .RE
 .PP
-$(prefix)/etc/gitconfig
+~/\&.gitconfig
 .RS 4
-System\-wide configuration file\&.
+User\-specific configuration file\&. Also called "global" configuration file\&.
+.RE
+.PP
+$GIT_DIR/config
+.RS 4
+Repository specific configuration file\&.
 .RE
 .sp
 If no further options are given, all reading options will read all of these files that are available\&. If the global or the system\-wide configuration file are not available they will be ignored\&. If the repository configuration file is not available or readable, \fIgit config\fR will exit with a non\-zero error code\&. However, in neither case will an error message be issued\&.
+.sp
+The files are read in the order given above, with last value found taking precedence over values read earlier\&. When multiple values are taken then all values of a key from all files will be used\&.
 .sp
 All writing options will per default write to the repository specific configuration file\&. Note that this also affects options like \fI\-\-replace\-all\fR and \fI\-\-unset\fR\&. \fB\fIgit config\fR\fR\fB will only ever change one file at a time\fR\&.
 .sp
