@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2013
+.\"      Date: 08/30/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.4
+.\"    Source: Git 1.8.4.21.g992c386
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "08/23/2013" "Git 1\&.8\&.4" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "08/30/2013" "Git 1\&.8\&.4\&.21\&.g992c386" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,6 +39,9 @@ git-rev-parse \- Pick out and massage parameters
 .sp
 Many Git porcelainish commands take mixture of flags (i\&.e\&. parameters that begin with a dash \fI\-\fR) and parameters meant for the underlying \fIgit rev\-list\fR command they use internally and flags and parameters for the other commands they use downstream of \fIgit rev\-list\fR\&. This command is used to distinguish between them\&.
 .SH "OPTIONS"
+.SS "Operation Modes"
+.sp
+Each of these options must appear first on the command line\&.
 .PP
 \-\-parseopt
 .RS 4
@@ -46,6 +49,16 @@ Use
 \fIgit rev\-parse\fR
 in option parsing mode (see PARSEOPT section below)\&.
 .RE
+.PP
+\-\-sq\-quote
+.RS 4
+Use
+\fIgit rev\-parse\fR
+in shell quoting mode (see SQ\-QUOTE section below)\&. In contrast to the
+\-\-sq
+option below, this mode does only quoting\&. Nothing else is done to command input\&.
+.RE
+.SS "Options for \-\-parseopt"
 .PP
 \-\-keep\-dashdash
 .RS 4
@@ -62,15 +75,7 @@ Only meaningful in
 \-\-parseopt
 mode\&. Lets the option parser stop at the first non\-option argument\&. This can be used to parse sub\-commands that take options themselves\&.
 .RE
-.PP
-\-\-sq\-quote
-.RS 4
-Use
-\fIgit rev\-parse\fR
-in shell quoting mode (see SQ\-QUOTE section below)\&. In contrast to the
-\-\-sq
-option below, this mode does only quoting\&. Nothing else is done to command input\&.
-.RE
+.SS "Options for Filtering"
 .PP
 \-\-revs\-only
 .RS 4
@@ -95,6 +100,7 @@ Do not output non\-flag parameters\&.
 .RS 4
 Do not output flag parameters\&.
 .RE
+.SS "Options for Output"
 .PP
 \-\-default <arg>
 .RS 4
@@ -170,6 +176,16 @@ and strip
 prefix from the object names that already have one\&.
 .RE
 .PP
+\-\-abbrev\-ref[=(strict|loose)]
+.RS 4
+A non\-ambiguous short name of the objects name\&. The option core\&.warnAmbiguousRefs is used to select the strict abbreviation mode\&.
+.RE
+.PP
+\-\-short, \-\-short=number
+.RS 4
+Instead of outputting the full SHA\-1 values of object names try to abbreviate them to a shorter unique name\&. When no length is specified 7 is used\&. The minimum length is 4\&.
+.RE
+.PP
 \-\-symbolic
 .RS 4
 Usually the object names are output in SHA\-1 form (with possible
@@ -181,16 +197,7 @@ prefix); this option makes them output in a form as close to the original input 
 .RS 4
 This is similar to \-\-symbolic, but it omits input that are not refs (i\&.e\&. branch or tag names; or more explicitly disambiguating "heads/master" form, when you want to name the "master" branch when there is an unfortunately named tag "master"), and show them as full refnames (e\&.g\&. "refs/heads/master")\&.
 .RE
-.PP
-\-\-abbrev\-ref[=(strict|loose)]
-.RS 4
-A non\-ambiguous short name of the objects name\&. The option core\&.warnAmbiguousRefs is used to select the strict abbreviation mode\&.
-.RE
-.PP
-\-\-disambiguate=<prefix>
-.RS 4
-Show every object whose name begins with the given prefix\&. The <prefix> must be at least 4 hexadecimal digits long to avoid listing each and every object in the repository by mistake\&.
-.RE
+.SS "Options for Objects"
 .PP
 \-\-all
 .RS 4
@@ -223,19 +230,15 @@ refs/, this is automatically prepended\&. If the pattern does not contain a glob
 /*\&.
 .RE
 .PP
-\-\-show\-toplevel
+\-\-disambiguate=<prefix>
 .RS 4
-Show the absolute path of the top\-level directory\&.
+Show every object whose name begins with the given prefix\&. The <prefix> must be at least 4 hexadecimal digits long to avoid listing each and every object in the repository by mistake\&.
 .RE
+.SS "Options for Files"
 .PP
-\-\-show\-prefix
+\-\-local\-env\-vars
 .RS 4
-When the command is invoked from a subdirectory, show the path of the current directory relative to the top\-level directory\&.
-.RE
-.PP
-\-\-show\-cdup
-.RS 4
-When the command is invoked from a subdirectory, show the path of the top\-level directory relative to the current directory (typically a sequence of "\&.\&./", or an empty string)\&.
+List the GIT_* environment variables that are local to the repository (e\&.g\&. GIT_DIR or GIT_WORK_TREE, but not GIT_EDITOR)\&. Only the names of the variables are listed, not their value, even if they are set\&.
 .RE
 .PP
 \-\-git\-dir
@@ -264,15 +267,26 @@ When the current working directory is inside the work tree of the repository pri
 When the repository is bare print "true", otherwise "false"\&.
 .RE
 .PP
-\-\-local\-env\-vars
+\-\-resolve\-git\-dir <path>
 .RS 4
-List the GIT_* environment variables that are local to the repository (e\&.g\&. GIT_DIR or GIT_WORK_TREE, but not GIT_EDITOR)\&. Only the names of the variables are listed, not their value, even if they are set\&.
+Check if <path> is a valid repository or a gitfile that points at a valid repository, and print the location of the repository\&. If <path> is a gitfile then the resolved path to the real repository is printed\&.
 .RE
 .PP
-\-\-short, \-\-short=number
+\-\-show\-cdup
 .RS 4
-Instead of outputting the full SHA\-1 values of object names try to abbreviate them to a shorter unique name\&. When no length is specified 7 is used\&. The minimum length is 4\&.
+When the command is invoked from a subdirectory, show the path of the top\-level directory relative to the current directory (typically a sequence of "\&.\&./", or an empty string)\&.
 .RE
+.PP
+\-\-show\-prefix
+.RS 4
+When the command is invoked from a subdirectory, show the path of the current directory relative to the top\-level directory\&.
+.RE
+.PP
+\-\-show\-toplevel
+.RS 4
+Show the absolute path of the top\-level directory\&.
+.RE
+.SS "Other Options"
 .PP
 \-\-since=datestring, \-\-after=datestring
 .RS 4
@@ -289,11 +303,6 @@ Parse the date string, and output the corresponding \-\-min\-age= parameter for
 <args>\&...
 .RS 4
 Flags and parameters to be parsed\&.
-.RE
-.PP
-\-\-resolve\-git\-dir <path>
-.RS 4
-Check if <path> is a valid repository or a gitfile that points at a valid repository, and print the location of the repository\&. If <path> is a gitfile then the resolved path to the real repository is printed\&.
 .RE
 .SH "SPECIFYING REVISIONS"
 .sp
