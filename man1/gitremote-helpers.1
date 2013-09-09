@@ -2,12 +2,12 @@
 .\"     Title: gitremote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2013
+.\"      Date: 09/09/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.4
+.\"    Source: Git 1.8.4.242.gbb80ee0
 .\"  Language: English
 .\"
-.TH "GITREMOTE\-HELPERS" "1" "08/23/2013" "Git 1\&.8\&.4" "Git Manual"
+.TH "GITREMOTE\-HELPERS" "1" "09/09/2013" "Git 1\&.8\&.4\&.242\&.gbb80ee0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -137,6 +137,11 @@ Can discover remote refs and output objects reachable from them as a stream in f
 Supported commands:
 \fIlist\fR,
 \fIimport\fR\&.
+.RE
+.PP
+\fIcheck\-connectivity\fR
+.RS 4
+Can guarantee that when a clone is requested, the received pack is self contained and is connected\&.
 .RE
 .sp
 If a helper advertises \fIconnect\fR, Git will use it if possible and fall back to another capability if the helper requests so when connecting (see the \fIconnect\fR command under COMMANDS)\&. When choosing between \fIfetch\fR and \fIimport\fR, Git prefers \fIfetch\fR\&. Other frontends may have some other order of preference\&.
@@ -284,6 +289,12 @@ Optionally may output a
 \fIlock <file>\fR
 line indicating a file under GIT_DIR/objects/pack which is keeping a pack until refs can be suitably updated\&.
 .sp
+If option
+\fIcheck\-connectivity\fR
+is requested, the helper must output
+\fIconnectivity\-ok\fR
+if the clone is self\-contained and connected\&.
+.sp
 Supported if the helper has the "fetch" capability\&.
 .RE
 .PP
@@ -424,6 +435,11 @@ If enabled the helper should automatically fetch annotated tag objects if the ob
 \fIoption servpath <c\-style\-quoted\-path>\fR
 .RS 4
 Sets service path (\-\-upload\-pack, \-\-receive\-pack etc\&.) for next connect\&. Remote helper may support this option, but must not rely on this option being set before connect request occurs\&.
+.RE
+.PP
+\fIoption check\-connectivity\fR {\fItrue\fR|\fIfalse\fR}
+.RS 4
+Request the helper to check connectivity of a clone\&.
 .RE
 .SH "SEE ALSO"
 .sp

@@ -2,12 +2,12 @@
 .\"     Title: gitglossary
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2013
+.\"      Date: 09/09/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.4
+.\"    Source: Git 1.8.4.242.gbb80ee0
 .\"  Language: English
 .\"
-.TH "GITGLOSSARY" "7" "08/23/2013" "Git 1\&.8\&.4" "Git Manual"
+.TH "GITGLOSSARY" "7" "09/09/2013" "Git 1\&.8\&.4\&.242\&.gbb80ee0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -498,9 +498,88 @@ is followed by a open parenthesis
 (, a comma\-separated list of zero or more "magic words", and a close parentheses
 ), and the remainder is the pattern to match against the path\&.
 .sp
-The "magic signature" consists of an ASCII symbol that is not alphanumeric\&. Currently only the slash
+The "magic signature" consists of an ASCII symbol that is not alphanumeric\&.
+.PP
+top /
+.RS 4
+The magic word
+top
+(mnemonic:
+/) makes the pattern match from the root of the working tree, even when you are running the command from inside a subdirectory\&.
+.RE
+.PP
+literal
+.RS 4
+Wildcards in the pattern such as
+*
+or
+?
+are treated as literal characters\&.
+.RE
+.PP
+icase
+.RS 4
+Case insensitive match\&.
+.RE
+.PP
+glob
+.RS 4
+Git treats the pattern as a shell glob suitable for consumption by fnmatch(3) with the FNM_PATHNAME flag: wildcards in the pattern will not match a / in the pathname\&. For example, "Documentation/*\&.html" matches "Documentation/git\&.html" but not "Documentation/ppc/ppc\&.html" or "tools/perf/Documentation/perf\&.html"\&.
+.sp
+Two consecutive asterisks ("**") in patterns matched against full pathname may have special meaning:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A leading "**" followed by a slash means match in all directories\&. For example, "**/foo" matches file or directory "foo" anywhere, the same as pattern "foo"\&. "**/foo/bar" matches file or directory "bar" anywhere that is directly under directory "foo"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A trailing "/\fB" matches everything inside\&. For example, "abc/\fR" matches all files inside directory "abc", relative to the location of the
+\&.gitignore
+file, with infinite depth\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A slash followed by two consecutive asterisks then a slash matches zero or more directories\&. For example, "a/**/b" matches "a/b", "a/x/b", "a/x/y/b" and so on\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Other consecutive asterisks are considered invalid\&.
+.sp
+Glob magic is incompatible with literal magic\&.
+.RE
+.RE
+.sp
+Currently only the slash
 /
-is recognized as a "magic signature": it makes the pattern match from the root of the working tree, even when you are running the command from inside a subdirectory\&.
+is recognized as the "magic signature", but it is envisioned that we will support more types of magic in later versions of Git\&.
 .sp
 A pathspec with only a colon means "there is no pathspec"\&. This form should not be combined with other pathspec\&.
 .RE
