@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 09/12/2013
+.\"      Date: 09/17/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.4.299.gb3e7d24
+.\"    Source: Git 1.8.4.357.g8d83871
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "09/12/2013" "Git 1\&.8\&.4\&.299\&.gb3e7d24" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "09/17/2013" "Git 1\&.8\&.4\&.357\&.g8d83871" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -330,8 +330,8 @@ Create or update a branch with a new commit, recording one logical change to the
         (\(aqauthor\(aq (SP <name>)? SP LT <email> GT SP <when> LF)?
         \(aqcommitter\(aq (SP <name>)? SP LT <email> GT SP <when> LF
         data
-        (\(aqfrom\(aq SP <committish> LF)?
-        (\(aqmerge\(aq SP <committish> LF)?
+        (\(aqfrom\(aq SP <commit\-ish> LF)?
+        (\(aqmerge\(aq SP <commit\-ish> LF)?
         (filemodify | filedelete | filecopy | filerename | filedeleteall | notemodify)*
         LF?
 .fi
@@ -387,9 +387,9 @@ The from command is used to specify the commit to initialize this branch from\&.
 .sp
 Omitting the from command in the first commit of a new branch will cause fast\-import to create that commit with no ancestor\&. This tends to be desired only for the initial commit of a project\&. If the frontend creates all files from scratch when making a new branch, a merge command may be used instead of from to start the commit with an empty tree\&. Omitting the from command on existing branches is usually desired, as the current commit on that branch is automatically assumed to be the first ancestor of the new commit\&.
 .sp
-As LF is not valid in a Git refname or SHA\-1 expression, no quoting or escaping syntax is supported within <committish>\&.
+As LF is not valid in a Git refname or SHA\-1 expression, no quoting or escaping syntax is supported within <commit\-ish>\&.
 .sp
-Here <committish> is any of the following:
+Here <commit\-ish> is any of the following:
 .sp
 .RS 4
 .ie n \{\
@@ -477,7 +477,7 @@ The ^0 suffix is necessary as fast\-import does not permit a branch to start fro
 .sp
 Includes one additional ancestor commit\&. The additional ancestry link does not change the way the tree state is built at this commit\&. If the from command is omitted when creating a new branch, the first merge commit will be the first ancestor of the current commit, and the branch will start out with no files\&. An unlimited number of merge commands per commit are permitted by fast\-import, thereby establishing an n\-way merge\&. However Git\(cqs other tools never create commits with more than 15 additional ancestors (forming a 16\-way merge)\&. For this reason it is suggested that frontends do not use more than 15 merge commands per commit; 16, if starting a new, empty branch\&.
 .sp
-Here <committish> is any of the commit specification expressions also accepted by from (see above)\&.
+Here <commit\-ish> is any of the commit specification expressions also accepted by from (see above)\&.
 .RE
 .sp
 .it 1 an-trap
@@ -786,7 +786,7 @@ Issuing a filedeleteall followed by the needed filemodify commands to set the co
 \fBnotemodify\fR
 .RS 4
 .sp
-Included in a commit <notes_ref> command to add a new note annotating a <committish> or change this annotation contents\&. Internally it is similar to filemodify 100644 on <committish> path (maybe split into subdirectories)\&. It\(cqs not advised to use any other commands to write to the <notes_ref> tree except filedeleteall to delete all existing notes in this tree\&. This command has two different means of specifying the content of the note\&.
+Included in a commit <notes_ref> command to add a new note annotating a <commit\-ish> or change this annotation contents\&. Internally it is similar to filemodify 100644 on <commit\-ish> path (maybe split into subdirectories)\&. It\(cqs not advised to use any other commands to write to the <notes_ref> tree except filedeleteall to delete all existing notes in this tree\&. This command has two different means of specifying the content of the note\&.
 .PP
 External data format
 .RS 4
@@ -798,7 +798,7 @@ command\&. The frontend just needs to connect it to the commit that is to be ann
 .RS 4
 .\}
 .nf
-        \(aqN\(aq SP <dataref> SP <committish> LF
+        \(aqN\(aq SP <dataref> SP <commit\-ish> LF
 .fi
 .if n \{\
 .RE
@@ -819,7 +819,7 @@ The data content for the note has not been supplied yet\&. The frontend wants to
 .RS 4
 .\}
 .nf
-        \(aqN\(aq SP \(aqinline\(aq SP <committish> LF
+        \(aqN\(aq SP \(aqinline\(aq SP <commit\-ish> LF
         data
 .fi
 .if n \{\
@@ -831,7 +831,7 @@ data
 command\&.
 .RE
 .sp
-In both formats <committish> is any of the commit specification expressions also accepted by from (see above)\&.
+In both formats <commit\-ish> is any of the commit specification expressions also accepted by from (see above)\&.
 .RE
 .SS "mark"
 .sp
@@ -859,7 +859,7 @@ Creates an annotated tag referring to a specific commit\&. To create lightweight
 .\}
 .nf
         \(aqtag\(aq SP <name> LF
-        \(aqfrom\(aq SP <committish> LF
+        \(aqfrom\(aq SP <commit\-ish> LF
         \(aqtagger\(aq (SP <name>)? SP LT <email> GT SP <when> LF
         data
 .fi
@@ -889,14 +889,14 @@ Creates (or recreates) the named branch, optionally starting from a specific rev
 .\}
 .nf
         \(aqreset\(aq SP <ref> LF
-        (\(aqfrom\(aq SP <committish> LF)?
+        (\(aqfrom\(aq SP <commit\-ish> LF)?
         LF?
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-For a detailed description of <ref> and <committish> see above under commit and from\&.
+For a detailed description of <ref> and <commit\-ish> see above under commit and from\&.
 .sp
 The LF after the command is optional (it used to be required)\&.
 .sp
