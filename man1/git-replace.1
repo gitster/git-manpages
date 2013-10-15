@@ -2,12 +2,12 @@
 .\"     Title: git-replace
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2013
+.\"      Date: 10/15/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.4
+.\"    Source: Git 1.8.4.554.g2b7ca91
 .\"  Language: English
 .\"
-.TH "GIT\-REPLACE" "1" "08/23/2013" "Git 1\&.8\&.4" "Git Manual"
+.TH "GIT\-REPLACE" "1" "10/15/2013" "Git 1\&.8\&.4\&.554\&.g2b7ca91" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -43,7 +43,11 @@ Adds a \fIreplace\fR reference in refs/replace/ namespace\&.
 .sp
 The name of the \fIreplace\fR reference is the SHA\-1 of the object that is replaced\&. The content of the \fIreplace\fR reference is the SHA\-1 of the replacement object\&.
 .sp
+The replaced object and the replacement object must be of the same type\&. This restriction can be bypassed using \-f\&.
+.sp
 Unless \-f is given, the \fIreplace\fR reference must not yet exist\&.
+.sp
+There is no other restriction on the replaced and replacement objects\&. Merge commits can be replaced by non\-merge commits and vice versa\&.
 .sp
 Replacement references will be used by default by all Git commands except those doing reachability traversal (prune, pack transfer and fsck)\&.
 .sp
@@ -80,28 +84,33 @@ shows information about commit \fIbar\fR\&.
 The \fIGIT_NO_REPLACE_OBJECTS\fR environment variable can be set to achieve the same effect as the \-\-no\-replace\-objects option\&.
 .SH "OPTIONS"
 .PP
-\-f
+\-f, \-\-force
 .RS 4
 If an existing replace ref for the same object exists, it will be overwritten (instead of failing)\&.
 .RE
 .PP
-\-d
+\-d, \-\-delete
 .RS 4
 Delete existing replace refs for the given objects\&.
 .RE
 .PP
-\-l <pattern>
+\-l <pattern>, \-\-list <pattern>
 .RS 4
 List replace refs for objects that match the given pattern (or all if no pattern is given)\&. Typing "git replace" without arguments, also lists all replace refs\&.
 .RE
+.SH "CREATING REPLACEMENT OBJECTS"
+.sp
+\fBgit-filter-branch\fR(1), \fBgit-hash-object\fR(1) and \fBgit-rebase\fR(1), among other git commands, can be used to create replacement objects from existing objects\&.
+.sp
+If you want to replace many blobs, trees or commits that are part of a string of commits, you may just want to create a replacement string of commits and then only replace the commit at the tip of the target string of commits with the commit at the tip of the replacement string of commits\&.
 .SH "BUGS"
 .sp
 Comparing blobs or trees that have been replaced with those that replace them will not work properly\&. And using git reset \-\-hard to go back to a replaced commit will move the branch to the replacement commit instead of the replaced commit\&.
 .sp
-There may be other problems when using \fIgit rev\-list\fR related to pending objects\&. And of course things may break if an object of one type is replaced by an object of another type (for example a blob replaced by a commit)\&.
+There may be other problems when using \fIgit rev\-list\fR related to pending objects\&.
 .SH "SEE ALSO"
 .sp
-\fBgit-tag\fR(1) \fBgit-branch\fR(1) \fBgit\fR(1)
+\fBgit-hash-object\fR(1) \fBgit-filter-branch\fR(1) \fBgit-rebase\fR(1) \fBgit-tag\fR(1) \fBgit-branch\fR(1) \fBgit\fR(1)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

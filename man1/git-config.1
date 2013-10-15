@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 09/20/2013
+.\"      Date: 10/15/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.4.474.g128a96c
+.\"    Source: Git 1.8.4.554.g2b7ca91
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "09/20/2013" "Git 1\&.8\&.4\&.474\&.g128a96c" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/15/2013" "Git 1\&.8\&.4\&.554\&.g2b7ca91" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2174,7 +2174,17 @@ Porcelain, and not lower level
 commands such as
 \fIgit diff\-files\fR\&.
 \fIgit checkout\fR
-also honors this setting when reporting uncommitted changes\&.
+also honors this setting when reporting uncommitted changes\&. Setting it to
+\fIall\fR
+disables the submodule summary normally shown by
+\fIgit commit\fR
+and
+\fIgit status\fR
+when
+\fIstatus\&.submodulesummary\fR
+is set unless it is overridden by using the \-\-ignore\-submodules command line option\&. The
+\fIgit submodule\fR
+commands are not affected by this setting\&.
 .RE
 .PP
 diff\&.mnemonicprefix
@@ -2339,6 +2349,17 @@ codecompare
 .IP \(bu 2.3
 .\}
 deltawalker
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+diffmerge
 .RE
 .sp
 .RS 4
@@ -3570,6 +3591,17 @@ deltawalker
 .sp -1
 .IP \(bu 2.3
 .\}
+diffmerge
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 diffuse
 .RE
 .sp
@@ -4427,7 +4459,14 @@ and
 status\&.submodulesummary
 .RS 4
 Defaults to false\&. If this is set to a non zero number or true (identical to \-1 or an unlimited number), the submodule summary will be enabled and a summary of commits for modified submodules will be shown (see \-\-summary\-limit option of
-\fBgit-submodule\fR(1))\&.
+\fBgit-submodule\fR(1))\&. Please note that the summary output command will be suppressed for all submodules when
+diff\&.ignoreSubmodules
+is set to
+\fIall\fR
+or only for those submodules where
+submodule\&.<name>\&.ignore=all\&. To also view the summary for ignored submodules you can either use the \-\-ignore\-submodules=dirty command line option or the
+\fIgit submodule summary\fR
+command, which shows a similar output but does not honor these settings\&.
 .RE
 .PP
 submodule\&.<name>\&.path, submodule\&.<name>\&.url, submodule\&.<name>\&.update
@@ -4463,7 +4502,9 @@ file\&.
 .PP
 submodule\&.<name>\&.ignore
 .RS 4
-Defines under what circumstances "git status" and the diff family show a submodule as modified\&. When set to "all", it will never be considered modified, "dirty" will ignore all changes to the submodules work tree and takes only differences between the HEAD of the submodule and the commit recorded in the superproject into account\&. "untracked" will additionally let submodules with modified tracked files in their work tree show up\&. Using "none" (the default when this option is not set) also shows submodules that have untracked files in their work tree as changed\&. This setting overrides any setting made in \&.gitmodules for this submodule, both settings can be overridden on the command line by using the "\-\-ignore\-submodules" option\&.
+Defines under what circumstances "git status" and the diff family show a submodule as modified\&. When set to "all", it will never be considered modified, "dirty" will ignore all changes to the submodules work tree and takes only differences between the HEAD of the submodule and the commit recorded in the superproject into account\&. "untracked" will additionally let submodules with modified tracked files in their work tree show up\&. Using "none" (the default when this option is not set) also shows submodules that have untracked files in their work tree as changed\&. This setting overrides any setting made in \&.gitmodules for this submodule, both settings can be overridden on the command line by using the "\-\-ignore\-submodules" option\&. The
+\fIgit submodule\fR
+commands are not affected by this setting\&.
 .RE
 .PP
 tar\&.umask
@@ -4573,7 +4614,9 @@ user\&.signingkey
 .RS 4
 If
 \fBgit-tag\fR(1)
-is not selecting the key you want it to automatically when creating a signed tag, you can override the default selection with this variable\&. This option is passed unchanged to gpg\(cqs \-\-local\-user parameter, so you may specify a key using any method that gpg supports\&.
+or
+\fBgit-commit\fR(1)
+is not selecting the key you want it to automatically when creating a signed tag or commit, you can override the default selection with this variable\&. This option is passed unchanged to gpg\(cqs \-\-local\-user parameter, so you may specify a key using any method that gpg supports\&.
 .RE
 .PP
 web\&.browser
