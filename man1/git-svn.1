@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2013
+.\"      Date: 10/16/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.4
+.\"    Source: Git 1.8.4.1.516.g1d25dd4
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "08/23/2013" "Git 1\&.8\&.4" "Git Manual"
+.TH "GIT\-SVN" "1" "10/16/2013" "Git 1\&.8\&.4\&.1\&.516\&.g1d2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -98,7 +98,22 @@ For transports that SVN handles authentication for (http, https, and plain svn),
 .PP
 \-\-prefix=<prefix>
 .RS 4
-This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified\&. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want\&. If \-\-branches/\-b is specified, the prefix must include a trailing slash\&. Setting a prefix is useful if you wish to track multiple projects that share a common repository\&.
+This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified\&. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want\&. If \-\-branches/\-b is specified, the prefix must include a trailing slash\&. Setting a prefix (with a trailing slash) is strongly encouraged in any case, as your SVN\-tracking refs will then be located at "refs/remotes/$prefix/\fB", which is compatible with Git\(cqs own remote\-tracking ref layout (refs/remotes/$remote/\fR)\&. Setting a prefix is also useful if you wish to track multiple projects that share a common repository\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+In Git v2\&.0, the default prefix will CHANGE from "" (no prefix) to "origin/"\&. This is done to put SVN\-tracking refs at "refs/remotes/origin/\fB" instead of "refs/remotes/\fR", and make them more compatible with how Git\(cqs own remote\-tracking refs are organized (i\&.e\&. refs/remotes/$remote/*)\&. You can enjoy the same benefits today, by using the \-\-prefix option\&.
+.sp .5v
+.RE
 .RE
 .PP
 \-\-ignore\-paths=<regex>
@@ -135,7 +150,11 @@ will allow git svn to accept URLs as\-is without attempting to connect to a high
 .PP
 \fIfetch\fR
 .RS 4
-Fetch unfetched revisions from the Subversion remote we are tracking\&. The name of the [svn\-remote "\&..."] section in the \&.git/config file may be specified as an optional command\-line argument\&.
+Fetch unfetched revisions from the Subversion remote we are tracking\&. The name of the [svn\-remote "\&..."] section in the $GIT_DIR/config file may be specified as an optional command\-line argument\&.
+.sp
+This automatically updates the rev_map if needed (see
+\fI$GIT_DIR/svn/**/\&.rev_map\&.*\fR
+in the FILES section below for details)\&.
 .PP
 \-\-localtime
 .RS 4
@@ -286,6 +305,10 @@ only fetches from the current [svn\-remote], and not all [svn\-remote] definitio
 .sp
 Like
 \fIgit rebase\fR; this requires that the working tree be clean and have no uncommitted changes\&.
+.sp
+This automatically updates the rev_map if needed (see
+\fI$GIT_DIR/svn/**/\&.rev_map\&.*\fR
+in the FILES section below for details)\&.
 .PP
 \-l, \-\-local
 .RS 4
@@ -581,7 +604,7 @@ Shows the Subversion externals\&. Use \-r/\-\-revision to specify a specific rev
 .PP
 \fIgc\fR
 .RS 4
-Compress $GIT_DIR/svn/<refname>/unhandled\&.log files in \&.git/svn and remove $GIT_DIR/svn/<refname>index files in \&.git/svn\&.
+Compress $GIT_DIR/svn/<refname>/unhandled\&.log files and remove $GIT_DIR/svn/<refname>/index files\&.
 .RE
 .PP
 \fIreset\fR
@@ -596,7 +619,9 @@ should not be necessary\&. However, if SVN permissions change, or if you alter y
 may fail with "not found in commit" (file not previously visible) or "checksum mismatch" (missed a modification)\&. If the problem file cannot be ignored forever (with \-\-ignore\-paths) the only way to repair the repo is to use
 \fIreset\fR\&.
 .sp
-Only the rev_map and refs/remotes/git\-svn are changed\&. Follow
+Only the rev_map and refs/remotes/git\-svn are changed (see
+\fI$GIT_DIR/svn/**/\&.rev_map\&.*\fR
+in the FILES section below for details)\&. Follow
 \fIreset\fR
 with a
 \fIfetch\fR
@@ -978,7 +1003,8 @@ lines at the end of every commit\&.
 .sp
 This option can only be used for one\-shot imports as
 \fIgit svn\fR
-will not be able to fetch again without metadata\&. Additionally, if you lose your \&.git/svn/\fB*/\&.rev_map\&.\fR
+will not be able to fetch again without metadata\&. Additionally, if you lose your
+\fI$GIT_DIR/svn/**/\&.rev_map\&.*\fR
 files,
 \fIgit svn\fR
 will not be able to rebuild them\&.
@@ -1098,16 +1124,16 @@ Tracking and contributing to an entire Subversion\-managed project (complete wit
 .\}
 .nf
 # Clone a repo with standard SVN directory layout (like git clone):
-        git svn clone http://svn\&.example\&.com/project \-\-stdlayout
+        git svn clone http://svn\&.example\&.com/project \-\-stdlayout \-\-prefix svn/
 # Or, if the repo uses a non\-standard directory layout:
-        git svn clone http://svn\&.example\&.com/project \-T tr \-b branch \-t tag
+        git svn clone http://svn\&.example\&.com/project \-T tr \-b branch \-t tag \-\-prefix svn/
 # View all branches and tags you have cloned:
         git branch \-r
 # Create a new branch in SVN
     git svn branch waldo
 # Reset your master to trunk (or any other branch, replacing \(aqtrunk\(aq
 # with the appropriate name):
-        git reset \-\-hard remotes/trunk
+        git reset \-\-hard svn/trunk
 # You may only dcommit to one branch/tag/trunk at a time\&.  The usage
 # of dcommit/rebase/show\-ignore should be the same as above\&.
 .fi
@@ -1123,7 +1149,7 @@ The initial \fIgit svn clone\fR can be quite time\-consuming (especially for lar
 .\}
 .nf
 # Do the initial import on a server
-        ssh server "cd /pub && git svn clone http://svn\&.example\&.com/project
+        ssh server "cd /pub && git svn clone http://svn\&.example\&.com/project [options\&.\&.\&.]"
 # Clone locally \- make sure the refs/remotes/ space matches the server
         mkdir project
         cd project
@@ -1136,8 +1162,9 @@ The initial \fIgit svn clone\fR can be quite time\-consuming (especially for lar
         git config \-\-remove\-section remote\&.origin
 # Create a local branch from one of the branches just fetched
         git checkout \-b master FETCH_HEAD
-# Initialize \(aqgit svn\(aq locally (be sure to use the same URL and \-T/\-b/\-t options as were used on server)
-        git svn init http://svn\&.example\&.com/project
+# Initialize \(aqgit svn\(aq locally (be sure to use the same URL and
+# \-\-stdlayout/\-T/\-b/\-t/\-\-prefix options as were used on server)
+        git svn init http://svn\&.example\&.com/project [options\&.\&.\&.]
 # Pull the latest changes from Subversion
         git svn rebase
 .fi
@@ -1193,7 +1220,9 @@ Do not use the \-\-amend option of \fBgit-commit\fR(1) on a change you\(cqve alr
 .sp
 When cloning an SVN repository, if none of the options for describing the repository layout is used (\-\-trunk, \-\-tags, \-\-branches, \-\-stdlayout), \fIgit svn clone\fR will create a Git repository with completely linear history, where branches and tags appear as separate directories in the working copy\&. While this is the easiest way to get a copy of a complete repository, for projects with many branches it will lead to a working copy many times larger than just the trunk\&. Thus for projects using the standard directory structure (trunk/branches/tags), it is recommended to clone with option \fI\-\-stdlayout\fR\&. If the project uses a non\-standard structure, and/or if branches and tags are not required, it is easiest to only clone one directory (typically trunk), without giving any repository layout options\&. If the full history with branches and tags is required, the options \fI\-\-trunk\fR / \fI\-\-branches\fR / \fI\-\-tags\fR must be used\&.
 .sp
-When using multiple \-\-branches or \-\-tags, \fIgit svn\fR does not automatically handle name collisions (for example, if two branches from different paths have the same name, or if a branch and a tag have the same name)\&. In these cases, use \fIinit\fR to set up your Git repository then, before your first \fIfetch\fR, edit the \&.git/config file so that the branches and tags are associated with different name spaces\&. For example:
+When using the options for describing the repository layout (\-\-trunk, \-\-tags, \-\-branches, \-\-stdlayout), please also specify the \-\-prefix option (e\&.g\&. \fI\-\-prefix=origin/\fR) to cause your SVN\-tracking refs to be placed at refs/remotes/origin/* rather than the default refs/remotes/\fB\&. The former is more compatible with the layout of Git\(cqs "regular" remote\-tracking refs (refs/remotes/$remote/\fR), and may potentially prevent similarly named SVN branches and Git remotes from clobbering each other\&. In Git v2\&.0 the default prefix used (i\&.e\&. when no \-\-prefix is given) will change from "" (no prefix) to "origin/"\&.
+.sp
+When using multiple \-\-branches or \-\-tags, \fIgit svn\fR does not automatically handle name collisions (for example, if two branches from different paths have the same name, or if a branch and a tag have the same name)\&. In these cases, use \fIinit\fR to set up your Git repository then, before your first \fIfetch\fR, edit the $GIT_DIR/config file so that the branches and tags are associated with different name spaces\&. For example:
 .sp
 .if n \{\
 .RS 4
@@ -1214,7 +1243,7 @@ Renamed and copied directories are not detected by Git and hence not tracked whe
 In SVN, it is possible (though discouraged) to commit changes to a tag (because a tag is just a directory copy, thus technically the same as a branch)\&. When cloning an SVN repository, \fIgit svn\fR cannot know if such a commit to a tag will happen in the future\&. Thus it acts conservatively and imports all SVN tags as branches, prefixing the tag name with \fItags/\fR\&.
 .SH "CONFIGURATION"
 .sp
-\fIgit svn\fR stores [svn\-remote] configuration information in the repository \&.git/config file\&. It is similar the core Git [remote] sections except \fIfetch\fR keys do not accept glob arguments; but they are instead handled by the \fIbranches\fR and \fItags\fR keys\&. Since some SVN repositories are oddly configured with multiple projects glob expansions such those listed below are allowed:
+\fIgit svn\fR stores [svn\-remote] configuration information in the repository $GIT_DIR/config file\&. It is similar the core Git [remote] sections except \fIfetch\fR keys do not accept glob arguments; but they are instead handled by the \fIbranches\fR and \fItags\fR keys\&. Since some SVN repositories are oddly configured with multiple projects glob expansions such those listed below are allowed:
 .sp
 .if n \{\
 .RS 4
@@ -1242,8 +1271,8 @@ It is also possible to fetch a subset of branches or tags by using a comma\-sepa
 [svn\-remote "huge\-project"]
         url = http://server\&.org/svn
         fetch = trunk/src:refs/remotes/trunk
-        branches = branches/{red,green}/src:refs/remotes/branches/*
-        tags = tags/{1\&.0,2\&.0}/src:refs/remotes/tags/*
+        branches = branches/{red,green}/src:refs/remotes/project\-a/branches/*
+        tags = tags/{1\&.0,2\&.0}/src:refs/remotes/project\-a/tags/*
 .fi
 .if n \{\
 .RE
@@ -1282,7 +1311,22 @@ $ git svn branch \-d branches/server release\-2\-3\-0
 .\}
 .sp
 .sp
-Note that git\-svn keeps track of the highest revision in which a branch or tag has appeared\&. If the subset of branches or tags is changed after fetching, then \&.git/svn/\&.metadata must be manually edited to remove (or reset) branches\-maxRev and/or tags\-maxRev as appropriate\&.
+Note that git\-svn keeps track of the highest revision in which a branch or tag has appeared\&. If the subset of branches or tags is changed after fetching, then $GIT_DIR/svn/\&.metadata must be manually edited to remove (or reset) branches\-maxRev and/or tags\-maxRev as appropriate\&.
+.SH "FILES"
+.PP
+$GIT_DIR/svn/**/\&.rev_map\&.*
+.RS 4
+Mapping between Subversion revision numbers and Git commit names\&. In a repository where the noMetadata option is not set, this can be rebuilt from the git\-svn\-id: lines that are at the end of every commit (see the
+\fIsvn\&.noMetadata\fR
+section above for details)\&.
+.sp
+\fIgit svn fetch\fR
+and
+\fIgit svn rebase\fR
+automatically update the rev_map if it is missing or not up to date\&.
+\fIgit svn reset\fR
+automatically rewinds it\&.
+.RE
 .SH "SEE ALSO"
 .sp
 \fBgit-rebase\fR(1)
