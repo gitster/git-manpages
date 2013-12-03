@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 11/27/2013
+.\"      Date: 12/03/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.5
+.\"    Source: Git 1.8.5.1.19.gdaad3aa
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "11/27/2013" "Git 1\&.8\&.5" "Git Manual"
+.TH "GIT\-LOG" "1" "12/03/2013" "Git 1\&.8\&.5\&.1\&.19\&.gdaad" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,7 +39,7 @@ git-log \- Show commit logs
 .sp
 Shows the commit logs\&.
 .sp
-The command takes options applicable to the \fIgit rev\-list\fR command to control what is shown and how, and options applicable to the \fIgit diff\-*\fR commands to control how the changes each commit introduces are shown\&.
+The command takes options applicable to the git rev\-list command to control what is shown and how, and options applicable to the git diff\-* commands to control how the changes each commit introduces are shown\&.
 .SH "OPTIONS"
 .PP
 \-\-follow
@@ -69,20 +69,25 @@ Print out the ref name given on the command line by which each commit was reache
 .PP
 \-\-use\-mailmap
 .RS 4
-Use mailmap file to map author and committer names and email to canonical real names and email addresses\&. See
+Use mailmap file to map author and committer names and email addresses to canonical real names and email addresses\&. See
 \fBgit-shortlog\fR(1)\&.
 .RE
 .PP
 \-\-full\-diff
 .RS 4
-Without this flag, "git log \-p <path>\&..." shows commits that touch the specified paths, and diffs about the same specified paths\&. With this, the full diff is shown for commits that touch the specified paths; this means that "<path>\&..." limits only commits, and doesn\(cqt limit diff for those commits\&.
+Without this flag,
+git log \-p <path>\&.\&.\&.
+shows commits that touch the specified paths, and diffs about the same specified paths\&. With this, the full diff is shown for commits that touch the specified paths; this means that "<path>\&..." limits only commits, and doesn\(cqt limit diff for those commits\&.
 .sp
-Note that this affects all diff\-based output types, e\&.g\&. those produced by \-\-stat etc\&.
+Note that this affects all diff\-based output types, e\&.g\&. those produced by
+\-\-stat, etc\&.
 .RE
 .PP
 \-\-log\-size
 .RS 4
-Before the log message print out its size in bytes\&. Intended mainly for porcelain tools consumption\&. If Git is unable to produce a valid value size is set to zero\&. Note that only message is considered, if also a diff is shown its size is not included\&.
+Include a line \(lqlog size <number>\(rq in the output for each commit, where <number> is the length of that commit\(cqs message in bytes\&. Intended to speed up tools that read log messages from
+git log
+output by allowing them to allocate space in advance\&.
 .RE
 .PP
 \-L <start>,<end>:<file>, \-L :<regex>:<file>
@@ -145,15 +150,19 @@ HEAD
 origin\&.\&.HEAD
 specifies all the commits reachable from the current commit (i\&.e\&.
 HEAD), but not from
-origin\&. For a complete list of ways to spell <revision range>, see the "Specifying Ranges" section of
+origin\&. For a complete list of ways to spell <revision range>, see the
+\fISpecifying Ranges\fR
+section of
 \fBgitrevisions\fR(7)\&.
 .RE
 .PP
 [\-\-] <path>\&...
 .RS 4
-Show only commits that are enough to explain how the files that match the specified paths came to be\&. See "History Simplification" below for details and other simplification modes\&.
+Show only commits that are enough to explain how the files that match the specified paths came to be\&. See
+\fIHistory Simplification\fR
+below for details and other simplification modes\&.
 .sp
-Paths may need to be prefixed with "\-\- " to separate them from options or the revision range, when confusion arises\&.
+Paths may need to be prefixed with \(oq`\-\- \(aq\(cq to separate them from options or the revision range, when confusion arises\&.
 .RE
 .SS "Commit Limiting"
 .sp
@@ -213,12 +222,13 @@ is in effect, the message from the notes as if it is part of the log message\&.
 .PP
 \-\-all\-match
 .RS 4
-Limit the commits output to ones that match all given \-\-grep, instead of ones that match at least one\&.
+Limit the commits output to ones that match all given
+\-\-grep, instead of ones that match at least one\&.
 .RE
 .PP
 \-i, \-\-regexp\-ignore\-case
 .RS 4
-Match the regexp limiting patterns without regard to letters case\&.
+Match the regular expression limiting patterns without regard to letter case\&.
 .RE
 .PP
 \-\-basic\-regexp
@@ -238,7 +248,7 @@ Consider the limiting patterns to be fixed strings (don\(cqt interpret pattern a
 .PP
 \-\-perl\-regexp
 .RS 4
-Consider the limiting patterns to be Perl\-compatible regexp\&. Requires libpcre to be compiled in\&.
+Consider the limiting patterns to be Perl\-compatible regular expressions\&. Requires libpcre to be compiled in\&.
 .RE
 .PP
 \-\-remove\-empty
@@ -292,7 +302,7 @@ Follow only the first parent commit upon seeing a merge commit\&. This option ca
 Reverses the meaning of the
 \fI^\fR
 prefix (or lack thereof) for all following revision specifiers, up to the next
-\fI\-\-not\fR\&.
+\-\-not\&.
 .RE
 .PP
 \-\-all
@@ -399,7 +409,7 @@ rather than omitting them, and inequivalent ones with
 .PP
 \-\-cherry\-pick
 .RS 4
-Omit any commit that introduces the same change as another commit on the "other side" when the set of commits are limited with symmetric difference\&.
+Omit any commit that introduces the same change as another commit on the \(lqother side\(rq when the set of commits are limited with symmetric difference\&.
 .sp
 For example, if you have two branches,
 A
@@ -408,7 +418,7 @@ B, a usual way to list all commits on only one side of them is with
 \-\-left\-right
 (see the example below in the description of the
 \-\-left\-right
-option)\&. It however shows the commits that were cherry\-picked from the other branch (for example, "3rd on b" may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
+option)\&. However, it shows the commits that were cherry\-picked from the other branch (for example, \(lq3rd on b\(rq may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
 .RE
 .PP
 \-\-left\-only, \-\-right\-only
@@ -452,15 +462,17 @@ Instead of walking the commit ancestry chain, walk reflog entries from the most 
 notations cannot be used)\&.
 .sp
 With
-\fI\-\-pretty\fR
-format other than oneline (for obvious reasons), this causes the output to have two extra lines of information taken from the reflog\&. By default,
+\-\-pretty
+format other than
+oneline
+(for obvious reasons), this causes the output to have two extra lines of information taken from the reflog\&. By default,
 \fIcommit@{Nth}\fR
 notation is used in the output\&. When the starting commit is specified as
 \fIcommit@{now}\fR, output also uses
 \fIcommit@{timestamp}\fR
 notation instead\&. Under
-\fI\-\-pretty=oneline\fR, the commit message is prefixed with this information on the same line\&. This option cannot be combined with
-\fI\-\-reverse\fR\&. See also
+\-\-pretty=oneline, the commit message is prefixed with this information on the same line\&. This option cannot be combined with
+\-\-reverse\&. See also
 \fBgit-reflog\fR(1)\&.
 .RE
 .PP
@@ -517,7 +529,7 @@ All commits in the simplified history are shown\&.
 \-\-simplify\-merges
 .RS 4
 Additional option to
-\fI\-\-full\-history\fR
+\-\-full\-history
 to remove some needless merges from the resulting history, as there are no selected commits contributing to this merge\&.
 .RE
 .PP
@@ -569,9 +581,9 @@ The horizontal line of history A\-\-\-Q is taken to be the first parent of each 
 I
 is the initial commit, in which
 foo
-exists with contents "asdf", and a file
+exists with contents \(lqasdf\(rq, and a file
 quux
-exists with contents "quux"\&. Initial commits are compared to an empty tree, so
+exists with contents \(lqquux\(rq\&. Initial commits are compared to an empty tree, so
 I
 is !TREESAME\&.
 .RE
@@ -587,7 +599,7 @@ is !TREESAME\&.
 In
 A,
 foo
-contains just "foo"\&.
+contains just \(lqfoo\(rq\&.
 .RE
 .sp
 .RS 4
@@ -619,7 +631,7 @@ C
 does not change
 foo, but its merge
 N
-changes it to "foobar", so it is not TREESAME to any parent\&.
+changes it to \(lqfoobar\(rq, so it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -634,13 +646,13 @@ changes it to "foobar", so it is not TREESAME to any parent\&.
 D
 sets
 foo
-to "baz"\&. Its merge
+to \(lqbaz\(rq\&. Its merge
 O
 combines the strings from
 N
 and
 D
-to "foobarbaz"; i\&.e\&., it is not TREESAME to any parent\&.
+to \(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -655,9 +667,9 @@ to "foobarbaz"; i\&.e\&., it is not TREESAME to any parent\&.
 E
 changes
 quux
-to "xyzzy", and its merge
+to \(lqxyzzy\(rq, and its merge
 P
-combines the strings to "quux xyzzy"\&.
+combines the strings to \(lqquux xyzzy\(rq\&.
 P
 is TREESAME to
 O, but not to
@@ -692,12 +704,12 @@ P, but not to
 Y\&.
 .RE
 .sp
-\fIrev\-list\fR walks backwards through history, including or excluding commits based on whether \fI\-\-full\-history\fR and/or parent rewriting (via \fI\-\-parents\fR or \fI\-\-children\fR) are used\&. The following settings are available\&.
+rev\-list walks backwards through history, including or excluding commits based on whether \-\-full\-history and/or parent rewriting (via \-\-parents or \-\-children) are used\&. The following settings are available\&.
 .PP
 Default mode
 .RS 4
 Commits are included if they are not TREESAME to any parent (though this can be changed, see
-\fI\-\-sparse\fR
+\-\-sparse
 below)\&. If the commit was a merge, and it was TREESAME to one parent, follow only that parent\&. (Even if there are several TREESAME parents, follow only one of them\&.) Otherwise, follow all parents\&.
 .sp
 This results in:
@@ -723,7 +735,8 @@ N, but is TREESAME\&. Root commits are compared to an empty tree, so
 I
 is !TREESAME\&.
 .sp
-Parent/child relations are only visible with \-\-parents, but that does not affect the commits selected in default mode, so we have shown the parent lines\&.
+Parent/child relations are only visible with
+\-\-parents, but that does not affect the commits selected in default mode, so we have shown the parent lines\&.
 .RE
 .PP
 \-\-full\-history without parent rewriting
@@ -756,7 +769,7 @@ Note that without parent rewriting, it is not really possible to talk about the 
 \-\-full\-history with parent rewriting
 .RS 4
 Ordinary commits are only included if they are !TREESAME (though this can be changed, see
-\fI\-\-sparse\fR
+\-\-sparse
 below)\&.
 .sp
 Merges are always included\&. However, their parent list is rewritten: Along each parent, prune away commits that are not included themselves\&. This results in
@@ -776,7 +789,7 @@ Merges are always included\&. However, their parent list is rewritten: Along eac
 .\}
 .sp
 Compare to
-\fI\-\-full\-history\fR
+\-\-full\-history
 without rewriting above\&. Note that
 E
 was pruned away because it is TREESAME, but the parent list of P was rewritten to contain
@@ -803,13 +816,13 @@ Commits that are walked are included if they are not TREESAME to any parent\&.
 All commits that are walked are included\&.
 .sp
 Note that without
-\fI\-\-full\-history\fR, this still simplifies merges: if one of the parents is TREESAME, we follow only that one, so the other sides of the merge are never walked\&.
+\-\-full\-history, this still simplifies merges: if one of the parents is TREESAME, we follow only that one, so the other sides of the merge are never walked\&.
 .RE
 .PP
 \-\-simplify\-merges
 .RS 4
 First, build a history graph in the same way that
-\fI\-\-full\-history\fR
+\-\-full\-history
 with parent rewriting does (see above)\&.
 .sp
 Then simplify each commit
@@ -862,7 +875,7 @@ is a root or merge commit (has zero or >1 parents), a boundary commit, or !TREES
 .RE
 .sp
 The effect of this is best shown by way of comparing to
-\fI\-\-full\-history\fR
+\-\-full\-history
 with parent rewriting\&. The example turns into:
 .sp
 .if n \{\
@@ -881,11 +894,10 @@ with parent rewriting\&. The example turns into:
 .sp
 Note the major differences in
 N,
-P
-and
+P, and
 Q
 over
-\fI\-\-full\-history\fR:
+\-\-full\-history:
 .sp
 .RS 4
 .ie n \{\
@@ -944,7 +956,7 @@ Finally, there is a fifth simplification mode available:
 .PP
 \-\-ancestry\-path
 .RS 4
-Limit the displayed commits to those directly on the ancestry chain between the "from" and "to" commits in the given commit range\&. I\&.e\&. only display commits that are ancestor of the "to" commit, and descendants of the "from" commit\&.
+Limit the displayed commits to those directly on the ancestry chain between the \(lqfrom\(rq and \(lqto\(rq commits in the given commit range\&. I\&.e\&. only display commits that are ancestor of the \(lqto\(rq commit and descendants of the \(lqfrom\(rq commit\&.
 .sp
 As an example use case, consider the following commit history:
 .sp
@@ -969,10 +981,10 @@ M, but excludes the ones that are ancestors of
 D\&. This is useful to see what happened to the history leading to
 M
 since
-D, in the sense that "what does
+D, in the sense that \(lqwhat does
 M
 have that did not exist in
-D"\&. The result in this example would be all the commits, except
+D\(rq\&. The result in this example would be all the commits, except
 A
 and
 B
@@ -991,7 +1003,7 @@ D, i\&.e\&. excluding
 C
 and
 K\&. This is exactly what the
-\fI\-\-ancestry\-path\fR
+\-\-ancestry\-path
 option does\&. Applied to the
 \fID\&.\&.M\fR
 range, it results in:
@@ -1012,7 +1024,7 @@ range, it results in:
 .sp
 .RE
 .sp
-The \fI\-\-simplify\-by\-decoration\fR option allows you to view only the big picture of the topology of the history, by omitting commits that are not referenced by tags\&. Commits are marked as !TREESAME (in other words, kept after history simplification rules described above) if (1) they are referenced by tags, or (2) they change the contents of the paths given on the command line\&. All other commits are marked as TREESAME (subject to be simplified away)\&.
+The \-\-simplify\-by\-decoration option allows you to view only the big picture of the topology of the history, by omitting commits that are not referenced by tags\&. Commits are marked as !TREESAME (in other words, kept after history simplification rules described above) if (1) they are referenced by tags, or (2) they change the contents of the paths given on the command line\&. All other commits are marked as TREESAME (subject to be simplified away)\&.
 .SS "Commit Ordering"
 .sp
 By default, the commits are shown in reverse chronological order\&.
@@ -1058,7 +1070,7 @@ With
 \-\-reverse
 .RS 4
 Output the commits in reverse order\&. Cannot be combined with
-\fI\-\-walk\-reflogs\fR\&.
+\-\-walk\-reflogs\&.
 .RE
 .SS "Object Traversal"
 .sp
@@ -1067,34 +1079,40 @@ These options are mostly targeted for packing of Git repositories\&.
 \-\-objects
 .RS 4
 Print the object IDs of any object referenced by the listed commits\&.
-\fI\-\-objects foo ^bar\fR
-thus means "send me all object IDs which I need to download if I have the commit object
-\fIbar\fR, but not
-\fIfoo\fR"\&.
+\-\-objects foo ^bar
+thus means \(lqsend me all object IDs which I need to download if I have the commit object
+\fIbar\fR
+but not
+\fIfoo\fR\(rq\&.
 .RE
 .PP
 \-\-objects\-edge
 .RS 4
 Similar to
-\fI\-\-objects\fR, but also print the IDs of excluded commits prefixed with a "\-" character\&. This is used by
+\-\-objects, but also print the IDs of excluded commits prefixed with a \(lq\-\(rq character\&. This is used by
 \fBgit-pack-objects\fR(1)
-to build "thin" pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic\&.
+to build \(lqthin\(rq pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic\&.
 .RE
 .PP
 \-\-unpacked
 .RS 4
 Only useful with
-\fI\-\-objects\fR; print the object IDs that are not in packs\&.
+\-\-objects; print the object IDs that are not in packs\&.
 .RE
 .PP
 \-\-no\-walk[=(sorted|unsorted)]
 .RS 4
-Only show the given commits, but do not traverse their ancestors\&. This has no effect if a range is specified\&. If the argument "unsorted" is given, the commits are show in the order they were given on the command line\&. Otherwise (if "sorted" or no argument was given), the commits are show in reverse chronological order by commit time\&.
+Only show the given commits, but do not traverse their ancestors\&. This has no effect if a range is specified\&. If the argument
+unsorted
+is given, the commits are shown in the order they were given on the command line\&. Otherwise (if
+sorted
+or no argument was given), the commits are shown in reverse chronological order by commit time\&.
 .RE
 .PP
 \-\-do\-walk
 .RS 4
-Overrides a previous \-\-no\-walk\&.
+Overrides a previous
+\-\-no\-walk\&.
 .RE
 .SS "Commit Formatting"
 .PP
@@ -1203,12 +1221,15 @@ Synonym for
 .PP
 \-\-date=(relative|local|default|iso|rfc|short|raw)
 .RS 4
-Only takes effect for dates shown in human\-readable format, such as when using "\-\-pretty"\&.
+Only takes effect for dates shown in human\-readable format, such as when using
+\-\-pretty\&.
 log\&.date
-config variable sets a default value for log command\(cqs \-\-date option\&.
+config variable sets a default value for the log command\(cqs
+\-\-date
+option\&.
 .sp
 \-\-date=relative
-shows dates relative to the current time, e\&.g\&. "2 hours ago"\&.
+shows dates relative to the current time, e\&.g\&. \(lq2 hours ago\(rq\&.
 .sp
 \-\-date=local
 shows timestamps in user\(cqs local time zone\&.
@@ -1219,10 +1240,10 @@ shows timestamps in user\(cqs local time zone\&.
 .sp
 \-\-date=rfc
 (or
-\-\-date=rfc2822) shows timestamps in RFC 2822 format, often found in E\-mail messages\&.
+\-\-date=rfc2822) shows timestamps in RFC 2822 format, often found in email messages\&.
 .sp
 \-\-date=short
-shows only date but not time, in
+shows only the date, but not the time, in
 YYYY\-MM\-DD
 format\&.
 .sp
@@ -1304,14 +1325,14 @@ This enables parent rewriting, see
 below\&.
 .sp
 This implies the
-\fI\-\-topo\-order\fR
+\-\-topo\-order
 option by default, but the
-\fI\-\-date\-order\fR
+\-\-date\-order
 option may also be specified\&.
 .RE
 .SS "Diff Formatting"
 .sp
-Below are listed options that control the formatting of diff output\&. Some of them are specific to \fBgit-rev-list\fR(1), however other diff options may be given\&. See \fBgit-diff-files\fR(1) for more options\&.
+Listed below are options that control the formatting of diff output\&. Some of them are specific to \fBgit-rev-list\fR(1), however other diff options may be given\&. See \fBgit-diff-files\fR(1) for more options\&.
 .PP
 \-c
 .RS 4
@@ -1321,14 +1342,14 @@ With this option, diff output for a merge commit shows the differences from each
 \-\-cc
 .RS 4
 This flag implies the
-\fI\-c\fR
+\-c
 option and further compresses the patch output by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
 .RE
 .PP
 \-m
 .RS 4
 This flag makes the merge commits show the full diff like regular commits; for each merge parent, a separate log entry and diff is generated\&. An exception is that only diff against the first parent is shown when
-\fI\-\-first\-parent\fR
+\-\-first\-parent
 option is given; in that case, the output represents the changes the merge brought
 \fIinto\fR
 the then\-current branch\&.
@@ -1342,7 +1363,7 @@ Show recursive diffs\&.
 \-t
 .RS 4
 Show the tree objects in the diff output\&. This implies
-\fI\-r\fR\&.
+\-r\&.
 .RE
 .SH "PRETTY FORMATS"
 .sp
@@ -3331,13 +3352,17 @@ git log v2\&.6\&.12\&.\&. include/scsi drivers/scsi
 .RS 4
 Show all commits since version
 \fIv2\&.6\&.12\fR
-that changed any file in the include/scsi or drivers/scsi subdirectories
+that changed any file in the
+include/scsi
+or
+drivers/scsi
+subdirectories
 .RE
 .PP
 git log \-\-since="2 weeks ago" \-\- gitk
 .RS 4
 Show the changes during the last two weeks to the file
-\fIgitk\fR\&. The "\-\-" is necessary to avoid confusion with the
+\fIgitk\fR\&. The \(lq\-\-\(rq is necessary to avoid confusion with the
 \fBbranch\fR
 named
 \fIgitk\fR
@@ -3350,7 +3375,8 @@ Show the commits that are in the "test" branch but not yet in the "release" bran
 .PP
 git log \-\-follow builtin/rev\-list\&.c
 .RS 4
-Shows the commits that changed builtin/rev\-list\&.c, including those commits that occurred before the file was given its present name\&.
+Shows the commits that changed
+builtin/rev\-list\&.c, including those commits that occurred before the file was given its present name\&.
 .RE
 .PP
 git log \-\-branches \-\-not \-\-remotes=origin
@@ -3367,7 +3393,7 @@ Shows all commits that are in local master but not in any remote repository mast
 .PP
 git log \-p \-m \-\-first\-parent
 .RS 4
-Shows the history including change diffs, but only from the "main branch" perspective, skipping commits that come from merged branches, and showing full diffs of changes introduced by the merges\&. This makes sense only when following a strict policy of merging all topic branches when staying on a single integration branch\&.
+Shows the history including change diffs, but only from the \(lqmain branch\(rq perspective, skipping commits that come from merged branches, and showing full diffs of changes introduced by the merges\&. This makes sense only when following a strict policy of merging all topic branches when staying on a single integration branch\&.
 .RE
 .PP
 git log \-L \(aq/int main/\(aq,/^}/:main\&.c
@@ -3375,7 +3401,7 @@ git log \-L \(aq/int main/\(aq,/^}/:main\&.c
 Shows how the function
 main()
 in the file
-\fImain\&.c\fR
+main\&.c
 evolved over time\&.
 .RE
 .PP
@@ -3501,14 +3527,19 @@ format\&.pretty
 .RS 4
 Default for the
 \-\-format
-option\&. (See "PRETTY FORMATS" above\&.) Defaults to "medium"\&.
+option\&. (See
+\fIPretty Formats\fR
+above\&.) Defaults to
+medium\&.
 .RE
 .PP
 i18n\&.logOutputEncoding
 .RS 4
-Encoding to use when displaying logs\&. (See "Discussion", above\&.) Defaults to the value of
+Encoding to use when displaying logs\&. (See
+\fIDiscussion\fR
+above\&.) Defaults to the value of
 i18n\&.commitEncoding
-if set, UTF\-8 otherwise\&.
+if set, and UTF\-8 otherwise\&.
 .RE
 .PP
 log\&.date
@@ -3523,7 +3554,7 @@ log\&.showroot
 .RS 4
 If
 false,
-\fIgit log\fR
+git log
 and related commands will not treat the initial commit as a big creation event\&. Any root commits in
 git log \-p
 output would be shown without a diff attached\&. The default is
@@ -3542,7 +3573,7 @@ Which refs, in addition to the default set by
 core\&.notesRef
 or
 \fIGIT_NOTES_REF\fR, to read notes from when showing commit messages with the
-\fIlog\fR
+log
 family of commands\&. See
 \fBgit-notes\fR(1)\&.
 .sp
