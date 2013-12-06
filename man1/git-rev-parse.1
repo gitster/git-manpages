@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 11/27/2013
+.\"      Date: 12/06/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.5
+.\"    Source: Git 1.8.5.1.93.g077f434
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "11/27/2013" "Git 1\&.8\&.5" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "12/06/2013" "Git 1\&.8\&.5\&.1\&.93\&.g077f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -74,6 +74,13 @@ met instead of skipping it\&.
 Only meaningful in
 \-\-parseopt
 mode\&. Lets the option parser stop at the first non\-option argument\&. This can be used to parse sub\-commands that take options themselves\&.
+.RE
+.PP
+\-\-stuck\-long
+.RS 4
+Only meaningful in
+\-\-parseopt
+mode\&. Output the options in their long form if available, and with their arguments stuck\&.
 .RE
 .SS "Options for Filtering"
 .PP
@@ -228,6 +235,41 @@ refs/, this is automatically prepended\&. If the pattern does not contain a glob
 *, or
 [), it is turned into a prefix match by appending
 /*\&.
+.RE
+.PP
+\-\-exclude=<glob\-pattern>
+.RS 4
+Do not include refs matching
+\fI<glob\-pattern>\fR
+that the next
+\-\-all,
+\-\-branches,
+\-\-tags,
+\-\-remotes, or
+\-\-glob
+would otherwise consider\&. Repetitions of this option accumulate exclusion patterns up to the next
+\-\-all,
+\-\-branches,
+\-\-tags,
+\-\-remotes, or
+\-\-glob
+option (other options or arguments do not clear accumlated patterns)\&.
+.sp
+The patterns given should not begin with
+refs/heads,
+refs/tags, or
+refs/remotes
+when applied to
+\-\-branches,
+\-\-tags, or
+\-\-remotes, respectively, and they must begin with
+refs/
+when applied to
+\-\-glob
+or
+\-\-all\&. If a trailing
+\fI/*\fR
+is intended, it must be given explicitly\&.
 .RE
 .PP
 \-\-disambiguate=<prefix>
@@ -812,7 +854,9 @@ if the option takes an argument\&.
 .\}
 Use
 ?
-to mean that the option is optional (though its use is discouraged)\&.
+to mean that the option takes an optional argument\&. You probably want to use the
+\-\-stuck\-long
+mode to be able to unambiguously parse the optional argument\&.
 .RE
 .sp
 .RS 4
