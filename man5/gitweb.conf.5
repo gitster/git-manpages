@@ -2,12 +2,12 @@
 .\"     Title: gitweb.conf
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 11/27/2013
+.\"      Date: 12/17/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.5
+.\"    Source: Git 1.8.5.2.192.g7794a68
 .\"  Language: English
 .\"
-.TH "GITWEB\&.CONF" "5" "11/27/2013" "Git 1\&.8\&.5" "Git Manual"
+.TH "GITWEB\&.CONF" "5" "12/17/2013" "Git 1\&.8\&.5\&.2\&.192\&.g779" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -981,6 +981,53 @@ The example configuration presented here is guaranteed to be backwards and forwa
 Time zone values can be "local" (for local time zone that browser uses), "utc" (what gitweb uses when JavaScript or this feature is disabled), or numerical time zones in the form of "+/\-HHMM", such as "+0200"\&.
 .sp
 Project specific override is not supported\&.
+.RE
+.PP
+extra\-branch\-refs
+.RS 4
+List of additional directories under "refs" which are going to be used as branch refs\&. For example if you have a gerrit setup where all branches under refs/heads/ are official, push\-after\-review ones and branches under refs/sandbox/, refs/wip and refs/other are user ones where permissions are much wider, then you might want to set this variable as follows:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$feature{\(aqextra\-branch\-refs\(aq}{\(aqdefault\(aq} =
+        [\(aqsandbox\(aq, \(aqwip\(aq, \(aqother\(aq];
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This feature can be configured on per\-repository basis after setting $feature{\fIextra\-branch\-refs\fR}{\fIoverride\fR} to true, via repository\(cqs
+gitweb\&.extraBranchRefs
+configuration variable, which contains a space separated list of refs\&. An example:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[gitweb]
+        extraBranchRefs = sandbox wip other
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The gitweb\&.extraBranchRefs is actually a multi\-valued configuration variable, so following example is also correct and the result is the same as of the snippet above:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[gitweb]
+        extraBranchRefs = sandbox
+        extraBranchRefs = wip other
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+It is an error to specify a ref that does not pass "git check\-ref\-format" scrutiny\&. Duplicated values are filtered\&.
 .RE
 .SH "EXAMPLES"
 .sp

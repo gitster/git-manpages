@@ -2,12 +2,12 @@
 .\"     Title: gitignore
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 11/27/2013
+.\"      Date: 12/17/2013
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.5
+.\"    Source: Git 1.8.5.2.192.g7794a68
 .\"  Language: English
 .\"
-.TH "GITIGNORE" "5" "11/27/2013" "Git 1\&.8\&.5" "Git Manual"
+.TH "GITIGNORE" "5" "12/17/2013" "Git 1\&.8\&.5\&.2\&.192\&.g779" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -165,7 +165,7 @@ A line starting with # serves as a comment\&. Put a backslash ("\e") in front of
 .sp -1
 .IP \(bu 2.3
 .\}
-An optional prefix "!" which negates the pattern; any matching file excluded by a previous pattern will become included again\&. If a negated pattern matches, this will override lower precedence patterns sources\&. Put a backslash ("\e") in front of the first "!" for patterns that begin with a literal "!", for example, "\e!important!\&.txt"\&.
+An optional prefix "!" which negates the pattern; any matching file excluded by a previous pattern will become included again\&. It is not possible to re\-include a file if a parent directory of that file is excluded\&. Git doesn\(cqt list excluded directories for performance reasons, so any patterns on contained files have no effect, no matter where they are defined\&. Put a backslash ("\e") in front of the first "!" for patterns that begin with a literal "!", for example, "\e!important!\&.txt"\&.
 .RE
 .sp
 .RS 4
@@ -331,6 +331,24 @@ Another example:
 .sp
 .sp
 The second \&.gitignore prevents Git from ignoring arch/foo/kernel/vmlinux\&.lds\&.S\&.
+.sp
+Example to exclude everything except a specific directory foo/bar (note the /* \- without the slash, the wildcard would also exclude everything within foo/bar):
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+    $ cat \&.gitignore
+    # exclude everything except directory foo/bar
+    /*
+    !/foo
+    /foo/*
+    !/foo/bar
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "SEE ALSO"
 .sp
 \fBgit-rm\fR(1), \fBgit-update-index\fR(1), \fBgitrepository-layout\fR(5), \fBgit-check-ignore\fR(1)
