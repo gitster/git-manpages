@@ -2,12 +2,12 @@
 .\"     Title: git-filter-branch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 11/27/2013
+.\"      Date: 01/10/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 1.8.5
+.\"    Source: Git 1.8.5.2.309.ga25014b
 .\"  Language: English
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "11/27/2013" "Git 1\&.8\&.5" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "01/10/2014" "Git 1\&.8\&.5\&.2\&.309\&.ga25" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -427,7 +427,7 @@ git filter\-branch \-\-index\-filter \e
 .sp
 .SH "CHECKLIST FOR SHRINKING A REPOSITORY"
 .sp
-git\-filter\-branch is often used to get rid of a subset of files, usually with some combination of \-\-index\-filter and \-\-subdirectory\-filter\&. People expect the resulting repository to be smaller than the original, but you need a few more steps to actually make it smaller, because Git tries hard not to lose your objects until you tell it to\&. First make sure that:
+git\-filter\-branch can be used to get rid of a subset of files, usually with some combination of \-\-index\-filter and \-\-subdirectory\-filter\&. People expect the resulting repository to be smaller than the original, but you need a few more steps to actually make it smaller, because Git tries hard not to lose your objects until you tell it to\&. First make sure that:
 .sp
 .RS 4
 .ie n \{\
@@ -511,6 +511,62 @@ git gc \-\-prune=now
 git repack \-ad; git prune
 instead)\&.
 .RE
+.SH "NOTES"
+.sp
+git\-filter\-branch allows you to make complex shell\-scripted rewrites of your Git history, but you probably don\(cqt need this flexibility if you\(cqre simply \fIremoving unwanted data\fR like large files or passwords\&. For those operations you may want to consider \m[blue]\fBThe BFG Repo\-Cleaner\fR\m[]\&\s-2\u[1]\d\s+2, a JVM\-based alternative to git\-filter\-branch, typically at least 10\-50x faster for those use\-cases, and with quite different characteristics:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Any particular version of a file is cleaned exactly
+\fIonce\fR\&. The BFG, unlike git\-filter\-branch, does not give you the opportunity to handle a file differently based on where or when it was committed within your history\&. This constraint gives the core performance benefit of The BFG, and is well\-suited to the task of cleansing bad data \- you don\(cqt care
+\fIwhere\fR
+the bad data is, you just want it
+\fIgone\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+By default The BFG takes full advantage of multi\-core machines, cleansing commit file\-trees in parallel\&. git\-filter\-branch cleans commits sequentially (ie in a single\-threaded manner), though it
+\fIis\fR
+possible to write filters that include their own parallellism, in the scripts executed against each commit\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The
+\m[blue]\fBcommand options\fR\m[]\&\s-2\u[2]\d\s+2
+are much more restrictive than git\-filter branch, and dedicated just to the tasks of removing unwanted data\- e\&.g:
+\-\-strip\-blobs\-bigger\-than 1M\&.
+.RE
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+The BFG Repo-Cleaner
+.RS 4
+\%http://rtyley.github.io/bfg-repo-cleaner/
+.RE
+.IP " 2." 4
+command options
+.RS 4
+\%http://rtyley.github.io/bfg-repo-cleaner/#examples
+.RE
