@@ -2,12 +2,12 @@
 .\"     Title: gitk
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 01/17/2014
+.\"      Date: 01/27/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 1.9.rc0
+.\"    Source: Git 1.9.rc1
 .\"  Language: English
 .\"
-.TH "GITK" "1" "01/17/2014" "Git 1\&.9\&.rc0" "Git Manual"
+.TH "GITK" "1" "01/27/2014" "Git 1\&.9\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -124,6 +124,65 @@ and
 \fIcommit2\fR\&. (See "History simplification" in
 \fBgit-log\fR(1)
 for a more detailed explanation\&.)
+.RE
+.PP
+\-L<start>,<end>:<file>, \-L:<regex>:<file>
+.RS 4
+Trace the evolution of the line range given by "<start>,<end>" (or the funcname regex <regex>) within the <file>\&. You may not give any pathspec limiters\&. This is currently limited to a walk starting from a single revision, i\&.e\&., you may only give zero or one positive revision arguments\&. You can specify this option more than once\&.
+.sp
+\fBNote:\fR
+gitk (unlike
+\fBgit-log\fR(1)) currently only understands this option if you specify it "glued together" with its argument\&. Do
+\fBnot\fR
+put a space after
+\-L\&.
+.sp
+<start> and <end> can take one of these forms:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+number
+.sp
+If <start> or <end> is a number, it specifies an absolute line number (lines count from 1)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+/regex/
+.sp
+This form will use the first line matching the given POSIX regex\&. If <start> is a regex, it will search from the end of the previous
+\-L
+range, if any, otherwise from the start of file\&. If <start> is \(lq^/regex/\(rq, it will search from the start of file\&. If <end> is a regex, it will search starting at the line given by <start>\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
++offset or \-offset
+.sp
+This is only valid for <end> and will specify a number of lines before or after the line given by <start>\&.
+.RE
+.sp
+If \(lq:<regex>\(rq is given in place of <start> and <end>, it denotes the range from the first funcname line that matches <regex>, up to the next funcname line\&. \(lq:<regex>\(rq searches from the end of the previous
+\-L
+range, if any, otherwise from the start of file\&. \(lq^:<regex>\(rq searches from the start of file\&.
 .RE
 .PP
 <revision range>
