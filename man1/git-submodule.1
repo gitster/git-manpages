@@ -2,12 +2,12 @@
 .\"     Title: git-submodule
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2014
+.\"      Date: 02/27/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 1.9.0
+.\"    Source: Git 1.9.0.138.g2de3478
 .\"  Language: English
 .\"
-.TH "GIT\-SUBMODULE" "1" "02/24/2014" "Git 1\&.9\&.0" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "02/27/2014" "Git 1\&.9\&.0\&.138\&.g2de3478" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -38,8 +38,8 @@ git-submodule \- Initialize, update or inspect submodules
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] deinit [\-f|\-\-force] [\-\-] <path>\&...
 \fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-\-remote] [\-N|\-\-no\-fetch]
-              [\-f|\-\-force] [\-\-rebase] [\-\-reference <repository>] [\-\-depth <depth>]
-              [\-\-merge] [\-\-recursive] [\-\-] [<path>\&...]
+              [\-f|\-\-force] [\-\-rebase|\-\-merge|\-\-checkout] [\-\-reference <repository>]
+              [\-\-depth <depth>] [\-\-recursive] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] summary [\-\-cached|\-\-files] [(\-n|\-\-summary\-limit) <n>]
               [commit] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] foreach [\-\-recursive] <command>
@@ -135,26 +135,26 @@ is specified, the submodule\(cqs work tree will be removed even if it contains l
 .PP
 update
 .RS 4
-Update the registered submodules, i\&.e\&. clone missing submodules and checkout the commit specified in the index of the containing repository\&. This will make the submodules HEAD be detached unless
-\-\-rebase
-or
-\-\-merge
-is specified or the key
-submodule\&.$name\&.update
-is set to
-rebase,
-merge
-or
-none\&.
-none
-can be overridden by specifying
-\-\-checkout\&. Setting the key
-submodule\&.$name\&.update
+Update the registered submodules, i\&.e\&. clone missing submodules and checkout the commit specified in the index of the containing repository\&. The update mode defaults to
+checkout, but can be configured with the
+submodule\&.<name>\&.update
+setting or the
+\-\-rebase,
+\-\-merge, or
+\-\-checkout
+options\&.
+.sp
+For updates that clone missing submodules, checkout\-mode updates will create submodules with detached HEADs; all other modes will create submodules with a local branch named after
+submodule\&.<path>\&.branch\&.
+.sp
+For updates that do not clone missing submodules, the submodule\(cqs HEAD is only touched when the remote reference does not match the submodule\(cqs HEAD (for none\-mode updates, the submodule is never touched)\&. The remote reference is usually the gitlinked commit from the superproject\(cqs tree, but with
+\-\-remote
+it is the upstream subproject\(cqs
+submodule\&.<name>\&.branch\&. This remote reference is integrated with the submodule\(cqs HEAD using the specified update mode\&. For checkout\-mode updates, that will result in a detached HEAD\&. For rebase\- and merge\-mode updates, the commit referenced by the submodule\(cqs HEAD may change, but the symbolic reference will remain unchanged (i\&.e\&. checked\-out branches will still be checked\-out branches, and detached HEADs will still be detached HEADs)\&. If none of the builtin modes fit your needs, set
+submodule\&.<name>\&.update
 to
 !command
-will cause
-command
-to be run\&.
+to configure a custom integration command\&.
 command
 can be any arbitrary shell command that takes a single argument, namely the sha1 to update to\&.
 .sp
@@ -271,6 +271,20 @@ In order to ensure a current tracking branch state,
 update \-\-remote
 fetches the submodule\(cqs remote repository before calculating the SHA\-1\&. If you don\(cqt want to fetch, you should use
 submodule update \-\-remote \-\-no\-fetch\&.
+.sp
+Use this option to integrate changes from the upstream subproject with your submodule\(cqs current HEAD\&. Alternatively, you can run
+git pull
+from the submodule, which is equivalent except for the remote branch name:
+update \-\-remote
+uses the default upstream repository and
+submodule\&.<name>\&.branch, while
+git pull
+uses the submodule\(cqs
+branch\&.<name>\&.merge\&. Prefer
+submodule\&.<name>\&.branch
+if you want to distribute the default upstream branch with the superproject and
+branch\&.<name>\&.merge
+if you want a more native feel while working in the submodule itself\&.
 .RE
 .PP
 \-N, \-\-no\-fetch
