@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2014
+.\"      Date: 03/31/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 1.9.0
+.\"    Source: Git 1.9.1.429.g25d1ac0
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "02/24/2014" "Git 1\&.9\&.0" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "03/31/2014" "Git 1\&.9\&.1\&.429\&.g25d1ac0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -794,7 +794,7 @@ It takes on the standard input the specification of the options to parse and und
 Note: Make sure you quote the result when passing it to eval\&. See below for an example\&.
 .SS "Input Format"
 .sp
-\fIgit rev\-parse \-\-parseopt\fR input format is fully text based\&. It has two parts, separated by a line that contains only \-\-\&. The lines before the separator (should be more than one) are used for the usage\&. The lines after the separator describe the options\&.
+\fIgit rev\-parse \-\-parseopt\fR input format is fully text based\&. It has two parts, separated by a line that contains only \-\-\&. The lines before the separator (should be one or more) are used for the usage\&. The lines after the separator describe the options\&.
 .sp
 Each line of options has this format:
 .sp
@@ -802,7 +802,7 @@ Each line of options has this format:
 .RS 4
 .\}
 .nf
-<opt_spec><flags>* SP+ help LF
+<opt_spec><flags>*<arg_hint>? SP+ help LF
 .fi
 .if n \{\
 .RE
@@ -890,6 +890,14 @@ Use
 to not make the corresponding negated long option available\&.
 .RE
 .RE
+.PP
+<arg_hint>
+.RS 4
+
+<arg_hint>, if specified, is used as a name of the argument in the help output, for options that take arguments\&.
+<arg_hint>
+is terminated by the first whitespace\&. When you need to use space in the argument hint use dash instead\&.
+.RE
 .sp
 The remainder of the line, after stripping the spaces, is used as the help associated to the option\&.
 .sp
@@ -909,11 +917,38 @@ h,help    show the help
 
 foo       some nifty option \-\-foo
 bar=      some cool option \-\-bar with an argument
+baz=arg   another cool option \-\-baz with a named argument
+qux?path  qux may take a path argument but has meaning by itself
 
   An option group Header
 C?        option C with an optional argument"
 
 eval "$(echo "$OPTS_SPEC" | git rev\-parse \-\-parseopt \-\- "$@" || echo exit $?)"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.SS "Usage text"
+.sp
+When "$@" is \-h or \-\-help in the above example, the following usage text would be shown:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+usage: some\-command [options] <args>\&.\&.\&.
+
+    some\-command does foo and bar!
+
+    \-h, \-\-help            show the help
+    \-\-foo                 some nifty option \-\-foo
+    \-\-bar \&.\&.\&.             some cool option \-\-bar with an argument
+    \-\-bar <arg>           another cool option \-\-baz with a named argument
+    \-\-qux[=<path>]        qux may take a path argument but has meaning by itself
+
+An option group Header
+    \-C[\&.\&.\&.]               option C with an optional argument
 .fi
 .if n \{\
 .RE
