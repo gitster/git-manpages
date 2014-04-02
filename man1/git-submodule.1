@@ -2,12 +2,12 @@
 .\"     Title: git-submodule
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 03/31/2014
+.\"      Date: 04/02/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 1.9.1.429.g25d1ac0
+.\"    Source: Git 1.9.1.445.g125d8ec
 .\"  Language: English
 .\"
-.TH "GIT\-SUBMODULE" "1" "03/31/2014" "Git 1\&.9\&.1\&.429\&.g25d1ac0" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "04/02/2014" "Git 1\&.9\&.1\&.445\&.g125d8ec" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -38,7 +38,7 @@ git-submodule \- Initialize, update or inspect submodules
 \fIgit submodule\fR [\-\-quiet] init [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] deinit [\-f|\-\-force] [\-\-] <path>\&...
 \fIgit submodule\fR [\-\-quiet] update [\-\-init] [\-\-remote] [\-N|\-\-no\-fetch]
-              [\-f|\-\-force] [\-\-checkout|\-\-rebase|\-\-merge] [\-\-reference <repository>]
+              [\-f|\-\-force] [\-\-rebase|\-\-merge] [\-\-reference <repository>]
               [\-\-depth <depth>] [\-\-recursive] [\-\-] [<path>\&...]
 \fIgit submodule\fR [\-\-quiet] summary [\-\-cached|\-\-files] [(\-n|\-\-summary\-limit) <n>]
               [commit] [\-\-] [<path>\&...]
@@ -135,26 +135,26 @@ is specified, the submodule\(cqs work tree will be removed even if it contains l
 .PP
 update
 .RS 4
-Update the registered submodules, i\&.e\&. clone missing submodules and checkout the commit specified in the index of the containing repository\&. The update mode defaults to
-checkout, but can be configured with the
-submodule\&.<name>\&.update
-setting or the
-\-\-rebase,
-\-\-merge, or
-\-\-checkout
-options\&.
-.sp
-For updates that clone missing submodules, checkout\-mode updates will create submodules with detached HEADs; all other modes will create submodules with a local branch named after
-submodule\&.<name>\&.branch\&.
-.sp
-For updates that do not clone missing submodules, the submodule\(cqs HEAD is only touched when the remote reference does not match the submodule\(cqs HEAD (for none\-mode updates, the submodule is never touched)\&. The remote reference is usually the gitlinked commit from the superproject\(cqs tree, but with
-\-\-remote
-it is the upstream subproject\(cqs
-submodule\&.<name>\&.branch\&. This remote reference is integrated with the submodule\(cqs HEAD using the specified update mode\&. For checkout\-mode updates, that will result in a detached HEAD\&. For rebase\- and merge\-mode updates, the commit referenced by the submodule\(cqs HEAD may change, but the symbolic reference will remain unchanged (i\&.e\&. checked\-out branches will still be checked\-out branches, and detached HEADs will still be detached HEADs)\&. If none of the builtin modes fit your needs, set
-submodule\&.<name>\&.update
+Update the registered submodules, i\&.e\&. clone missing submodules and checkout the commit specified in the index of the containing repository\&. This will make the submodules HEAD be detached unless
+\-\-rebase
+or
+\-\-merge
+is specified or the key
+submodule\&.$name\&.update
+is set to
+rebase,
+merge
+or
+none\&.
+none
+can be overridden by specifying
+\-\-checkout\&. Setting the key
+submodule\&.$name\&.update
 to
 !command
-to configure a custom integration command\&.
+will cause
+command
+to be run\&.
 command
 can be any arbitrary shell command that takes a single argument, namely the sha1 to update to\&.
 .sp
