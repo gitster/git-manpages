@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2014
+.\"      Date: 04/21/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 1.9.0
+.\"    Source: Git 2.0.0.rc0.26.g779792a
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "02/24/2014" "Git 1\&.9\&.0" "Git Manual"
+.TH "GIT\-SVN" "1" "04/21/2014" "Git 2\&.0\&.0\&.rc0\&.26\&.g77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -98,7 +98,8 @@ For transports that SVN handles authentication for (http, https, and plain svn),
 .PP
 \-\-prefix=<prefix>
 .RS 4
-This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified\&. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want\&. If \-\-branches/\-b is specified, the prefix must include a trailing slash\&. Setting a prefix (with a trailing slash) is strongly encouraged in any case, as your SVN\-tracking refs will then be located at "refs/remotes/$prefix/\fB", which is compatible with Git\(cqs own remote\-tracking ref layout (refs/remotes/$remote/\fR)\&. Setting a prefix is also useful if you wish to track multiple projects that share a common repository\&.
+This allows one to specify a prefix which is prepended to the names of remotes if trunk/branches/tags are specified\&. The prefix does not automatically include a trailing slash, so be sure you include one in the argument if that is what you want\&. If \-\-branches/\-b is specified, the prefix must include a trailing slash\&. Setting a prefix (with a trailing slash) is strongly encouraged in any case, as your SVN\-tracking refs will then be located at "refs/remotes/$prefix/\fB", which is compatible with Git\(cqs own remote\-tracking ref layout (refs/remotes/$remote/\fR)\&. Setting a prefix is also useful if you wish to track multiple projects that share a common repository\&. By default, the prefix is set to
+\fIorigin/\fR\&.
 .if n \{\
 .sp
 .\}
@@ -111,7 +112,7 @@ This allows one to specify a prefix which is prepended to the names of remotes i
 \fBNote\fR
 .ps -1
 .br
-In Git v2\&.0, the default prefix will CHANGE from "" (no prefix) to "origin/"\&. This is done to put SVN\-tracking refs at "refs/remotes/origin/\fB" instead of "refs/remotes/\fR", and make them more compatible with how Git\(cqs own remote\-tracking refs are organized (i\&.e\&. refs/remotes/$remote/*)\&. You can enjoy the same benefits today, by using the \-\-prefix option\&.
+Before Git v2\&.0, the default prefix was "" (no prefix)\&. This meant that SVN\-tracking refs were put at "refs/remotes/*", which is incompatible with how Git\(cqs own remote\-tracking refs are organized\&.
 .sp .5v
 .RE
 .RE
@@ -1219,8 +1220,6 @@ Since \fIdcommit\fR uses rebase internally, any Git branches you \fIgit push\fR 
 Do not use the \-\-amend option of \fBgit-commit\fR(1) on a change you\(cqve already dcommitted\&. It is considered bad practice to \-\-amend commits you\(cqve already pushed to a remote repository for other users, and dcommit with SVN is analogous to that\&.
 .sp
 When cloning an SVN repository, if none of the options for describing the repository layout is used (\-\-trunk, \-\-tags, \-\-branches, \-\-stdlayout), \fIgit svn clone\fR will create a Git repository with completely linear history, where branches and tags appear as separate directories in the working copy\&. While this is the easiest way to get a copy of a complete repository, for projects with many branches it will lead to a working copy many times larger than just the trunk\&. Thus for projects using the standard directory structure (trunk/branches/tags), it is recommended to clone with option \fI\-\-stdlayout\fR\&. If the project uses a non\-standard structure, and/or if branches and tags are not required, it is easiest to only clone one directory (typically trunk), without giving any repository layout options\&. If the full history with branches and tags is required, the options \fI\-\-trunk\fR / \fI\-\-branches\fR / \fI\-\-tags\fR must be used\&.
-.sp
-When using the options for describing the repository layout (\-\-trunk, \-\-tags, \-\-branches, \-\-stdlayout), please also specify the \-\-prefix option (e\&.g\&. \fI\-\-prefix=origin/\fR) to cause your SVN\-tracking refs to be placed at refs/remotes/origin/* rather than the default refs/remotes/\fB\&. The former is more compatible with the layout of Git\(cqs "regular" remote\-tracking refs (refs/remotes/$remote/\fR), and may potentially prevent similarly named SVN branches and Git remotes from clobbering each other\&. In Git v2\&.0 the default prefix used (i\&.e\&. when no \-\-prefix is given) will change from "" (no prefix) to "origin/"\&.
 .sp
 When using multiple \-\-branches or \-\-tags, \fIgit svn\fR does not automatically handle name collisions (for example, if two branches from different paths have the same name, or if a branch and a tag have the same name)\&. In these cases, use \fIinit\fR to set up your Git repository then, before your first \fIfetch\fR, edit the $GIT_DIR/config file so that the branches and tags are associated with different name spaces\&. For example:
 .sp
