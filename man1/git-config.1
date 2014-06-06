@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 06/03/2014
+.\"      Date: 06/06/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 2.0.0.153.g79dcccc
+.\"    Source: Git 2.0.0.239.g0953113
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "06/03/2014" "Git 2\&.0\&.0\&.153\&.g79dcccc" "Git Manual"
+.TH "GIT\-CONFIG" "1" "06/06/2014" "Git 2\&.0\&.0\&.239\&.g0953113" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -386,7 +386,7 @@ The files are read in the order given above, with last value found taking preced
 .sp
 All writing options will per default write to the repository specific configuration file\&. Note that this also affects options like \fI\-\-replace\-all\fR and \fI\-\-unset\fR\&. \fB\fIgit config\fR\fR\fB will only ever change one file at a time\fR\&.
 .sp
-You can override these rules either by command line options or by environment variables\&. The \fI\-\-global\fR and the \fI\-\-system\fR options will limit the file used to the global or system\-wide file respectively\&. The GIT_CONFIG environment variable has a similar effect, but you can specify any filename you want\&.
+You can override these rules either by command\-line options or by environment variables\&. The \fI\-\-global\fR and the \fI\-\-system\fR options will limit the file used to the global or system\-wide file respectively\&. The GIT_CONFIG environment variable has a similar effect, but you can specify any filename you want\&.
 .SH "ENVIRONMENT"
 .PP
 GIT_CONFIG
@@ -1056,7 +1056,7 @@ core\&.worktree
 .RS 4
 Set the path to the root of the working tree\&. This can be overridden by the GIT_WORK_TREE environment variable and the
 \fI\-\-work\-tree\fR
-command line option\&. The value can be an absolute path or relative to the path to the \&.git directory, which is either specified by \-\-git\-dir or GIT_DIR, or automatically discovered\&. If \-\-git\-dir or GIT_DIR is specified but none of \-\-work\-tree, GIT_WORK_TREE and core\&.worktree is specified, the current working directory is regarded as the top level of your working tree\&.
+command\-line option\&. The value can be an absolute path or relative to the path to the \&.git directory, which is either specified by \-\-git\-dir or GIT_DIR, or automatically discovered\&. If \-\-git\-dir or GIT_DIR is specified but none of \-\-work\-tree, GIT_WORK_TREE and core\&.worktree is specified, the current working directory is regarded as the top level of your working tree\&.
 .sp
 Note that this variable is honored even when set in a configuration file in a "\&.git" subdirectory of a directory and its value differs from the latter directory (e\&.g\&. "/path/to/\&.git/config" has core\&.worktree set to "/different/path"), which is most likely a misconfiguration\&. Running Git commands in the "/path/to" directory will still use "/different/path" as the root of the work tree and can cause confusion unless you know what you are doing (e\&.g\&. you are creating a read\-only snapshot of the same index to a location different from the repository\(cqs usual working tree)\&.
 .RE
@@ -1152,7 +1152,7 @@ core\&.deltaBaseCacheLimit
 .RS 4
 Maximum number of bytes to reserve for caching base objects that may be referenced by multiple deltified objects\&. By storing the entire decompressed base objects in a cache Git is able to avoid unpacking and decompressing frequently used base objects multiple times\&.
 .sp
-Default is 16 MiB on all platforms\&. This should be reasonable for all users/operating systems, except on the largest projects\&. You probably do not need to adjust this value\&.
+Default is 96 MiB on all platforms\&. This should be reasonable for all users/operating systems, except on the largest projects\&. You probably do not need to adjust this value\&.
 .sp
 Common unit suffixes of
 \fIk\fR,
@@ -1191,7 +1191,7 @@ Some commands (e\&.g\&. svn and http interfaces) that interactively ask for a pa
 \fIGIT_ASKPASS\fR
 environment variable\&. If not set, fall back to the value of the
 \fISSH_ASKPASS\fR
-environment variable or, failing that, a simple password prompt\&. The external program shall be given a suitable prompt as command line argument and write the password on its STDOUT\&.
+environment variable or, failing that, a simple password prompt\&. The external program shall be given a suitable prompt as command\-line argument and write the password on its STDOUT\&.
 .RE
 .PP
 core\&.attributesfile
@@ -1224,6 +1224,10 @@ and
 tag
 that lets you edit messages consider a line that begins with this character commented, and removes them after the editor returns (default
 \fI#\fR)\&.
+.sp
+If set to "auto",
+git\-commit
+would select a character that is not the beginning character of any line in existing commit messages\&.
 .RE
 .PP
 sequence\&.editor
@@ -1249,17 +1253,29 @@ $PAGER, and then the default chosen at compile time (usually
 When the
 LESS
 environment variable is unset, Git sets it to
-FRSX
+FRX
 (if
 LESS
 environment variable is set, Git does not change it at all)\&. If you want to selectively override Git\(cqs default setting for
 LESS, you can set
 core\&.pager
 to e\&.g\&.
-less \-+S\&. This will be passed to the shell by Git, which will translate the final command to
-LESS=FRSX less \-+S\&. The environment tells the command to set the
+less \-S\&. This will be passed to the shell by Git, which will translate the final command to
+LESS=FRX less \-S\&. The environment does not set the
 S
-option to chop long lines but the command line resets it to the default to fold long lines\&.
+option but the command line does, instructing less to truncate long lines\&. Similarly, setting
+core\&.pager
+to
+less \-+F
+will deactivate the
+F
+option specified by the environment from the command\-line, deactivating the "quit if one screen" behavior of
+less\&. One can specifically activate some flags for particular commands: for example, setting
+pager\&.blame
+to
+less \-S
+enables line truncation only for
+git blame\&.
 .sp
 Likewise, when the
 LV
@@ -2184,7 +2200,7 @@ and
 \fIgit status\fR
 when
 \fIstatus\&.submodulesummary\fR
-is set unless it is overridden by using the \-\-ignore\-submodules command line option\&. The
+is set unless it is overridden by using the \-\-ignore\-submodules command\-line option\&. The
 \fIgit submodule\fR
 commands are not affected by this setting\&.
 .RE
@@ -2936,7 +2952,7 @@ option is set to a value other than
 .PP
 gpg\&.program
 .RS 4
-Use this custom program instead of "gpg" found on $PATH when making or verifying a PGP signature\&. The program must support the same command line interface as GPG, namely, to verify a detached signature, "gpg \-\-verify $file \- <$signature" is run, and the program is expected to signal a good signature by exiting with code 0, and to generate an ascii\-armored detached signature, the standard input of "gpg \-bsau $key" is fed with the contents to be signed, and the program is expected to send the result to its standard output\&.
+Use this custom program instead of "gpg" found on $PATH when making or verifying a PGP signature\&. The program must support the same command\-line interface as GPG, namely, to verify a detached signature, "gpg \-\-verify $file \- <$signature" is run, and the program is expected to signal a good signature by exiting with code 0, and to generate an ascii\-armored detached signature, the standard input of "gpg \-bsau $key" is fed with the contents to be signed, and the program is expected to send the result to its standard output\&.
 .RE
 .PP
 gui\&.commitmsgwidth
@@ -4594,7 +4610,7 @@ diff\&.ignoreSubmodules
 is set to
 \fIall\fR
 or only for those submodules where
-submodule\&.<name>\&.ignore=all\&. To also view the summary for ignored submodules you can either use the \-\-ignore\-submodules=dirty command line option or the
+submodule\&.<name>\&.ignore=all\&. To also view the summary for ignored submodules you can either use the \-\-ignore\-submodules=dirty command\-line option or the
 \fIgit submodule summary\fR
 command, which shows a similar output but does not honor these settings\&.
 .RE
@@ -4625,7 +4641,7 @@ for details\&.
 .PP
 submodule\&.<name>\&.fetchRecurseSubmodules
 .RS 4
-This option can be used to control recursive fetching of this submodule\&. It can be overridden by using the \-\-[no\-]recurse\-submodules command line option to "git fetch" and "git pull"\&. This setting will override that from in the
+This option can be used to control recursive fetching of this submodule\&. It can be overridden by using the \-\-[no\-]recurse\-submodules command\-line option to "git fetch" and "git pull"\&. This setting will override that from in the
 \fBgitmodules\fR(5)
 file\&.
 .RE
