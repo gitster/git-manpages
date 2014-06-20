@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 05/20/2014
+.\"      Date: 06/20/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 2.0.0.rc4
+.\"    Source: Git 2.0.0.421.g786a89d
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "05/20/2014" "Git 2\&.0\&.0\&.rc4" "Git Manual"
+.TH "GIT\-FETCH" "1" "06/20/2014" "Git 2\&.0\&.0\&.421\&.g786a89d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,15 +40,15 @@ git-fetch \- Download objects and refs from another repository
 .sp
 .SH "DESCRIPTION"
 .sp
-Fetches named heads or tags from one or more other repositories, along with the objects necessary to complete them\&.
+Fetch branches and/or tags (collectively, "refs") from one or more other repositories, along with the objects necessary to complete their histories\&. Remote\-tracking branches are updated (see the description of <refspec> below for ways to control this behavior)\&.
 .sp
-The ref names and their object names of fetched refs are stored in \&.git/FETCH_HEAD\&. This information is left for a later merge operation done by \fIgit merge\fR\&.
+By default, any tag that points into the histories being fetched is also fetched; the effect is to fetch tags that point at branches that you are interested in\&. This default behavior can be changed by using the \-\-tags or \-\-no\-tags options or by configuring remote\&.<name>\&.tagopt\&. By using a refspec that fetches tags explicitly, you can fetch tags that do not point into branches you are interested in as well\&.
 .sp
-By default, tags are auto\-followed\&. This means that when fetching from a remote, any tags on the remote that point to objects that exist in the local repository are fetched\&. The effect is to fetch tags that point at branches that you are interested in\&. This default behavior can be changed by using the \-\-tags or \-\-no\-tags options, by configuring remote\&.<name>\&.tagopt, or by using a refspec that fetches tags explicitly\&.
-.sp
-\fIgit fetch\fR can fetch from either a single named repository, or from several repositories at once if <group> is given and there is a remotes\&.<group> entry in the configuration file\&. (See \fBgit-config\fR(1))\&.
+\fIgit fetch\fR can fetch from either a single named repository or URL, or from several repositories at once if <group> is given and there is a remotes\&.<group> entry in the configuration file\&. (See \fBgit-config\fR(1))\&.
 .sp
 When no remote is specified, by default the origin remote will be used, unless there\(cqs an upstream branch configured for the current branch\&.
+.sp
+The names of refs that are fetched, together with the object names they point at, are written to \&.git/FETCH_HEAD\&. This information may be used by scripts or other git commands, such as \fBgit-pull\fR(1)\&.
 .SH "OPTIONS"
 .PP
 \-\-all
@@ -128,6 +128,13 @@ After fetching, remove any remote\-tracking references that no longer exist on t
 .RS 4
 By default, tags that point at objects that are downloaded from the remote repository are fetched and stored locally\&. This option disables this automatic tag following\&. The default behavior for a remote may be specified with the remote\&.<name>\&.tagopt setting\&. See
 \fBgit-config\fR(1)\&.
+.RE
+.PP
+\-\-refmap=<refspec>
+.RS 4
+When fetching refs listed on the command line, use the specified refspec (can be given more than once) to map the refs to remote\-tracking branches, instead of the values of
+remote\&.*\&.fetch
+configuration variables for the remote repository\&. See section on "Configured Remote\-tracking Branches" for details\&.
 .RE
 .PP
 \-t, \-\-tags
@@ -218,9 +225,19 @@ A name referring to a list of repositories as the value of remotes\&.<group> in 
 .PP
 <refspec>
 .RS 4
+Specifies which refs to fetch and which local refs to update\&. When no <refspec>s appear on the command line, the refs to fetch are read from
+remote\&.<repository>\&.fetch
+variables instead (see
+CONFIGURED REMOTE\-TRACKING BRANCHES
+below)\&.
+.sp
 The format of a <refspec> parameter is an optional plus
 +, followed by the source ref <src>, followed by a colon
-:, followed by the destination ref <dst>\&.
+:, followed by the destination ref <dst>\&. The colon can be omitted when <dst> is empty\&.
+.sp
+tag <tag>
+means the same as
+refs/tags/<tag>:refs/tags/<tag>; it requests fetching everything up to the given tag\&.
 .sp
 The remote ref that matches <src> is fetched, and if <dst> is not empty string, the local ref that matches it is fast\-forwarded using <src>\&. If the optional plus
 +
@@ -237,93 +254,10 @@ is used, the local ref is updated even if it does not result in a fast\-forward 
 \fBNote\fR
 .ps -1
 .br
-If the remote branch from which you want to pull is modified in non\-linear ways such as being rewound and rebased frequently, then a pull will attempt a merge with an older version of itself, likely conflict, and fail\&. It is under these conditions that you would want to use the
+When the remote branch you want to fetch is known to be rewound and rebased regularly, it is expected that its new tip will not be descendant of its previous tip (as stored in your remote\-tracking branch the last time you fetched)\&. You would want to use the
 +
-sign to indicate non\-fast\-forward updates will be needed\&. There is currently no easy way to determine or declare that a branch will be made available in a repository with this behavior; the pulling user simply must know this is the expected usage pattern for a branch\&.
+sign to indicate non\-fast\-forward updates will be needed for such branches\&. There is no way to determine or declare that a branch will be made available in a repository with this behavior; the pulling user simply must know this is the expected usage pattern for a branch\&.
 .sp .5v
-.RE
-.if n \{\
-.sp
-.\}
-.RS 4
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.br
-.ps +1
-\fBNote\fR
-.ps -1
-.br
-You never do your own development on branches that appear on the right hand side of a <refspec> colon on
-Pull:
-lines; they are to be updated by
-\fIgit fetch\fR\&. If you intend to do development derived from a remote branch
-B, have a
-Pull:
-line to track it (i\&.e\&.
-Pull: B:remote\-B), and have a separate branch
-my\-B
-to do your development on top of it\&. The latter is created by
-git branch my\-B remote\-B
-(or its equivalent
-git checkout \-b my\-B remote\-B)\&. Run
-git fetch
-to keep track of the progress of the remote side, and when you see something new on the remote branch, merge it into your development branch with
-git pull \&. remote\-B, while you are on
-my\-B
-branch\&.
-.sp .5v
-.RE
-.if n \{\
-.sp
-.\}
-.RS 4
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.br
-.ps +1
-\fBNote\fR
-.ps -1
-.br
-There is a difference between listing multiple <refspec> directly on
-\fIgit pull\fR
-command line and having multiple
-Pull:
-<refspec> lines for a <repository> and running
-\fIgit pull\fR
-command without any explicit <refspec> parameters\&. <refspec> listed explicitly on the command line are always merged into the current branch after fetching\&. In other words, if you list more than one remote refs, you would be making an Octopus\&. While
-\fIgit pull\fR
-run without any explicit <refspec> parameter takes default <refspec>s from
-Pull:
-lines, it merges only the first <refspec> found into the current branch, after fetching all the remote refs\&. This is because making an Octopus from remote refs is rarely done, while keeping track of multiple remote heads in one\-go by fetching more than one is often useful\&.
-.sp .5v
-.RE
-Some short\-cut notations are also supported\&.
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-
-tag <tag>
-means the same as
-refs/tags/<tag>:refs/tags/<tag>; it requests fetching everything up to the given tag\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-A parameter <ref> without a colon fetches that ref into FETCH_HEAD, and updates the remote\-tracking branches (if any)\&.
 .RE
 .RE
 .SH "GIT URLS"
@@ -667,6 +601,81 @@ git push uses:
 .RE
 .\}
 .sp
+.SH "CONFIGURED REMOTE-TRACKING BRANCHES"
+.sp
+You often interact with the same remote repository by regularly and repeatedly fetching from it\&. In order to keep track of the progress of such a remote repository, git fetch allows you to configure remote\&.<repository>\&.fetch configuration variables\&.
+.sp
+Typically such a variable may look like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[remote "origin"]
+        fetch = +refs/heads/*:refs/remotes/origin/*
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+This configuration is used in two ways:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+When
+git fetch
+is run without specifying what branches and/or tags to fetch on the command line, e\&.g\&.
+git fetch origin
+or
+git fetch,
+remote\&.<repository>\&.fetch
+values are used as the refspecs\-\-\-they specify which refs to fetch and which local refs to update\&. The example above will fetch all branches that exist in the
+origin
+(i\&.e\&. any ref that matches the left\-hand side of the value,
+refs/heads/*) and update the corresponding remote\-tracking branches in the
+refs/remotes/origin/*
+hierarchy\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+When
+git fetch
+is run with explicit branches and/or tags to fetch on the command line, e\&.g\&.
+git fetch origin master, the <refspec>s given on the command line determine what are to be fetched (e\&.g\&.
+master
+in the example, which is a short\-hand for
+master:, which in turn means "fetch the
+\fImaster\fR
+branch but I do not explicitly say what remote\-tracking branch to update with it from the command line"), and the example command will fetch
+\fIonly\fR
+the
+\fImaster\fR
+branch\&. The
+remote\&.<repository>\&.fetch
+values determine which remote\-tracking branch, if any, is updated\&. When used in this way, the
+remote\&.<repository>\&.fetch
+values do not have any effect in deciding
+\fIwhat\fR
+gets fetched (i\&.e\&. the values are not used as refspecs when the command\-line lists refspecs); they are only used to decide
+\fIwhere\fR
+the refs that are fetched are stored by acting as a mapping\&.
+.RE
+.sp
+The latter use of the remote\&.<repository>\&.fetch values can be overridden by giving the \-\-refmap=<refspec> parameter(s) on the command line\&.
 .SH "EXAMPLES"
 .sp
 .RS 4
@@ -727,6 +736,38 @@ pu
 branch will be updated even if it is does not fast\-forward, because it is prefixed with a plus sign;
 tmp
 will not be\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Peek at a remote\(cqs branch, without configuring the remote in your local repository:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git fetch git://git\&.kernel\&.org/pub/scm/git/git\&.git maint
+$ git log FETCH_HEAD
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The first command fetches the
+maint
+branch from the repository at
+git://git\&.kernel\&.org/pub/scm/git/git\&.git
+and the second command uses
+FETCH_HEAD
+to examine the branch with
+\fBgit-log\fR(1)\&. The fetched objects will eventually be removed by git\(cqs built\-in housekeeping (see
+\fBgit-gc\fR(1))\&.
 .RE
 .SH "BUGS"
 .sp
