@@ -2,12 +2,12 @@
 .\"     Title: git-init
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 08/17/2014
+.\"      Date: 09/09/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 2.1.0
+.\"    Source: Git 2.1.0.127.g0c72b98
 .\"  Language: English
 .\"
-.TH "GIT\-INIT" "1" "08/17/2014" "Git 2\&.1\&.0" "Git Manual"
+.TH "GIT\-INIT" "1" "09/09/2014" "Git 2\&.1\&.0\&.127\&.g0c72b98" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -50,7 +50,7 @@ Running \fIgit init\fR in an existing repository is safe\&. It will not overwrit
 .PP
 \-q, \-\-quiet
 .RS 4
-Only print error and warning messages, all other output will be suppressed\&.
+Only print error and warning messages; all other output will be suppressed\&.
 .RE
 .PP
 \-\-bare
@@ -65,7 +65,12 @@ Specify the directory from which templates will be used\&. (See the "TEMPLATE DI
 .PP
 \-\-separate\-git\-dir=<git dir>
 .RS 4
-Instead of initializing the repository where it is supposed to be, place a filesytem\-agnostic Git symbolic link there, pointing to the specified path, and initialize a Git repository at the path\&. The result is Git repository can be separated from working tree\&. If this is reinitialization, the repository will be moved to the specified path\&.
+Instead of initializing the repository as a directory to either
+$GIT_DIR
+or
+\&./\&.git/, create a text file there containing the path to the actual repository\&. This file acts as filesystem\-agnostic Git symbolic link to the repository\&.
+.sp
+If this is reinitialization, the repository will be moved to the specified path\&.
 .RE
 .PP
 \-\-shared[=(false|true|umask|group|all|world|everybody|0xxx)]
@@ -73,72 +78,37 @@ Instead of initializing the repository where it is supposed to be, place a files
 Specify that the Git repository is to be shared amongst several users\&. This allows users belonging to the same group to push into that repository\&. When specified, the config variable "core\&.sharedRepository" is set so that files and directories under
 $GIT_DIR
 are created with the requested permissions\&. When not specified, Git will use permissions reported by umask(2)\&.
-.RE
 .sp
-The option can have the following values, defaulting to \fIgroup\fR if no value is given:
-.sp
+The option can have the following values, defaulting to
+\fIgroup\fR
+if no value is given:
+.PP
+\fIumask\fR (or \fIfalse\fR)
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-
-\fIumask\fR
-(or
-\fIfalse\fR): Use permissions reported by umask(2)\&. The default, when
+Use permissions reported by umask(2)\&. The default, when
 \-\-shared
 is not specified\&.
 .RE
-.sp
+.PP
+\fIgroup\fR (or \fItrue\fR)
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-
-\fIgroup\fR
-(or
-\fItrue\fR): Make the repository group\-writable, (and g+sx, since the git group may be not the primary group of all users)\&. This is used to loosen the permissions of an otherwise safe umask(2) value\&. Note that the umask still applies to the other permission bits (e\&.g\&. if umask is
+Make the repository group\-writable, (and g+sx, since the git group may be not the primary group of all users)\&. This is used to loosen the permissions of an otherwise safe umask(2) value\&. Note that the umask still applies to the other permission bits (e\&.g\&. if umask is
 \fI0022\fR, using
 \fIgroup\fR
 will not remove read privileges from other (non\-group) users)\&. See
 \fI0xxx\fR
 for how to exactly specify the repository permissions\&.
 .RE
-.sp
+.PP
+\fIall\fR (or \fIworld\fR or \fIeverybody\fR)
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-
-\fIall\fR
-(or
-\fIworld\fR
-or
-\fIeverybody\fR): Same as
+Same as
 \fIgroup\fR, but make the repository readable by all users\&.
 .RE
-.sp
+.PP
+\fI0xxx\fR
 .RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 
-\fI0xxx\fR:
 \fI0xxx\fR
 is an octal number and each file will have mode
 \fI0xxx\fR\&.
@@ -153,15 +123,16 @@ will create a repository which is group\-readable, but not group\-writable or ac
 \fI0660\fR
 will create a repo that is readable and writable to the current user and group, but inaccessible to others\&.
 .RE
+.RE
 .sp
 By default, the configuration flag receive\&.denyNonFastForwards is enabled in shared repositories, so that you cannot force a non fast\-forwarding push into it\&.
 .sp
-If you name a (possibly non\-existent) directory at the end of the command line, the command is run inside the directory (possibly after creating it)\&.
+If you provide a \fIdirectory\fR, the command is run inside it\&. If this directory does not exist, it will be created\&.
 .SH "TEMPLATE DIRECTORY"
 .sp
 The template directory contains files and directories that will be copied to the $GIT_DIR after it is created\&.
 .sp
-The template directory used will (in order):
+The template directory will be one of the following (in order):
 .sp
 .RS 4
 .ie n \{\
@@ -171,9 +142,9 @@ The template directory used will (in order):
 .sp -1
 .IP \(bu 2.3
 .\}
-The argument given with the
+the argument given with the
 \-\-template
-option\&.
+option;
 .RE
 .sp
 .RS 4
@@ -184,9 +155,9 @@ option\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-The contents of the
+the contents of the
 $GIT_TEMPLATE_DIR
-environment variable\&.
+environment variable;
 .RE
 .sp
 .RS 4
@@ -197,9 +168,9 @@ environment variable\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-The
+the
 init\&.templatedir
-configuration variable\&.
+configuration variable; or
 .RE
 .sp
 .RS 4
@@ -210,11 +181,11 @@ configuration variable\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-The default template directory:
+the default template directory:
 /usr/share/git\-core/templates\&.
 .RE
 .sp
-The default template directory includes some directory structure, some suggested "exclude patterns", and copies of sample "hook" files\&. The suggested patterns and hook files are all modifiable and extensible\&.
+The default template directory includes some directory structure, suggested "exclude patterns" (see \fBgitignore\fR(5)), and sample hook files (see \fBgithooks\fR(5))\&.
 .SH "EXAMPLES"
 .PP
 Start a new Git repository for an existing code base
@@ -227,14 +198,17 @@ Start a new Git repository for an existing code base
 $ cd /path/to/my/codebase
 $ git init      \fB(1)\fR
 $ git add \&.     \fB(2)\fR
+$ git commit    \fB(3)\fR
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-\fB1. \fRprepare /path/to/my/codebase/\&.git directory
+\fB1. \fRCreate a /path/to/my/codebase/\&.git directory\&.
 .br
-\fB2. \fRadd all existing file to the index
+\fB2. \fRAdd all existing files to the index\&.
+.br
+\fB3. \fRRecord the pristine state as the first commit in the history\&.
 .br
 .RE
 .SH "GIT"
