@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/19/2014
+.\"      Date: 10/14/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 2.1.1.273.g97b8860
+.\"    Source: Git 2.1.2.443.g670a3c1
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "09/19/2014" "Git 2\&.1\&.1\&.273\&.g97b8860" "Git Manual"
+.TH "GIT\-REBASE" "1" "10/14/2014" "Git 2\&.1\&.2\&.443\&.g670a3c1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -43,9 +43,9 @@ git-rebase \- Forward\-port local commits to the updated upstream head
 .sp
 If <branch> is specified, \fIgit rebase\fR will perform an automatic git checkout <branch> before doing anything else\&. Otherwise it remains on the current branch\&.
 .sp
-If <upstream> is not specified, the upstream configured in branch\&.<name>\&.remote and branch\&.<name>\&.merge options will be used; see \fBgit-config\fR(1) for details\&. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abort\&.
+If <upstream> is not specified, the upstream configured in branch\&.<name>\&.remote and branch\&.<name>\&.merge options will be used (see \fBgit-config\fR(1) for details) and the \-\-fork\-point option is assumed\&. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abort\&.
 .sp
-All changes made by commits in the current branch but that are not in <upstream> are saved to a temporary area\&. This is the same set of commits that would be shown by git log <upstream>\&.\&.HEAD (or git log HEAD, if \-\-root is specified)\&.
+All changes made by commits in the current branch but that are not in <upstream> are saved to a temporary area\&. This is the same set of commits that would be shown by git log <upstream>\&.\&.HEAD; or by git log \(aqfork_point\(aq\&.\&.HEAD, if \-\-fork\-point is active (see the description on \-\-fork\-point below); or by git log HEAD, if the \-\-root option is specified\&.
 .sp
 The current branch is reset to <upstream>, or <newbase> if the \-\-onto option was supplied\&. This has the exact same effect as git reset \-\-hard <upstream> (or <newbase>)\&. ORIG_HEAD is set to point at the tip of the branch before the reset\&.
 .sp
@@ -458,24 +458,22 @@ for details)\&.
 .PP
 \-\-fork\-point, \-\-no\-fork\-point
 .RS 4
-Use
-\fIgit merge\-base \-\-fork\-point\fR
-to find a better common ancestor between
-upstream
-and
-branch
-when calculating which commits have have been introduced by
-branch
-(see
-\fBgit-merge-base\fR(1))\&.
+Use reflog to find a better common ancestor between <upstream> and <branch> when calculating which commits have been introduced by <branch>\&.
 .sp
-If no non\-option arguments are given on the command line, then the default is
-\-\-fork\-point @{u}
-otherwise the
-upstream
-argument is interpreted literally unless the
-\-\-fork\-point
-option is specified\&.
+When \-\-fork\-point is active,
+\fIfork_point\fR
+will be used instead of <upstream> to calculate the set of commits to rebase, where
+\fIfork_point\fR
+is the result of
+git merge\-base \-\-fork\-point <upstream> <branch>
+command (see
+\fBgit-merge-base\fR(1))\&. If
+\fIfork_point\fR
+ends up being empty, the <upstream> will be used as a fallback\&.
+.sp
+If either <upstream> or \-\-root is given on the command line, then the default is
+\-\-no\-fork\-point, otherwise the default is
+\-\-fork\-point\&.
 .RE
 .PP
 \-\-ignore\-whitespace, \-\-whitespace=<option>

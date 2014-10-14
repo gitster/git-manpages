@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-receive-pack
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
-.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 08/17/2014
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 10/14/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 2.1.0
+.\"    Source: Git 2.1.2.443.g670a3c1
 .\"  Language: English
 .\"
-.TH "GIT\-RECEIVE\-PACK" "1" "08/17/2014" "Git 2\&.1\&.0" "Git Manual"
+.TH "GIT\-RECEIVE\-PACK" "1" "10/14/2014" "Git 2\&.1\&.2\&.443\&.g670a3c1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -68,6 +68,75 @@ sha1\-old SP sha1\-new SP refname LF
 .sp
 The refname value is relative to $GIT_DIR; e\&.g\&. for the master head this is "refs/heads/master"\&. The two sha1 values before each refname are the object names for the refname before and after the update\&. Refs to be created will have sha1\-old equal to 0{40}, while refs to be deleted will have sha1\-new equal to 0{40}, otherwise sha1\-old and sha1\-new should be valid objects in the repository\&.
 .sp
+When accepting a signed push (see \fBgit-push\fR(1)), the signed push certificate is stored in a blob and an environment variable GIT_PUSH_CERT can be consulted for its object name\&. See the description of post\-receive hook for an example\&. In addition, the certificate is verified using GPG and the result is exported with the following environment variables:
+.PP
+GIT_PUSH_CERT_SIGNER
+.RS 4
+The name and the e\-mail address of the owner of the key that signed the push certificate\&.
+.RE
+.PP
+GIT_PUSH_CERT_KEY
+.RS 4
+The GPG key ID of the key that signed the push certificate\&.
+.RE
+.PP
+GIT_PUSH_CERT_STATUS
+.RS 4
+The status of GPG verification of the push certificate, using the same mnemonic as used in
+%G?
+format of
+git log
+family of commands (see
+\fBgit-log\fR(1))\&.
+.RE
+.PP
+GIT_PUSH_CERT_NONCE
+.RS 4
+The nonce string the process asked the signer to include in the push certificate\&. If this does not match the value recorded on the "nonce" header in the push certificate, it may indicate that the certificate is a valid one that is being replayed from a separate "git push" session\&.
+.RE
+.PP
+GIT_PUSH_CERT_NONCE_STATUS
+.RS 4
+.PP
+UNSOLICITED
+.RS 4
+"git push \-\-signed" sent a nonce when we did not ask it to send one\&.
+.RE
+.PP
+MISSING
+.RS 4
+"git push \-\-signed" did not send any nonce header\&.
+.RE
+.PP
+BAD
+.RS 4
+"git push \-\-signed" sent a bogus nonce\&.
+.RE
+.PP
+OK
+.RS 4
+"git push \-\-signed" sent the nonce we asked it to send\&.
+.RE
+.PP
+SLOP
+.RS 4
+"git push \-\-signed" sent a nonce different from what we asked it to send now, but in a previous session\&. See
+GIT_PUSH_CERT_NONCE_SLOP
+environment variable\&.
+.RE
+.RE
+.PP
+GIT_PUSH_CERT_NONCE_SLOP
+.RS 4
+"git push \-\-signed" sent a nonce different from what we asked it to send now, but in a different session whose starting time is different by this many seconds from the current session\&. Only meaningful when
+GIT_PUSH_CERT_NONCE_STATUS
+says
+SLOP\&. Also read about
+receive\&.certnonceslop
+variable in
+\fBgit-config\fR(1)\&.
+.RE
+.sp
 This hook is called before any refname is updated and before any fast\-forward checks are performed\&.
 .sp
 If the pre\-receive hook exits with a non\-zero exit status no updates will be performed, and the update, post\-receive and post\-update hooks will not be invoked either\&. This can be useful to quickly bail out if the update is not to be supported\&.
@@ -106,7 +175,9 @@ sha1\-old SP sha1\-new SP refname LF
 .sp
 The refname value is relative to $GIT_DIR; e\&.g\&. for the master head this is "refs/heads/master"\&. The two sha1 values before each refname are the object names for the refname before and after the update\&. Refs that were created will have sha1\-old equal to 0{40}, while refs that were deleted will have sha1\-new equal to 0{40}, otherwise sha1\-old and sha1\-new should be valid objects in the repository\&.
 .sp
-Using this hook, it is easy to generate mails describing the updates to the repository\&. This example script sends one mail message per ref listing the commits pushed to the repository:
+The GIT_PUSH_CERT* environment variables can be inspected, just as in pre\-receive hook, after accepting a signed push\&.
+.sp
+Using this hook, it is easy to generate mails describing the updates to the repository\&. This example script sends one mail message per ref listing the commits pushed to the repository, and logs the push certificates of signed pushes with good signatures to a logger service:
 .sp
 .if n \{\
 .RS 4
@@ -126,6 +197,14 @@ do
         fi |
         mail \-s "Changes to ref $ref" commit\-list@mydomain
 done
+# log signed push certificate, if any
+if test \-n "${GIT_PUSH_CERT\-}" && test ${GIT_PUSH_CERT_STATUS} = G
+then
+        (
+                echo expected nonce is ${GIT_PUSH_NONCE}
+                git cat\-file blob ${GIT_PUSH_CERT}
+        ) | mail \-s "push certificate from $GIT_PUSH_CERT_SIGNER" push\-log@mydomain
+fi
 exit 0
 .fi
 .if n \{\
