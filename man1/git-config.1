@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 10/21/2014
+.\"      Date: 10/24/2014
 .\"    Manual: Git Manual
-.\"    Source: Git 2.1.2.532.g19b5d50
+.\"    Source: Git 2.1.2.555.gfbecd99
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "10/21/2014" "Git 2\&.1\&.2\&.532\&.g19b5d50" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/24/2014" "Git 2\&.1\&.2\&.555\&.gfbecd99" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -883,14 +883,21 @@ In case of failure in the output of
 .PP
 core\&.fileMode
 .RS 4
-If false, the executable bit differences between the index and the working tree are ignored; useful on broken filesystems like FAT\&. See
-\fBgit-update-index\fR(1)\&.
+Tells Git if the executable bit of files in the working tree is to be honored\&.
 .sp
-The default is true, except
+Some filesystems lose the executable bit when a file that is marked as executable is checked out, or checks out an non\-executable file with executable bit on\&.
 \fBgit-clone\fR(1)
 or
 \fBgit-init\fR(1)
-will probe and set core\&.fileMode false if appropriate when the repository is created\&.
+probe the filesystem to see if it handles the executable bit correctly and this variable is automatically set as necessary\&.
+.sp
+A repository, however, may be on a filesystem that handles the filemode correctly, and this variable is set to
+\fItrue\fR
+when created, but later may be made accessible from another environment that loses the filemode (e\&.g\&. exporting ext4 via CIFS mount, visiting a Cygwin created repository with Git for Windows or Eclipse)\&. In such a case it may be necessary to set this variable to
+\fIfalse\fR\&. See
+\fBgit-update-index\fR(1)\&.
+.sp
+The default is true (when core\&.filemode is not specified in the config file)\&.
 .RE
 .PP
 core\&.ignorecase
