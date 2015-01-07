@@ -2,12 +2,12 @@
 .\"     Title: git-imap-send
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 11/26/2014
+.\"      Date: 01/07/2015
 .\"    Manual: Git Manual
 .\"    Source: Git
 .\"  Language: English
 .\"
-.TH "GIT\-IMAP\-SEND" "1" "11/26/2014" "Git" "Git Manual"
+.TH "GIT\-IMAP\-SEND" "1" "01/07/2015" "Git" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-imap-send \- Send a collection of patches from stdin to an IMAP folder
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit imap\-send\fR
+\fIgit imap\-send\fR [\-v] [\-q] [\-\-[no\-]curl]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -42,6 +42,27 @@ This command uploads a mailbox generated with \fIgit format\-patch\fR into an IM
 Typical usage is something like:
 .sp
 git format\-patch \-\-signoff \-\-stdout \-\-attach origin | git imap\-send
+.SH "OPTIONS"
+.PP
+\-v, \-\-verbose
+.RS 4
+Be verbose\&.
+.RE
+.PP
+\-q, \-\-quiet
+.RS 4
+Be quiet\&.
+.RE
+.PP
+\-\-curl
+.RS 4
+Use libcurl to communicate with the IMAP server, unless tunneling into it\&. Ignored if Git was built without the USE_CURL_FOR_IMAP_SEND option set\&.
+.RE
+.PP
+\-\-no\-curl
+.RS 4
+Talk to the IMAP server using git\(cqs own IMAP routines instead of using libcurl\&.
+.RE
 .SH "CONFIGURATION"
 .sp
 To use the tool, imap\&.folder and either imap\&.tunnel or imap\&.host must be set to appropriate values\&.
@@ -95,9 +116,10 @@ false\&.
 .PP
 imap\&.authMethod
 .RS 4
-Specify authenticate method for authentication with IMAP server\&. Current supported method is
-\fICRAM\-MD5\fR
-only\&. If this is not set then
+Specify authenticate method for authentication with IMAP server\&. If Git was built with the NO_CURL option, or if your curl version is older than 7\&.34\&.0, or if you\(cqre running git\-imap\-send with the
+\-\-no\-curl
+option, the only supported method is
+\fICRAM\-MD5\fR\&. If this is not set then
 \fIgit imap\-send\fR
 uses the basic IMAP plaintext LOGIN command\&.
 .RE
