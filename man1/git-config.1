@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/12/2015
+.\"      Date: 01/14/2015
 .\"    Manual: Git Manual
 .\"    Source: Git
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "01/12/2015" "Git" "Git Manual"
+.TH "GIT\-CONFIG" "1" "01/14/2015" "Git" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1050,8 +1050,16 @@ can be used as the proxy command to specify that no proxy be used for a given do
 .PP
 core\&.ignoreStat
 .RS 4
-If true, commands which modify both the working tree and the index will mark the updated paths with the "assume unchanged" bit in the index\&. These marked files are then assumed to stay unchanged in the working tree, until you mark them otherwise manually \- Git will not detect the file changes by lstat() calls\&. This is useful on systems where those are very slow, such as Microsoft Windows\&. See
-\fBgit-update-index\fR(1)\&. False by default\&.
+If true, Git will avoid using lstat() calls to detect if files have changed by setting the "assume\-unchanged" bit for those tracked files which it has updated identically in both the index and working tree\&.
+.sp
+When files are modified outside of Git, the user will need to stage the modified files explicitly (e\&.g\&. see
+\fIExamples\fR
+section in
+\fBgit-update-index\fR(1))\&. Git will not normally detect changes to those files\&.
+.sp
+This is useful on systems where lstat() calls are very slow, such as CIFS/Microsoft Windows\&.
+.sp
+False by default\&.
 .RE
 .PP
 core\&.preferSymlinkRefs
