@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/05/2015
+.\"      Date: 02/17/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.3.0
+.\"    Source: Git 2.3.0.130.g3188ab3
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/05/2015" "Git 2\&.3\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/17/2015" "Git 2\&.3\&.0\&.130\&.g3188ab3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -4342,6 +4342,11 @@ rebase\&.autostash
 When set to true, automatically create a temporary stash before the operation begins, and apply it after the operation ends\&. This means that you can run rebase on a dirty worktree\&. However, use with care: the final stash application after a successful rebase might result in non\-trivial conflicts\&. Defaults to false\&.
 .RE
 .PP
+receive\&.advertiseatomic
+.RS 4
+By default, git\-receive\-pack will advertise the atomic push capability to its clients\&. If you don\(cqt want to this capability to be advertised, set this variable to false\&.
+.RE
+.PP
 receive\&.autogc
 .RS 4
 By default, git\-receive\-pack will run "git\-gc \-\-auto" after receiving data from git\-push and updating refs\&. You can stop it by setting this variable to false\&.
@@ -4402,7 +4407,12 @@ receive\&.denyCurrentBranch
 .RS 4
 If set to true or "refuse", git\-receive\-pack will deny a ref update to the currently checked out branch of a non\-bare repository\&. Such a push is potentially dangerous because it brings the HEAD out of sync with the index and working tree\&. If set to "warn", print a warning of such a push to stderr, but allow the push to proceed\&. If set to false or "ignore", allow such pushes with no message\&. Defaults to "refuse"\&.
 .sp
-Another option is "updateInstead" which will update the working directory (must be clean) if pushing into the current branch\&. This option is intended for synchronizing working directories when one side is not easily accessible via interactive ssh (e\&.g\&. a live web site, hence the requirement that the working directory be clean)\&. This mode also comes in handy when developing inside a VM to test and fix code on different Operating Systems\&.
+Another option is "updateInstead" which will update the working tree if pushing into the current branch\&. This option is intended for synchronizing working directories when one side is not easily accessible via interactive ssh (e\&.g\&. a live web site, hence the requirement that the working directory be clean)\&. This mode also comes in handy when developing inside a VM to test and fix code on different Operating Systems\&.
+.sp
+By default, "updateInstead" will refuse the push if the working tree or the index have any difference from the HEAD, but the
+push\-to\-checkout
+hook can be used to customize this\&. See
+\fBgithooks\fR(5)\&.
 .RE
 .PP
 receive\&.denyNonFastForwards
