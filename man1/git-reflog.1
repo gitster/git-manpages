@@ -2,12 +2,12 @@
 .\"     Title: git-reflog
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/05/2015
+.\"      Date: 03/10/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.3.0
+.\"    Source: Git 2.3.2.223.g7a9409c
 .\"  Language: English
 .\"
-.TH "GIT\-REFLOG" "1" "02/05/2015" "Git 2\&.3\&.0" "Git Manual"
+.TH "GIT\-REFLOG" "1" "03/10/2015" "Git 2\&.3\&.2\&.223\&.g7a9409c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -43,70 +43,92 @@ The command takes various subcommands, and different options depending on the su
 .RS 4
 .\}
 .nf
-\fIgit reflog expire\fR [\-\-dry\-run] [\-\-stale\-fix] [\-\-verbose]
-        [\-\-expire=<time>] [\-\-expire\-unreachable=<time>] [\-\-all] <refs>\&...
-\fIgit reflog delete\fR ref@{specifier}\&...
 \fIgit reflog\fR [\fIshow\fR] [log\-options] [<ref>]
+\fIgit reflog expire\fR [\-\-expire=<time>] [\-\-expire\-unreachable=<time>]
+        [\-\-rewrite] [\-\-updateref] [\-\-stale\-fix]
+        [\-\-dry\-run] [\-\-verbose] [\-\-all | <refs>\&...]
+\fIgit reflog delete\fR [\-\-rewrite] [\-\-updateref]
+        [\-\-dry\-run] [\-\-verbose] ref@{specifier}\&...
 .fi
 .if n \{\
 .RE
 .\}
 .sp
 .sp
-Reflog is a mechanism to record when the tip of branches are updated\&. This command is to manage the information recorded in it\&.
+Reference logs, or "reflogs", record when the tips of branches and other references were updated in the local repository\&. Reflogs are useful in various Git commands, to specify the old value of a reference\&. For example, HEAD@{2} means "where HEAD used to be two moves ago", master@{one\&.week\&.ago} means "where master used to point to one week ago in this local repository", and so on\&. See \fBgitrevisions\fR(7) for more details\&.
 .sp
-The subcommand "expire" is used to prune older reflog entries\&. Entries older than expire time, or entries older than expire\-unreachable time and not reachable from the current tip, are removed from the reflog\&. This is typically not used directly by the end users \(em instead, see \fBgit-gc\fR(1)\&.
+This command manages the information recorded in the reflogs\&.
 .sp
-The subcommand "show" (which is also the default, in the absence of any subcommands) will take all the normal log options, and show the log of the reference provided in the command\-line (or HEAD, by default)\&. The reflog will cover all recent actions (HEAD reflog records branch switching as well)\&. It is an alias for git log \-g \-\-abbrev\-commit \-\-pretty=oneline; see \fBgit-log\fR(1)\&.
+The "show" subcommand (which is also the default, in the absence of any subcommands) shows the log of the reference provided in the command\-line (or HEAD, by default)\&. The reflog covers all recent actions, and in addition the HEAD reflog records branch switching\&. git reflog show is an alias for git log \-g \-\-abbrev\-commit \-\-pretty=oneline; see \fBgit-log\fR(1) for more information\&.
 .sp
-The reflog is useful in various Git commands, to specify the old value of a reference\&. For example, HEAD@{2} means "where HEAD used to be two moves ago", master@{one\&.week\&.ago} means "where master used to point to one week ago", and so on\&. See \fBgitrevisions\fR(7) for more details\&.
+The "expire" subcommand prunes older reflog entries\&. Entries older than expire time, or entries older than expire\-unreachable time and not reachable from the current tip, are removed from the reflog\&. This is typically not used directly by end users \(em instead, see \fBgit-gc\fR(1)\&.
 .sp
-To delete single entries from the reflog, use the subcommand "delete" and specify the \fIexact\fR entry (e\&.g\&. "git reflog delete master@{2}")\&.
+The "delete" subcommand deletes single entries from the reflog\&. Its argument must be an \fIexact\fR entry (e\&.g\&. "git reflog delete master@{2}")\&. This subcommand is also typically not used directly by end users\&.
 .SH "OPTIONS"
-.PP
-\-\-stale\-fix
-.RS 4
-This revamps the logic \(em the definition of "broken commit" becomes: a commit that is not reachable from any of the refs and there is a missing object among the commit, tree, or blob objects reachable from it that is not reachable from any of the refs\&.
+.SS "Options for show"
 .sp
-This computation involves traversing all the reachable objects, i\&.e\&. it has the same cost as
-\fIgit prune\fR\&. Fortunately, once this is run, we should not have to ever worry about missing objects, because the current prune and pack\-objects know about reflogs and protect objects referred by them\&.
+git reflog show accepts any of the options accepted by git log\&.
+.SS "Options for expire"
+.PP
+\-\-all
+.RS 4
+Process the reflogs of all references\&.
 .RE
 .PP
 \-\-expire=<time>
 .RS 4
-Entries older than this time are pruned\&. Without the option it is taken from configuration
-gc\&.reflogExpire, which in turn defaults to 90 days\&. \-\-expire=all prunes entries regardless of their age; \-\-expire=never turns off pruning of reachable entries (but see \-\-expire\-unreachable)\&.
+Prune entries older than the specified time\&. If this option is not specified, the expiration time is taken from the configuration setting
+gc\&.reflogExpire, which in turn defaults to 90 days\&.
+\-\-expire=all
+prunes entries regardless of their age;
+\-\-expire=never
+turns off pruning of reachable entries (but see
+\-\-expire\-unreachable)\&.
 .RE
 .PP
 \-\-expire\-unreachable=<time>
 .RS 4
-Entries older than this time and not reachable from the current tip of the branch are pruned\&. Without the option it is taken from configuration
-gc\&.reflogExpireUnreachable, which in turn defaults to 30 days\&. \-\-expire\-unreachable=all prunes unreachable entries regardless of their age; \-\-expire\-unreachable=never turns off early pruning of unreachable entries (but see \-\-expire)\&.
-.RE
-.PP
-\-\-all
-.RS 4
-Instead of listing <refs> explicitly, prune all refs\&.
+Prune entries older than
+<time>
+that are not reachable from the current tip of the branch\&. If this option is not specified, the expiration time is taken from the configuration setting
+gc\&.reflogExpireUnreachable, which in turn defaults to 30 days\&.
+\-\-expire\-unreachable=all
+prunes unreachable entries regardless of their age;
+\-\-expire\-unreachable=never
+turns off early pruning of unreachable entries (but see
+\-\-expire)\&.
 .RE
 .PP
 \-\-updateref
 .RS 4
-Update the ref with the sha1 of the top reflog entry (i\&.e\&. <ref>@{0}) after expiring or deleting\&.
+Update the reference to the value of the top reflog entry (i\&.e\&. <ref>@{0}) if the previous top entry was pruned\&. (This option is ignored for symbolic references\&.)
 .RE
 .PP
 \-\-rewrite
 .RS 4
-While expiring or deleting, adjust each reflog entry to ensure that the
-old
-sha1 field points to the
-new
-sha1 field of the previous entry\&.
+If a reflog entry\(cqs predecessor is pruned, adjust its "old" SHA\-1 to be equal to the "new" SHA\-1 field of the entry that now precedes it\&.
+.RE
+.PP
+\-\-stale\-fix
+.RS 4
+Prune any reflog entries that point to "broken commits"\&. A broken commit is a commit that is not reachable from any of the reference tips and that refers, directly or indirectly, to a missing commit, tree, or blob object\&.
+.sp
+This computation involves traversing all the reachable objects, i\&.e\&. it has the same cost as
+\fIgit prune\fR\&. It is primarily intended to fix corruption caused by garbage collecting using older versions of Git, which didn\(cqt protect objects referred to by reflogs\&.
+.RE
+.PP
+\-n, \-\-dry\-run
+.RS 4
+Do not actually prune any entries; just show what would have been pruned\&.
 .RE
 .PP
 \-\-verbose
 .RS 4
 Print extra information on screen\&.
 .RE
+.SS "Options for delete"
+.sp
+git reflog delete accepts options \-\-updateref, \-\-rewrite, \-n, \-\-dry\-run, and \-\-verbose, with the same meanings as when they are used with expire\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
