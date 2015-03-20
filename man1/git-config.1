@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03/17/2015
+.\"      Date: 03/20/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.3.3.220.g9ab698f
+.\"    Source: Git 2.3.3.262.ge80e85a
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "03/17/2015" "Git 2\&.3\&.3\&.220\&.g9ab698f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "03/20/2015" "Git 2\&.3\&.3\&.262\&.ge80e85a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -655,12 +655,12 @@ http\&.sslverify false
 .sp
 The Git configuration file contains a number of variables that affect the Git commands\(aq behavior\&. The \&.git/config file in each repository is used to store the configuration for that repository, and $HOME/\&.gitconfig is used to store a per\-user configuration as fallback values for the \&.git/config file\&. The file /etc/gitconfig can be used to store a system\-wide default configuration\&.
 .sp
-The configuration variables are used by both the Git plumbing and the porcelains\&. The variables are divided into sections, wherein the fully qualified variable name of the variable itself is the last dot\-separated segment and the section name is everything before the last dot\&. The variable names are case\-insensitive, allow only alphanumeric characters and \-, and must start with an alphabetic character\&. Some variables may appear multiple times\&.
+The configuration variables are used by both the Git plumbing and the porcelains\&. The variables are divided into sections, wherein the fully qualified variable name of the variable itself is the last dot\-separated segment and the section name is everything before the last dot\&. The variable names are case\-insensitive, allow only alphanumeric characters and \-, and must start with an alphabetic character\&. Some variables may appear multiple times; we say then that the variable is multivalued\&.
 .SS "Syntax"
 .sp
 The syntax is fairly flexible and permissive; whitespaces are mostly ignored\&. The \fI#\fR and \fI;\fR characters begin comments to the end of line, blank lines are ignored\&.
 .sp
-The file consists of sections and variables\&. A section begins with the name of the section in square brackets and continues until the next section begins\&. Section names are not case sensitive\&. Only alphanumeric characters, \- and \&. are allowed in section names\&. Each variable must belong to some section, which means that there must be a section header before the first setting of a variable\&.
+The file consists of sections and variables\&. A section begins with the name of the section in square brackets and continues until the next section begins\&. Section names are case\-insensitive\&. Only alphanumeric characters, \- and \&. are allowed in section names\&. Each variable must belong to some section, which means that there must be a section header before the first setting of a variable\&.
 .sp
 Sections can be further divided into subsections\&. To begin a subsection put its name in double quotes, separated by space from the section name, in the section header, like in the example below:
 .sp
@@ -675,23 +675,17 @@ Sections can be further divided into subsections\&. To begin a subsection put it
 .\}
 .sp
 .sp
-Subsection names are case sensitive and can contain any characters except newline (doublequote " and backslash have to be escaped as \e" and \e\e, respectively)\&. Section headers cannot span multiple lines\&. Variables may belong directly to a section or to a given subsection\&. You can have [section] if you have [section "subsection"], but you don\(cqt need to\&.
+Subsection names are case sensitive and can contain any characters except newline (doublequote " and backslash can be included by escaping them as \e" and \e\e, respectively)\&. Section headers cannot span multiple lines\&. Variables may belong directly to a section or to a given subsection\&. You can have [section] if you have [section "subsection"], but you don\(cqt need to\&.
 .sp
 There is also a deprecated [section\&.subsection] syntax\&. With this syntax, the subsection name is converted to lower\-case and is also compared case sensitively\&. These subsection names follow the same restrictions as section names\&.
 .sp
-All the other lines (and the remainder of the line after the section header) are recognized as setting variables, in the form \fIname = value\fR\&. If there is no equal sign on the line, the entire line is taken as \fIname\fR and the variable is recognized as boolean "true"\&. The variable names are case\-insensitive, allow only alphanumeric characters and \-, and must start with an alphabetic character\&. There can be more than one value for a given variable; we say then that the variable is multivalued\&.
+All the other lines (and the remainder of the line after the section header) are recognized as setting variables, in the form \fIname = value\fR (or just \fIname\fR, which is a short\-hand to say that the variable is the boolean "true")\&. The variable names are case\-insensitive, allow only alphanumeric characters and \-, and must start with an alphabetic character\&.
 .sp
-Leading and trailing whitespace in a variable value is discarded\&. Internal whitespace within a variable value is retained verbatim\&.
+A line that defines a value can be continued to the next line by ending it with a \e; the backquote and the end\-of\-line are stripped\&. Leading whitespaces after \fIname =\fR, the remainder of the line after the first comment character \fI#\fR or \fI;\fR, and trailing whitespaces of the line are discarded unless they are enclosed in double quotes\&. Internal whitespaces within the value are retained verbatim\&.
 .sp
-The values following the equals sign in variable assign are all either a string, an integer, or a boolean\&. Boolean values may be given as yes/no, 1/0, true/false or on/off\&. Case is not significant in boolean values, when converting value to the canonical form using \fI\-\-bool\fR type specifier; \fIgit config\fR will ensure that the output is "true" or "false"\&.
-.sp
-String values may be entirely or partially enclosed in double quotes\&. You need to enclose variable values in double quotes if you want to preserve leading or trailing whitespace, or if the variable value contains comment characters (i\&.e\&. it contains \fI#\fR or \fI;\fR)\&. Double quote " and backslash \e characters in variable values must be escaped: use \e" for " and \e\e for \e\&.
+Inside double quotes, double quote " and backslash \e characters must be escaped: use \e" for " and \e\e for \e\&.
 .sp
 The following escape sequences (beside \e" and \e\e) are recognized: \en for newline character (NL), \et for horizontal tabulation (HT, TAB) and \eb for backspace (BS)\&. Other char escape sequences (including octal escape sequences) are invalid\&.
-.sp
-Variable values ending in a \e are continued on the next line in the customary UNIX fashion\&.
-.sp
-Some variables may require a special value format\&.
 .SS "Includes"
 .sp
 You can include one config file from another by setting the special include\&.path variable to the name of the file to be included\&. The included file is expanded immediately, as if its contents had been found at the location of the include directive\&. If the value of the include\&.path variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. The value of include\&.path is subject to tilde expansion: ~/ is expanded to the value of $HOME, and ~user/ to the specified user\(cqs home directory\&. See below for examples\&.
@@ -760,6 +754,87 @@ You can include one config file from another by setting the special include\&.pa
 .if n \{\
 .RE
 .\}
+.SS "Values"
+.sp
+Values of many variables are treated as a simple string, but there are variables that take values of specific types and there are rules as to how to spell them\&.
+.PP
+boolean
+.RS 4
+When a variable is said to take a boolean value, many synonyms are accepted for
+\fItrue\fR
+and
+\fIfalse\fR; these are all case\-insensitive\&.
+.PP
+true
+.RS 4
+Boolean true can be spelled as
+yes,
+on,
+true, or
+1\&. Also, a variable defined without
+= <value>
+is taken as true\&.
+.RE
+.PP
+false
+.RS 4
+Boolean false can be spelled as
+no,
+off,
+false, or
+0\&.
+.sp
+When converting value to the canonical form using
+\fI\-\-bool\fR
+type specifier;
+\fIgit config\fR
+will ensure that the output is "true" or "false" (spelled in lowercase)\&.
+.RE
+.RE
+.PP
+integer
+.RS 4
+The value for many variables that specify various sizes can be suffixed with
+k,
+M,\&... to mean "scale the number by 1024", "by 1024x1024", etc\&.
+.RE
+.PP
+color
+.RS 4
+The value for a variables that takes a color is a list of colors (at most two) and attributes (at most one), separated by spaces\&. The colors accepted are
+normal,
+black,
+red,
+green,
+yellow,
+blue,
+magenta,
+cyan
+and
+white; the attributes are
+bold,
+dim,
+ul,
+blink
+and
+reverse\&. The first color given is the foreground; the second is the background\&. The position of the attribute, if any, doesn\(cqt matter\&. Attributes may be turned off specifically by prefixing them with
+no
+(e\&.g\&.,
+noreverse,
+noul, etc)\&.
+.sp
+Colors (foreground and background) may also be given as numbers between 0 and 255; these use ANSI 256\-color mode (but note that not all terminals may support this)\&. If your terminal supports it, you may also specify 24\-bit RGB values as hex, like
+#ff0ab3\&.
+.sp
+The attributes are meant to be reset at the beginning of each item in the colored output, so setting color\&.decorate\&.branch to
+black
+will paint that branch name in a plain
+black, even if the previous thing on the same output line (e\&.g\&. opening parenthesis before the list of branch names in
+log \-\-decorate
+output) is set to be painted with
+bold
+or some other attribute\&.
+.RE
 .SS "Variables"
 .sp
 Note that this list is non\-comprehensive and not necessarily complete\&. For command\-specific variables, you will find a more detailed description in the appropriate manual page\&.
@@ -1717,31 +1792,6 @@ upstream
 (upstream tracking branch),
 plain
 (other refs)\&.
-.sp
-The value for these configuration variables is a list of colors (at most two) and attributes (at most one), separated by spaces\&. The colors accepted are
-normal,
-black,
-red,
-green,
-yellow,
-blue,
-magenta,
-cyan
-and
-white; the attributes are
-bold,
-dim,
-ul,
-blink
-and
-reverse\&. The first color given is the foreground; the second is the background\&. The position of the attribute, if any, doesn\(cqt matter\&. Attributes may be turned off specifically by prefixing them with
-no
-(e\&.g\&.,
-noreverse,
-noul, etc)\&.
-.sp
-Colors (foreground and background) may also be given as numbers between 0 and 255; these use ANSI 256\-color mode (but note that not all terminals may support this)\&. If your terminal supports it, you may also specify 24\-bit RGB values as hex, like
-#ff0ab3\&.
 .RE
 .PP
 color\&.diff
@@ -1785,7 +1835,7 @@ new
 commit
 (commit headers), or
 whitespace
-(highlighting whitespace errors)\&. The values of these variables may be specified as in color\&.branch\&.<slot>\&.
+(highlighting whitespace errors)\&.
 .RE
 .PP
 color\&.decorate\&.<slot>
@@ -1878,8 +1928,6 @@ separators between fields on a line (:,
 \-, and
 =) and between hunks (\-\-)
 .RE
-.sp
-The values of these variables may be specified as in color\&.branch\&.<slot>\&.
 .RE
 .PP
 color\&.interactive
@@ -1905,7 +1953,7 @@ prompt,
 header,
 help
 or
-error, for four distinct types of normal output from interactive commands\&. The values of these variables may be specified as in color\&.branch\&.<slot>\&.
+error, for four distinct types of normal output from interactive commands\&.
 .RE
 .PP
 color\&.pager
@@ -1961,7 +2009,7 @@ nobranch
 \fIno branch\fR
 warning is shown in, defaulting to red), or
 unmerged
-(files which have unmerged changes)\&. The values of these variables may be specified as in color\&.branch\&.<slot>\&.
+(files which have unmerged changes)\&.
 .RE
 .PP
 color\&.ui
@@ -4938,6 +4986,14 @@ If
 or
 \fBgit-commit\fR(1)
 is not selecting the key you want it to automatically when creating a signed tag or commit, you can override the default selection with this variable\&. This option is passed unchanged to gpg\(cqs \-\-local\-user parameter, so you may specify a key using any method that gpg supports\&.
+.RE
+.PP
+versionsort\&.prereleaseSuffix
+.RS 4
+When version sort is used in
+\fBgit-tag\fR(1), prerelease tags (e\&.g\&. "1\&.0\-rc1") may appear after the main release "1\&.0"\&. By specifying the suffix "\-rc" in this variable, "1\&.0\-rc1" will appear before "1\&.0"\&.
+.sp
+This variable can be specified multiple times, once per suffix\&. The order of suffixes in the config file determines the sorting order (e\&.g\&. if "\-pre" appears before "\-rc" in the config file then 1\&.0\-preXX is sorted before 1\&.0\-rcXX)\&. The sorting order between different suffixes is undefined if they are in multiple config files\&.
 .RE
 .PP
 web\&.browser
