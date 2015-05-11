@@ -2,12 +2,12 @@
 .\"     Title: gitrepository-layout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 04/30/2015
+.\"      Date: 05/11/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.4.0
+.\"    Source: Git 2.4.0.194.gc518059
 .\"  Language: English
 .\"
-.TH "GITREPOSITORY\-LAYOU" "5" "04/30/2015" "Git 2\&.4\&.0" "Git Manual"
+.TH "GITREPOSITORY\-LAYOU" "5" "05/11/2015" "Git 2\&.4\&.0\&.194\&.gc518059" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -101,6 +101,8 @@ mechanisms to
 objects from other object stores\&. A repository with this kind of incomplete object store is not suitable to be published for use with dumb transports but otherwise is OK as long as
 objects/info/alternates
 points at the object stores it borrows from\&.
+.sp
+This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/objects" will be used instead\&.
 .RE
 .RE
 .PP
@@ -148,7 +150,7 @@ refs
 .RS 4
 References are stored in subdirectories of this directory\&. The
 \fIgit prune\fR
-command knows to preserve objects reachable from refs found in this directory and its subdirectories\&.
+command knows to preserve objects reachable from refs found in this directory and its subdirectories\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/refs" will be used instead\&.
 .RE
 .PP
 refs/heads/name
@@ -177,7 +179,7 @@ records the SHA\-1 of the object that replaces
 packed\-refs
 .RS 4
 records the same information as refs/heads/, refs/tags/, and friends record in a more efficient way\&. See
-\fBgit-pack-refs\fR(1)\&.
+\fBgit-pack-refs\fR(1)\&. This file is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/packed\-refs" will be used instead\&.
 .RE
 .PP
 HEAD
@@ -200,6 +202,11 @@ See
 for details\&.
 .RE
 .PP
+config
+.RS 4
+Repository specific configuration file\&. This file is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/config" will be used instead\&.
+.RE
+.PP
 branches
 .RS 4
 A slightly deprecated way to store shorthands to be used to specify a URL to
@@ -214,7 +221,7 @@ can be given to these commands in place of
 \fIrepository\fR
 argument\&. See the REMOTES section in
 \fBgit-fetch\fR(1)
-for details\&. This mechanism is legacy and not likely to be found in modern repositories\&.
+for details\&. This mechanism is legacy and not likely to be found in modern repositories\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/branches" will be used instead\&.
 .RE
 .PP
 hooks
@@ -225,7 +232,7 @@ is run, but all of them are disabled by default\&. To enable, the
 \&.sample
 suffix has to be removed from the filename by renaming\&. Read
 \fBgithooks\fR(5)
-for more details about each hook\&.
+for more details about each hook\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/hooks" will be used instead\&.
 .RE
 .PP
 index
@@ -240,7 +247,7 @@ The shared index part, to be referenced by $GIT_DIR/index and other temporary in
 .PP
 info
 .RS 4
-Additional information about the repository is recorded in this directory\&.
+Additional information about the repository is recorded in this directory\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/index" will be used instead\&.
 .RE
 .PP
 info/refs
@@ -294,14 +301,14 @@ and
 \fIgit push\fR
 commands\&. See the REMOTES section in
 \fBgit-fetch\fR(1)
-for details\&. This mechanism is legacy and not likely to be found in modern repositories\&.
+for details\&. This mechanism is legacy and not likely to be found in modern repositories\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/remotes" will be used instead\&.
 .RE
 .PP
 logs
 .RS 4
 Records of changes made to refs are stored in this directory\&. See
 \fBgit-update-ref\fR(1)
-for more information\&.
+for more information\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/logs" will be used instead\&.
 .RE
 .PP
 logs/refs/heads/name
@@ -325,12 +332,40 @@ but is internally used and maintained by shallow clone mechanism\&. See
 option to
 \fBgit-clone\fR(1)
 and
-\fBgit-fetch\fR(1)\&.
+\fBgit-fetch\fR(1)\&. This file is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/shallow" will be used instead\&.
+.RE
+.PP
+commondir
+.RS 4
+If this file exists, $GIT_COMMON_DIR (see
+\fBgit\fR(1)) will be set to the path specified in this file if it is not explicitly set\&. If the specified path is relative, it is relative to $GIT_DIR\&. The repository with commondir is incomplete without the repository pointed by "commondir"\&.
 .RE
 .PP
 modules
 .RS 4
 Contains the git\-repositories of the submodules\&.
+.RE
+.PP
+worktrees
+.RS 4
+Contains worktree specific information of linked checkouts\&. Each subdirectory contains the worktree\-related part of a linked checkout\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/worktrees" will be used instead\&.
+.RE
+.PP
+worktrees/<id>/gitdir
+.RS 4
+A text file containing the absolute path back to the \&.git file that points to here\&. This is used to check if the linked repository has been manually removed and there is no need to keep this directory any more\&. mtime of this file should be updated every time the linked repository is accessed\&.
+.RE
+.PP
+worktrees/<id>/locked
+.RS 4
+If this file exists, the linked repository may be on a portable device and not available\&. It does not mean that the linked repository is gone and
+worktrees/<id>
+could be removed\&. The file\(cqs content contains a reason string on why the repository is locked\&.
+.RE
+.PP
+worktrees/<id>/link
+.RS 4
+If this file exists, it is a hard link to the linked \&.git file\&. It is used to detect if the linked repository is manually removed\&.
 .RE
 .SH "SEE ALSO"
 .sp
