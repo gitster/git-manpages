@@ -2,12 +2,12 @@
 .\"     Title: gitrevisions
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 04/30/2015
+.\"      Date: 06/05/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.4.0
+.\"    Source: Git 2.4.3.368.g7974889
 .\"  Language: English
 .\"
-.TH "GITREVISIONS" "7" "04/30/2015" "Git 2\&.4\&.0" "Git Manual"
+.TH "GITREVISIONS" "7" "06/05/2015" "Git 2\&.4\&.3\&.368\&.g7974889" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -248,6 +248,45 @@ to a branchname (short form
 branch\&.<name>\&.remote
 and
 branch\&.<name>\&.merge)\&. A missing branchname defaults to the current one\&.
+.RE
+.PP
+\fI<branchname>@{push}\fR, e\&.g\&. \fImaster@{push}\fR, \fI@{push}\fR
+.RS 4
+The suffix
+\fI@{push}\fR
+reports the branch "where we would push to" if
+git push
+were run while
+branchname
+was checked out (or the current
+\fIHEAD\fR
+if no branchname is specified)\&. Since our push destination is in a remote repository, of course, we report the local tracking branch that corresponds to that branch (i\&.e\&., something in
+\fIrefs/remotes/\fR)\&.
+.sp
+Here\(cqs an example to make it more clear:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git config push\&.default current
+$ git config remote\&.pushdefault myfork
+$ git checkout \-b mybranch origin/master
+
+$ git rev\-parse \-\-symbolic\-full\-name @{upstream}
+refs/remotes/origin/master
+
+$ git rev\-parse \-\-symbolic\-full\-name @{push}
+refs/remotes/myfork/mybranch
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Note in the example that we set up a triangular workflow, where we pull from one location and push to another\&. In a non\-triangular workflow,
+\fI@{push}\fR
+is the same as
+\fI@{upstream}\fR, and there is no need for it\&.
 .RE
 .PP
 \fI<rev>^\fR, e\&.g\&. \fIHEAD^, v1\&.5\&.1^0\fR
