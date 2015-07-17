@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 07/13/2015
+.\"      Date: 07/17/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.5.0.rc2
+.\"    Source: Git 2.5.0.rc2.34.gfbdeabf
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "07/13/2015" "Git 2\&.5\&.0\&.rc2" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "07/17/2015" "Git 2\&.5\&.0\&.rc2\&.34\&.gfb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,7 +40,7 @@ git-worktree \- Manage multiple worktrees
 .sp
 Manage multiple worktrees attached to the same repository\&.
 .sp
-A git repository can support multiple working trees, allowing you to check out more than one branch at a time\&. With git checkout \-\-to a new working tree is associated with the repository\&. This new working tree is called a "linked working tree" as opposed to the "main working tree" prepared by "git init" or "git clone"\&. A repository has one main working tree (if it\(cqs not a bare repository) and zero or more linked working trees\&.
+A git repository can support multiple working trees, allowing you to check out more than one branch at a time\&. With git worktree add a new working tree is associated with the repository\&. This new working tree is called a "linked working tree" as opposed to the "main working tree" prepared by "git init" or "git clone"\&. A repository has one main working tree (if it\(cqs not a bare repository) and zero or more linked working trees\&.
 .sp
 When you are done with a linked working tree you can simply delete it\&. The working tree\(cqs administrative files in the repository (see "DETAILS" below) will eventually be removed automatically (see gc\&.pruneworktreesexpire in \fB:git-config\fR(1)), or you can run git worktree prune in the main or any linked working tree to clean up any stale administrative files\&.
 .sp
@@ -129,7 +129,7 @@ prune, only expire unused worktrees older than <time>\&.
 .RE
 .SH "DETAILS"
 .sp
-Each linked working tree has a private sub\-directory in the repository\(cqs $GIT_DIR/worktrees directory\&. The private sub\-directory\(cqs name is usually the base name of the linked working tree\(cqs path, possibly appended with a number to make it unique\&. For example, when $GIT_DIR=/path/main/\&.git the command git checkout \-\-to /path/other/test\-next next creates the linked working tree in /path/other/test\-next and also creates a $GIT_DIR/worktrees/test\-next directory (or $GIT_DIR/worktrees/test\-next1 if test\-next is already taken)\&.
+Each linked working tree has a private sub\-directory in the repository\(cqs $GIT_DIR/worktrees directory\&. The private sub\-directory\(cqs name is usually the base name of the linked working tree\(cqs path, possibly appended with a number to make it unique\&. For example, when $GIT_DIR=/path/main/\&.git the command git worktree add /path/other/test\-next next creates the linked working tree in /path/other/test\-next and also creates a $GIT_DIR/worktrees/test\-next directory (or $GIT_DIR/worktrees/test\-next1 if test\-next is already taken)\&.
 .sp
 Within a linked working tree, $GIT_DIR is set to point to this private directory (e\&.g\&. /path/main/\&.git/worktrees/test\-next in the example) and $GIT_COMMON_DIR is set to point back to the main working tree\(cqs $GIT_DIR (e\&.g\&. /path/main/\&.git)\&. These settings are made in a \&.git file located at the top directory of the linked working tree\&.
 .sp
@@ -160,7 +160,7 @@ $ git worktree prune
 .sp
 .SH "BUGS"
 .sp
-Multiple checkout support for submodules is incomplete\&. It is NOT recommended to make multiple checkouts of a superproject\&.
+Multiple checkout in general is still experimental, and the support for submodules is incomplete\&. It is NOT recommended to make multiple checkouts of a superproject\&.
 .sp
 git\-worktree could provide more automation for tasks currently performed manually, such as:
 .sp
