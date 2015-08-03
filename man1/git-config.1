@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 07/27/2015
+.\"      Date: 08/03/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.5.0
+.\"    Source: Git 2.5.0.234.gefc8a62
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "07/27/2015" "Git 2\&.5\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/03/2015" "Git 2\&.5\&.0\&.234\&.gefc8a62" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2861,6 +2861,23 @@ The command which is used to convert the content of a blob object to a worktree 
 for details\&.
 .RE
 .PP
+fsck\&.<msg\-id>
+.RS 4
+Allows overriding the message type (error, warn or ignore) of a specific message ID such as
+missingEmail\&.
+.sp
+For convenience, fsck prefixes the error/warning with the message ID, e\&.g\&. "missingEmail: invalid author/committer line \- missing email" means that setting
+fsck\&.missingEmail = ignore
+will hide that issue\&.
+.sp
+This feature is intended to support working with legacy repositories which cannot be repaired without disruptive changes\&.
+.RE
+.PP
+fsck\&.skipList
+.RS 4
+The path to a sorted list of object names (i\&.e\&. one SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
+.RE
+.PP
 gc\&.aggressiveDepth
 .RS 4
 The depth parameter used in the delta compression algorithm used by
@@ -4466,6 +4483,17 @@ rebase\&.autoStash
 When set to true, automatically create a temporary stash before the operation begins, and apply it after the operation ends\&. This means that you can run rebase on a dirty worktree\&. However, use with care: the final stash application after a successful rebase might result in non\-trivial conflicts\&. Defaults to false\&.
 .RE
 .PP
+rebase\&.missingCommitsCheck
+.RS 4
+If set to "warn", git rebase \-i will print a warning if some commits are removed (e\&.g\&. a line was deleted), however the rebase will still proceed\&. If set to "error", it will print the previous warning and stop the rebase,
+\fIgit rebase \-\-edit\-todo\fR
+can then be used to correct the error\&. If set to "ignore", no checking is done\&. To drop a commit without warning or error, use the
+drop
+command in the todo\-list\&. Defaults to "ignore"\&.
+.RE
+.sp
+rebase\&.instructionFormat A format string, as specified in \fBgit-log\fR(1), to be used for the instruction list during an interactive rebase\&. The format will automatically have the long commit hash prepended to the format\&.
+.PP
 receive\&.advertiseAtomic
 .RS 4
 By default, git\-receive\-pack will advertise the atomic push capability to its clients\&. If you don\(cqt want to this capability to be advertised, set this variable to false\&.
@@ -4508,6 +4536,31 @@ receive\&.fsckObjects
 If it is set to true, git\-receive\-pack will check all received objects\&. It will abort in the case of a malformed object or a broken link\&. The result of an abort are only dangling objects\&. Defaults to false\&. If not set, the value of
 transfer\&.fsckObjects
 is used instead\&.
+.RE
+.PP
+receive\&.fsck\&.<msg\-id>
+.RS 4
+When
+receive\&.fsckObjects
+is set to true, errors can be switched to warnings and vice versa by configuring the
+receive\&.fsck\&.<msg\-id>
+setting where the
+<msg\-id>
+is the fsck message ID and the value is one of
+error,
+warn
+or
+ignore\&. For convenience, fsck prefixes the error/warning with the message ID, e\&.g\&. "missingEmail: invalid author/committer line \- missing email" means that setting
+receive\&.fsck\&.missingEmail = ignore
+will hide that issue\&.
+.sp
+This feature is intended to support working with legacy repositories which would not pass pushing when
+receive\&.fsckObjects = true, allowing the host to accept repositories with certain known issues but still catch other issues\&.
+.RE
+.PP
+receive\&.fsck\&.skipList
+.RS 4
+The path to a sorted list of object names (i\&.e\&. one SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
 .RE
 .PP
 receive\&.unpackLimit

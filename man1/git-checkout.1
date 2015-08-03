@@ -2,12 +2,12 @@
 .\"     Title: git-checkout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 07/27/2015
+.\"      Date: 08/03/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.5.0
+.\"    Source: Git 2.5.0.234.gefc8a62
 .\"  Language: English
 .\"
-.TH "GIT\-CHECKOUT" "1" "07/27/2015" "Git 2\&.5\&.0" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "08/03/2015" "Git 2\&.5\&.0\&.234\&.gefc8a62" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -156,6 +156,27 @@ When checking out paths from the index, do not fail upon unmerged entries; inste
 \-\-ours, \-\-theirs
 .RS 4
 When checking out paths from the index, check out stage #2 (\fIours\fR) or #3 (\fItheirs\fR) for unmerged paths\&.
+.sp
+Note that during
+git rebase
+and
+git pull \-\-rebase,
+\fIours\fR
+and
+\fItheirs\fR
+may appear swapped;
+\-\-ours
+gives the version from the branch the changes are rebased onto, while
+\-\-theirs
+gives the version from the branch that holds your work that is being rebased\&.
+.sp
+This is because
+rebase
+is used in a workflow that treats the history at the remote as the shared canonical one, and treats the work done on the branch you are rebasing as the third\-party work to be integrated, and you are temporarily assuming the role of the keeper of the canonical history during the rebase\&. As the keeper of the canonical history, you need to view the history from the remote as
+ours
+(i\&.e\&. "our shared canonical history"), while what you did on your side branch as
+theirs
+(i\&.e\&. "one contributor\(cqs work on top of it")\&.
 .RE
 .PP
 \-b <new_branch>
