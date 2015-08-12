@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 07/27/2015
+.\"      Date: 08/12/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.5.0
+.\"    Source: Git 2.5.0.330.g130be8e
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "07/27/2015" "Git 2\&.5\&.0" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "08/12/2015" "Git 2\&.5\&.0\&.330\&.g130be8e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,7 +28,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-worktree \- Manage multiple worktrees
+git-worktree \- Manage multiple working trees
 .SH "SYNOPSIS"
 .sp
 .nf
@@ -38,15 +38,15 @@ git-worktree \- Manage multiple worktrees
 .sp
 .SH "DESCRIPTION"
 .sp
-Manage multiple worktrees attached to the same repository\&.
+Manage multiple working trees attached to the same repository\&.
 .sp
 A git repository can support multiple working trees, allowing you to check out more than one branch at a time\&. With git worktree add a new working tree is associated with the repository\&. This new working tree is called a "linked working tree" as opposed to the "main working tree" prepared by "git init" or "git clone"\&. A repository has one main working tree (if it\(cqs not a bare repository) and zero or more linked working trees\&.
 .sp
-When you are done with a linked working tree you can simply delete it\&. The working tree\(cqs administrative files in the repository (see "DETAILS" below) will eventually be removed automatically (see gc\&.pruneworktreesexpire in \fB:git-config\fR(1)), or you can run git worktree prune in the main or any linked working tree to clean up any stale administrative files\&.
+When you are done with a linked working tree you can simply delete it\&. The working tree\(cqs administrative files in the repository (see "DETAILS" below) will eventually be removed automatically (see gc\&.worktreePruneExpire in \fBgit-config\fR(1)), or you can run git worktree prune in the main or any linked working tree to clean up any stale administrative files\&.
 .sp
-If you move a linked working directory to another file system, or within a file system that does not support hard links, you need to run at least one git command inside the linked working directory (e\&.g\&. git status) in order to update its administrative files in the repository so that they do not get automatically pruned\&.
+If you move a linked working tree to another file system, or within a file system that does not support hard links, you need to run at least one git command inside the linked working tree (e\&.g\&. git status) in order to update its administrative files in the repository so that they do not get automatically pruned\&.
 .sp
-If a linked working tree is stored on a portable device or network share which is not always mounted, you can prevent its administrative files from being pruned by creating a file named \fIlock\fR alongside the other administrative files, optionally containing a plain text reason that pruning should be suppressed\&. See section "DETAILS" for more information\&.
+If a linked working tree is stored on a portable device or network share which is not always mounted, you can prevent its administrative files from being pruned by creating a file named \fIlocked\fR alongside the other administrative files, optionally containing a plain text reason that pruning should be suppressed\&. See section "DETAILS" for more information\&.
 .SH "COMMANDS"
 .PP
 add <path> [<branch>]
@@ -63,7 +63,9 @@ is omitted and neither
 \-b
 nor
 \-B
-is used, then, as a convenience, a new branch based at HEAD is created automatically, as if
+nor
+\-\-detached
+used, then, as a convenience, a new branch based at HEAD is created automatically, as if
 \-b $(basename <path>)
 was specified\&.
 .RE
@@ -78,9 +80,9 @@ Prune working tree information in $GIT_DIR/worktrees\&.
 .RS 4
 By default,
 add
-refuses to create a new worktree when
+refuses to create a new working tree when
 <branch>
-is already checked out by another worktree\&. This option overrides that safeguard\&.
+is already checked out by another working tree\&. This option overrides that safeguard\&.
 .RE
 .PP
 \-b <new\-branch>, \-B <new\-branch>
@@ -91,7 +93,7 @@ add, create a new branch named
 starting at
 <branch>, and check out
 <new\-branch>
-into the new worktree\&. If
+into the new working tree\&. If
 <branch>
 is omitted, it defaults to HEAD\&. By default,
 \-b
@@ -106,7 +108,7 @@ to
 \-\-detach
 .RS 4
 With
-add, detach HEAD in the new worktree\&. See "DETACHED HEAD" in
+add, detach HEAD in the new working tree\&. See "DETACHED HEAD" in
 \fBgit-checkout\fR(1)\&.
 .RE
 .PP
@@ -125,7 +127,7 @@ prune, report all removals\&.
 \-\-expire <time>
 .RS 4
 With
-prune, only expire unused worktrees older than <time>\&.
+prune, only expire unused working trees older than <time>\&.
 .RE
 .SH "DETAILS"
 .sp
@@ -137,10 +139,10 @@ Path resolution via git rev\-parse \-\-git\-path uses either $GIT_DIR or $GIT_CO
 .sp
 See \fBgitrepository-layout\fR(5) for more information\&. The rule of thumb is do not make any assumption about whether a path belongs to $GIT_DIR or $GIT_COMMON_DIR when you need to directly access something inside $GIT_DIR\&. Use git rev\-parse \-\-git\-path to get the final path\&.
 .sp
-To prevent a $GIT_DIR/worktrees entry from from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), add a file named \fIlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \&.git file points to /path/main/\&.git/worktrees/test\-next then a file named /path/main/\&.git/worktrees/test\-next/locked will prevent the test\-next entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
+To prevent a $GIT_DIR/worktrees entry from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), add a file named \fIlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \&.git file points to /path/main/\&.git/worktrees/test\-next then a file named /path/main/\&.git/worktrees/test\-next/locked will prevent the test\-next entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
 .SH "EXAMPLES"
 .sp
-You are in the middle of a refactoring session and your boss comes in and demands that you fix something immediately\&. You might typically use \fBgit-stash\fR(1) to store your changes away temporarily, however, your worktree is in such a state of disarray (with new, moved, and removed files, and other bits and pieces strewn around) that you don\(cqt want to risk disturbing any of it\&. Instead, you create a temporary linked worktree to make the emergency fix, remove it when done, and then resume your earlier refactoring session\&.
+You are in the middle of a refactoring session and your boss comes in and demands that you fix something immediately\&. You might typically use \fBgit-stash\fR(1) to store your changes away temporarily, however, your working tree is in such a state of disarray (with new, moved, and removed files, and other bits and pieces strewn around) that you don\(cqt want to risk disturbing any of it\&. Instead, you create a temporary linked working tree to make the emergency fix, remove it when done, and then resume your earlier refactoring session\&.
 .sp
 .if n \{\
 .RS 4
@@ -173,7 +175,7 @@ git\-worktree could provide more automation for tasks currently performed manual
 .IP \(bu 2.3
 .\}
 remove
-to remove a linked worktree and its administrative files (and warn if the worktree is dirty)
+to remove a linked working tree and its administrative files (and warn if the working tree is dirty)
 .RE
 .sp
 .RS 4
@@ -185,7 +187,7 @@ to remove a linked worktree and its administrative files (and warn if the worktr
 .IP \(bu 2.3
 .\}
 mv
-to move or rename a worktree and update its administrative files
+to move or rename a working tree and update its administrative files
 .RE
 .sp
 .RS 4
@@ -197,7 +199,7 @@ to move or rename a worktree and update its administrative files
 .IP \(bu 2.3
 .\}
 list
-to list linked worktrees
+to list linked working trees
 .RE
 .sp
 .RS 4
@@ -209,7 +211,7 @@ to list linked worktrees
 .IP \(bu 2.3
 .\}
 lock
-to prevent automatic pruning of administrative files (for instance, for a worktree on a portable device)
+to prevent automatic pruning of administrative files (for instance, for a working tree on a portable device)
 .RE
 .SH "GIT"
 .sp
