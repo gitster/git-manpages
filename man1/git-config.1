@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/12/2015
+.\"      Date: 08/19/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.5.0.330.g130be8e
+.\"    Source: Git 2.5.0.400.gff86faf
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "08/12/2015" "Git 2\&.5\&.0\&.330\&.g130be8e" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/19/2015" "Git 2\&.5\&.0\&.400\&.gff86faf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -4612,10 +4612,10 @@ If set to true, git\-receive\-pack will deny a ref update which is not a fast\-f
 .PP
 receive\&.hideRefs
 .RS 4
-String(s)
+This variable is the same as
+transfer\&.hideRefs, but applies only to
 receive\-pack
-uses to decide which refs to omit from its initial advertisement\&. Use more than one definitions to specify multiple prefix strings\&. A ref that are under the hierarchies listed on the value of this variable is excluded, and is hidden when responding to
-git push, and an attempt to update or delete a hidden ref by
+(and so affects pushes, but not fetches)\&. An attempt to update or delete a hidden ref by
 git push
 is rejected\&.
 .RE
@@ -5014,11 +5014,22 @@ are not set, the value of this variable is used instead\&. Defaults to false\&.
 .PP
 transfer\&.hideRefs
 .RS 4
-This variable can be used to set both
+String(s)
+receive\-pack
+and
+upload\-pack
+use to decide which refs to omit from their initial advertisements\&. Use more than one definition to specify multiple prefix strings\&. A ref that is under the hierarchies listed in the value of this variable is excluded, and is hidden when responding to
+git push
+or
+git fetch\&. See
 receive\&.hideRefs
 and
 uploadpack\&.hideRefs
-at the same time to the same values\&. See entries for these other variables\&.
+for program\-specific versions of this config\&.
+.sp
+You may also include a
+!
+in front of the ref name to negate the entry, explicitly exposing it, even if an earlier entry marked it as hidden\&. If you have multiple hideRefs values, later entries override earlier ones (and entries in more\-specific config files override less\-specific ones)\&.
 .RE
 .PP
 transfer\&.unpackLimit
@@ -5044,11 +5055,10 @@ false\&.
 .PP
 uploadpack\&.hideRefs
 .RS 4
-String(s)
+This variable is the same as
+transfer\&.hideRefs, but applies only to
 upload\-pack
-uses to decide which refs to omit from its initial advertisement\&. Use more than one definitions to specify multiple prefix strings\&. A ref that are under the hierarchies listed on the value of this variable is excluded, and is hidden from
-git ls\-remote,
-git fetch, etc\&. An attempt to fetch a hidden ref by
+(and so affects only fetches, not pushes)\&. An attempt to fetch a hidden ref by
 git fetch
 will fail\&. See also
 uploadpack\&.allowTipSHA1InWant\&.
