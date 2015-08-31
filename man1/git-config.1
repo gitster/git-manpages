@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/26/2015
+.\"      Date: 08/31/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.5.0.474.g3a9835b
+.\"    Source: Git 2.5.1.454.g1616360
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "08/26/2015" "Git 2\&.5\&.0\&.474\&.g3a9835b" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/31/2015" "Git 2\&.5\&.1\&.454\&.g1616360" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,13 +37,13 @@ git-config \- Get and set repository or global options
 \fIgit config\fR [<file\-option>] [type] \-\-replace\-all name value [value_regex]
 \fIgit config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get name [value_regex]
 \fIgit config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get\-all name [value_regex]
-\fIgit config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get\-regexp name_regex [value_regex]
+\fIgit config\fR [<file\-option>] [type] [\-z|\-\-null] [\-\-name\-only] \-\-get\-regexp name_regex [value_regex]
 \fIgit config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get\-urlmatch name URL
 \fIgit config\fR [<file\-option>] \-\-unset name [value_regex]
 \fIgit config\fR [<file\-option>] \-\-unset\-all name [value_regex]
 \fIgit config\fR [<file\-option>] \-\-rename\-section old_name new_name
 \fIgit config\fR [<file\-option>] \-\-remove\-section name
-\fIgit config\fR [<file\-option>] [\-z|\-\-null] \-l | \-\-list
+\fIgit config\fR [<file\-option>] [\-z|\-\-null] [\-\-name\-only] \-l | \-\-list
 \fIgit config\fR [<file\-option>] \-\-get\-color name [default]
 \fIgit config\fR [<file\-option>] \-\-get\-colorbool name [stdout\-is\-tty]
 \fIgit config\fR [<file\-option>] \-e | \-\-edit
@@ -266,7 +266,7 @@ Remove all lines matching the key from config file\&.
 .PP
 \-l, \-\-list
 .RS 4
-List all variables set in config file\&.
+List all variables set in config file, along with their values\&.
 .RE
 .PP
 \-\-bool
@@ -307,6 +307,14 @@ from the command line to let your shell do the expansion)\&.
 \-z, \-\-null
 .RS 4
 For all options that output values and/or keys, always end values with the null character (instead of a newline)\&. Use newline instead as a delimiter between key and value\&. This allows for secure parsing of the output without getting confused e\&.g\&. by values that contain line breaks\&.
+.RE
+.PP
+\-\-name\-only
+.RS 4
+Output only the names of config variables for
+\-\-list
+or
+\-\-get\-regexp\&.
 .RE
 .PP
 \-\-get\-colorbool name [stdout\-is\-tty]
@@ -4242,6 +4250,26 @@ mergetool\&.prompt
 Prompt before each invocation of the merge resolution program\&.
 .RE
 .PP
+notes\&.mergeStrategy
+.RS 4
+Which merge strategy to choose by default when resolving notes conflicts\&. Must be one of
+manual,
+ours,
+theirs,
+union, or
+cat_sort_uniq\&. Defaults to
+manual\&. See "NOTES MERGE STRATEGIES" section of
+\fBgit-notes\fR(1)
+for more information on each strategy\&.
+.RE
+.PP
+notes\&.<name>\&.mergeStrategy
+.RS 4
+Which merge strategy to choose when doing a notes merge into refs/notes/<name>\&. This overrides the more general "notes\&.mergeStrategy"\&. See the "NOTES MERGE STRATEGIES" section in
+\fBgit-notes\fR(1)
+for more information on the available strategies\&.
+.RE
+.PP
 notes\&.displayRef
 .RS 4
 The (fully qualified) refname from which to show notes when showing commit messages\&. The value of this variable can be set to a glob, in which case notes from all matching refs will be shown\&. You may also specify this configuration variable several times\&. A warning will be issued for refs that do not exist, but a glob that does not match any refs is silently ignored\&.
@@ -4267,7 +4295,8 @@ notes\&.rewriteMode
 .RS 4
 When copying notes during a rewrite (see the "notes\&.rewrite\&.<command>" option), determines what to do if the target commit already has a note\&. Must be one of
 overwrite,
-concatenate, or
+concatenate,
+cat_sort_uniq, or
 ignore\&. Defaults to
 concatenate\&.
 .sp
@@ -4556,6 +4585,20 @@ If set to true enable
 \fI\-\-follow\-tags\fR
 option by default\&. You may override this configuration at time of push by specifying
 \fI\-\-no\-follow\-tags\fR\&.
+.RE
+.PP
+push\&.gpgSign
+.RS 4
+May be set to a boolean value, or the string
+\fIif\-asked\fR\&. A true value causes all pushes to be GPG signed, as if
+\fI\-\-signed\fR
+is passed to
+\fBgit-push\fR(1)\&. The string
+\fIif\-asked\fR
+causes pushes to be signed if the server supports it, as if
+\fI\-\-signed=if\-asked\fR
+is passed to
+\fIgit push\fR\&. A false value may override a value from a lower\-priority config file\&. An explicit command\-line flag always overrides this config option\&.
 .RE
 .PP
 rebase\&.stat

@@ -2,12 +2,12 @@
 .\"     Title: git-notes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 07/27/2015
+.\"      Date: 08/31/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.5.0
+.\"    Source: Git 2.5.1.454.g1616360
 .\"  Language: English
 .\"
-.TH "GIT\-NOTES" "1" "07/27/2015" "Git 2\&.5\&.0" "Git Manual"
+.TH "GIT\-NOTES" "1" "08/31/2015" "Git 2\&.5\&.1\&.454\&.g1616360" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -122,7 +122,7 @@ merge
 .RS 4
 Merge the given notes ref into the current notes ref\&. This will try to merge the changes made by the given notes ref (called "remote") since the merge\-base (if any) into the current notes ref (called "local")\&.
 .sp
-If conflicts arise and a strategy for automatically resolving conflicting notes (see the \-s/\-\-strategy option) is not given, the "manual" resolver is used\&. This resolver checks out the conflicting notes in a special worktree (\&.git/NOTES_MERGE_WORKTREE), and instructs the user to manually resolve the conflicts there\&. When done, the user can either finalize the merge with
+If conflicts arise and a strategy for automatically resolving conflicting notes (see the "NOTES MERGE STRATEGIES" section) is not given, the "manual" resolver is used\&. This resolver checks out the conflicting notes in a special worktree (\&.git/NOTES_MERGE_WORKTREE), and instructs the user to manually resolve the conflicts there\&. When done, the user can either finalize the merge with
 \fIgit notes merge \-\-commit\fR, or abort the merge with
 \fIgit notes merge \-\-abort\fR\&.
 .RE
@@ -214,7 +214,7 @@ Do not remove anything; just report the object names whose notes would be remove
 .PP
 \-s <strategy>, \-\-strategy=<strategy>
 .RS 4
-When merging notes, resolve notes conflicts using the given strategy\&. The following strategies are recognized: "manual" (default), "ours", "theirs", "union" and "cat_sort_uniq"\&. See the "NOTES MERGE STRATEGIES" section below for more information on each notes merge strategy\&.
+When merging notes, resolve notes conflicts using the given strategy\&. The following strategies are recognized: "manual" (default), "ours", "theirs", "union" and "cat_sort_uniq"\&. This option overrides the "notes\&.mergeStrategy" configuration setting\&. See the "NOTES MERGE STRATEGIES" section below for more information on each notes merge strategy\&.
 .RE
 .PP
 \-\-commit
@@ -252,6 +252,8 @@ It is also permitted for a notes ref to point directly to a tree object, in whic
 .SH "NOTES MERGE STRATEGIES"
 .sp
 The default notes merge strategy is "manual", which checks out conflicting notes in a special work tree for resolving notes conflicts (\&.git/NOTES_MERGE_WORKTREE), and instructs the user to resolve the conflicts in that work tree\&. When done, the user can either finalize the merge with \fIgit notes merge \-\-commit\fR, or abort the merge with \fIgit notes merge \-\-abort\fR\&.
+.sp
+Users may select an automated merge strategy from among the following using either \-s/\-\-strategy option or configuring notes\&.mergeStrategy accordingly:
 .sp
 "ours" automatically resolves conflicting notes in favor of the local version (i\&.e\&. the current notes ref)\&.
 .sp
@@ -305,6 +307,26 @@ Notes ref to read and manipulate instead of
 refs/notes/commits\&. Must be an unabbreviated ref name\&. This setting can be overridden through the environment and command line\&.
 .RE
 .PP
+notes\&.mergeStrategy
+.RS 4
+Which merge strategy to choose by default when resolving notes conflicts\&. Must be one of
+manual,
+ours,
+theirs,
+union, or
+cat_sort_uniq\&. Defaults to
+manual\&. See "NOTES MERGE STRATEGIES" section above for more information on each strategy\&.
+.sp
+This setting can be overridden by passing the
+\-\-strategy
+option\&.
+.RE
+.PP
+notes\&.<name>\&.mergeStrategy
+.RS 4
+Which merge strategy to choose when doing a notes merge into refs/notes/<name>\&. This overrides the more general "notes\&.mergeStrategy"\&. See the "NOTES MERGE STRATEGIES" section above for more information on each available strategy\&.
+.RE
+.PP
 notes\&.displayRef
 .RS 4
 Which ref (or refs, if a glob or specified more than once), in addition to the default set by
@@ -336,7 +358,8 @@ notes\&.rewriteMode
 .RS 4
 When copying notes during a rewrite, what to do if the target commit already has a note\&. Must be one of
 overwrite,
-concatenate, and
+concatenate,
+cat_sort_uniq, or
 ignore\&. Defaults to
 concatenate\&.
 .sp
@@ -381,7 +404,8 @@ A warning will be issued for refs that do not exist, but a glob that does not ma
 .RS 4
 When copying notes during a rewrite, what to do if the target commit already has a note\&. Must be one of
 overwrite,
-concatenate, and
+concatenate,
+cat_sort_uniq, or
 ignore\&. This overrides the
 core\&.rewriteMode
 setting\&.
