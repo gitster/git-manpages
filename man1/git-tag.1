@@ -2,12 +2,12 @@
 .\"     Title: git-tag
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/28/2015
+.\"      Date: 10/05/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.6.0
+.\"    Source: Git 2.6.1.120.g24a00ef
 .\"  Language: English
 .\"
-.TH "GIT\-TAG" "1" "09/28/2015" "Git 2\&.6\&.0" "Git Manual"
+.TH "GIT\-TAG" "1" "10/05/2015" "Git 2\&.6\&.1\&.120\&.g24a00ef" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,11 +32,12 @@ git-tag \- Create, list, delete or verify a tag object signed with GPG
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit tag\fR [\-a | \-s | \-u <key\-id>] [\-f] [\-m <msg> | \-F <file>]
+\fIgit tag\fR [\-a | \-s | \-u <keyid>] [\-f] [\-m <msg> | \-F <file>]
         <tagname> [<commit> | <object>]
 \fIgit tag\fR \-d <tagname>\&...
 \fIgit tag\fR [\-n[<num>]] \-l [\-\-contains <commit>] [\-\-points\-at <object>]
-        [\-\-column[=<options>] | \-\-no\-column] [\-\-create\-reflog] [<pattern>\&...]
+        [\-\-column[=<options>] | \-\-no\-column] [\-\-create\-reflog] [\-\-sort=<key>]
+        [\-\-format=<format>] [\-\-[no\-]merged [<commit>]] [<pattern>\&...]
 \fIgit tag\fR \-v <tagname>\&...
 .fi
 .sp
@@ -46,13 +47,13 @@ Add a tag reference in refs/tags/, unless \-d/\-l/\-v is given to delete, list o
 .sp
 Unless \-f is given, the named tag must not yet exist\&.
 .sp
-If one of \-a, \-s, or \-u <key\-id> is passed, the command creates a \fItag\fR object, and requires a tag message\&. Unless \-m <msg> or \-F <file> is given, an editor is started for the user to type in the tag message\&.
+If one of \-a, \-s, or \-u <keyid> is passed, the command creates a \fItag\fR object, and requires a tag message\&. Unless \-m <msg> or \-F <file> is given, an editor is started for the user to type in the tag message\&.
 .sp
-If \-m <msg> or \-F <file> is given and \-a, \-s, and \-u <key\-id> are absent, \-a is implied\&.
+If \-m <msg> or \-F <file> is given and \-a, \-s, and \-u <keyid> are absent, \-a is implied\&.
 .sp
 Otherwise just a tag reference for the SHA\-1 object name of the commit object is created (i\&.e\&. a lightweight tag)\&.
 .sp
-A GnuPG signed tag object will be created when \-s or \-u <key\-id> is used\&. When \-u <key\-id> is not used, the committer identity for the current user is used to find the GnuPG key for signing\&. The configuration variable gpg\&.program is used to specify custom GnuPG binary\&.
+A GnuPG signed tag object will be created when \-s or \-u <keyid> is used\&. When \-u <keyid> is not used, the committer identity for the current user is used to find the GnuPG key for signing\&. The configuration variable gpg\&.program is used to specify custom GnuPG binary\&.
 .sp
 Tag objects (created with \-a, \-s, or \-u) are called "annotated" tags; they contain a creation date, the tagger name and e\-mail, a tagging message, and an optional GnuPG signature\&. Whereas a "lightweight" tag is simply a name for an object (usually a commit object)\&.
 .sp
@@ -69,7 +70,7 @@ Make an unsigned, annotated tag object
 Make a GPG\-signed tag, using the default e\-mail address\(cqs key\&.
 .RE
 .PP
-\-u <key\-id>, \-\-local\-user=<key\-id>
+\-u <keyid>, \-\-local\-user=<keyid>
 .RS 4
 Make a GPG\-signed tag, using the given key\&.
 .RE
@@ -100,9 +101,12 @@ Verify the gpg signature of the given tag names\&.
 List tags with names that match the given pattern (or all if no pattern is given)\&. Running "git tag" without arguments also lists all tags\&. The pattern is a shell wildcard (i\&.e\&., matched using fnmatch(3))\&. Multiple patterns may be given; if any of them matches, the tag is shown\&.
 .RE
 .PP
-\-\-sort=<type>
+\-\-sort=<key>
 .RS 4
-Sort in a specific order\&. Supported type is "refname" (lexicographic order), "version:refname" or "v:refname" (tag names are treated as versions)\&. The "version:refname" sort order can also be affected by the "versionsort\&.prereleaseSuffix" configuration variable\&. Prepend "\-" to reverse sort order\&. When this option is not given, the sort order defaults to the value configured for the
+Sort based on the key given\&. Prefix
+\-
+to sort in descending order of the value\&. You may use the \-\-sort=<key> option multiple times, in which case the last key becomes the primary key\&. Also supports "version:refname" or "v:refname" (tag names are treated as versions)\&. The "version:refname" sort order can also be affected by the "versionsort\&.prereleaseSuffix" configuration variable\&. The keys supported are the same as those in
+git for\-each\-ref\&. Sort order defaults to the value configured for the
 \fItag\&.sort\fR
 variable if it exists, or lexicographic order otherwise\&. See
 \fBgit-config\fR(1)\&.
@@ -141,7 +145,7 @@ options are given, their values are concatenated as separate paragraphs\&. Impli
 if none of
 \-a,
 \-s, or
-\-u <key\-id>
+\-u <keyid>
 is given\&.
 .RE
 .PP
@@ -154,7 +158,7 @@ to read the message from the standard input\&. Implies
 if none of
 \-a,
 \-s, or
-\-u <key\-id>
+\-u <keyid>
 is given\&.
 .RE
 .PP
@@ -192,6 +196,23 @@ The name of the tag to create, delete, or describe\&. The new tag name must pass
 .RS 4
 The object that the new tag will refer to, usually a commit\&. Defaults to HEAD\&.
 .RE
+.PP
+<format>
+.RS 4
+A string that interpolates
+%(fieldname)
+from the object pointed at by a ref being shown\&. The format is the same as that of
+\fBgit-for-each-ref\fR(1)\&. When unspecified, defaults to
+%(refname:short)\&.
+.RE
+.PP
+\-\-[no\-]merged [<commit>]
+.RS 4
+Only list tags whose tips are reachable, or not reachable if
+\fI\-\-no\-merged\fR
+is used, from the specified commit (\fIHEAD\fR
+if not specified)\&.
+.RE
 .SH "CONFIGURATION"
 .sp
 By default, \fIgit tag\fR in sign\-with\-default mode (\-s) will use your committer identity (of the form Your Name <your@email\&.address>) to find a key\&. If you want to use a different default key, you can specify it in the repository configuration as follows:
@@ -201,7 +222,7 @@ By default, \fIgit tag\fR in sign\-with\-default mode (\-s) will use your commit
 .\}
 .nf
 [user]
-    signingKey = <gpg\-key\-id>
+    signingKey = <gpg\-keyid>
 .fi
 .if n \{\
 .RE

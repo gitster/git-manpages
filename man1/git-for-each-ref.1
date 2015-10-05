@@ -2,12 +2,12 @@
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/28/2015
+.\"      Date: 10/05/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.6.0
+.\"    Source: Git 2.6.1.120.g24a00ef
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "09/28/2015" "Git 2\&.6\&.0" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "10/05/2015" "Git 2\&.6\&.1\&.120\&.g24a00ef" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,6 +34,8 @@ git-for-each-ref \- Output information on each ref
 .nf
 \fIgit for\-each\-ref\fR [\-\-count=<count>] [\-\-shell|\-\-perl|\-\-python|\-\-tcl]
                    [(\-\-sort=<key>)\&...] [\-\-format=<format>] [<pattern>\&...]
+                   [\-\-points\-at <object>] [(\-\-merged | \-\-no\-merged) [<object>]]
+                   [\-\-contains [<object>]]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -96,6 +98,26 @@ If one or more patterns are given, only refs are shown that match against at lea
 If given, strings that substitute
 %(fieldname)
 placeholders are quoted as string literals suitable for the specified host language\&. This is meant to produce a scriptlet that can directly be `eval`ed\&.
+.RE
+.PP
+\-\-points\-at <object>
+.RS 4
+Only list refs which points at the given object\&.
+.RE
+.PP
+\-\-merged [<object>]
+.RS 4
+Only list refs whose tips are reachable from the specified commit (HEAD if not specified)\&.
+.RE
+.PP
+\-\-no\-merged [<object>]
+.RS 4
+Only list refs whose tips are not reachable from the specified commit (HEAD if not specified)\&.
+.RE
+.PP
+\-\-contains [<object>]
+.RS 4
+Only list tags which contain the specified commit (HEAD if not specified)\&.
 .RE
 .SH "FIELD NAMES"
 .sp
@@ -170,18 +192,35 @@ Change output color\&. Followed by
 :<colorname>, where names are described in
 color\&.branch\&.*\&.
 .RE
+.PP
+align
+.RS 4
+Left\-, middle\-, or right\-align the content between %(align:\&...) and %(end)\&. The "align:" is followed by
+<width>
+and
+<position>
+in any order separated by a comma, where the
+<position>
+is either left, right or middle, default being left and
+<width>
+is the total length of the content with alignment\&. If the contents length is more than the width then no alignment is performed\&. If used with
+\fI\-\-quote\fR
+everything in between %(align:\&...) and %(end) is quoted, but if nested then only the topmost level performs quoting\&.
+.RE
 .sp
 In addition to the above, for commit and tag objects, the header field names (tree, parent, object, type, and tag) can be used to specify the value in the header field\&.
 .sp
 Fields that have name\-email\-date tuple as its value (author, committer, and tagger) can be suffixed with name, email, and date to extract the named component\&.
 .sp
-The complete message in a commit and tag object is contents\&. Its first line is contents:subject, where subject is the concatenation of all lines of the commit message up to the first blank line\&. The next line is \fIcontents:body\fR, where body is all of the lines after the first blank line\&. Finally, the optional GPG signature is contents:signature\&.
+The complete message in a commit and tag object is contents\&. Its first line is contents:subject, where subject is the concatenation of all lines of the commit message up to the first blank line\&. The next line is \fIcontents:body\fR, where body is all of the lines after the first blank line\&. The optional GPG signature is contents:signature\&. The first N lines of the message is obtained using contents:lines=N\&.
 .sp
 For sorting purposes, fields with numeric values sort in numeric order (objectsize, authordate, committerdate, taggerdate)\&. All other fields are used to sort in their byte\-value order\&.
 .sp
+There is also an option to sort by versions, this can be done by using the fieldname version:refname or its alias v:refname\&.
+.sp
 In any case, a field name that refers to a field inapplicable to the object referred by the ref does not cause an error\&. It returns an empty string instead\&.
 .sp
-As a special case for the date\-type fields, you may specify a format for the date by adding one of :default, :relative, :short, :local, :iso8601, :rfc2822 or :raw to the end of the fieldname; e\&.g\&. %(taggerdate:relative)\&.
+As a special case for the date\-type fields, you may specify a format for the date by adding : followed by date format name (see the values the \-\-date option to \fB:git-rev-list\fR(1) takes)\&.
 .SH "EXAMPLES"
 .sp
 An example directly producing formatted text\&. Show the most recent 3 tagged commits:

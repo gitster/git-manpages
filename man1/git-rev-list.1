@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/28/2015
+.\"      Date: 10/05/2015
 .\"    Manual: Git Manual
-.\"    Source: Git 2.6.0
+.\"    Source: Git 2.6.1.120.g24a00ef
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "09/28/2015" "Git 2\&.6\&.0" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "10/05/2015" "Git 2\&.6\&.1\&.120\&.g24a00ef" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -68,7 +68,7 @@ git-rev-list \- Lists commit objects in reverse chronological order
              [ \-\-regexp\-ignore\-case | \-i ]
              [ \-\-extended\-regexp | \-E ]
              [ \-\-fixed\-strings | \-F ]
-             [ \-\-date=(local|relative|default|iso|iso\-strict|rfc|short) ]
+             [ \-\-date=<format>]
              [ [ \-\-objects | \-\-objects\-edge | \-\-objects\-edge\-aggressive ]
                [ \-\-unpacked ] ]
              [ \-\-pretty | \-\-header ]
@@ -1289,20 +1289,29 @@ Synonym for
 \-\-date=relative\&.
 .RE
 .PP
-\-\-date=(relative|local|default|iso|iso\-strict|rfc|short|raw)
+\-\-date=<format>
 .RS 4
 Only takes effect for dates shown in human\-readable format, such as when using
 \-\-pretty\&.
 log\&.date
 config variable sets a default value for the log command\(cqs
 \-\-date
-option\&.
+option\&. By default, dates are shown in the original time zone (either committer\(cqs or author\(cqs)\&. If
+\-local
+is appended to the format (e\&.g\&.,
+iso\-local), the user\(cqs local time zone is used instead\&.
 .sp
 \-\-date=relative
-shows dates relative to the current time, e\&.g\&. \(lq2 hours ago\(rq\&.
+shows dates relative to the current time, e\&.g\&. \(lq2 hours ago\(rq\&. The
+\-local
+option cannot be used with
+\-\-raw
+or
+\-\-relative\&.
 .sp
 \-\-date=local
-shows timestamps in user\(cqs local time zone\&.
+is an alias for
+\-\-date=default\-local\&.
 .sp
 \-\-date=iso
 (or
@@ -1369,10 +1378,35 @@ strftime\&. Use
 \-\-date=format:%c
 to show the date in your system locale\(cqs preferred format\&. See the
 strftime
-manual for a complete list of format placeholders\&.
+manual for a complete list of format placeholders\&. When using
+\-local, the correct syntax is
+\-\-date=format\-local:\&.\&.\&.\&.
 .sp
 \-\-date=default
-shows timestamps in the original time zone (either committer\(cqs or author\(cqs)\&.
+is the default format, and is similar to
+\-\-date=rfc2822, with a few exceptions:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+there is no comma after the day\-of\-week
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+the time zone is omitted when the local time zone is used
+.RE
 .RE
 .PP
 \-\-header
