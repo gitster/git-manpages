@@ -2,12 +2,12 @@
 .\"     Title: git-interpret-trailers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/04/2016
+.\"      Date: 01/29/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.7.0
+.\"    Source: Git 2.7.0.229.g701fa7f
 .\"  Language: English
 .\"
-.TH "GIT\-INTERPRET\-TRAI" "1" "01/04/2016" "Git 2\&.7\&.0" "Git Manual"
+.TH "GIT\-INTERPRET\-TRAI" "1" "01/29/2016" "Git 2\&.7\&.0\&.229\&.g701fa7f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-interpret-trailers \- help add structured information into commit messages
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit interpret\-trailers\fR [\-\-trim\-empty] [(\-\-trailer <token>[(=|:)<value>])\&...] [<file>\&...]
+\fIgit interpret\-trailers\fR [\-\-in\-place] [\-\-trim\-empty] [(\-\-trailer <token>[(=|:)<value>])\&...] [<file>\&...]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -66,6 +66,11 @@ When reading trailers, there can be whitespaces before and after the token, the 
 .sp
 Note that \fItrailers\fR do not follow and are not intended to follow many rules for RFC 822 headers\&. For example they do not follow the line folding rules, the encoding rules and probably many other rules\&.
 .SH "OPTIONS"
+.PP
+\-\-in\-place
+.RS 4
+Edit the files in place\&.
+.RE
 .PP
 \-\-trim\-empty
 .RS 4
@@ -256,6 +261,43 @@ message
 
 Signed\-off\-by: Alice <alice@example\&.com>
 Signed\-off\-by: Bob <bob@example\&.com>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Use the
+\fI\-\-in\-place\fR
+option to edit a message file in place:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cat msg\&.txt
+subject
+
+message
+
+Signed\-off\-by: Bob <bob@example\&.com>
+$ git interpret\-trailers \-\-trailer \(aqAcked\-by: Alice <alice@example\&.com>\(aq \-\-in\-place msg\&.txt
+$ cat msg\&.txt
+subject
+
+message
+
+Signed\-off\-by: Bob <bob@example\&.com>
+Acked\-by: Alice <alice@example\&.com>
 .fi
 .if n \{\
 .RE
