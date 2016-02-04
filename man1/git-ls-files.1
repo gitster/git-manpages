@@ -2,12 +2,12 @@
 .\"     Title: git-ls-files
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/04/2016
+.\"      Date: 02/03/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.7.0
+.\"    Source: Git 2.7.0.297.g563e384
 .\"  Language: English
 .\"
-.TH "GIT\-LS\-FILES" "1" "01/04/2016" "Git 2\&.7\&.0" "Git Manual"
+.TH "GIT\-LS\-FILES" "1" "02/03/2016" "Git 2\&.7\&.0\&.297\&.g563e384" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,6 +35,7 @@ git-ls-files \- Show information about files in the index and the working tree
 \fIgit ls\-files\fR [\-z] [\-t] [\-v]
                 (\-\-[cached|deleted|others|ignored|stage|unmerged|killed|modified])*
                 (\-[c|d|o|i|s|u|k|m])*
+                [\-\-eol]
                 [\-x <pattern>|\-\-exclude=<pattern>]
                 [\-X <file>|\-\-exclude\-from=<file>]
                 [\-\-exclude\-per\-directory=<file>]
@@ -213,6 +214,17 @@ Instead of showing the full 40\-byte hexadecimal object lines, show only a parti
 After each line that describes a file, add more data about its cache entry\&. This is intended to show as much information as possible for manual inspection; the exact format may change at any time\&.
 .RE
 .PP
+\-\-eol
+.RS 4
+Show <eolinfo> and <eolattr> of files\&. <eolinfo> is the file content identification used by Git when the "text" attribute is "auto" (or not set and core\&.autocrlf is not false)\&. <eolinfo> is either "\-text", "none", "lf", "crlf", "mixed" or ""\&.
+.sp
+"" means the file is not a regular file, it is not in the index or not accessable in the working tree\&.
+.sp
+<eolattr> is the attribute that is used when checking out or committing, it is either "", "\-text", "text", "text=auto", "text eol=lf", "text eol=crlf"\&. Note: Currently Git does not support "text=auto eol=lf" or "text=auto eol=crlf", that may change in the future\&.
+.sp
+Both the <eolinfo> in the index ("i/<eolinfo>") and in the working tree ("w/<eolinfo>") are shown for regular files, followed by the ("attr/<eolattr>")\&.
+.RE
+.PP
 \-\-
 .RS 4
 Do not interpret any more arguments as options\&.
@@ -235,6 +247,8 @@ Files to show\&. If no files are given all files which match the other specified
 .if n \{\
 .RE
 .\}
+.sp
+\fIgit ls\-files \-\-eol\fR will show i/<eolinfo><SPACES>w/<eolinfo><SPACES>attr/<eolattr><SPACE*><TAB><file>
 .sp
 \fIgit ls\-files \-\-unmerged\fR and \fIgit ls\-files \-\-stage\fR can be used to examine detailed information on unmerged paths\&.
 .sp

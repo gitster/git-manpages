@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/26/2016
+.\"      Date: 02/03/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.7.0.193.gd10e2cb
+.\"    Source: Git 2.7.0.297.g563e384
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "01/26/2016" "Git 2\&.7\&.0\&.193\&.gd10e2cb" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/03/2016" "Git 2\&.7\&.0\&.297\&.g563e384" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3360,7 +3360,83 @@ Override the HTTP proxy, normally configured using the
 \fIhttps_proxy\fR, and
 \fIall_proxy\fR
 environment variables (see
-curl(1))\&. This can be overridden on a per\-remote basis; see remote\&.<name>\&.proxy
+curl(1))\&. In addition to the syntax understood by curl, it is possible to specify a proxy string with a user name but no password, in which case git will attempt to acquire one in the same way it does for other credentials\&. See
+\fBgitcredentials\fR(7)
+for more information\&. The syntax thus is
+\fI[protocol://][user[:password]@]proxyhost[:port]\fR\&. This can be overridden on a per\-remote basis; see remote\&.<name>\&.proxy
+.RE
+.PP
+http\&.proxyAuthMethod
+.RS 4
+Set the method with which to authenticate against the HTTP proxy\&. This only takes effect if the configured proxy string contains a user name part (i\&.e\&. is of the form
+\fIuser@host\fR
+or
+\fIuser@host:port\fR)\&. This can be overridden on a per\-remote basis; see
+remote\&.<name>\&.proxyAuthMethod\&. Both can be overridden by the
+\fIGIT_HTTP_PROXY_AUTHMETHOD\fR
+environment variable\&. Possible values are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+anyauth
+\- Automatically pick a suitable authentication method\&. It is assumed that the proxy answers an unauthenticated request with a 407 status code and one or more Proxy\-authenticate headers with supported authentication methods\&. This is the default\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+basic
+\- HTTP Basic authentication
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+digest
+\- HTTP Digest authentication; this prevents the password from being transmitted to the proxy in clear text
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+negotiate
+\- GSS\-Negotiate authentication (compare the \-\-negotiate option of
+curl(1))
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ntlm
+\- NTLM authentication (compare the \-\-ntlm option of
+curl(1))
+.RE
 .RE
 .PP
 http\&.cookieFile
@@ -4815,6 +4891,13 @@ The push URL of a remote repository\&. See
 remote\&.<name>\&.proxy
 .RS 4
 For remotes that require curl (http, https and ftp), the URL to the proxy to use for that remote\&. Set to the empty string to disable proxying for that remote\&.
+.RE
+.PP
+remote\&.<name>\&.proxyAuthMethod
+.RS 4
+For remotes that require curl (http, https and ftp), the method to use for authenticating against the proxy in use (probably set in
+remote\&.<name>\&.proxy)\&. See
+http\&.proxyAuthMethod\&.
 .RE
 .PP
 remote\&.<name>\&.fetch
