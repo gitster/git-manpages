@@ -2,12 +2,12 @@
 .\"     Title: git-update-index
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/04/2016
+.\"      Date: 02/10/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.7.0
+.\"    Source: Git 2.7.1.287.g4943984
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "01/04/2016" "Git 2\&.7\&.0" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "02/10/2016" "Git 2\&.7\&.1\&.287\&.g4943984" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -41,7 +41,7 @@ git-update-index \- Register file contents in the working tree to the index
              [\-\-[no\-]skip\-worktree]
              [\-\-ignore\-submodules]
              [\-\-[no\-]split\-index]
-             [\-\-[no\-|force\-]untracked\-cache]
+             [\-\-[no\-|test\-|force\-]untracked\-cache]
              [\-\-really\-refresh] [\-\-unresolve] [\-\-again | \-g]
              [\-\-info\-only] [\-\-index\-info]
              [\-z] [\-\-stdin] [\-\-index\-version <n>]
@@ -207,19 +207,35 @@ is given again, all changes in $GIT_DIR/index are pushed back to the shared inde
 .PP
 \-\-untracked\-cache, \-\-no\-untracked\-cache
 .RS 4
-Enable or disable untracked cache extension\&. This could speed up for commands that involve determining untracked files such as
-git status\&. The underlying operating system and file system must change
-st_mtime
-field of a directory if files are added or deleted in that directory\&.
+Enable or disable untracked cache feature\&. Please use
+\-\-test\-untracked\-cache
+before enabling it\&.
+.sp
+These options take effect whatever the value of the
+core\&.untrackedCache
+configuration variable (see
+\fBgit-config\fR(1))\&. But a warning is emitted when the change goes against the configured value, as the configured value will take effect next time the index is read and this will remove the intended effect of the option\&.
+.RE
+.PP
+\-\-test\-untracked\-cache
+.RS 4
+Only perform tests on the working directory to make sure untracked cache can be used\&. You have to manually enable untracked cache using
+\-\-untracked\-cache
+or
+\-\-force\-untracked\-cache
+or the
+core\&.untrackedCache
+configuration variable afterwards if you really want to use it\&. If a test fails the exit code is 1 and a message explains what is not working as needed, otherwise the exit code is 0 and OK is printed\&.
 .RE
 .PP
 \-\-force\-untracked\-cache
 .RS 4
-For safety,
+Same as
+\-\-untracked\-cache\&. Provided for backwards compatibility with older versions of Git where
 \-\-untracked\-cache
-performs tests on the working directory to make sure untracked cache can be used\&. These tests can take a few seconds\&.
-\-\-force\-untracked\-cache
-can be used to skip the tests\&.
+used to imply
+\-\-test\-untracked\-cache
+but this option would enable the extension unconditionally\&.
 .RE
 .PP
 \-\-
@@ -433,6 +449,17 @@ Skip\-worktree bit can be defined in one (long) sentence: When reading an entry,
 To elaborate, "reading" means checking for file existence, reading file attributes or file content\&. The working directory version may be present or absent\&. If present, its content may match against the index version or not\&. Writing is not affected by this bit, content safety is still first priority\&. Note that Git \fIcan\fR update working directory file, that is marked skip\-worktree, if it is safe to do so (i\&.e\&. working directory version matches index version)
 .sp
 Although this bit looks similar to assume\-unchanged bit, its goal is different from assume\-unchanged bit\(cqs\&. Skip\-worktree also takes precedence over assume\-unchanged bit when both are set\&.
+.SH "UNTRACKED CACHE"
+.sp
+This cache is meant to speed up commands that involve determining untracked files such as git status\&.
+.sp
+This feature works by recording the mtime of the working tree directories and then omitting reading directories and stat calls against files in those directories whose mtime hasn\(cqt changed\&. For this to work the underlying operating system and file system must change the st_mtime field of directories if files in the directory are added, modified or deleted\&.
+.sp
+You can test whether the filesystem supports that with the \-\-test\-untracked\-cache option\&. The \-\-untracked\-cache option used to implicitly perform that test in older versions of Git, but that\(cqs no longer the case\&.
+.sp
+If you want to enable (or disable) this feature, it is easier to use the core\&.untrackedCache configuration variable (see \fBgit-config\fR(1)) than using the \-\-untracked\-cache option to git update\-index in each repository, especially if you want to do so across all repositories you use, because you can set the configuration variable to true (or false) in your $HOME/\&.gitconfig just once and have it affect all repositories you touch\&.
+.sp
+When the core\&.untrackedCache configuration variable is changed, the untracked cache is added to or removed from the index the next time a command reads the index; while when \-\-[no\-|force\-]untracked\-cache are used, the untracked cache is immediately added to or removed from the index\&.
 .SH "CONFIGURATION"
 .sp
 The command honors core\&.filemode configuration variable\&. If your repository is on a filesystem whose executable bits are unreliable, this should be set to \fIfalse\fR (see \fBgit-config\fR(1))\&. This causes the command to ignore differences in file modes recorded in the index and the file mode on the filesystem if they differ only on executable bit\&. On such an unfortunate filesystem, you may need to use \fIgit update\-index \-\-chmod=\fR\&.
@@ -442,6 +469,8 @@ Quite similarly, if core\&.symlinks configuration variable is set to \fIfalse\fR
 The command looks at core\&.ignorestat configuration variable\&. See \fIUsing "assume unchanged" bit\fR section above\&.
 .sp
 The command also looks at core\&.trustctime configuration variable\&. It can be useful when the inode change time is regularly modified by something outside Git (file system crawlers and backup systems use ctime for marking files processed) (see \fBgit-config\fR(1))\&.
+.sp
+The untracked cache extension can be enabled by the core\&.untrackedCache configuration variable (see \fBgit-config\fR(1))\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-config\fR(1), \fBgit-add\fR(1), \fBgit-ls-files\fR(1)

@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/04/2016
+.\"      Date: 02/10/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.7.0
+.\"    Source: Git 2.7.1.287.g4943984
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "01/04/2016" "Git 2\&.7\&.0" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "02/10/2016" "Git 2\&.7\&.1\&.287\&.g4943984" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -45,7 +45,7 @@ A git repository can support multiple working trees, allowing you to check out m
 .sp
 When you are done with a linked working tree you can simply delete it\&. The working tree\(cqs administrative files in the repository (see "DETAILS" below) will eventually be removed automatically (see gc\&.worktreePruneExpire in \fBgit-config\fR(1)), or you can run git worktree prune in the main or any linked working tree to clean up any stale administrative files\&.
 .sp
-If you move a linked working tree to another file system, or within a file system that does not support hard links, you need to run at least one git command inside the linked working tree (e\&.g\&. git status) in order to update its administrative files in the repository so that they do not get automatically pruned\&.
+If you move a linked working tree, you need to manually update the administrative files so that they do not get pruned automatically\&. See section "DETAILS" for more information\&.
 .sp
 If a linked working tree is stored on a portable device or network share which is not always mounted, you can prevent its administrative files from being pruned by creating a file named \fIlocked\fR alongside the other administrative files, optionally containing a plain text reason that pruning should be suppressed\&. See section "DETAILS" for more information\&.
 .SH "COMMANDS"
@@ -152,6 +152,8 @@ Within a linked working tree, $GIT_DIR is set to point to this private directory
 Path resolution via git rev\-parse \-\-git\-path uses either $GIT_DIR or $GIT_COMMON_DIR depending on the path\&. For example, in the linked working tree git rev\-parse \-\-git\-path HEAD returns /path/main/\&.git/worktrees/test\-next/HEAD (not /path/other/test\-next/\&.git/HEAD or /path/main/\&.git/HEAD) while git rev\-parse \-\-git\-path refs/heads/master uses $GIT_COMMON_DIR and returns /path/main/\&.git/refs/heads/master, since refs are shared across all working trees\&.
 .sp
 See \fBgitrepository-layout\fR(5) for more information\&. The rule of thumb is do not make any assumption about whether a path belongs to $GIT_DIR or $GIT_COMMON_DIR when you need to directly access something inside $GIT_DIR\&. Use git rev\-parse \-\-git\-path to get the final path\&.
+.sp
+If you move a linked working tree, you need to update the \fIgitdir\fR file in the entry\(cqs directory\&. For example, if a linked working tree is moved to /newpath/test\-next and its \&.git file points to /path/main/\&.git/worktrees/test\-next, then update /path/main/\&.git/worktrees/test\-next/gitdir to reference /newpath/test\-next instead\&.
 .sp
 To prevent a $GIT_DIR/worktrees entry from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), add a file named \fIlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \&.git file points to /path/main/\&.git/worktrees/test\-next then a file named /path/main/\&.git/worktrees/test\-next/locked will prevent the test\-next entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
 .SH "LIST OUTPUT FORMAT"
