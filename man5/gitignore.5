@@ -2,12 +2,12 @@
 .\"     Title: gitignore
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03/04/2016
+.\"      Date: 03/10/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.8.0.rc1
+.\"    Source: Git 2.8.0.rc2
 .\"  Language: English
 .\"
-.TH "GITIGNORE" "5" "03/04/2016" "Git 2\&.8\&.0\&.rc1" "Git Manual"
+.TH "GITIGNORE" "5" "03/10/2016" "Git 2\&.8\&.0\&.rc2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -308,8 +308,97 @@ The rules to exclude a directory and re\-include a subset back must be in the sa
 .sp -1
 .IP \(bu 2.3
 .\}
-The directory part in the re\-include rules must be literal (i\&.e\&. no wildcards)
+The directory part in the re\-include rules must be literal (i\&.e\&. no wildcards and has to start with a
+/)\&.
 .RE
+.sp
+A re\-inclusion of a directory makes all files in the directory unignored\&. For example, suppose you have files \&.gitignore, dir/file1, dir/file2, and dir/file3, and have the following in your \&.gitignore:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# \&.gitignore is not mentioned in \&.gitignore
+*
+!/dir
+# dir/file1 is not mentioned in \&.gitignore
+dir/file2
+!dir/file3
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Then:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\&.gitignore
+gets ignored, because it matches the
+*
+at the top level;
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+dir/file1
+does not get ignored, because
+/dir
+marks everything underneath
+dir/
+directory to be
+\fIre\-included\fR
+unless otherwise specified;
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+dir/file2
+gets ignored, because
+dir/file2
+matches it\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+dir/file3
+does not get ignored, because
+!dir/file3
+matches it\&. Note that the entry
+!dir/file3
+is redundant because everything underneath
+dir/
+is marked to be
+\fIre\-included\fR
+already\&.
+.RE
+.sp
+Some earlier versions of Git treated !/dir above differently in that it did not cause the paths under it unignored (but merely told Git that patterns that begin with dir/ should not be ignored), but this has been corrected to be consistent with /dir that says "the directory dir/ and everything below are ignored\&."
 .SH "EXAMPLES"
 .sp
 .if n \{\
