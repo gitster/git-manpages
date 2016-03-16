@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03/10/2016
+.\"      Date: 03/16/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.8.0.rc2
+.\"    Source: Git 2.8.0.rc3
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "03/10/2016" "Git 2\&.8\&.0\&.rc2" "Git Manual"
+.TH "GIT\-SVN" "1" "03/16/2016" "Git 2\&.8\&.0\&.rc3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1248,6 +1248,8 @@ In SVN, it is possible (though discouraged) to commit changes to a tag (because 
         url = http://server\&.org/svn
         fetch = trunk/project\-a:refs/remotes/project\-a/trunk
         branches = branches/*/project\-a:refs/remotes/project\-a/branches/*
+        branches = branches/release_*:refs/remotes/project\-a/branches/release_*
+        branches = branches/re*se:refs/remotes/project\-a/branches/*
         tags = tags/*/project\-a:refs/remotes/project\-a/tags/*
 .fi
 .if n \{\
@@ -1256,6 +1258,32 @@ In SVN, it is possible (though discouraged) to commit changes to a tag (because 
 .sp
 .sp
 Keep in mind that the \fI*\fR (asterisk) wildcard of the local ref (right of the \fI:\fR) \fBmust\fR be the farthest right path component; however the remote wildcard may be anywhere as long as it\(cqs an independent path component (surrounded by \fI/\fR or EOL)\&. This type of configuration is not automatically created by \fIinit\fR and should be manually entered with a text\-editor or using \fIgit config\fR\&.
+.sp
+Also note that only one asterisk is allowed per word\&. For example:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+branches = branches/re*se:refs/remotes/project\-a/branches/*
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+will match branches \fIrelease\fR, \fIrese\fR, \fIre123se\fR, however
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+branches = branches/re*s*e:refs/remotes/project\-a/branches/*
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+will produce an error\&.
 .sp
 It is also possible to fetch a subset of branches or tags by using a comma\-separated list of names within braces\&. For example:
 .sp
