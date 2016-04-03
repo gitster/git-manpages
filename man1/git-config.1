@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03/28/2016
+.\"      Date: 04/03/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.8.0
+.\"    Source: Git 2.8.1.51.g6a269e5
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "03/28/2016" "Git 2\&.8\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "04/03/2016" "Git 2\&.8\&.1\&.51\&.g6a269e5" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -65,77 +65,77 @@ This command will fail with non\-zero status upon error\&. Some exit codes are:
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 1.\h'+01'\c
+\h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
 .sp -1
-.IP "  1." 4.2
+.IP \(bu 2.3
 .\}
 The config file is invalid (ret=3),
 .RE
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 2.\h'+01'\c
+\h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
 .sp -1
-.IP "  2." 4.2
+.IP \(bu 2.3
 .\}
 can not write to the config file (ret=4),
 .RE
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 3.\h'+01'\c
+\h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
 .sp -1
-.IP "  3." 4.2
+.IP \(bu 2.3
 .\}
 no section or name was provided (ret=2),
 .RE
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 4.\h'+01'\c
+\h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
 .sp -1
-.IP "  4." 4.2
+.IP \(bu 2.3
 .\}
 the section or key is invalid (ret=1),
 .RE
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 5.\h'+01'\c
+\h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
 .sp -1
-.IP "  5." 4.2
+.IP \(bu 2.3
 .\}
 you try to unset an option which does not exist (ret=5),
 .RE
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 6.\h'+01'\c
+\h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
 .sp -1
-.IP "  6." 4.2
+.IP \(bu 2.3
 .\}
 you try to unset/set an option for which multiple lines match (ret=5), or
 .RE
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 7.\h'+01'\c
+\h'-04'\(bu\h'+03'\c
 .\}
 .el \{\
 .sp -1
-.IP "  7." 4.2
+.IP \(bu 2.3
 .\}
 you try to use an invalid regexp (ret=6)\&.
 .RE
@@ -163,7 +163,7 @@ Get the value for a given key (optionally filtered by a regex matching the value
 .PP
 \-\-get\-all
 .RS 4
-Like get, but does not fail if the number of values for the key is not exactly one\&.
+Like get, but returns all values for a multi\-valued key\&.
 .RE
 .PP
 \-\-get\-regexp
@@ -173,7 +173,7 @@ Like \-\-get\-all, but interprets the name as a regular expression and writes ou
 .PP
 \-\-get\-urlmatch name URL
 .RS 4
-When given a two\-part name section\&.key, the value for section\&.<url>\&.key whose <url> part matches the best to the given URL is returned (if no such key exists, the value for section\&.key is used as a fallback)\&. When given just the section as name, do so for all the keys in the section and list them\&.
+When given a two\-part name section\&.key, the value for section\&.<url>\&.key whose <url> part matches the best to the given URL is returned (if no such key exists, the value for section\&.key is used as a fallback)\&. When given just the section as name, do so for all the keys in the section and list them\&. Returns error code 1 if no value is found\&.
 .RE
 .PP
 \-\-global
@@ -2216,7 +2216,7 @@ and "~user/" to the specified user\(cqs home directory\&.
 .PP
 credential\&.helper
 .RS 4
-Specify an external helper to be called when a username or password credential is needed; the helper may consult external storage to avoid prompting the user for the credentials\&. See
+Specify an external helper to be called when a username or password credential is needed; the helper may consult external storage to avoid prompting the user for the credentials\&. Note that multiple helpers may be defined\&. See
 \fBgitcredentials\fR(7)
 for details\&.
 .RE
@@ -2409,7 +2409,13 @@ option
 .PP
 diff\&.renames
 .RS 4
-Tells Git to detect renames\&. If set to any boolean value, it will enable basic rename detection\&. If set to "copies" or "copy", it will detect copies, as well\&.
+Whether and how Git detects renames\&. If set to "false", rename detection is disabled\&. If set to "true", basic rename detection is enabled\&. If set to "copies" or "copy", Git will detect copies, as well\&. Defaults to true\&. Note that this affects only
+\fIgit diff\fR
+Porcelain like
+\fBgit-diff\fR(1)
+and
+\fBgit-log\fR(1), and not lower level commands such as
+\fBgit-diff-files\fR(1)\&.
 .RE
 .PP
 diff\&.suppressBlankEmpty
@@ -3836,6 +3842,12 @@ mode of
 \fBgit-commit\fR(1),
 \fBgit-reset\fR(1), and
 \fBgit-stash\fR(1)\&. Note that this setting is silently ignored if portable keystroke input is not available; requires the Perl module Term::ReadKey\&.
+.RE
+.PP
+interactive\&.diffFilter
+.RS 4
+When an interactive command (such as
+git add \-\-patch) shows a colorized diff, git will pipe the diff through the shell command defined by this configuration variable\&. The command may mark up the diff further for human consumption, provided that it retains a one\-to\-one correspondence with the lines in the original diff\&. Defaults to disabled (no filtering)\&.
 .RE
 .PP
 log\&.abbrevCommit
