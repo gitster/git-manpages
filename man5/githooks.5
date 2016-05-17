@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03/28/2016
+.\"      Date: 05/17/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.8.0
+.\"    Source: Git 2.8.2.534.g1f66975
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "03/28/2016" "Git 2\&.8\&.0" "Git Manual"
+.TH "GITHOOKS" "5" "05/17/2016" "Git 2\&.8\&.2\&.534\&.g1f66975" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,34 +31,26 @@
 githooks \- Hooks used by Git
 .SH "SYNOPSIS"
 .sp
-$GIT_DIR/hooks/*
+$GIT_DIR/hooks/* (or `git config core\&.hooksPath`/*)
 .SH "DESCRIPTION"
 .sp
-Hooks are little scripts you can place in $GIT_DIR/hooks directory to trigger action at certain points\&. When \fIgit init\fR is run, a handful of example hooks are copied into the hooks directory of the new repository, but by default they are all disabled\&. To enable a hook, rename it by removing its \&.sample suffix\&.
-.if n \{\
+Hooks are programs you can place in a hooks directory to trigger actions at certain points in git\(cqs execution\&. Hooks that don\(cqt have the executable bit set are ignored\&.
 .sp
-.\}
-.RS 4
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.br
-.ps +1
-\fBNote\fR
-.ps -1
-.br
+By default the hooks directory is $GIT_DIR/hooks, but that can be changed via the core\&.hooksPath configuration variable (see \fBgit-config\fR(1))\&.
 .sp
-It is also a requirement for a given hook to be executable\&. However \- in a freshly initialized repository \- the \&.sample files are executable by default\&.
-.sp .5v
-.RE
+Before Git invokes a hook, it changes its working directory to either the root of the working tree in a non\-bare repository, or to the $GIT_DIR in a bare repository\&.
 .sp
-This document describes the currently defined hooks\&.
+Hooks can get their arguments via the environment, command\-line arguments, and stdin\&. See the documentation for each hook below for details\&.
+.sp
+\fIgit init\fR may copy hooks to the new repository, depending on its configuration\&. See the "TEMPLATE DIRECTORY" section in \fBgit-init\fR(1) for details\&. When the rest of this document refers to "default hooks" it\(cqs talking about the default template shipped with Git\&.
+.sp
+The currently supported hooks are described below\&.
 .SH "HOOKS"
 .SS "applypatch\-msg"
 .sp
-This hook is invoked by \fIgit am\fR script\&. It takes a single parameter, the name of the file that holds the proposed commit log message\&. Exiting with non\-zero status causes \fIgit am\fR to abort before applying the patch\&.
+This hook is invoked by \fIgit am\fR\&. It takes a single parameter, the name of the file that holds the proposed commit log message\&. Exiting with a non\-zero status causes \fIgit am\fR to abort before applying the patch\&.
 .sp
-The hook is allowed to edit the message file in place, and can be used to normalize the message into some project standard format (if the project has one)\&. It can also be used to refuse the commit after inspecting the message file\&.
+The hook is allowed to edit the message file in place, and can be used to normalize the message into some project standard format\&. It can also be used to refuse the commit after inspecting the message file\&.
 .sp
 The default \fIapplypatch\-msg\fR hook, when enabled, runs the \fIcommit\-msg\fR hook, if the latter is enabled\&.
 .SS "pre\-applypatch"
@@ -77,7 +69,7 @@ This hook is invoked by \fIgit am\fR\&. It takes no parameter, and is invoked af
 This hook is meant primarily for notification, and cannot affect the outcome of \fIgit am\fR\&.
 .SS "pre\-commit"
 .sp
-This hook is invoked by \fIgit commit\fR, and can be bypassed with \-\-no\-verify option\&. It takes no parameter, and is invoked before obtaining the proposed commit log message and making a commit\&. Exiting with non\-zero status from this script causes the \fIgit commit\fR to abort\&.
+This hook is invoked by \fIgit commit\fR, and can be bypassed with the \-\-no\-verify option\&. It takes no parameters, and is invoked before obtaining the proposed commit log message and making a commit\&. Exiting with a non\-zero status from this script causes the \fIgit commit\fR command to abort before creating a commit\&.
 .sp
 The default \fIpre\-commit\fR hook, when enabled, catches introduction of lines with trailing whitespaces and aborts the commit when such a line is found\&.
 .sp
@@ -95,14 +87,14 @@ The purpose of the hook is to edit the message file in place, and it is not supp
 The sample prepare\-commit\-msg hook that comes with Git comments out the Conflicts: part of a merge\(cqs commit message\&.
 .SS "commit\-msg"
 .sp
-This hook is invoked by \fIgit commit\fR, and can be bypassed with \-\-no\-verify option\&. It takes a single parameter, the name of the file that holds the proposed commit log message\&. Exiting with non\-zero status causes the \fIgit commit\fR to abort\&.
+This hook is invoked by \fIgit commit\fR, and can be bypassed with the \-\-no\-verify option\&. It takes a single parameter, the name of the file that holds the proposed commit log message\&. Exiting with a non\-zero status causes the \fIgit commit\fR to abort\&.
 .sp
-The hook is allowed to edit the message file in place, and can be used to normalize the message into some project standard format (if the project has one)\&. It can also be used to refuse the commit after inspecting the message file\&.
+The hook is allowed to edit the message file in place, and can be used to normalize the message into some project standard format\&. It can also be used to refuse the commit after inspecting the message file\&.
 .sp
 The default \fIcommit\-msg\fR hook, when enabled, detects duplicate "Signed\-off\-by" lines, and aborts the commit if one is found\&.
 .SS "post\-commit"
 .sp
-This hook is invoked by \fIgit commit\fR\&. It takes no parameter, and is invoked after a commit is made\&.
+This hook is invoked by \fIgit commit\fR\&. It takes no parameters, and is invoked after a commit is made\&.
 .sp
 This hook is meant primarily for notification, and cannot affect the outcome of \fIgit commit\fR\&.
 .SS "pre\-rebase"
@@ -217,7 +209,7 @@ This hook can be used to prevent \fIforced\fR update on certain refs by making s
 .sp
 It could also be used to log the old\&.\&.new status\&. However, it does not know the entire set of branches, so it would end up firing one e\-mail per ref when used naively, though\&. The \fIpost\-receive\fR hook is more suited to that\&.
 .sp
-Another use suggested on the mailing list is to use this hook to implement access control which is finer grained than the one based on filesystem group\&.
+In an environment that restricts the users\(aq access only to git commands over the wire, this hook can be used to implement access control without relying on filesystem ownership and group membership\&. See \fBgit-shell\fR(1) for how you might use the login shell to restrict the user\(cqs access to only git commands\&.
 .sp
 Both standard output and standard error output are forwarded to \fIgit send\-pack\fR on the other end, so you can simply echo messages for the user\&.
 .sp

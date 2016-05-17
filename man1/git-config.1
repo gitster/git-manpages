@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/10/2016
+.\"      Date: 05/17/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.8.2.396.g5fe494c
+.\"    Source: Git 2.8.2.534.g1f66975
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "05/10/2016" "Git 2\&.8\&.2\&.396\&.g5fe494c" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/17/2016" "Git 2\&.8\&.2\&.534\&.g1f66975" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -707,7 +707,9 @@ Inside double quotes, double quote " and backslash \e characters must be escaped
 The following escape sequences (beside \e" and \e\e) are recognized: \en for newline character (NL), \et for horizontal tabulation (HT, TAB) and \eb for backspace (BS)\&. Other char escape sequences (including octal escape sequences) are invalid\&.
 .SS "Includes"
 .sp
-You can include one config file from another by setting the special include\&.path variable to the name of the file to be included\&. The included file is expanded immediately, as if its contents had been found at the location of the include directive\&. If the value of the include\&.path variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. The value of include\&.path is subject to tilde expansion: ~/ is expanded to the value of $HOME, and ~user/ to the specified user\(cqs home directory\&. See below for examples\&.
+You can include one config file from another by setting the special include\&.path variable to the name of the file to be included\&. The variable takes a pathname as its value, and is subject to tilde expansion\&.
+.sp
+The included file is expanded immediately, as if its contents had been found at the location of the include directive\&. If the value of the include\&.path variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. See below for examples\&.
 .SS "Example"
 .sp
 .if n \{\
@@ -768,7 +770,7 @@ You can include one config file from another by setting the special include\&.pa
 [include]
         path = /path/to/foo\&.inc ; include by absolute path
         path = foo ; expand "foo" relative to the current file
-        path = ~/foo ; expand "foo" in your $HOME directory
+        path = ~/foo ; expand "foo" in your `$HOME` directory
 .fi
 .if n \{\
 .RE
@@ -853,6 +855,16 @@ log \-\-decorate
 output) is set to be painted with
 bold
 or some other attribute\&.
+.RE
+.PP
+pathname
+.RS 4
+A variable that takes a pathname value can be given a string that begins with "~/" or "~user/", and the usual tilde expansion happens to such a string:
+~/
+is expanded to the value of
+$HOME, and
+~user/
+to the specified user\(cqs home directory\&.
 .RE
 .SS "Variables"
 .sp
@@ -992,6 +1004,15 @@ when created, but later may be made accessible from another environment that los
 \fBgit-update-index\fR(1)\&.
 .sp
 The default is true (when core\&.filemode is not specified in the config file)\&.
+.RE
+.PP
+core\&.hideDotFiles
+.RS 4
+(Windows\-only) If true, mark newly\-created directories and files whose name starts with a dot as hidden\&. If
+\fIdotGitOnly\fR, only the
+\&.git/
+directory is hidden, but no other files starting with a dot\&. The default mode is
+\fIdotGitOnly\fR\&.
 .RE
 .PP
 core\&.ignoreCase
@@ -1313,12 +1334,15 @@ are supported\&.
 .PP
 core\&.excludesFile
 .RS 4
-In addition to
+Specifies the pathname to the file that contains patterns to describe paths that are not meant to be tracked, in addition to
 \fI\&.gitignore\fR
 (per\-directory) and
-\fI\&.git/info/exclude\fR, Git looks into this file for patterns of files which are not meant to be tracked\&. "~/" is expanded to the value of
-$HOME
-and "~user/" to the specified user\(cqs home directory\&. Its default value is $XDG_CONFIG_HOME/git/ignore\&. If $XDG_CONFIG_HOME is either not set or empty, $HOME/\&.config/git/ignore is used instead\&. See
+\fI\&.git/info/exclude\fR\&. Defaults to
+$XDG_CONFIG_HOME/git/ignore\&. If
+$XDG_CONFIG_HOME
+is either not set or empty,
+$HOME/\&.config/git/ignore
+is used instead\&. See
 \fBgitignore\fR(5)\&.
 .RE
 .PP
@@ -1338,7 +1362,30 @@ In addition to
 (per\-directory) and
 \fI\&.git/info/attributes\fR, Git looks into this file for attributes (see
 \fBgitattributes\fR(5))\&. Path expansions are made the same way as for
-core\&.excludesFile\&. Its default value is $XDG_CONFIG_HOME/git/attributes\&. If $XDG_CONFIG_HOME is either not set or empty, $HOME/\&.config/git/attributes is used instead\&.
+core\&.excludesFile\&. Its default value is
+$XDG_CONFIG_HOME/git/attributes\&. If
+$XDG_CONFIG_HOME
+is either not set or empty,
+$HOME/\&.config/git/attributes
+is used instead\&.
+.RE
+.PP
+core\&.hooksPath
+.RS 4
+By default Git will look for your hooks in the
+\fI$GIT_DIR/hooks\fR
+directory\&. Set this to different path, e\&.g\&.
+\fI/etc/git/hooks\fR, and Git will try to find your hooks in that directory, e\&.g\&.
+\fI/etc/git/hooks/pre\-receive\fR
+instead of in
+\fI$GIT_DIR/hooks/pre\-receive\fR\&.
+.sp
+The path can be either absolute or relative\&. A relative path is taken as relative to the directory where the hooks are run (see the "DESCRIPTION" section of
+\fBgithooks\fR(5))\&.
+.sp
+This configuration variable is useful in cases where you\(cqd like to centrally configure your Git hooks instead of configuring them on a per\-repository basis, or as a more flexible and centralized alternative to having an
+init\&.templateDir
+where you\(cqve changed default hooks\&.
 .RE
 .PP
 core\&.editor
@@ -2209,9 +2256,7 @@ A boolean to enable/disable inclusion of status information in the commit messag
 .PP
 commit\&.template
 .RS 4
-Specify a file to use as the template for new commit messages\&. "~/" is expanded to the value of
-$HOME
-and "~user/" to the specified user\(cqs home directory\&.
+Specify the pathname of a file to use as the template for new commit messages\&.
 .RE
 .PP
 credential\&.helper
@@ -3008,7 +3053,9 @@ gc\&.worktreePruneExpire
 When
 \fIgit gc\fR
 is run, it calls
-\fIgit worktree prune \-\-expire 3\&.months\&.ago\fR\&. This config variable can be used to set a different grace period\&. The value "now" may be used to disable the grace period and prune $GIT_DIR/worktrees immediately, or "never" may be used to suppress pruning\&.
+\fIgit worktree prune \-\-expire 3\&.months\&.ago\fR\&. This config variable can be used to set a different grace period\&. The value "now" may be used to disable the grace period and prune
+$GIT_DIR/worktrees
+immediately, or "never" may be used to suppress pruning\&.
 .RE
 .PP
 gc\&.reflogExpire, gc\&.<pattern>\&.reflogExpire
@@ -3184,7 +3231,9 @@ If set to true, fall back to git grep \-\-no\-index if git grep is executed outs
 .PP
 gpg\&.program
 .RS 4
-Use this custom program instead of "gpg" found on $PATH when making or verifying a PGP signature\&. The program must support the same command\-line interface as GPG, namely, to verify a detached signature, "gpg \-\-verify $file \- <$signature" is run, and the program is expected to signal a good signature by exiting with code 0, and to generate an ASCII\-armored detached signature, the standard input of "gpg \-bsau $key" is fed with the contents to be signed, and the program is expected to send the result to its standard output\&.
+Use this custom program instead of "gpg" found on
+$PATH
+when making or verifying a PGP signature\&. The program must support the same command\-line interface as GPG, namely, to verify a detached signature, "gpg \-\-verify $file \- <$signature" is run, and the program is expected to signal a good signature by exiting with code 0, and to generate an ASCII\-armored detached signature, the standard input of "gpg \-bsau $key" is fed with the contents to be signed, and the program is expected to send the result to its standard output\&.
 .RE
 .PP
 gui\&.commitMsgWidth
@@ -3202,7 +3251,7 @@ Specifies how many context lines should be used in calls to diff made by the
 gui\&.displayUntracked
 .RS 4
 Determines if
-\fB:git-gui\fR(1)
+\fBgit-gui\fR(1)
 shows untracked files in the file list\&. The default is "true"\&.
 .RE
 .PP
@@ -3491,8 +3540,8 @@ Pass an additional HTTP header when communicating with a server\&. If more than 
 .PP
 http\&.cookieFile
 .RS 4
-File containing previously stored cookie lines which should be used in the Git http session, if they match the server\&. The file format of the file to read cookies from should be plain HTTP headers or the Netscape/Mozilla cookie file format (see
-\fBcurl\fR(1))\&. NOTE that the file specified with http\&.cookieFile is only used as input unless http\&.saveCookies is set\&.
+The pathname of a file containing previously stored cookie lines, which should be used in the Git http session, if they match the server\&. The file format of the file to read cookies from should be plain HTTP headers or the Netscape/Mozilla cookie file format (see
+curl(1))\&. NOTE that the file specified with http\&.cookieFile is used only as input unless http\&.saveCookies is set\&.
 .RE
 .PP
 http\&.saveCookies
