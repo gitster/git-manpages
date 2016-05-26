@@ -2,12 +2,12 @@
 .\"     Title: git-notes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-NOTES" "1" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GIT\-NOTES" "1" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -50,11 +50,11 @@ git-notes \- Add or inspect object notes
 .sp
 Adds, removes, or reads notes attached to objects, without touching the objects themselves\&.
 .sp
-By default, notes are saved to and read from refs/notes/commits, but this default can be overridden\&. See the OPTIONS, CONFIGURATION, and ENVIRONMENT sections below\&. If this ref does not exist, it will be quietly created when it is first needed to store a note\&.
+By default, notes are saved to and read from \fBrefs/notes/commits\fR, but this default can be overridden\&. See the OPTIONS, CONFIGURATION, and ENVIRONMENT sections below\&. If this ref does not exist, it will be quietly created when it is first needed to store a note\&.
 .sp
-A typical use of notes is to supplement a commit message without changing the commit itself\&. Notes can be shown by \fIgit log\fR along with the original commit message\&. To distinguish these notes from the message stored in the commit object, the notes are indented like the message, after an unindented line saying "Notes (<refname>):" (or "Notes:" for refs/notes/commits)\&.
+A typical use of notes is to supplement a commit message without changing the commit itself\&. Notes can be shown by \fIgit log\fR along with the original commit message\&. To distinguish these notes from the message stored in the commit object, the notes are indented like the message, after an unindented line saying "Notes (<refname>):" (or "Notes:" for \fBrefs/notes/commits\fR)\&.
 .sp
-Notes can also be added to patches prepared with git format\-patch by using the \-\-notes option\&. Such notes are added as a patch commentary after a three dash separator line\&.
+Notes can also be added to patches prepared with \fBgit format\-patch\fR by using the \fB\-\-notes\fR option\&. Such notes are added as a patch commentary after a three dash separator line\&.
 .sp
 To change which notes are shown by \fIgit log\fR, see the "notes\&.displayRef" configuration in \fBgit-log\fR(1)\&.
 .sp
@@ -69,21 +69,21 @@ List the notes object for a given object\&. If no object is given, show a list o
 add
 .RS 4
 Add notes for a given object (defaults to HEAD)\&. Abort if the object already has notes (use
-\-f
+\fB\-f\fR
 to overwrite existing notes)\&. However, if you\(cqre using
-add
+\fBadd\fR
 interactively (using an editor to supply the notes contents), then \- instead of aborting \- the existing notes will be opened in the editor (like the
-edit
+\fBedit\fR
 subcommand)\&.
 .RE
 .PP
 copy
 .RS 4
 Copy the notes for the first object onto the second object\&. Abort if the second object already has notes, or if the first object has none (use \-f to overwrite existing notes to the second object)\&. This subcommand is equivalent to:
-git notes add [\-f] \-C $(git notes list <from\-object>) <to\-object>
+\fBgit notes add [\-f] \-C $(git notes list <from\-object>) <to\-object>\fR
 .sp
 In
-\-\-stdin
+\fB\-\-stdin\fR
 mode, take lines in the format
 .sp
 .if n \{\
@@ -97,9 +97,9 @@ mode, take lines in the format
 .\}
 .sp
 on standard input, and copy the notes from each <from\-object> to its corresponding <to\-object>\&. (The optional
-<rest>
+\fB<rest>\fR
 is ignored so that the command can read the input given to the
-post\-rewrite
+\fBpost\-rewrite\fR
 hook\&.)
 .RE
 .PP
@@ -122,7 +122,7 @@ merge
 .RS 4
 Merge the given notes ref into the current notes ref\&. This will try to merge the changes made by the given notes ref (called "remote") since the merge\-base (if any) into the current notes ref (called "local")\&.
 .sp
-If conflicts arise and a strategy for automatically resolving conflicting notes (see the "NOTES MERGE STRATEGIES" section) is not given, the "manual" resolver is used\&. This resolver checks out the conflicting notes in a special worktree (\&.git/NOTES_MERGE_WORKTREE), and instructs the user to manually resolve the conflicts there\&. When done, the user can either finalize the merge with
+If conflicts arise and a strategy for automatically resolving conflicting notes (see the "NOTES MERGE STRATEGIES" section) is not given, the "manual" resolver is used\&. This resolver checks out the conflicting notes in a special worktree (\fB\&.git/NOTES_MERGE_WORKTREE\fR), and instructs the user to manually resolve the conflicts there\&. When done, the user can either finalize the merge with
 \fIgit notes merge \-\-commit\fR, or abort the merge with
 \fIgit notes merge \-\-abort\fR\&.
 .RE
@@ -130,7 +130,7 @@ If conflicts arise and a strategy for automatically resolving conflicting notes 
 remove
 .RS 4
 Remove the notes for given objects (defaults to HEAD)\&. When giving zero or one object from the command line, this is equivalent to specifying an empty note message to the
-edit
+\fBedit\fR
 subcommand\&.
 .RE
 .PP
@@ -153,9 +153,9 @@ When adding notes to an object that already has notes, overwrite the existing no
 \-m <msg>, \-\-message=<msg>
 .RS 4
 Use the given note message (instead of prompting)\&. If multiple
-\-m
+\fB\-m\fR
 options are given, their values are concatenated as separate paragraphs\&. Lines starting with
-#
+\fB#\fR
 and empty lines other than a single line between paragraphs will be stripped out\&.
 .RE
 .PP
@@ -164,14 +164,14 @@ and empty lines other than a single line between paragraphs will be stripped out
 Take the note message from the given file\&. Use
 \fI\-\fR
 to read the note message from the standard input\&. Lines starting with
-#
+\fB#\fR
 and empty lines other than a single line between paragraphs will be stripped out\&.
 .RE
 .PP
 \-C <object>, \-\-reuse\-message=<object>
 .RS 4
 Take the given blob object (for example, another note) as the note message\&. (Use
-git notes copy <object>
+\fBgit notes copy <object>\fR
 instead to copy notes between objects\&.)
 .RE
 .PP
@@ -193,11 +193,11 @@ Allow an empty note object to be stored\&. The default behavior is to automatica
 Manipulate the notes tree in <ref>\&. This overrides
 \fIGIT_NOTES_REF\fR
 and the "core\&.notesRef" configuration\&. The ref specifies the full refname when it begins with
-refs/notes/; when it begins with
-notes/,
-refs/
+\fBrefs/notes/\fR; when it begins with
+\fBnotes/\fR,
+\fBrefs/\fR
 and otherwise
-refs/notes/
+\fBrefs/notes/\fR
 is prefixed to form a full name of the ref\&.
 .RE
 .PP
@@ -250,12 +250,12 @@ When merging notes, be more verbose\&. When pruning notes, report all object nam
 .sp
 Commit notes are blobs containing extra information about an object (usually information to supplement a commit\(cqs message)\&. These blobs are taken from notes refs\&. A notes ref is usually a branch which contains "files" whose paths are the object names for the objects they describe, with some directory separators included for performance reasons \&\s-2\u[1]\d\s+2\&.
 .sp
-Every notes change creates a new commit at the specified notes ref\&. You can therefore inspect the history of the notes by invoking, e\&.g\&., git log \-p notes/commits\&. Currently the commit message only records which operation triggered the update, and the commit authorship is determined according to the usual rules (see \fBgit-commit\fR(1))\&. These details may change in the future\&.
+Every notes change creates a new commit at the specified notes ref\&. You can therefore inspect the history of the notes by invoking, e\&.g\&., \fBgit log \-p notes/commits\fR\&. Currently the commit message only records which operation triggered the update, and the commit authorship is determined according to the usual rules (see \fBgit-commit\fR(1))\&. These details may change in the future\&.
 .sp
-It is also permitted for a notes ref to point directly to a tree object, in which case the history of the notes can be read with git log \-p \-g <refname>\&.
+It is also permitted for a notes ref to point directly to a tree object, in which case the history of the notes can be read with \fBgit log \-p \-g <refname>\fR\&.
 .SH "NOTES MERGE STRATEGIES"
 .sp
-The default notes merge strategy is "manual", which checks out conflicting notes in a special work tree for resolving notes conflicts (\&.git/NOTES_MERGE_WORKTREE), and instructs the user to resolve the conflicts in that work tree\&. When done, the user can either finalize the merge with \fIgit notes merge \-\-commit\fR, or abort the merge with \fIgit notes merge \-\-abort\fR\&.
+The default notes merge strategy is "manual", which checks out conflicting notes in a special work tree for resolving notes conflicts (\fB\&.git/NOTES_MERGE_WORKTREE\fR), and instructs the user to resolve the conflicts in that work tree\&. When done, the user can either finalize the merge with \fIgit notes merge \-\-commit\fR, or abort the merge with \fIgit notes merge \-\-abort\fR\&.
 .sp
 Users may select an automated merge strategy from among the following using either \-s/\-\-strategy option or configuring notes\&.mergeStrategy accordingly:
 .sp
@@ -302,27 +302,27 @@ $ git notes \-\-ref=built add \-\-allow\-empty \-C "$blob" HEAD
 .\}
 .sp
 .sp
-(You cannot simply use git notes \-\-ref=built add \-F a\&.out HEAD because that is not binary\-safe\&.) Of course, it doesn\(cqt make much sense to display non\-text\-format notes with \fIgit log\fR, so if you use such notes, you\(cqll probably need to write some special\-purpose tools to do something useful with them\&.
+(You cannot simply use \fBgit notes \-\-ref=built add \-F a\&.out HEAD\fR because that is not binary\-safe\&.) Of course, it doesn\(cqt make much sense to display non\-text\-format notes with \fIgit log\fR, so if you use such notes, you\(cqll probably need to write some special\-purpose tools to do something useful with them\&.
 .SH "CONFIGURATION"
 .PP
 core\&.notesRef
 .RS 4
 Notes ref to read and manipulate instead of
-refs/notes/commits\&. Must be an unabbreviated ref name\&. This setting can be overridden through the environment and command line\&.
+\fBrefs/notes/commits\fR\&. Must be an unabbreviated ref name\&. This setting can be overridden through the environment and command line\&.
 .RE
 .PP
 notes\&.mergeStrategy
 .RS 4
 Which merge strategy to choose by default when resolving notes conflicts\&. Must be one of
-manual,
-ours,
-theirs,
-union, or
-cat_sort_uniq\&. Defaults to
-manual\&. See "NOTES MERGE STRATEGIES" section above for more information on each strategy\&.
+\fBmanual\fR,
+\fBours\fR,
+\fBtheirs\fR,
+\fBunion\fR, or
+\fBcat_sort_uniq\fR\&. Defaults to
+\fBmanual\fR\&. See "NOTES MERGE STRATEGIES" section above for more information on each strategy\&.
 .sp
 This setting can be overridden by passing the
-\-\-strategy
+\fB\-\-strategy\fR
 option\&.
 .RE
 .PP
@@ -334,7 +334,7 @@ Which merge strategy to choose when doing a notes merge into refs/notes/<name>\&
 notes\&.displayRef
 .RS 4
 Which ref (or refs, if a glob or specified more than once), in addition to the default set by
-core\&.notesRef
+\fBcore\&.notesRef\fR
 or
 \fIGIT_NOTES_REF\fR, to read notes from when showing commit messages with the
 \fIgit log\fR
@@ -347,11 +347,11 @@ environment variable\&. See
 notes\&.rewrite\&.<command>
 .RS 4
 When rewriting commits with <command> (currently
-amend
+\fBamend\fR
 or
-rebase), if this variable is
-false, git will not copy notes from the original to the rewritten commit\&. Defaults to
-true\&. See also "notes\&.rewriteRef" below\&.
+\fBrebase\fR), if this variable is
+\fBfalse\fR, git will not copy notes from the original to the rewritten commit\&. Defaults to
+\fBtrue\fR\&. See also "\fBnotes\&.rewriteRef\fR" below\&.
 .sp
 This setting can be overridden by the
 \fIGIT_NOTES_REWRITE_REF\fR
@@ -361,14 +361,14 @@ environment variable\&.
 notes\&.rewriteMode
 .RS 4
 When copying notes during a rewrite, what to do if the target commit already has a note\&. Must be one of
-overwrite,
-concatenate,
-cat_sort_uniq, or
-ignore\&. Defaults to
-concatenate\&.
+\fBoverwrite\fR,
+\fBconcatenate\fR,
+\fBcat_sort_uniq\fR, or
+\fBignore\fR\&. Defaults to
+\fBconcatenate\fR\&.
 .sp
 This setting can be overridden with the
-GIT_NOTES_REWRITE_MODE
+\fBGIT_NOTES_REWRITE_MODE\fR
 environment variable\&.
 .RE
 .PP
@@ -387,18 +387,18 @@ environment variable\&.
 \fIGIT_NOTES_REF\fR
 .RS 4
 Which ref to manipulate notes from, instead of
-refs/notes/commits\&. This overrides the
-core\&.notesRef
+\fBrefs/notes/commits\fR\&. This overrides the
+\fBcore\&.notesRef\fR
 setting\&.
 .RE
 .PP
 \fIGIT_NOTES_DISPLAY_REF\fR
 .RS 4
 Colon\-delimited list of refs or globs indicating which refs, in addition to the default from
-core\&.notesRef
+\fBcore\&.notesRef\fR
 or
 \fIGIT_NOTES_REF\fR, to read notes from when showing commit messages\&. This overrides the
-notes\&.displayRef
+\fBnotes\&.displayRef\fR
 setting\&.
 .sp
 A warning will be issued for refs that do not exist, but a glob that does not match any refs is silently ignored\&.
@@ -407,11 +407,11 @@ A warning will be issued for refs that do not exist, but a glob that does not ma
 \fIGIT_NOTES_REWRITE_MODE\fR
 .RS 4
 When copying notes during a rewrite, what to do if the target commit already has a note\&. Must be one of
-overwrite,
-concatenate,
-cat_sort_uniq, or
-ignore\&. This overrides the
-core\&.rewriteMode
+\fBoverwrite\fR,
+\fBconcatenate\fR,
+\fBcat_sort_uniq\fR, or
+\fBignore\fR\&. This overrides the
+\fBcore\&.rewriteMode\fR
 setting\&.
 .RE
 .PP
@@ -420,9 +420,9 @@ setting\&.
 When rewriting commits, which notes to copy from the original to the rewritten commit\&. Must be a colon\-delimited list of refs or globs\&.
 .sp
 If not set in the environment, the list of notes to copy depends on the
-notes\&.rewrite\&.<command>
+\fBnotes\&.rewrite\&.<command>\fR
 and
-notes\&.rewriteRef
+\fBnotes\&.rewriteRef\fR
 settings\&.
 .RE
 .SH "GIT"
@@ -430,5 +430,5 @@ settings\&.
 Part of the \fBgit\fR(1) suite
 .SH "NOTES"
 .IP " 1." 4
-Permitted pathnames have the form \fIab\fR/\fIcd\fR/\fIef\fR/\fI\&...\fR/\fIabcdef\&...\fR: a sequence of directory names of two hexadecimal digits each followed by a filename with the rest of the object ID.
+Permitted pathnames have the form \fIab\fR\fB/\fR\fIcd\fR\fB/\fR\fIef\fR\fB/\fR\fI\&...\fR\fB/\fR\fIabcdef\&...\fR: a sequence of directory names of two hexadecimal digits each followed by a filename with the rest of the object ID.
 

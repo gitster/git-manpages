@@ -2,12 +2,12 @@
 .\"     Title: git-rm
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-RM" "1" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GIT\-RM" "1" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,19 +37,19 @@ git-rm \- Remove files from the working tree and from the index
 .sp
 .SH "DESCRIPTION"
 .sp
-Remove files from the index, or from the working tree and the index\&. git rm will not remove a file from just your working directory\&. (There is no option to remove a file only from the working tree and yet keep it in the index; use /bin/rm if you want to do that\&.) The files being removed have to be identical to the tip of the branch, and no updates to their contents can be staged in the index, though that default behavior can be overridden with the \-f option\&. When \-\-cached is given, the staged content has to match either the tip of the branch or the file on disk, allowing the file to be removed from just the index\&.
+Remove files from the index, or from the working tree and the index\&. \fBgit rm\fR will not remove a file from just your working directory\&. (There is no option to remove a file only from the working tree and yet keep it in the index; use \fB/bin/rm\fR if you want to do that\&.) The files being removed have to be identical to the tip of the branch, and no updates to their contents can be staged in the index, though that default behavior can be overridden with the \fB\-f\fR option\&. When \fB\-\-cached\fR is given, the staged content has to match either the tip of the branch or the file on disk, allowing the file to be removed from just the index\&.
 .SH "OPTIONS"
 .PP
 <file>\&...
 .RS 4
 Files to remove\&. Fileglobs (e\&.g\&.
-*\&.c) can be given to remove all matching files\&. If you want Git to expand file glob characters, you may need to shell\-escape them\&. A leading directory name (e\&.g\&.
-dir
+\fB*\&.c\fR) can be given to remove all matching files\&. If you want Git to expand file glob characters, you may need to shell\-escape them\&. A leading directory name (e\&.g\&.
+\fBdir\fR
 to remove
-dir/file1
+\fBdir/file1\fR
 and
-dir/file2) can be given to remove all files in the directory, and recursively all sub\-directories, but this requires the
-\-r
+\fBdir/file2\fR) can be given to remove all files in the directory, and recursively all sub\-directories, but this requires the
+\fB\-r\fR
 option to be explicitly given\&.
 .RE
 .PP
@@ -85,22 +85,22 @@ Exit with a zero status even if no files matched\&.
 .PP
 \-q, \-\-quiet
 .RS 4
-git rm
+\fBgit rm\fR
 normally outputs one line (in the form of an
-rm
+\fBrm\fR
 command) for each file removed\&. This option suppresses that output\&.
 .RE
 .SH "DISCUSSION"
 .sp
 The <file> list given to the command can be exact pathnames, file glob patterns, or leading directory names\&. The command removes only the paths that are known to Git\&. Giving the name of a file that you have not told Git about does not remove that file\&.
 .sp
-File globbing matches across directory boundaries\&. Thus, given two directories d and d2, there is a difference between using git rm \(aqd*\(aq and git rm \(aqd/*\(aq, as the former will also remove all of directory d2\&.
+File globbing matches across directory boundaries\&. Thus, given two directories \fBd\fR and \fBd2\fR, there is a difference between using \fBgit rm \(aqd*\(aq\fR and \fBgit rm \(aqd/*\(aq\fR, as the former will also remove all of directory \fBd2\fR\&.
 .SH "REMOVING FILES THAT HAVE DISAPPEARED FROM THE FILESYSTEM"
 .sp
-There is no option for git rm to remove from the index only the paths that have disappeared from the filesystem\&. However, depending on the use case, there are several ways that can be done\&.
+There is no option for \fBgit rm\fR to remove from the index only the paths that have disappeared from the filesystem\&. However, depending on the use case, there are several ways that can be done\&.
 .SS "Using \(lqgit commit \-a\(rq"
 .sp
-If you intend that your next commit should record all modifications of tracked files in the working tree and record all removals of files that have been removed from the working tree with rm (as opposed to git rm), use git commit \-a, as it will automatically notice and record all removals\&. You can also have a similar effect without committing by using git add \-u\&.
+If you intend that your next commit should record all modifications of tracked files in the working tree and record all removals of files that have been removed from the working tree with \fBrm\fR (as opposed to \fBgit rm\fR), use \fBgit commit \-a\fR, as it will automatically notice and record all removals\&. You can also have a similar effect without committing by using \fBgit add \-u\fR\&.
 .SS "Using \(lqgit add \-A\(rq"
 .sp
 When accepting a new code drop for a vendor branch, you probably want to record both the removal of paths and additions of new paths as well as modifications of existing paths\&.
@@ -136,7 +136,7 @@ git add \-A
 See \fBgit-add\fR(1)\&.
 .SS "Other ways"
 .sp
-If all you really want to do is to remove from the index the files that are no longer present in the working tree (perhaps because your working tree is dirty so that you cannot use git commit \-a), use the following command:
+If all you really want to do is to remove from the index the files that are no longer present in the working tree (perhaps because your working tree is dirty so that you cannot use \fBgit commit \-a\fR), use the following command:
 .sp
 .if n \{\
 .RS 4
@@ -150,32 +150,32 @@ git diff \-\-name\-only \-\-diff\-filter=D \-z | xargs \-0 git rm \-\-cached
 .sp
 .SH "SUBMODULES"
 .sp
-Only submodules using a gitfile (which means they were cloned with a Git version 1\&.7\&.8 or newer) will be removed from the work tree, as their repository lives inside the \&.git directory of the superproject\&. If a submodule (or one of those nested inside it) still uses a \&.git directory, git rm will fail \- no matter if forced or not \- to protect the submodule\(cqs history\&. If it exists the submodule\&.<name> section in the \fBgitmodules\fR(5) file will also be removed and that file will be staged (unless \-\-cached or \-n are used)\&.
+Only submodules using a gitfile (which means they were cloned with a Git version 1\&.7\&.8 or newer) will be removed from the work tree, as their repository lives inside the \&.git directory of the superproject\&. If a submodule (or one of those nested inside it) still uses a \&.git directory, \fBgit rm\fR will fail \- no matter if forced or not \- to protect the submodule\(cqs history\&. If it exists the submodule\&.<name> section in the \fBgitmodules\fR(5) file will also be removed and that file will be staged (unless \-\-cached or \-n are used)\&.
 .sp
 A submodule is considered up\-to\-date when the HEAD is the same as recorded in the index, no tracked files are modified and no untracked files that aren\(cqt ignored are present in the submodules work tree\&. Ignored files are deemed expendable and won\(cqt stop a submodule\(cqs work tree from being removed\&.
 .sp
-If you only want to remove the local checkout of a submodule from your work tree without committing the removal, use \fBgit-submodule\fR(1) deinit instead\&.
+If you only want to remove the local checkout of a submodule from your work tree without committing the removal, use \fBgit-submodule\fR(1) \fBdeinit\fR instead\&.
 .SH "EXAMPLES"
 .PP
-git rm Documentation/\e*\&.txt
+\fBgit rm Documentation/\e*\&.txt\fR
 .RS 4
 Removes all
-*\&.txt
+\fB*\&.txt\fR
 files from the index that are under the
-Documentation
+\fBDocumentation\fR
 directory and any of its subdirectories\&.
 .sp
 Note that the asterisk
-*
+\fB*\fR
 is quoted from the shell in this example; this lets Git, and not the shell, expand the pathnames of files and subdirectories under the
-Documentation/
+\fBDocumentation/\fR
 directory\&.
 .RE
 .PP
-git rm \-f git\-*\&.sh
+\fBgit rm \-f git\-*\&.sh\fR
 .RS 4
 Because this example lets the shell expand the asterisk (i\&.e\&. you are listing the files explicitly), it does not remove
-subdir/git\-foo\&.sh\&.
+\fBsubdir/git\-foo\&.sh\fR\&.
 .RE
 .SH "BUGS"
 .sp

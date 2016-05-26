@@ -2,12 +2,12 @@
 .\"     Title: gitdiffcore
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GITDIFFCORE" "7" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GITDIFFCORE" "7" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -97,7 +97,7 @@ The pathspecs are used to limit the world diff operates in\&. They remove the fi
 .\}
 .sp
 .sp
-but the command invocation was git diff\-files myfile, then the junkfile entry would be removed from the list because only "myfile" is under consideration\&.
+but the command invocation was \fBgit diff\-files myfile\fR, then the junkfile entry would be removed from the list because only "myfile" is under consideration\&.
 .sp
 The result of comparison is passed from these commands to what is internally called "diffcore", in a format similar to what is output when the \-p option is not used\&. E\&.g\&.
 .sp
@@ -262,7 +262,7 @@ the original contents of fileY and the resulting contents of file0 are compared,
 .sp
 In both rename and copy detection, the same "extent of changes" algorithm used in diffcore\-break is used to determine if two files are "similar enough", and can be customized to use a similarity score different from the default of 50% by giving a number after the "\-M" or "\-C" option (e\&.g\&. "\-M8" to tell it to use 8/10 = 80%)\&.
 .sp
-Note\&. When the "\-C" option is used with \-\-find\-copies\-harder option, \fIgit diff\-*\fR commands feed unmodified filepairs to diffcore mechanism as well as modified ones\&. This lets the copy detector consider unmodified files as copy source candidates at the expense of making it slower\&. Without \-\-find\-copies\-harder, \fIgit diff\-*\fR commands can detect copies only if the file that was copied happened to have been modified in the same changeset\&.
+Note\&. When the "\-C" option is used with \fB\-\-find\-copies\-harder\fR option, \fIgit diff\-*\fR commands feed unmodified filepairs to diffcore mechanism as well as modified ones\&. This lets the copy detector consider unmodified files as copy source candidates at the expense of making it slower\&. Without \fB\-\-find\-copies\-harder\fR, \fIgit diff\-*\fR commands can detect copies only if the file that was copied happened to have been modified in the same changeset\&.
 .SH "DIFFCORE-MERGE-BROKEN: FOR PUTTING "COMPLETE REWRITES" BACK TOGETHER"
 .sp
 This transformation is used to merge filepairs broken by diffcore\-break, and not transformed into rename/copy by diffcore\-rename, back into a single modification\&. This always runs when diffcore\-break is used\&.
@@ -298,11 +298,11 @@ Note that earlier implementation left a broken pair as a separate creation and d
 .sp
 This transformation limits the set of filepairs to those that change specified strings between the preimage and the postimage in a certain way\&. \-S<block of text> and \-G<regular expression> options are used to specify different ways these strings are sought\&.
 .sp
-"\-S<block of text>" detects filepairs whose preimage and postimage have different number of occurrences of the specified block of text\&. By definition, it will not detect in\-file moves\&. Also, when a changeset moves a file wholesale without affecting the interesting string, diffcore\-rename kicks in as usual, and \-S omits the filepair (since the number of occurrences of that string didn\(cqt change in that rename\-detected filepair)\&. When used with \-\-pickaxe\-regex, treat the <block of text> as an extended POSIX regular expression to match, instead of a literal string\&.
+"\-S<block of text>" detects filepairs whose preimage and postimage have different number of occurrences of the specified block of text\&. By definition, it will not detect in\-file moves\&. Also, when a changeset moves a file wholesale without affecting the interesting string, diffcore\-rename kicks in as usual, and \fB\-S\fR omits the filepair (since the number of occurrences of that string didn\(cqt change in that rename\-detected filepair)\&. When used with \fB\-\-pickaxe\-regex\fR, treat the <block of text> as an extended POSIX regular expression to match, instead of a literal string\&.
 .sp
 "\-G<regular expression>" (mnemonic: grep) detects filepairs whose textual diff has an added or a deleted line that matches the given regular expression\&. This means that it will detect in\-file (or what rename\-detection considers the same file) moves, which is noise\&. The implementation runs diff twice and greps, and this can be quite expensive\&.
 .sp
-When \-S or \-G are used without \-\-pickaxe\-all, only filepairs that match their respective criterion are kept in the output\&. When \-\-pickaxe\-all is used, if even one filepair matches their respective criterion in a changeset, the entire changeset is kept\&. This behavior is designed to make reviewing changes in the context of the whole changeset easier\&.
+When \fB\-S\fR or \fB\-G\fR are used without \fB\-\-pickaxe\-all\fR, only filepairs that match their respective criterion are kept in the output\&. When \fB\-\-pickaxe\-all\fR is used, if even one filepair matches their respective criterion in a changeset, the entire changeset is kept\&. This behavior is designed to make reviewing changes in the context of the whole changeset easier\&.
 .SH "DIFFCORE-ORDER: FOR SORTING THE OUTPUT BASED ON FILENAMES"
 .sp
 This is used to reorder the filepairs according to the user\(cqs (or project\(cqs) taste, and is controlled by the \-O option to the \fIgit diff\-*\fR commands\&.

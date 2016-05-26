@@ -2,12 +2,12 @@
 .\"     Title: git-daemon
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-DAEMON" "1" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GIT\-DAEMON" "1" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -53,11 +53,11 @@ A really simple TCP Git daemon that normally listens on port "DEFAULT_GIT_PORT" 
 .sp
 It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any Git directory that hasn\(cqt explicitly been marked for export this way (unless the \fI\-\-export\-all\fR parameter is specified)\&. If you pass some directory paths as \fIgit daemon\fR arguments, you can further restrict the offers to a whitelist comprising of those\&.
 .sp
-By default, only upload\-pack service is enabled, which serves \fIgit fetch\-pack\fR and \fIgit ls\-remote\fR clients, which are invoked from \fIgit fetch\fR, \fIgit pull\fR, and \fIgit clone\fR\&.
+By default, only \fBupload\-pack\fR service is enabled, which serves \fIgit fetch\-pack\fR and \fIgit ls\-remote\fR clients, which are invoked from \fIgit fetch\fR, \fIgit pull\fR, and \fIgit clone\fR\&.
 .sp
 This is ideally suited for read\-only updates, i\&.e\&., pulling from Git repositories\&.
 .sp
-An upload\-archive also exists to serve \fIgit archive\fR\&.
+An \fBupload\-archive\fR also exists to serve \fIgit archive\fR\&.
 .SH "OPTIONS"
 .PP
 \-\-strict\-paths
@@ -147,12 +147,12 @@ Log to syslog instead of stderr\&. Note that this option does not imply \-\-verb
 Allow ~user notation to be used in requests\&. When specified with no parameter, requests to git://host/~alice/foo is taken as a request to access
 \fIfoo\fR
 repository in the home directory of user
-alice\&. If
-\-\-user\-path=path
+\fBalice\fR\&. If
+\fB\-\-user\-path=path\fR
 is specified, the same request is taken as a request to access
-path/foo
+\fBpath/foo\fR
 repository in the home directory of user
-alice\&.
+\fBalice\fR\&.
 .RE
 .PP
 \-\-verbose
@@ -174,36 +174,36 @@ Detach from the shell\&. Implies \-\-syslog\&.
 .RS 4
 Save the process id in
 \fIfile\fR\&. Ignored when the daemon is run under
-\-\-inetd\&.
+\fB\-\-inetd\fR\&.
 .RE
 .PP
 \-\-user=<user>, \-\-group=<group>
 .RS 4
 Change daemon\(cqs uid and gid before entering the service loop\&. When only
-\-\-user
+\fB\-\-user\fR
 is given without
-\-\-group, the primary group ID for the user is used\&. The values of the option are given to
-getpwnam(3)
+\fB\-\-group\fR, the primary group ID for the user is used\&. The values of the option are given to
+\fBgetpwnam(3)\fR
 and
-getgrnam(3)
+\fBgetgrnam(3)\fR
 and numeric IDs are not supported\&.
 .sp
 Giving these options is an error when used with
-\-\-inetd; use the facility of inet daemon to achieve the same before spawning
+\fB\-\-inetd\fR; use the facility of inet daemon to achieve the same before spawning
 \fIgit daemon\fR
 if needed\&.
 .sp
 Like many programs that switch user id, the daemon does not reset environment variables such as
-$HOME
+\fB$HOME\fR
 when it runs git programs, e\&.g\&.
-upload\-pack
+\fBupload\-pack\fR
 and
-receive\-pack\&. When using this option, you may also want to set and export
-HOME
+\fBreceive\-pack\fR\&. When using this option, you may also want to set and export
+\fBHOME\fR
 to point at the home directory of
-<user>
+\fB<user>\fR
 before starting the daemon, and make sure any Git configuration files in that directory are readable by
-<user>\&.
+\fB<user>\fR\&.
 .RE
 .PP
 \-\-enable=<service>, \-\-disable=<service>
@@ -243,18 +243,18 @@ This serves
 and
 \fIgit ls\-remote\fR
 clients\&. It is enabled by default, but a repository can disable it by setting
-daemon\&.uploadpack
+\fBdaemon\&.uploadpack\fR
 configuration item to
-false\&.
+\fBfalse\fR\&.
 .RE
 .PP
 upload\-archive
 .RS 4
 This serves
 \fIgit archive \-\-remote\fR\&. It is disabled by default, but a repository can enable it by setting
-daemon\&.uploadarch
+\fBdaemon\&.uploadarch\fR
 configuration item to
-true\&.
+\fBtrue\fR\&.
 .RE
 .PP
 receive\-pack
@@ -264,9 +264,9 @@ This serves
 clients, allowing anonymous push\&. It is disabled by default, as there is
 \fIno\fR
 authentication in the protocol (in other words, anybody can push anything into the repository, including removal of refs)\&. This is solely meant for a closed LAN setting where everybody is friendly\&. This service can be enabled by setting
-daemon\&.receivepack
+\fBdaemon\&.receivepack\fR
 configuration item to
-true\&.
+\fBtrue\fR\&.
 .RE
 .SH "EXAMPLES"
 .PP
@@ -311,10 +311,10 @@ as an inetd service that handles any repository under the whitelisted set of dir
 To set up
 \fIgit daemon\fR
 as an inetd service that handles repositories for different virtual hosts,
-www\&.example\&.com
+\fBwww\&.example\&.com\fR
 and
-www\&.example\&.org, place an entry like the following into
-/etc/inetd
+\fBwww\&.example\&.org\fR, place an entry like the following into
+\fB/etc/inetd\fR
 all on one line:
 .sp
 .if n \{\
@@ -333,10 +333,10 @@ all on one line:
 .\}
 .sp
 In this example, the root\-level directory
-/pub
+\fB/pub\fR
 will contain a subdirectory for each virtual host name supported\&. Further, both hosts advertise repositories simply as
-git://www\&.example\&.com/software/repo\&.git\&. For pre\-1\&.4\&.0 clients, a symlink from
-/software
+\fBgit://www\&.example\&.com/software/repo\&.git\fR\&. For pre\-1\&.4\&.0 clients, a symlink from
+\fB/software\fR
 into the appropriate default repository could be made as well\&.
 .RE
 .PP
@@ -360,7 +360,7 @@ as a regular, non\-inetd service that handles repositories for multiple virtual 
 .\}
 .sp
 In this example, the root\-level directory
-/pub
+\fB/pub\fR
 will contain a subdirectory for each virtual host IP address supported\&. Repositories can still be accessed by hostname though, assuming they correspond to these IP addresses\&.
 .RE
 .PP

@@ -2,12 +2,12 @@
 .\"     Title: git-repack
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-REPACK" "1" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GIT\-REPACK" "1" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -48,9 +48,9 @@ Packs are used to reduce the load on mirror systems, backup engines, disk storag
 .RS 4
 Instead of incrementally packing the unpacked objects, pack everything referenced into a single pack\&. Especially useful when packing a repository that is used for private development\&. Use with
 \fI\-d\fR\&. This will clean up the objects that
-git prune
+\fBgit prune\fR
 leaves behind, but
-git fsck \-\-full \-\-dangling
+\fBgit fsck \-\-full \-\-dangling\fR
 shows as dangling\&.
 .sp
 Note that users fetching over dumb protocols will have to fetch the whole new pack in order to get any contained object, no matter how many other objects in that pack they already have locally\&.
@@ -59,7 +59,7 @@ Note that users fetching over dumb protocols will have to fetch the whole new pa
 \-A
 .RS 4
 Same as
-\-a, unless
+\fB\-a\fR, unless
 \fI\-d\fR
 is used\&. Then any unreachable objects in a previous pack become loose, unpacked objects, instead of being left in the old pack\&. Unreachable objects are never intentionally added to a pack, even when repacking\&. This option prevents unreachable objects from being immediately deleted by way of being left in the old pack and then removed\&. Instead, the loose unreachable objects will be pruned according to normal expiry rules with the next
 \fIgit gc\fR
@@ -77,7 +77,7 @@ to remove redundant loose object files\&.
 \-l
 .RS 4
 Pass the
-\-\-local
+\fB\-\-local\fR
 option to
 \fIgit pack\-objects\fR\&. See
 \fBgit-pack-objects\fR(1)\&.
@@ -86,25 +86,25 @@ option to
 \-f
 .RS 4
 Pass the
-\-\-no\-reuse\-delta
+\fB\-\-no\-reuse\-delta\fR
 option to
-git\-pack\-objects, see
+\fBgit\-pack\-objects\fR, see
 \fBgit-pack-objects\fR(1)\&.
 .RE
 .PP
 \-F
 .RS 4
 Pass the
-\-\-no\-reuse\-object
+\fB\-\-no\-reuse\-object\fR
 option to
-git\-pack\-objects, see
+\fBgit\-pack\-objects\fR, see
 \fBgit-pack-objects\fR(1)\&.
 .RE
 .PP
 \-q
 .RS 4
 Pass the
-\-q
+\fB\-q\fR
 option to
 \fIgit pack\-objects\fR\&. See
 \fBgit-pack-objects\fR(1)\&.
@@ -120,54 +120,54 @@ Do not update the server information with
 \-\-window=<n>, \-\-depth=<n>
 .RS 4
 These two options affect how the objects contained in the pack are stored using delta compression\&. The objects are first internally sorted by type, size and optionally names and compared against the other objects within
-\-\-window
+\fB\-\-window\fR
 to see if using delta compression saves space\&.
-\-\-depth
+\fB\-\-depth\fR
 limits the maximum delta depth; making it too deep affects the performance on the unpacker side, because delta data needs to be applied that many times to get to the necessary object\&. The default value for \-\-window is 10 and \-\-depth is 50\&.
 .RE
 .PP
 \-\-window\-memory=<n>
 .RS 4
 This option provides an additional limit on top of
-\-\-window; the window size will dynamically scale down so as to not take up more than
+\fB\-\-window\fR; the window size will dynamically scale down so as to not take up more than
 \fI<n>\fR
 bytes in memory\&. This is useful in repositories with a mix of large and small objects to not run out of memory with a large window, but still be able to take advantage of the large window for the smaller objects\&. The size can be suffixed with "k", "m", or "g"\&.
-\-\-window\-memory=0
+\fB\-\-window\-memory=0\fR
 makes memory usage unlimited, which is the default\&.
 .RE
 .PP
 \-\-max\-pack\-size=<n>
 .RS 4
 Maximum size of each output pack file\&. The size can be suffixed with "k", "m", or "g"\&. The minimum size allowed is limited to 1 MiB\&. If specified, multiple packfiles may be created, which also prevents the creation of a bitmap index\&. The default is unlimited, unless the config variable
-pack\&.packSizeLimit
+\fBpack\&.packSizeLimit\fR
 is set\&.
 .RE
 .PP
 \-b, \-\-write\-bitmap\-index
 .RS 4
 Write a reachability bitmap index as part of the repack\&. This only makes sense when used with
-\-a
+\fB\-a\fR
 or
-\-A, as the bitmaps must be able to refer to all reachable objects\&. This option overrides the setting of
-repack\&.writeBitmaps\&. This option has no effect if multiple packfiles are created\&.
+\fB\-A\fR, as the bitmaps must be able to refer to all reachable objects\&. This option overrides the setting of
+\fBrepack\&.writeBitmaps\fR\&. This option has no effect if multiple packfiles are created\&.
 .RE
 .PP
 \-\-pack\-kept\-objects
 .RS 4
 Include objects in
-\&.keep
+\fB\&.keep\fR
 files when repacking\&. Note that we still do not delete
-\&.keep
+\fB\&.keep\fR
 packs after
-pack\-objects
+\fBpack\-objects\fR
 finishes\&. This means that we may duplicate objects, but this makes the option safe to use when there are concurrent pushes or fetches\&. This option is generally only useful if you are writing bitmaps with
-\-b
+\fB\-b\fR
 or
-repack\&.writeBitmaps, as it ensures that the bitmapped packfile has the necessary objects\&.
+\fBrepack\&.writeBitmaps\fR, as it ensures that the bitmapped packfile has the necessary objects\&.
 .RE
 .SH "CONFIGURATION"
 .sp
-By default, the command passes \-\-delta\-base\-offset option to \fIgit pack\-objects\fR; this typically results in slightly smaller packs, but the generated packs are incompatible with versions of Git older than version 1\&.4\&.4\&. If you need to share your repository with such ancient Git versions, either directly or via the dumb http protocol, then you need to set the configuration variable repack\&.UseDeltaBaseOffset to "false" and repack\&. Access from old Git versions over the native protocol is unaffected by this option as the conversion is performed on the fly as needed in that case\&.
+By default, the command passes \fB\-\-delta\-base\-offset\fR option to \fIgit pack\-objects\fR; this typically results in slightly smaller packs, but the generated packs are incompatible with versions of Git older than version 1\&.4\&.4\&. If you need to share your repository with such ancient Git versions, either directly or via the dumb http protocol, then you need to set the configuration variable \fBrepack\&.UseDeltaBaseOffset\fR to "false" and repack\&. Access from old Git versions over the native protocol is unaffected by this option as the conversion is performed on the fly as needed in that case\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-pack-objects\fR(1) \fBgit-prune-packed\fR(1)

@@ -2,12 +2,12 @@
 .\"     Title: git-cvsserver
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-CVSSERVER" "1" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -71,7 +71,7 @@ Don\(cqt allow recursing into subdirectories
 \-\-export\-all
 .RS 4
 Don\(cqt check for
-gitcvs\&.enabled
+\fBgitcvs\&.enabled\fR
 in config\&. You also have to specify a list of allowed directories (see below) if you want to use this option\&.
 .RE
 .PP
@@ -88,7 +88,7 @@ Print usage information and exit
 <directory>
 .RS 4
 You can specify a list of allowed directories\&. If no directories are given, all are allowed\&. This is an additional restriction, gitcvs access still needs to be enabled by the
-gitcvs\&.enabled
+\fBgitcvs\&.enabled\fR
 config option unless
 \fI\-\-export\-all\fR
 was given, too\&.
@@ -196,7 +196,7 @@ Then provide your password via the pserver method, for example:
 No special setup is needed for SSH access, other than having Git tools in the PATH\&. If you have clients that do not accept the CVS_SERVER environment variable, you can rename
 \fIgit\-cvsserver\fR
 to
-cvs\&.
+\fBcvs\fR\&.
 .sp
 Note: Newer CVS versions (>= 1\&.12\&.11) also support specifying CVS_SERVER directly in CVSROOT like
 .sp
@@ -217,7 +217,7 @@ files and you don\(cqt need to worry about always setting the correct environmen
 don\(cqt need to override the default with CVS_SERVER (and shouldn\(cqt) as
 \fIgit\-shell\fR
 understands
-cvs
+\fBcvs\fR
 to mean
 \fIgit\-cvsserver\fR
 and pretends that the other end runs the real
@@ -254,7 +254,7 @@ has write access to the log file and to the database (see
 Database Backend\&. If you want to offer write access over SSH, the users of course also need write access to the Git repository itself\&.
 .sp
 You also need to ensure that each repository is "bare" (without a Git index file) for
-cvs commit
+\fBcvs commit\fR
 to work\&. See
 \fBgitcvs-migration\fR(7)\&.
 .sp
@@ -329,10 +329,10 @@ Clients should now be able to check out the project\&. Use the CVS
 name to indicate what Git
 \fIhead\fR
 you want to check out\&. This also sets the name of your newly checked\-out directory, unless you tell it otherwise with
-\-d <dir_name>\&. For example, this checks out
+\fB\-d <dir_name>\fR\&. For example, this checks out
 \fImaster\fR
 branch to the
-project\-master
+\fBproject\-master\fR
 directory:
 .sp
 .if n \{\
@@ -350,22 +350,22 @@ directory:
 .sp
 \fIgit\-cvsserver\fR uses one database per Git head (i\&.e\&. CVS module) to store information about the repository to maintain consistent CVS revision numbers\&. The database needs to be updated (i\&.e\&. written to) after every commit\&.
 .sp
-If the commit is done directly by using git (as opposed to using \fIgit\-cvsserver\fR) the update will need to happen on the next repository access by \fIgit\-cvsserver\fR, independent of access method and requested operation\&.
+If the commit is done directly by using \fBgit\fR (as opposed to using \fIgit\-cvsserver\fR) the update will need to happen on the next repository access by \fIgit\-cvsserver\fR, independent of access method and requested operation\&.
 .sp
 That means that even if you offer only read access (e\&.g\&. by using the pserver method), \fIgit\-cvsserver\fR should have write access to the database to work reliably (otherwise you need to make sure that the database is up\-to\-date any time \fIgit\-cvsserver\fR is executed)\&.
 .sp
-By default it uses SQLite databases in the Git directory, named gitcvs\&.<module_name>\&.sqlite\&. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using \fIgit\-cvsserver\fR write access to the database file without granting them write access to the directory, too\&.
+By default it uses SQLite databases in the Git directory, named \fBgitcvs\&.<module_name>\&.sqlite\fR\&. Note that the SQLite backend creates temporary files in the same directory as the database file on write so it might not be enough to grant the users using \fIgit\-cvsserver\fR write access to the database file without granting them write access to the directory, too\&.
 .sp
-The database can not be reliably regenerated in a consistent form after the branch it is tracking has changed\&. Example: For merged branches, \fIgit\-cvsserver\fR only tracks one branch of development, and after a \fIgit merge\fR an incrementally updated database may track a different branch than a database regenerated from scratch, causing inconsistent CVS revision numbers\&. git\-cvsserver has no way of knowing which branch it would have picked if it had been run incrementally pre\-merge\&. So if you have to fully or partially (from old backup) regenerate the database, you should be suspicious of pre\-existing CVS sandboxes\&.
+The database can not be reliably regenerated in a consistent form after the branch it is tracking has changed\&. Example: For merged branches, \fIgit\-cvsserver\fR only tracks one branch of development, and after a \fIgit merge\fR an incrementally updated database may track a different branch than a database regenerated from scratch, causing inconsistent CVS revision numbers\&. \fBgit\-cvsserver\fR has no way of knowing which branch it would have picked if it had been run incrementally pre\-merge\&. So if you have to fully or partially (from old backup) regenerate the database, you should be suspicious of pre\-existing CVS sandboxes\&.
 .sp
 You can configure the database backend with the following configuration variables:
 .SS "Configuring database backend"
 .sp
-\fIgit\-cvsserver\fR uses the Perl DBI module\&. Please also read its documentation if changing these variables, especially about DBI\->connect()\&.
+\fIgit\-cvsserver\fR uses the Perl DBI module\&. Please also read its documentation if changing these variables, especially about \fBDBI\->connect()\fR\&.
 .PP
 gitcvs\&.dbName
 .RS 4
-Database name\&. The exact meaning depends on the selected database driver, for SQLite this is a filename\&. Supports variable substitution (see below)\&. May not contain semicolons (;)\&. Default:
+Database name\&. The exact meaning depends on the selected database driver, for SQLite this is a filename\&. Supports variable substitution (see below)\&. May not contain semicolons (\fB;\fR)\&. Default:
 \fI%Ggitcvs\&.%m\&.sqlite\fR
 .RE
 .PP
@@ -376,20 +376,20 @@ Used DBI driver\&. You can specify any available driver for this here, but it mi
 \fIDBD::Pg\fR, and reported
 \fBnot\fR
 to work with
-\fIDBD::mysql\fR\&. Please regard this as an experimental feature\&. May not contain colons (:)\&. Default:
+\fIDBD::mysql\fR\&. Please regard this as an experimental feature\&. May not contain colons (\fB:\fR)\&. Default:
 \fISQLite\fR
 .RE
 .PP
 gitcvs\&.dbuser
 .RS 4
 Database user\&. Only useful if setting
-dbDriver, since SQLite has no concept of database users\&. Supports variable substitution (see below)\&.
+\fBdbDriver\fR, since SQLite has no concept of database users\&. Supports variable substitution (see below)\&.
 .RE
 .PP
 gitcvs\&.dbPass
 .RS 4
 Database password\&. Only useful if setting
-dbDriver, since SQLite has no concept of database passwords\&.
+\fBdbDriver\fR, since SQLite has no concept of database passwords\&.
 .RE
 .PP
 gitcvs\&.dbTableNamePrefix
@@ -407,7 +407,7 @@ All variables can also be set per access method, see above\&.
 \fBVariable substitution\fR
 .RS 4
 .sp
-In dbDriver and dbUser you can use the following variables:
+In \fBdbDriver\fR and \fBdbUser\fR you can use the following variables:
 .PP
 %G
 .RS 4
@@ -417,10 +417,10 @@ Git directory name
 %g
 .RS 4
 Git directory name, where all characters except for alpha\-numeric ones,
-\&., and
-\-
+\fB\&.\fR, and
+\fB\-\fR
 are replaced with
-_
+\fB_\fR
 (this should make it easier to use the directory name in a filename if wanted)
 .RE
 .PP
@@ -501,9 +501,9 @@ Pick
 when it asks what branch/tag to check out\&. Untick the "launch commit wizard" to avoid committing the \&.project file\&.
 .RE
 .sp
-Protocol notes: If you are using anonymous access via pserver, just select that\&. Those using SSH access should choose the \fIext\fR protocol, and configure \fIext\fR access on the Preferences\(->Team\(->CVS\(->ExtConnection pane\&. Set CVS_SERVER to "git cvsserver"\&. Note that password support is not good when using \fIext\fR, you will definitely want to have SSH keys setup\&.
+Protocol notes: If you are using anonymous access via pserver, just select that\&. Those using SSH access should choose the \fIext\fR protocol, and configure \fIext\fR access on the Preferences\(->Team\(->CVS\(->ExtConnection pane\&. Set CVS_SERVER to "\fBgit cvsserver\fR"\&. Note that password support is not good when using \fIext\fR, you will definitely want to have SSH keys setup\&.
 .sp
-Alternatively, you can just use the non\-standard extssh protocol that Eclipse offer\&. In that case CVS_SERVER is ignored, and you will have to replace the cvs utility on the server with \fIgit\-cvsserver\fR or manipulate your \&.bashrc so that calling \fIcvs\fR effectively calls \fIgit\-cvsserver\fR\&.
+Alternatively, you can just use the non\-standard extssh protocol that Eclipse offer\&. In that case CVS_SERVER is ignored, and you will have to replace the cvs utility on the server with \fIgit\-cvsserver\fR or manipulate your \fB\&.bashrc\fR so that calling \fIcvs\fR effectively calls \fIgit\-cvsserver\fR\&.
 .SH "CLIENTS KNOWN TO WORK"
 .sp
 .RS 4
@@ -557,18 +557,18 @@ Most CVS command arguments that read CVS tags or revision numbers (typically \-r
 .sp
 Note that there are two ways to checkout a particular branch\&. As described elsewhere on this page, the "module" parameter of cvs checkout is interpreted as a branch name, and it becomes the main branch\&. It remains the main branch for a given sandbox even if you temporarily make another branch sticky with cvs update \-r\&. Alternatively, the \-r argument can indicate some other branch to actually checkout, even though the module is still the "main" branch\&. Tradeoffs (as currently implemented): Each new "module" creates a new database on disk with a history for the given module, and after the database is created, operations against that main branch are fast\&. Or alternatively, \-r doesn\(cqt take any extra disk space, but may be significantly slower for many operations, like cvs update\&.
 .sp
-If you want to refer to a git refspec that has characters that are not allowed by CVS, you have two options\&. First, it may just work to supply the git refspec directly to the appropriate CVS \-r argument; some CVS clients don\(cqt seem to do much sanity checking of the argument\&. Second, if that fails, you can use a special character escape mechanism that only uses characters that are valid in CVS tags\&. A sequence of 4 or 5 characters of the form (underscore ("_"), dash ("\-"), one or two characters, and dash ("\-")) can encode various characters based on the one or two letters: "s" for slash ("/"), "p" for period ("\&."), "u" for underscore ("_"), or two hexadecimal digits for any byte value at all (typically an ASCII number, or perhaps a part of a UTF\-8 encoded character)\&.
+If you want to refer to a git refspec that has characters that are not allowed by CVS, you have two options\&. First, it may just work to supply the git refspec directly to the appropriate CVS \-r argument; some CVS clients don\(cqt seem to do much sanity checking of the argument\&. Second, if that fails, you can use a special character escape mechanism that only uses characters that are valid in CVS tags\&. A sequence of 4 or 5 characters of the form (underscore (\fB"_"\fR), dash (\fB"\-"\fR), one or two characters, and dash (\fB"\-"\fR)) can encode various characters based on the one or two letters: \fB"s"\fR for slash (\fB"/"\fR), \fB"p"\fR for period (\fB"\&."\fR), \fB"u"\fR for underscore (\fB"_"\fR), or two hexadecimal digits for any byte value at all (typically an ASCII number, or perhaps a part of a UTF\-8 encoded character)\&.
 .sp
 Legacy monitoring operations are not supported (edit, watch and related)\&. Exports and tagging (tags and branches) are not supported at this stage\&.
 .SS "CRLF Line Ending Conversions"
 .sp
 By default the server leaves the \fI\-k\fR mode blank for all files, which causes the CVS client to treat them as a text files, subject to end\-of\-line conversion on some platforms\&.
 .sp
-You can make the server use the end\-of\-line conversion attributes to set the \fI\-k\fR modes for files by setting the gitcvs\&.usecrlfattr config variable\&. See \fBgitattributes\fR(5) for more information about end\-of\-line conversion\&.
+You can make the server use the end\-of\-line conversion attributes to set the \fI\-k\fR modes for files by setting the \fBgitcvs\&.usecrlfattr\fR config variable\&. See \fBgitattributes\fR(5) for more information about end\-of\-line conversion\&.
 .sp
-Alternatively, if gitcvs\&.usecrlfattr config is not enabled or the attributes do not allow automatic detection for a filename, then the server uses the gitcvs\&.allBinary config for the default setting\&. If gitcvs\&.allBinary is set, then file not otherwise specified will default to \fI\-kb\fR mode\&. Otherwise the \fI\-k\fR mode is left blank\&. But if gitcvs\&.allBinary is set to "guess", then the correct \fI\-k\fR mode will be guessed based on the contents of the file\&.
+Alternatively, if \fBgitcvs\&.usecrlfattr\fR config is not enabled or the attributes do not allow automatic detection for a filename, then the server uses the \fBgitcvs\&.allBinary\fR config for the default setting\&. If \fBgitcvs\&.allBinary\fR is set, then file not otherwise specified will default to \fI\-kb\fR mode\&. Otherwise the \fI\-k\fR mode is left blank\&. But if \fBgitcvs\&.allBinary\fR is set to "guess", then the correct \fI\-k\fR mode will be guessed based on the contents of the file\&.
 .sp
-For best consistency with \fIcvs\fR, it is probably best to override the defaults by setting gitcvs\&.usecrlfattr to true, and gitcvs\&.allBinary to "guess"\&.
+For best consistency with \fIcvs\fR, it is probably best to override the defaults by setting \fBgitcvs\&.usecrlfattr\fR to true, and \fBgitcvs\&.allBinary\fR to "guess"\&.
 .SH "DEPENDENCIES"
 .sp
 \fIgit\-cvsserver\fR depends on DBD::SQLite\&.

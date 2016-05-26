@@ -2,12 +2,12 @@
 .\"     Title: gitworkflows
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GITWORKFLOWS" "7" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GITWORKFLOWS" "7" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,14 +37,14 @@ git *
 .sp
 .SH "DESCRIPTION"
 .sp
-This document attempts to write down and motivate some of the workflow elements used for git\&.git itself\&. Many ideas apply in general, though the full workflow is rarely required for smaller projects with fewer people involved\&.
+This document attempts to write down and motivate some of the workflow elements used for \fBgit\&.git\fR itself\&. Many ideas apply in general, though the full workflow is rarely required for smaller projects with fewer people involved\&.
 .sp
 We formulate a set of \fIrules\fR for quick reference, while the prose tries to motivate each of them\&. Do not always take them literally; you should value good reasons for your actions higher than manpages such as this one\&.
 .SH "SEPARATE CHANGES"
 .sp
 As a general rule, you should try to split your changes into small logical steps, and commit each of them\&. They should be consistent, working independently of any later commits, pass the test suite, etc\&. This makes the review process much easier, and the history much more useful for later inspection and analysis, for example with \fBgit-blame\fR(1) and \fBgit-bisect\fR(1)\&.
 .sp
-To achieve this, try to split your work into small steps from the very beginning\&. It is always easier to squash a few commits together than to split one big commit into several\&. Don\(cqt be afraid of making too small or imperfect steps along the way\&. You can always go back later and edit the commits with git rebase \-\-interactive before you publish them\&. You can use git stash save \-\-keep\-index to run the test suite independent of other uncommitted changes; see the EXAMPLES section of \fBgit-stash\fR(1)\&.
+To achieve this, try to split your work into small steps from the very beginning\&. It is always easier to squash a few commits together than to split one big commit into several\&. Don\(cqt be afraid of making too small or imperfect steps along the way\&. You can always go back later and edit the commits with \fBgit rebase \-\-interactive\fR before you publish them\&. You can use \fBgit stash save \-\-keep\-index\fR to run the test suite independent of other uncommitted changes; see the EXAMPLES section of \fBgit-stash\fR(1)\&.
 .SH "MANAGING BRANCHES"
 .sp
 There are two main tools that can be used to include changes from one branch on another: \fBgit-merge\fR(1) and \fBgit-cherry-pick\fR(1)\&.
@@ -56,7 +56,7 @@ Most importantly, merging works at the branch level, while cherry\-picking works
 There is a tradeoff of course: merges require a more careful branch management\&. The following subsections discuss the important points\&.
 .SS "Graduation"
 .sp
-As a given feature goes from experimental to stable, it also "graduates" between the corresponding branches of the software\&. git\&.git uses the following \fIintegration branches\fR:
+As a given feature goes from experimental to stable, it also "graduates" between the corresponding branches of the software\&. \fBgit\&.git\fR uses the following \fIintegration branches\fR:
 .sp
 .RS 4
 .ie n \{\
@@ -195,7 +195,7 @@ The solution, of course, is to make a merge that we can undo: merge into a throw
 .sp
 To test the interaction of several topics, merge them into a throw\-away branch\&. You must never base any work on such a branch!
 .sp
-If you make it (very) clear that this branch is going to be deleted right after the testing, you can even publish this branch, for example to give the testers a chance to work with it, or other developers a chance to see if their in\-progress work will be compatible\&. git\&.git has such an official throw\-away integration branch called \fIpu\fR\&.
+If you make it (very) clear that this branch is going to be deleted right after the testing, you can even publish this branch, for example to give the testers a chance to work with it, or other developers a chance to see if their in\-progress work will be compatible\&. \fBgit\&.git\fR has such an official throw\-away integration branch called \fIpu\fR\&.
 .SS "Branch management for a release"
 .sp
 Assuming you are using the merge approach discussed above, when you are releasing your project you will need to do some additional branch management work\&.
@@ -208,7 +208,7 @@ To verify that \fImaster\fR is indeed a superset of \fImaint\fR, use git log:
 .PP
 \fBExample\ \&5.\ \&Verify \fImaster\fR is a superset of \fImaint\fR\fR
 .sp
-git log master\&.\&.maint
+\fBgit log master\&.\&.maint\fR
 .sp
 This command should not list any commits\&. Otherwise, check out \fImaster\fR and merge \fImaint\fR into it\&.
 .sp
@@ -216,7 +216,7 @@ Now you can proceed with the creation of the feature release\&. Apply a tag to t
 .PP
 \fBExample\ \&6.\ \&Release tagging\fR
 .sp
-git tag \-s \-m "Git X\&.Y\&.Z" vX\&.Y\&.Z master
+\fBgit tag \-s \-m "Git X\&.Y\&.Z" vX\&.Y\&.Z master\fR
 .sp
 You need to push the new tag to a public Git server (see "DISTRIBUTED WORKFLOWS" below)\&. This makes the tag available to others tracking your project\&. The push could also trigger a post\-update hook to perform release\-related items such as building release tarballs and preformatted documentation pages\&.
 .sp
@@ -231,7 +231,7 @@ To do this, the current maintenance branch is copied to another branch named wit
 .PP
 \fBExample\ \&7.\ \&Copy maint\fR
 .sp
-git branch maint\-X\&.Y\&.(Z\-1) maint
+\fBgit branch maint\-X\&.Y\&.(Z\-1) maint\fR
 .sp
 The \fImaint\fR branch should now be fast\-forwarded to the newly released code so that maintenance fixes can be tracked for the current release:
 .PP
@@ -245,7 +245,7 @@ The \fImaint\fR branch should now be fast\-forwarded to the newly released code 
 .sp -1
 .IP \(bu 2.3
 .\}
-git checkout maint
+\fBgit checkout maint\fR
 .RE
 .sp
 .RS 4
@@ -256,7 +256,7 @@ git checkout maint
 .sp -1
 .IP \(bu 2.3
 .\}
-git merge \-\-ff\-only master
+\fBgit merge \-\-ff\-only master\fR
 .RE
 .sp
 If the merge fails because it is not a fast\-forward, then it is possible some fixes on \fImaint\fR were missed in the feature release\&. This will not happen if the content of the branches was verified as described in the previous section\&.
@@ -274,7 +274,7 @@ After a feature release, the integration branch \fInext\fR may optionally be rew
 .sp -1
 .IP \(bu 2.3
 .\}
-git checkout next
+\fBgit checkout next\fR
 .RE
 .sp
 .RS 4
@@ -285,7 +285,7 @@ git checkout next
 .sp -1
 .IP \(bu 2.3
 .\}
-git reset \-\-hard master
+\fBgit reset \-\-hard master\fR
 .RE
 .sp
 .RS 4
@@ -296,7 +296,7 @@ git reset \-\-hard master
 .sp -1
 .IP \(bu 2.3
 .\}
-git merge ai/topic_in_next1
+\fBgit merge ai/topic_in_next1\fR
 .RE
 .sp
 .RS 4
@@ -307,7 +307,7 @@ git merge ai/topic_in_next1
 .sp -1
 .IP \(bu 2.3
 .\}
-git merge ai/topic_in_next2
+\fBgit merge ai/topic_in_next2\fR
 .RE
 .sp
 .RS 4
@@ -330,7 +330,7 @@ The same rewind and rebuild process may be followed for \fIpu\fR\&. A public ann
 .sp
 After the last section, you should know how to manage topics\&. In general, you will not be the only person working on the project, so you will have to share your work\&.
 .sp
-Roughly speaking, there are two important workflows: merge and patch\&. The important difference is that the merge workflow can propagate full history, including merges, while patches cannot\&. Both workflows can be used in parallel: in git\&.git, only subsystem maintainers use the merge workflow, while everyone else sends patches\&.
+Roughly speaking, there are two important workflows: merge and patch\&. The important difference is that the merge workflow can propagate full history, including merges, while patches cannot\&. Both workflows can be used in parallel: in \fBgit\&.git\fR, only subsystem maintainers use the merge workflow, while everyone else sends patches\&.
 .sp
 Note that the maintainer(s) may impose restrictions, such as "Signed\-off\-by" requirements, that all commits/patches submitted for inclusion must adhere to\&. Consult your project\(cqs documentation for more information\&.
 .SS "Merge workflow"
@@ -381,7 +381,7 @@ Getting changes out is easy:
 .PP
 \fBExample\ \&10.\ \&Push/pull: Publishing branches/topics\fR
 .sp
-git push <remote> <branch> and tell everyone where they can fetch from\&.
+\fBgit push <remote> <branch>\fR and tell everyone where they can fetch from\&.
 .sp
 You will still have to tell people by other means, such as mail\&. (Git provides the \fBgit-request-pull\fR(1) to send preformatted pull requests to upstream maintainers to simplify this task\&.)
 .sp
@@ -389,7 +389,7 @@ If you just want to get the newest copies of the integration branches, staying u
 .PP
 \fBExample\ \&11.\ \&Push/pull: Staying up to date\fR
 .sp
-Use git fetch <remote> or git remote update to stay up to date\&.
+Use \fBgit fetch <remote>\fR or \fBgit remote update\fR to stay up to date\&.
 .sp
 Then simply fork your topic branches from the stable remotes as explained earlier\&.
 .sp
@@ -411,7 +411,7 @@ In that case, \fIgit pull\fR can do the fetch and merge in one go, as follows\&.
 .PP
 \fBExample\ \&12.\ \&Push/pull: Merging remote topics\fR
 .sp
-git pull <url> <branch>
+\fBgit pull <url> <branch>\fR
 .sp
 Occasionally, the maintainer may get merge conflicts when he tries to pull changes from downstream\&. In this case, he can ask downstream to do the merge and resolve the conflicts themselves (perhaps they will know better how to resolve them)\&. It is one of the rare cases where downstream \fIshould\fR merge from upstream\&.
 .SS "Patch workflow"
@@ -428,7 +428,7 @@ If you are a contributor that sends changes upstream in the form of emails, you 
 .sp -1
 .IP \(bu 2.3
 .\}
-git format\-patch \-M upstream\&.\&.topic
+\fBgit format\-patch \-M upstream\&.\&.topic\fR
 to turn them into preformatted patch files
 .RE
 .sp
@@ -440,7 +440,7 @@ to turn them into preformatted patch files
 .sp -1
 .IP \(bu 2.3
 .\}
-git send\-email \-\-to=<recipient> <patches>
+\fBgit send\-email \-\-to=<recipient> <patches>\fR
 .RE
 .sp
 See the \fBgit-format-patch\fR(1) and \fBgit-send-email\fR(1) manpages for further usage notes\&.
@@ -449,7 +449,7 @@ If the maintainer tells you that your patch no longer applies to the current ups
 .PP
 \fBExample\ \&14.\ \&format-patch/am: Keeping topics up to date\fR
 .sp
-git pull \-\-rebase <url> <branch>
+\fBgit pull \-\-rebase <url> <branch>\fR
 .sp
 You can then fix the conflicts during the rebase\&. Presumably you have not published your topic other than by mail, so rebasing it is not a problem\&.
 .sp
@@ -457,9 +457,9 @@ If you receive such a patch series (as maintainer, or perhaps as a reader of the
 .PP
 \fBExample\ \&15.\ \&format-patch/am: Importing patches\fR
 .sp
-git am < patch
+\fBgit am < patch\fR
 .sp
-One feature worth pointing out is the three\-way merge, which can help if you get conflicts: git am \-3 will use index information contained in patches to figure out the merge base\&. See \fBgit-am\fR(1) for other options\&.
+One feature worth pointing out is the three\-way merge, which can help if you get conflicts: \fBgit am \-3\fR will use index information contained in patches to figure out the merge base\&. See \fBgit-am\fR(1) for other options\&.
 .SH "SEE ALSO"
 .sp
 \fBgittutorial\fR(7), \fBgit-push\fR(1), \fBgit-pull\fR(1), \fBgit-merge\fR(1), \fBgit-rebase\fR(1), \fBgit-format-patch\fR(1), \fBgit-send-email\fR(1), \fBgit-am\fR(1)

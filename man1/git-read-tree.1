@@ -2,12 +2,12 @@
 .\"     Title: git-read-tree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2016
+.\"      Date: 05/26/2016
 .\"    Manual: Git Manual
 .\"    Source: Git 2.9.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "05/23/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "05/26/2016" "Git 2\&.9\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,7 +42,7 @@ git-read-tree \- Reads tree information into the index
 .sp
 Reads the tree information given by <tree\-ish> into the index, but does not actually \fBupdate\fR any of the files it "caches"\&. (see: \fBgit-checkout-index\fR(1))
 .sp
-Optionally, it can merge a tree into the index, perform a fast\-forward (i\&.e\&. 2\-way) merge, or a 3\-way merge, with the \-m flag\&. When used with \-m, the \-u flag causes it to also update the files in the work tree with the result of the merge\&.
+Optionally, it can merge a tree into the index, perform a fast\-forward (i\&.e\&. 2\-way) merge, or a 3\-way merge, with the \fB\-m\fR flag\&. When used with \fB\-m\fR, the \fB\-u\fR flag causes it to also update the files in the work tree with the result of the merge\&.
 .sp
 Trivial merges are done by \fIgit read\-tree\fR itself\&. Only conflicting paths will be in unmerged state when \fIgit read\-tree\fR returns\&.
 .SH "OPTIONS"
@@ -127,21 +127,21 @@ when both sides add a path identically\&. The resolution is to add that path\&.
 \-\-prefix=<prefix>/
 .RS 4
 Keep the current index contents, and read the contents of the named tree\-ish under the directory at
-<prefix>\&. The command will refuse to overwrite entries that already existed in the original index file\&. Note that the
-<prefix>/
+\fB<prefix>\fR\&. The command will refuse to overwrite entries that already existed in the original index file\&. Note that the
+\fB<prefix>/\fR
 value must end with a slash\&.
 .RE
 .PP
 \-\-exclude\-per\-directory=<gitignore>
 .RS 4
 When running the command with
-\-u
+\fB\-u\fR
 and
-\-m
+\fB\-m\fR
 options, the merge result may need to overwrite paths that are not tracked in the current branch\&. The command usually refuses to proceed with the merge to avoid losing such a path\&. However this safety valve sometimes gets in the way\&. For example, it often happens that the other branch added a file that used to be a generated file in your branch, and the safety valve triggers when you try to switch to that branch after you ran
-make
+\fBmake\fR
 but before running
-make clean
+\fBmake clean\fR
 to remove the generated file\&. This option tells the command to read per\-directory exclude file (usually
 \fI\&.gitignore\fR) and allows such an untracked but explicitly ignored file to be overwritten\&.
 .RE
@@ -149,13 +149,13 @@ to remove the generated file\&. This option tells the command to read per\-direc
 \-\-index\-output=<file>
 .RS 4
 Instead of writing the results out to
-$GIT_INDEX_FILE, write the resulting index in the named file\&. While the command is operating, the original index file is locked with the same mechanism as usual\&. The file must allow to be rename(2)ed into from a temporary file that is created next to the usual index file; typically this means it needs to be on the same filesystem as the index file itself, and you need write permission to the directories the index file and index output file are located in\&.
+\fB$GIT_INDEX_FILE\fR, write the resulting index in the named file\&. While the command is operating, the original index file is locked with the same mechanism as usual\&. The file must allow to be rename(2)ed into from a temporary file that is created next to the usual index file; typically this means it needs to be on the same filesystem as the index file itself, and you need write permission to the directories the index file and index output file are located in\&.
 .RE
 .PP
 \-\-no\-sparse\-checkout
 .RS 4
 Disable sparse checkout support even if
-core\&.sparseCheckout
+\fBcore\&.sparseCheckout\fR
 is true\&.
 .RE
 .PP
@@ -170,17 +170,17 @@ The id of the tree object(s) to be read/merged\&.
 .RE
 .SH "MERGING"
 .sp
-If \-m is specified, \fIgit read\-tree\fR can perform 3 kinds of merge, a single tree merge if only 1 tree is given, a fast\-forward merge with 2 trees, or a 3\-way merge if 3 trees are provided\&.
+If \fB\-m\fR is specified, \fIgit read\-tree\fR can perform 3 kinds of merge, a single tree merge if only 1 tree is given, a fast\-forward merge with 2 trees, or a 3\-way merge if 3 trees are provided\&.
 .SS "Single Tree Merge"
 .sp
-If only 1 tree is specified, \fIgit read\-tree\fR operates as if the user did not specify \-m, except that if the original index has an entry for a given pathname, and the contents of the path match with the tree being read, the stat info from the index is used\&. (In other words, the index\(cqs stat()s take precedence over the merged tree\(cqs)\&.
+If only 1 tree is specified, \fIgit read\-tree\fR operates as if the user did not specify \fB\-m\fR, except that if the original index has an entry for a given pathname, and the contents of the path match with the tree being read, the stat info from the index is used\&. (In other words, the index\(cqs stat()s take precedence over the merged tree\(cqs)\&.
 .sp
-That means that if you do a git read\-tree \-m <newtree> followed by a git checkout\-index \-f \-u \-a, the \fIgit checkout\-index\fR only checks out the stuff that really changed\&.
+That means that if you do a \fBgit read\-tree \-m <newtree>\fR followed by a \fBgit checkout\-index \-f \-u \-a\fR, the \fIgit checkout\-index\fR only checks out the stuff that really changed\&.
 .sp
 This is used to avoid unnecessary false hits when \fIgit diff\-files\fR is run after \fIgit read\-tree\fR\&.
 .SS "Two Tree Merge"
 .sp
-Typically, this is invoked as git read\-tree \-m $H $M, where $H is the head commit of the current repository, and $M is the head of a foreign tree, which is simply ahead of $H (i\&.e\&. we are in a fast\-forward situation)\&.
+Typically, this is invoked as \fBgit read\-tree \-m $H $M\fR, where $H is the head commit of the current repository, and $M is the head of a foreign tree, which is simply ahead of $H (i\&.e\&. we are in a fast\-forward situation)\&.
 .sp
 When two trees are specified, the user is telling \fIgit read\-tree\fR the following:
 .sp
@@ -206,7 +206,7 @@ The current index and work tree is derived from $H, but the user may have local 
 The user wants to fast\-forward to $M\&.
 .RE
 .sp
-In this case, the git read\-tree \-m $H $M command makes sure that no local change is lost as the result of this "merge"\&. Here are the "carry forward" rules, where "I" denotes the index, "clean" means that index and work tree coincide, and "exists"/"nothing" refer to the presence of a path in the specified commit:
+In this case, the \fBgit read\-tree \-m $H $M\fR command makes sure that no local change is lost as the result of this "merge"\&. Here are the "carry forward" rules, where "I" denotes the index, "clean" means that index and work tree coincide, and "exists"/"nothing" refer to the presence of a path in the specified commit:
 .sp
 .if n \{\
 .RS 4
@@ -297,7 +297,7 @@ In this case, the git read\-tree \-m $H $M command makes sure that no local chan
 .sp
 In all "keep index" cases, the index entry stays as in the original index file\&. If the entry is not up to date, \fIgit read\-tree\fR keeps the copy in the work tree intact when operating under the \-u flag\&.
 .sp
-When this form of \fIgit read\-tree\fR returns successfully, you can see which of the "local changes" that you made were carried forward by running git diff\-index \-\-cached $M\&. Note that this does not necessarily match what git diff\-index \-\-cached $H would have produced before such a two tree merge\&. This is because of cases 18 and 19 \-\-\- if you already had the changes in $M (e\&.g\&. maybe you picked it up via e\-mail in a patch form), git diff\-index \-\-cached $H would have told you about the change before this merge, but it would not show in git diff\-index \-\-cached $M output after the two\-tree merge\&.
+When this form of \fIgit read\-tree\fR returns successfully, you can see which of the "local changes" that you made were carried forward by running \fBgit diff\-index \-\-cached $M\fR\&. Note that this does not necessarily match what \fBgit diff\-index \-\-cached $H\fR would have produced before such a two tree merge\&. This is because of cases 18 and 19 \-\-\- if you already had the changes in $M (e\&.g\&. maybe you picked it up via e\-mail in a patch form), \fBgit diff\-index \-\-cached $H\fR would have told you about the change before this merge, but it would not show in \fBgit diff\-index \-\-cached $M\fR output after the two\-tree merge\&.
 .sp
 Case 3 is slightly tricky and needs explanation\&. The result from this rule logically should be to remove the path if the user staged the removal of the path and then switching to a new branch\&. That however will prevent the initial checkout from happening, so the rule is modified to use M (new tree) only when the content of the index is empty\&. Otherwise the removal of the path is kept as long as $H and $M are the same\&.
 .SS "3\-Way Merge"
@@ -488,11 +488,11 @@ In other words, there is no need to worry about what exists only in the working 
 .sp
 "Sparse checkout" allows populating the working directory sparsely\&. It uses the skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file in the working directory is worth looking at\&.
 .sp
-\fIgit read\-tree\fR and other merge\-based commands (\fIgit merge\fR, \fIgit checkout\fR\&...) can help maintaining the skip\-worktree bitmap and working directory update\&. $GIT_DIR/info/sparse\-checkout is used to define the skip\-worktree reference bitmap\&. When \fIgit read\-tree\fR needs to update the working directory, it resets the skip\-worktree bit in the index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, skip\-worktree will not be set on that entry\&. Otherwise, skip\-worktree will be set\&.
+\fIgit read\-tree\fR and other merge\-based commands (\fIgit merge\fR, \fIgit checkout\fR\&...) can help maintaining the skip\-worktree bitmap and working directory update\&. \fB$GIT_DIR/info/sparse\-checkout\fR is used to define the skip\-worktree reference bitmap\&. When \fIgit read\-tree\fR needs to update the working directory, it resets the skip\-worktree bit in the index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, skip\-worktree will not be set on that entry\&. Otherwise, skip\-worktree will be set\&.
 .sp
 Then it compares the new skip\-worktree value with the previous one\&. If skip\-worktree turns from set to unset, it will add the corresponding file back\&. If it turns from unset to set, that file will be removed\&.
 .sp
-While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are in, you can also specify what files are \fInot\fR in, using negate patterns\&. For example, to remove the file unwanted:
+While \fB$GIT_DIR/info/sparse\-checkout\fR is usually used to specify what files are in, you can also specify what files are \fInot\fR in, using negate patterns\&. For example, to remove the file \fBunwanted\fR:
 .sp
 .if n \{\
 .RS 4
@@ -506,7 +506,7 @@ While $GIT_DIR/info/sparse\-checkout is usually used to specify what files are i
 .\}
 .sp
 .sp
-Another tricky thing is fully repopulating the working directory when you no longer want sparse checkout\&. You cannot just disable "sparse checkout" because skip\-worktree bits are still in the index and your working directory is still sparsely populated\&. You should re\-populate the working directory with the $GIT_DIR/info/sparse\-checkout file content as follows:
+Another tricky thing is fully repopulating the working directory when you no longer want sparse checkout\&. You cannot just disable "sparse checkout" because skip\-worktree bits are still in the index and your working directory is still sparsely populated\&. You should re\-populate the working directory with the \fB$GIT_DIR/info/sparse\-checkout\fR file content as follows:
 .sp
 .if n \{\
 .RS 4
@@ -519,7 +519,7 @@ Another tricky thing is fully repopulating the working directory when you no lon
 .\}
 .sp
 .sp
-Then you can disable sparse checkout\&. Sparse checkout support in \fIgit read\-tree\fR and similar commands is disabled by default\&. You need to turn core\&.sparseCheckout on in order to have sparse checkout support\&.
+Then you can disable sparse checkout\&. Sparse checkout support in \fIgit read\-tree\fR and similar commands is disabled by default\&. You need to turn \fBcore\&.sparseCheckout\fR on in order to have sparse checkout support\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-write-tree\fR(1); \fBgit-ls-files\fR(1); \fBgitignore\fR(5)
