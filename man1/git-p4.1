@@ -2,12 +2,12 @@
 .\"     Title: git-p4
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 06/27/2016
+.\"      Date: 07/13/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.9.0.137.gcf4c2cf
+.\"    Source: Git 2.9.1.273.g79ed43c
 .\"  Language: English
 .\"
-.TH "GIT\-P4" "1" "06/27/2016" "Git 2\&.9\&.0\&.137\&.gcf4c2cf" "Git Manual"
+.TH "GIT\-P4" "1" "07/13/2016" "Git 2\&.9\&.1\&.273\&.g79ed43c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -234,11 +234,11 @@ $ git p4 sync //path/in/your/perforce/depot
 .\}
 .sp
 .sp
-This imports the specified depot into \fIrefs/remotes/p4/master\fR in an existing Git repository\&. The \fI\-\-branch\fR option can be used to specify a different branch to be used for the p4 content\&.
+This imports the specified depot into \fIrefs/remotes/p4/master\fR in an existing Git repository\&. The \fB\-\-branch\fR option can be used to specify a different branch to be used for the p4 content\&.
 .sp
 If a Git repository includes branches \fIrefs/remotes/origin/p4\fR, these will be fetched and consulted first during a \fIgit p4 sync\fR\&. Since importing directly from p4 is considerably slower than pulling changes from a Git remote, this can be useful in a multi\-developer environment\&.
 .sp
-If there are multiple branches, doing \fIgit p4 sync\fR will automatically use the "BRANCH DETECTION" algorithm to try to partition new changes into the right branch\&. This can be overridden with the \fI\-\-branch\fR option to specify just a single branch to update\&.
+If there are multiple branches, doing \fIgit p4 sync\fR will automatically use the "BRANCH DETECTION" algorithm to try to partition new changes into the right branch\&. This can be overridden with the \fB\-\-branch\fR option to specify just a single branch to update\&.
 .SS "Rebase"
 .sp
 A common working pattern is to fetch the latest changes from the p4 depot and merge them with local uncommitted changes\&. Often, the p4 repository is the ultimate location for all code, thus a rebase workflow makes sense\&. This command does \fIgit p4 sync\fR followed by \fIgit rebase\fR to move local commits on top of updated p4 changes\&.
@@ -283,9 +283,9 @@ $ git p4 submit topicbranch
 .\}
 .sp
 .sp
-The upstream reference is generally \fIrefs/remotes/p4/master\fR, but can be overridden using the \fI\-\-origin=\fR command\-line option\&.
+The upstream reference is generally \fIrefs/remotes/p4/master\fR, but can be overridden using the \fB\-\-origin=\fR command\-line option\&.
 .sp
-The p4 changes will be created as the user invoking \fIgit p4 submit\fR\&. The \fI\-\-preserve\-user\fR option will cause ownership to be modified according to the author of the Git commit\&. This option requires admin privileges in p4, which can be granted using \fIp4 protect\fR\&.
+The p4 changes will be created as the user invoking \fIgit p4 submit\fR\&. The \fB\-\-preserve\-user\fR option will cause ownership to be modified according to the author of the Git commit\&. This option requires admin privileges in p4, which can be granted using \fIp4 protect\fR\&.
 .SH "OPTIONS"
 .SS "General options"
 .sp
@@ -365,7 +365,7 @@ By default, p4 branches are stored in
 \fBgit-branch\fR(1)
 and other commands\&. This option instead puts p4 branches in
 \fIrefs/heads/p4/\fR\&. Note that future sync operations must specify
-\fI\-\-import\-local\fR
+\fB\-\-import\-local\fR
 as well so that they can find the p4 branches in refs/heads\&.
 .RE
 .PP
@@ -396,7 +396,7 @@ The mapping of file names from the p4 depot path to Git, by default, involves re
 \fI//depot/main/foo/bar\&.c\fR, when imported from
 \fI//depot/main/\fR, becomes
 \fIfoo/bar\&.c\fR\&. With
-\fI\-\-keep\-path\fR, the Git path is instead
+\fB\-\-keep\-path\fR, the Git path is instead
 \fIdepot/main/foo/bar\&.c\fR\&.
 .RE
 .PP
@@ -430,7 +430,7 @@ These options can be used to modify \fIgit p4 submit\fR behavior\&.
 \-\-origin <commit>
 .RS 4
 Upstream location from which commits are identified to submit to p4\&. By default, this is the most recent p4 commit reachable from
-\fIHEAD\fR\&.
+\fBHEAD\fR\&.
 .RE
 .PP
 \-M
@@ -502,14 +502,14 @@ Import only changes 1 through 6\&.
 "//depot/proj1@all //depot/proj2@all"
 .RS 4
 Import all changes from both named depot paths into a single repository\&. Only files below these directories are included\&. There is not a subdirectory in Git for each "proj1" and "proj2"\&. You must use the
-\fI\-\-destination\fR
+\fB\-\-destination\fR
 option when specifying more than one depot path\&. The revision specifier must be specified identically on each depot path\&. If there are files in the depot paths with the same name, the path with the most recently updated version of the file is the one that appears in Git\&.
 .RE
 .sp
 See \fIp4 help revisions\fR for the full syntax of p4 revision specifiers\&.
 .SH "CLIENT SPEC"
 .sp
-The p4 client specification is maintained with the \fIp4 client\fR command and contains among other fields, a View that specifies how the depot is mapped into the client repository\&. The \fIclone\fR and \fIsync\fR commands can consult the client spec when given the \fI\-\-use\-client\-spec\fR option or when the useClientSpec variable is true\&. After \fIgit p4 clone\fR, the useClientSpec variable is automatically set in the repository configuration file\&. This allows future \fIgit p4 submit\fR commands to work properly; the submit command looks only at the variable and does not have a command\-line option\&.
+The p4 client specification is maintained with the \fIp4 client\fR command and contains among other fields, a View that specifies how the depot is mapped into the client repository\&. The \fIclone\fR and \fIsync\fR commands can consult the client spec when given the \fB\-\-use\-client\-spec\fR option or when the useClientSpec variable is true\&. After \fIgit p4 clone\fR, the useClientSpec variable is automatically set in the repository configuration file\&. This allows future \fIgit p4 submit\fR commands to work properly; the submit command looks only at the variable and does not have a command\-line option\&.
 .sp
 The full syntax for a p4 view is documented in \fIp4 help views\fR\&. \fIgit p4\fR knows only a subset of the view syntax\&. It understands multi\-line mappings, overlays with \fI+\fR, exclusions with \fI\-\fR and double\-quotes around whitespace\&. Of the possible wildcards, \fIgit p4\fR only handles \fI\&...\fR, and only when it is at the end of the path\&. \fIgit p4\fR will complain if it encounters an unhandled wildcard\&.
 .sp
@@ -520,7 +520,7 @@ The name of the client can be given to \fIgit p4\fR in multiple ways\&. The vari
 .sp
 P4 does not have the same concept of a branch as Git\&. Instead, p4 organizes its content as a directory tree, where by convention different logical branches are in different locations in the tree\&. The \fIp4 branch\fR command is used to maintain mappings between different areas in the tree, and indicate related content\&. \fIgit p4\fR can use these mappings to determine branch relationships\&.
 .sp
-If you have a repository where all the branches of interest exist as subdirectories of a single depot path, you can use \fI\-\-detect\-branches\fR when cloning or syncing to have \fIgit p4\fR automatically find subdirectories in p4, and to generate these as branches in Git\&.
+If you have a repository where all the branches of interest exist as subdirectories of a single depot path, you can use \fB\-\-detect\-branches\fR when cloning or syncing to have \fIgit p4\fR automatically find subdirectories in p4, and to generate these as branches in Git\&.
 .sp
 For example, if the P4 repository structure is:
 .sp
@@ -675,7 +675,7 @@ Only p4 labels matching this regular expression will be imported\&. The default 
 git\-p4\&.useClientSpec
 .RS 4
 Specify that the p4 client spec should be used to identify p4 depot paths of interest\&. This is equivalent to specifying the option
-\fI\-\-use\-client\-spec\fR\&. See the "CLIENT SPEC" section above\&. This variable is a boolean, not the name of a p4 client\&.
+\fB\-\-use\-client\-spec\fR\&. See the "CLIENT SPEC" section above\&. This variable is a boolean, not the name of a p4 client\&.
 .RE
 .PP
 git\-p4\&.pathEncoding
