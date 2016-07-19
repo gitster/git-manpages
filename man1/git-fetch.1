@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 07/13/2016
+.\"      Date: 07/19/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.9.1.273.g79ed43c
+.\"    Source: Git 2.9.2.368.g08bb350
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "07/13/2016" "Git 2\&.9\&.1\&.273\&.g79ed43c" "Git Manual"
+.TH "GIT\-FETCH" "1" "07/19/2016" "Git 2\&.9\&.2\&.368\&.g08bb350" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -680,6 +680,96 @@ the refs that are fetched are stored by acting as a mapping\&.
 .RE
 .sp
 The latter use of the \fBremote\&.<repository>\&.fetch\fR values can be overridden by giving the \fB\-\-refmap=<refspec>\fR parameter(s) on the command line\&.
+.SH "OUTPUT"
+.sp
+The output of "git fetch" depends on the transport method used; this section describes the output when fetching over the Git protocol (either locally or via ssh) and Smart HTTP protocol\&.
+.sp
+The status of the fetch is output in tabular form, with each line representing the status of a single ref\&. Each line is of the form:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+ <flag> <summary> <from> \-> <to> [<reason>]
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+The status of up\-to\-date refs is shown only if the \-\-verbose option is used\&.
+.sp
+In compact output mode, specified with configuration variable fetch\&.output, if either entire \fB<from>\fR or \fB<to>\fR is found in the other string, it will be substituted with \fB*\fR in the other string\&. For example, \fBmaster \-> origin/master\fR becomes \fBmaster \-> origin/*\fR\&.
+.PP
+flag
+.RS 4
+A single character indicating the status of the ref:
+.PP
+(space)
+.RS 4
+for a successfully fetched fast\-forward;
+.RE
+.PP
+\fB+\fR
+.RS 4
+for a successful forced update;
+.RE
+.PP
+\fB\-\fR
+.RS 4
+for a successfully pruned ref;
+.RE
+.PP
+\fBt\fR
+.RS 4
+for a successful tag update;
+.RE
+.PP
+\fB*\fR
+.RS 4
+for a successfully fetched new ref;
+.RE
+.PP
+\fB!\fR
+.RS 4
+for a ref that was rejected or failed to update; and
+.RE
+.PP
+\fB=\fR
+.RS 4
+for a ref that was up to date and did not need fetching\&.
+.RE
+.RE
+.PP
+summary
+.RS 4
+For a successfully fetched ref, the summary shows the old and new values of the ref in a form suitable for using as an argument to
+\fBgit log\fR
+(this is
+\fB<old>\&.\&.<new>\fR
+in most cases, and
+\fB<old>\&.\&.\&.<new>\fR
+for forced non\-fast\-forward updates)\&.
+.RE
+.PP
+from
+.RS 4
+The name of the remote ref being fetched from, minus its
+\fBrefs/<type>/\fR
+prefix\&. In the case of deletion, the name of the remote ref is "(none)"\&.
+.RE
+.PP
+to
+.RS 4
+The name of the local ref being updated, minus its
+\fBrefs/<type>/\fR
+prefix\&.
+.RE
+.PP
+reason
+.RS 4
+A human\-readable explanation\&. In the case of successfully fetched refs, no explanation is needed\&. For a failed ref, the reason for failure is described\&.
+.RE
 .SH "EXAMPLES"
 .sp
 .RS 4
