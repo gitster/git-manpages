@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 07/06/2016
+.\"      Date: 07/28/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.9.0.243.g5c589a7
+.\"    Source: Git 2.9.2.517.gf8f7adc
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "07/06/2016" "Git 2\&.9\&.0\&.243\&.g5c589a7" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "07/28/2016" "Git 2\&.9\&.2\&.517\&.gf8f7adc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,9 @@ git-worktree \- Manage multiple working trees
 .nf
 \fIgit worktree add\fR [\-f] [\-\-detach] [\-\-checkout] [\-b <new\-branch>] <path> [<branch>]
 \fIgit worktree list\fR [\-\-porcelain]
+\fIgit worktree lock\fR [\-\-reason <string>] <worktree>
 \fIgit worktree prune\fR [\-n] [\-v] [\-\-expire <expire>]
+\fIgit worktree unlock\fR <worktree>
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -47,7 +49,7 @@ When you are done with a linked working tree you can simply delete it\&. The wor
 .sp
 If you move a linked working tree, you need to manually update the administrative files so that they do not get pruned automatically\&. See section "DETAILS" for more information\&.
 .sp
-If a linked working tree is stored on a portable device or network share which is not always mounted, you can prevent its administrative files from being pruned by creating a file named \fIlocked\fR alongside the other administrative files, optionally containing a plain text reason that pruning should be suppressed\&. See section "DETAILS" for more information\&.
+If a linked working tree is stored on a portable device or network share which is not always mounted, you can prevent its administrative files from being pruned by issuing the \fBgit worktree lock\fR command, optionally specifying \fB\-\-reason\fR to explain why the working tree is locked\&.
 .SH "COMMANDS"
 .PP
 add <path> [<branch>]
@@ -82,9 +84,20 @@ List details of each worktree\&. The main worktree is listed first, followed by 
 if none)\&.
 .RE
 .PP
+lock
+.RS 4
+If a working tree is on a portable device or network share which is not always mounted, lock it to prevent its administrative files from being pruned automatically\&. This also prevents it from being moved or deleted\&. Optionally, specify a reason for the lock with
+\fB\-\-reason\fR\&.
+.RE
+.PP
 prune
 .RS 4
 Prune working tree information in $GIT_DIR/worktrees\&.
+.RE
+.PP
+unlock
+.RS 4
+Unlock a working tree, allowing it to be pruned, moved or deleted\&.
 .RE
 .SH "OPTIONS"
 .PP
@@ -158,6 +171,19 @@ With
 With
 \fBprune\fR, only expire unused working trees older than <time>\&.
 .RE
+.PP
+\-\-reason <string>
+.RS 4
+With
+\fBlock\fR, an explanation why the working tree is locked\&.
+.RE
+.PP
+<worktree>
+.RS 4
+Working trees can be identified by path, either relative or absolute\&.
+.sp
+If the last path components in the working tree\(cqs path is unique among working trees, it can be used to identify worktrees\&. For example if you only have to working trees at "/abc/def/ghi" and "/abc/def/ggg", then "ghi" or "def/ghi" is enough to point to the former working tree\&.
+.RE
 .SH "DETAILS"
 .sp
 Each linked working tree has a private sub\-directory in the repository\(cqs $GIT_DIR/worktrees directory\&. The private sub\-directory\(cqs name is usually the base name of the linked working tree\(cqs path, possibly appended with a number to make it unique\&. For example, when \fB$GIT_DIR=/path/main/\&.git\fR the command \fBgit worktree add /path/other/test\-next next\fR creates the linked working tree in \fB/path/other/test\-next\fR and also creates a \fB$GIT_DIR/worktrees/test\-next\fR directory (or \fB$GIT_DIR/worktrees/test\-next1\fR if \fBtest\-next\fR is already taken)\&.
@@ -170,7 +196,7 @@ See \fBgitrepository-layout\fR(5) for more information\&. The rule of thumb is d
 .sp
 If you move a linked working tree, you need to update the \fIgitdir\fR file in the entry\(cqs directory\&. For example, if a linked working tree is moved to \fB/newpath/test\-next\fR and its \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR, then update \fB/path/main/\&.git/worktrees/test\-next/gitdir\fR to reference \fB/newpath/test\-next\fR instead\&.
 .sp
-To prevent a $GIT_DIR/worktrees entry from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), add a file named \fIlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR then a file named \fB/path/main/\&.git/worktrees/test\-next/locked\fR will prevent the \fBtest\-next\fR entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
+To prevent a $GIT_DIR/worktrees entry from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), use the \fBgit worktree lock\fR command, which adds a file named \fIlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR then a file named \fB/path/main/\&.git/worktrees/test\-next/locked\fR will prevent the \fBtest\-next\fR entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
 .SH "LIST OUTPUT FORMAT"
 .sp
 The worktree list command has two output formats\&. The default format shows the details on a single line with columns\&. For example:
@@ -260,18 +286,6 @@ to remove a linked working tree and its administrative files (and warn if the wo
 .\}
 \fBmv\fR
 to move or rename a working tree and update its administrative files
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBlock\fR
-to prevent automatic pruning of administrative files (for instance, for a working tree on a portable device)
 .RE
 .SH "GIT"
 .sp
