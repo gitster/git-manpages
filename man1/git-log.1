@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/03/2016
+.\"      Date: 08/08/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.9.2.566.g80460f5
+.\"    Source: Git 2.9.2.664.ga0a1831
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "08/03/2016" "Git 2\&.9\&.2\&.566\&.g80460f5" "Git Manual"
+.TH "GIT\-LOG" "1" "08/08/2016" "Git 2\&.9\&.2\&.664\&.ga0a1831" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -516,12 +516,64 @@ With
 \fB\-\-pretty\fR
 format other than
 \fBoneline\fR
-(for obvious reasons), this causes the output to have two extra lines of information taken from the reflog\&. By default,
-\fIcommit@{Nth}\fR
-notation is used in the output\&. When the starting commit is specified as
-\fIcommit@{now}\fR, output also uses
-\fIcommit@{timestamp}\fR
-notation instead\&. Under
+(for obvious reasons), this causes the output to have two extra lines of information taken from the reflog\&. The reflog designator in the output may be shown as
+\fBref@{Nth}\fR
+(where
+\fBNth\fR
+is the reverse\-chronological index in the reflog) or as
+\fBref@{timestamp}\fR
+(with the timestamp for that entry), depending on a few rules:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+If the starting point is specified as
+\fBref@{Nth}\fR, show the index format\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+If the starting point was specified as
+\fBref@{now}\fR, show the timestamp format\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+If neither was used, but
+\fB\-\-date\fR
+was given on the command line, show the timestamp in the format requested by
+\fB\-\-date\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+Otherwise, show the index format\&.
+.RE
+.sp
+Under
 \fB\-\-pretty=oneline\fR, the commit message is prefixed with this information on the same line\&. This option cannot be combined with
 \fB\-\-reverse\fR\&. See also
 \fBgit-reflog\fR(1)\&.
@@ -1287,10 +1339,8 @@ is appended to the format (e\&.g\&.,
 \fB\-\-date=relative\fR
 shows dates relative to the current time, e\&.g\&. \(lq2 hours ago\(rq\&. The
 \fB\-local\fR
-option cannot be used with
-\fB\-\-raw\fR
-or
-\fB\-\-relative\fR\&.
+option has no effect for
+\fB\-\-date=relative\fR\&.
 .sp
 \fB\-\-date=local\fR
 is an alias for
@@ -1349,9 +1399,20 @@ shows only the date, but not the time, in
 format\&.
 .sp
 \fB\-\-date=raw\fR
-shows the date in the internal raw Git format
-\fB%s %z\fR
-format\&.
+shows the date as seconds since the epoch (1970\-01\-01 00:00:00 UTC), followed by a space, and then the timezone as an offset from UTC (a
+\fB+\fR
+or
+\fB\-\fR
+with four digits; the first two are hours, and the second two are minutes)\&. I\&.e\&., as if the timestamp were formatted with
+\fBstrftime("%s %z")\fR)\&. Note that the
+\fB\-local\fR
+option does not affect the seconds\-since\-epoch value (which is always measured in UTC), but does switch the accompanying timezone value\&.
+.sp
+\fB\-\-date=unix\fR
+shows the date as a Unix epoch timestamp (seconds since 1970)\&. As with
+\fB\-\-raw\fR, this is always in UTC and therefore
+\fB\-local\fR
+has no effect\&.
 .sp
 \fB\-\-date=format:\&.\&.\&.\fR
 feeds the format
@@ -2229,6 +2290,15 @@ or
 .\}
 \fI%gD\fR: reflog selector, e\&.g\&.,
 \fBrefs/stash@{1}\fR
+or
+\fBrefs/stash@{2 minutes ago\fR}; the format follows the rules described for the
+\fB\-g\fR
+option\&. The portion before the
+\fB@\fR
+is the refname as given on the command line (so
+\fBgit log \-g refs/heads/master\fR
+would yield
+\fBrefs/heads/master@{0}\fR)\&.
 .RE
 .sp
 .RS 4
@@ -2239,8 +2309,11 @@ or
 .sp -1
 .IP \(bu 2.3
 .\}
-\fI%gd\fR: shortened reflog selector, e\&.g\&.,
-\fBstash@{1}\fR
+\fI%gd\fR: shortened reflog selector; same as
+\fB%gD\fR, but the refname portion is shortened for human readability (so
+\fBrefs/heads/master\fR
+becomes just
+\fBmaster\fR)\&.
 .RE
 .sp
 .RS 4
