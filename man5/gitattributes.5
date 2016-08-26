@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/24/2016
+.\"      Date: 08/26/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.10.0.rc1
+.\"    Source: Git 2.10.0.rc2
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "08/24/2016" "Git 2\&.10\&.0\&.rc1" "Git Manual"
+.TH "GITATTRIBUTES" "5" "08/26/2016" "Git 2\&.10\&.0\&.rc2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -190,7 +190,36 @@ crlf=input      eol=lf
 .sp
 While Git normally leaves file contents alone, it can be configured to normalize line endings to LF in the repository and, optionally, to convert them to CRLF when files are checked out\&.
 .sp
-Here is an example that will make Git normalize \&.txt, \&.vcproj and \&.sh files, ensure that \&.vcproj files have CRLF and \&.sh files have LF in the working directory, and prevent \&.jpg files from being normalized regardless of their content\&.
+If you simply want to have CRLF line endings in your working directory regardless of the repository you are working with, you can set the config variable "core\&.autocrlf" without using any attributes\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[core]
+        autocrlf = true
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+This does not force normalization of text files, but does ensure that text files that you introduce to the repository have their line endings normalized to LF when they are added, and that files that are already normalized in the repository stay normalized\&.
+.sp
+If you want to ensure that text files that any contributor introduces to the repository have their line endings normalized, you can set the \fBtext\fR attribute to "auto" for \fIall\fR files\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+*       text=auto
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+The attributes allow a fine\-grained control, how the line endings are converted\&. Here is an example that will make Git normalize \&.txt, \&.vcproj and \&.sh files, ensure that \&.vcproj files have CRLF and \&.sh files have LF in the working directory, and prevent \&.jpg files from being normalized regardless of their content\&.
 .sp
 .if n \{\
 .RS 4
@@ -206,39 +235,6 @@ Here is an example that will make Git normalize \&.txt, \&.vcproj and \&.sh file
 .RE
 .\}
 .sp
-.sp
-Other source code management systems normalize all text files in their repositories, and there are two ways to enable similar automatic normalization in Git\&.
-.sp
-If you simply want to have CRLF line endings in your working directory regardless of the repository you are working with, you can set the config variable "core\&.autocrlf" without using any attributes\&.
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-[core]
-        autocrlf = true
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.sp
-This does not force normalization of all text files, but does ensure that text files that you introduce to the repository have their line endings normalized to LF when they are added, and that files that are already normalized in the repository stay normalized\&.
-.sp
-If you want to interoperate with a source code management system that enforces end\-of\-line normalization, or you simply want all text files in your repository to be normalized, you should instead set the \fBtext\fR attribute to "auto" for \fIall\fR files\&.
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-*       text=auto
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.sp
-This ensures that all files that Git considers to be text will have normalized (LF) line endings in the repository\&. The \fBcore\&.eol\fR configuration variable controls which line endings Git will use for normalized files in your working directory; the default is to use the native line ending for your platform, or CRLF if \fBcore\&.autocrlf\fR is set\&.
 .if n \{\
 .sp
 .\}
@@ -252,15 +248,17 @@ This ensures that all files that Git considers to be text will have normalized (
 .ps -1
 .br
 .sp
-When \fBtext=auto\fR normalization is enabled in an existing repository, any text files containing CRLFs should be normalized\&. If they are not they will be normalized the next time someone tries to change them, causing unfortunate misattribution\&. From a clean working directory:
+When \fBtext=auto\fR conversion is enabled in a cross\-platform project using push and pull to a central repository the text files containing CRLFs should be normalized\&.
 .sp .5v
 .RE
+.sp
+From a clean working directory:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-$ echo "* text=auto" >>\&.gitattributes
+$ echo "* text=auto" >\&.gitattributes
 $ rm \&.git/index     # Remove the index to force Git to
 $ git reset         # re\-scan the working directory
 $ git status        # Show files that will be normalized
