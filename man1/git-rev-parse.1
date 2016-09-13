@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/02/2016
+.\"      Date: 09/12/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.10.0
+.\"    Source: Git 2.10.0.129.g35f6318
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "09/02/2016" "Git 2\&.10\&.0" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "09/12/2016" "Git 2\&.10\&.0\&.129\&.g35f631" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -776,28 +776,79 @@ J = F^2  = B^3^2   = A^^3^2
 .\}
 .SH "SPECIFYING RANGES"
 .sp
-History traversing commands such as \fBgit log\fR operate on a set of commits, not just a single commit\&. To these commands, specifying a single revision with the notation described in the previous section means the set of commits reachable from that commit, following the commit ancestry chain\&.
+History traversing commands such as \fBgit log\fR operate on a set of commits, not just a single commit\&.
 .sp
-To exclude commits reachable from a commit, a prefix \fI^\fR notation is used\&. E\&.g\&. \fI^r1 r2\fR means commits reachable from \fIr2\fR but exclude the ones reachable from \fIr1\fR\&.
+For these commands, specifying a single revision, using the notation described in the previous section, means the set of commits \fBreachable\fR from the given commit\&.
 .sp
-This set operation appears so often that there is a shorthand for it\&. When you have two commits \fIr1\fR and \fIr2\fR (named according to the syntax explained in SPECIFYING REVISIONS above), you can ask for commits that are reachable from r2 excluding those that are reachable from r1 by \fI^r1 r2\fR and it can be written as \fIr1\&.\&.r2\fR\&.
+A commit\(cqs reachable set is the commit itself and the commits in its ancestry chain\&.
+.SS "Commit Exclusions"
+.PP
+\fI^<rev>\fR (caret) Notation
+.RS 4
+To exclude commits reachable from a commit, a prefix
+\fI^\fR
+notation is used\&. E\&.g\&.
+\fI^r1 r2\fR
+means commits reachable from
+\fIr2\fR
+but exclude the ones reachable from
+\fIr1\fR
+(i\&.e\&.
+\fIr1\fR
+and its ancestors)\&.
+.RE
+.SS "Dotted Range Notations"
+.PP
+The \fI\&.\&.\fR (two\-dot) Range Notation
+.RS 4
+The
+\fI^r1 r2\fR
+set operation appears so often that there is a shorthand for it\&. When you have two commits
+\fIr1\fR
+and
+\fIr2\fR
+(named according to the syntax explained in SPECIFYING REVISIONS above), you can ask for commits that are reachable from r2 excluding those that are reachable from r1 by
+\fI^r1 r2\fR
+and it can be written as
+\fIr1\&.\&.r2\fR\&.
+.RE
+.PP
+The \fI\&...\fR (three dot) Symmetric Difference Notation
+.RS 4
+A similar notation
+\fIr1\&.\&.\&.r2\fR
+is called symmetric difference of
+\fIr1\fR
+and
+\fIr2\fR
+and is defined as
+\fIr1 r2 \-\-not $(git merge\-base \-\-all r1 r2)\fR\&. It is the set of commits that are reachable from either one of
+\fIr1\fR
+(left side) or
+\fIr2\fR
+(right side) but not from both\&.
+.RE
 .sp
-A similar notation \fIr1\&.\&.\&.r2\fR is called symmetric difference of \fIr1\fR and \fIr2\fR and is defined as \fIr1 r2 \-\-not $(git merge\-base \-\-all r1 r2)\fR\&. It is the set of commits that are reachable from either one of \fIr1\fR or \fIr2\fR but not from both\&.
+In these two shorthand notations, you can omit one end and let it default to HEAD\&. For example, \fIorigin\&.\&.\fR is a shorthand for \fIorigin\&.\&.HEAD\fR and asks "What did I do since I forked from the origin branch?" Similarly, \fI\&.\&.origin\fR is a shorthand for \fIHEAD\&.\&.origin\fR and asks "What did the origin do since I forked from them?" Note that \fI\&.\&.\fR would mean \fIHEAD\&.\&.HEAD\fR which is an empty range that is both reachable and unreachable from HEAD\&.
+.SS "Other <rev>^ Parent Shorthand Notations"
 .sp
-In these two shorthands, you can omit one end and let it default to HEAD\&. For example, \fIorigin\&.\&.\fR is a shorthand for \fIorigin\&.\&.HEAD\fR and asks "What did I do since I forked from the origin branch?" Similarly, \fI\&.\&.origin\fR is a shorthand for \fIHEAD\&.\&.origin\fR and asks "What did the origin do since I forked from them?" Note that \fI\&.\&.\fR would mean \fIHEAD\&.\&.HEAD\fR which is an empty range that is both reachable and unreachable from HEAD\&.
+Two other shorthands exist, particularly useful for merge commits, for naming a set that is formed by a commit and its parent commits\&.
 .sp
-Two other shorthands for naming a set that is formed by a commit and its parent commits exist\&. The \fIr1^@\fR notation means all parents of \fIr1\fR\&. \fIr1^!\fR includes commit \fIr1\fR but excludes all of its parents\&.
+The \fIr1^@\fR notation means all parents of \fIr1\fR\&.
 .sp
-To summarize:
+The \fIr1^!\fR notation includes commit \fIr1\fR but excludes all of its parents\&. By itself, this notation denotes the single commit \fIr1\fR\&.
+.sp
+While \fI<rev>^<n>\fR was about specifying a single commit parent, these two notations consider all its parents\&. For example you can say \fIHEAD^2^@\fR, however you cannot say \fIHEAD^@^2\fR\&.
+.SH "REVISION RANGE SUMMARY"
 .PP
 \fI<rev>\fR
 .RS 4
-Include commits that are reachable from (i\&.e\&. ancestors of) <rev>\&.
+Include commits that are reachable from <rev> (i\&.e\&. <rev> and its ancestors)\&.
 .RE
 .PP
 \fI^<rev>\fR
 .RS 4
-Exclude commits that are reachable from (i\&.e\&. ancestors of) <rev>\&.
+Exclude commits that are reachable from <rev> (i\&.e\&. <rev> and its ancestors)\&.
 .RE
 .PP
 \fI<rev1>\&.\&.<rev2>\fR
@@ -832,23 +883,32 @@ and then all its parents prefixed with
 to exclude them (and their ancestors)\&.
 .RE
 .sp
-Here are a handful of examples:
+Here are a handful of examples using the Loeliger illustration above, with each step in the notation\(cqs expansion and selection carefully spelt out:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-D                G H D
-D F              G H I J D F
-^G D             H D
-^D B             E I J F B
-B\&.\&.C             C
-B\&.\&.\&.C            G H D E B C
-^D B C           E I J F B C
-C                I J F C
-C^@              I J F
-C^!              C
-F^! D            G H D F
+Args   Expanded arguments    Selected commits
+D                            G H D
+D F                          G H I J D F
+^G D                         H D
+^D B                         E I J F B
+^D B C                       E I J F B C
+C                            I J F C
+B\&.\&.C   = ^B C                C
+B\&.\&.\&.C  = B ^F C              G H D E B C
+C^@    = C^1
+       = F                   I J F
+B^@    = B^1 B^2 B^3
+       = D E F               D G H E F I J
+C^!    = C ^C^@
+       = C ^C^1
+       = C ^F                C
+B^!    = B ^B^@
+       = B ^B^1 ^B^2 ^B^3
+       = B ^D ^E ^F          B
+F^! D  = F ^I ^J D           G H D F
 .fi
 .if n \{\
 .RE
