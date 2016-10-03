@@ -2,12 +2,12 @@
 .\"     Title: gitweb.conf
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/02/2016
+.\"      Date: 10/03/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.10.0
+.\"    Source: Git 2.10.1.352.g0cf3611
 .\"  Language: English
 .\"
-.TH "GITWEB\&.CONF" "5" "09/02/2016" "Git 2\&.10\&.0" "Git Manual"
+.TH "GITWEB\&.CONF" "5" "10/03/2016" "Git 2\&.10\&.1\&.352\&.g0cf361" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -306,12 +306,14 @@ due to assumptions about parameters and output)\&. By default set to
 \fIhighlight\fR
 feature must be set for gitweb to actually use syntax highlighting\&.
 .sp
-\fBNOTE\fR: if you want to add support for new file type (supported by "highlight" but not used by gitweb), you need to modify
-\fB%highlight_ext\fR
-or
-\fB%highlight_basename\fR, depending on whether you detect type of file based on extension (for example "sh") or on its basename (for example "Makefile")\&. The keys of these hashes are extension and basename, respectively, and value for given key is name of syntax to be passed via
+\fBNOTE\fR: for a file to be highlighted, its syntax type must be detected and that syntax must be supported by "highlight"\&. The default syntax detection is minimal, and there are many supported syntax types with no detection by default\&. There are three options for adding syntax detection\&. The first and second priority are
+\fB%highlight_basename\fR
+and
+\fB%highlight_ext\fR, which detect based on basename (the full filename, for example "Makefile") and extension (for example "sh")\&. The keys of these hashes are the basename and extension, respectively, and the value for a given key is the name of the syntax to be passed via
 \fB\-\-syntax <syntax>\fR
-to highlighter\&.
+to "highlight"\&. The last priority is the "highlight" configuration of
+\fBShebang\fR
+regular expressions to detect the language based on the first line in the file, (for example, matching the line "#!/bin/bash")\&. See the highlight documentation and the default config at /etc/highlight/filetypes\&.conf for more details\&.
 .sp
 For example if repositories you are hosting use "phtml" extension for PHP files, and you want to have correct syntax\-highlighting for those files, you can add the following to gitweb configuration:
 .sp
