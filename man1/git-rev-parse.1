@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/12/2016
+.\"      Date: 10/06/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.10.0.129.g35f6318
+.\"    Source: Git 2.10.1.382.ga23ca1b
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "09/12/2016" "Git 2\&.10\&.0\&.129\&.g35f631" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "10/06/2016" "Git 2\&.10\&.1\&.382\&.ga23ca1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -832,13 +832,15 @@ and is defined as
 In these two shorthand notations, you can omit one end and let it default to HEAD\&. For example, \fIorigin\&.\&.\fR is a shorthand for \fIorigin\&.\&.HEAD\fR and asks "What did I do since I forked from the origin branch?" Similarly, \fI\&.\&.origin\fR is a shorthand for \fIHEAD\&.\&.origin\fR and asks "What did the origin do since I forked from them?" Note that \fI\&.\&.\fR would mean \fIHEAD\&.\&.HEAD\fR which is an empty range that is both reachable and unreachable from HEAD\&.
 .SS "Other <rev>^ Parent Shorthand Notations"
 .sp
-Two other shorthands exist, particularly useful for merge commits, for naming a set that is formed by a commit and its parent commits\&.
+Three other shorthands exist, particularly useful for merge commits, for naming a set that is formed by a commit and its parent commits\&.
 .sp
 The \fIr1^@\fR notation means all parents of \fIr1\fR\&.
 .sp
 The \fIr1^!\fR notation includes commit \fIr1\fR but excludes all of its parents\&. By itself, this notation denotes the single commit \fIr1\fR\&.
 .sp
-While \fI<rev>^<n>\fR was about specifying a single commit parent, these two notations consider all its parents\&. For example you can say \fIHEAD^2^@\fR, however you cannot say \fIHEAD^@^2\fR\&.
+The \fI<rev>^\-{<n>}\fR notation includes \fI<rev>\fR but excludes the <n>th parent (i\&.e\&. a shorthand for \fI<rev>^<n>\&.\&.<rev>\fR), with \fI<n>\fR = 1 if not given\&. This is typically useful for merge commits where you can just pass \fI<commit>^\-\fR to get all the commits in the branch that was merged in merge commit \fI<commit>\fR (including \fI<commit>\fR itself)\&.
+.sp
+While \fI<rev>^<n>\fR was about specifying a single commit parent, these three notations also consider its parents\&. For example you can say \fIHEAD^2^@\fR, however you cannot say \fIHEAD^@^2\fR\&.
 .SH "REVISION RANGE SUMMARY"
 .PP
 \fI<rev>\fR
@@ -882,6 +884,14 @@ and then all its parents prefixed with
 \fI^\fR
 to exclude them (and their ancestors)\&.
 .RE
+.PP
+\fI<rev>^\-{<n>}\fR, e\&.g\&. \fIHEAD^\-, HEAD^\-2\fR
+.RS 4
+Equivalent to
+\fI<rev>^<n>\&.\&.<rev>\fR, with
+\fI<n>\fR
+= 1 if not given\&.
+.RE
 .sp
 Here are a handful of examples using the Loeliger illustration above, with each step in the notation\(cqs expansion and selection carefully spelt out:
 .sp
@@ -898,6 +908,8 @@ D F                          G H I J D F
 C                            I J F C
 B\&.\&.C   = ^B C                C
 B\&.\&.\&.C  = B ^F C              G H D E B C
+B^\-    = B^\&.\&.B
+       = ^B^1 B              E I J F B
 C^@    = C^1
        = F                   I J F
 B^@    = B^1 B^2 B^3
