@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 12/19/2016
+.\"      Date: 12/27/2016
 .\"    Manual: Git Manual
-.\"    Source: Git 2.11.0.161.g6610af872
+.\"    Source: Git 2.11.0.258.ge05806da9
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/19/2016" "Git 2\&.11\&.0\&.161\&.g6610af" "Git Manual"
+.TH "GIT\-CONFIG" "1" "12/27/2016" "Git 2\&.11\&.0\&.258\&.ge05806" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -4824,6 +4824,130 @@ would cause the invocation
 \fBgit log \-\-pretty=changelog\fR
 to be equivalent to running
 \fBgit log "\-\-pretty=format:* %H %s"\fR\&. Note that an alias with the same name as a built\-in format will be silently ignored\&.
+.RE
+.PP
+protocol\&.allow
+.RS 4
+If set, provide a user defined default policy for all protocols which don\(cqt explicitly have a policy (\fBprotocol\&.<name>\&.allow\fR)\&. By default, if unset, known\-safe protocols (http, https, git, ssh, file) have a default policy of
+\fBalways\fR, known\-dangerous protocols (ext) have a default policy of
+\fBnever\fR, and all other protocols have a default policy of
+\fBuser\fR\&. Supported policies:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBalways\fR
+\- protocol is always able to be used\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBnever\fR
+\- protocol is never able to be used\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBuser\fR
+\- protocol is only able to be used when
+\fBGIT_PROTOCOL_FROM_USER\fR
+is either unset or has a value of 1\&. This policy should be used when you want a protocol to be directly usable by the user but don\(cqt want it used by commands which execute clone/fetch/push commands without user input, e\&.g\&. recursive submodule initialization\&.
+.RE
+.RE
+.PP
+protocol\&.<name>\&.allow
+.RS 4
+Set a policy to be used by protocol
+\fB<name>\fR
+with clone/fetch/push commands\&. See
+\fBprotocol\&.allow\fR
+above for the available policies\&.
+.sp
+The protocol names currently used by git are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBfile\fR: any local file\-based path (including
+\fBfile://\fR
+URLs, or local paths)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBgit\fR: the anonymous git protocol over a direct TCP connection (or proxy, if configured)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBssh\fR: git over ssh (including
+\fBhost:path\fR
+syntax,
+\fBssh://\fR, etc)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBhttp\fR: git over http, both "smart http" and "dumb http"\&. Note that this does
+\fInot\fR
+include
+\fBhttps\fR; if you want to configure both, you must do so individually\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+any external helpers are named by their protocol (e\&.g\&., use
+\fBhg\fR
+to allow the
+\fBgit\-remote\-hg\fR
+helper)
+.RE
 .RE
 .PP
 pull\&.ff
