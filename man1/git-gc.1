@@ -2,12 +2,12 @@
 .\"     Title: git-gc
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 11/29/2016
+.\"      Date: 01/10/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.11.0
+.\"    Source: Git 2.11.0.295.gd7dffce1c
 .\"  Language: English
 .\"
-.TH "GIT\-GC" "1" "11/29/2016" "Git 2\&.11\&.0" "Git Manual"
+.TH "GIT\-GC" "1" "01/10/2017" "Git 2\&.11\&.0\&.295\&.gd7dffc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -93,7 +93,7 @@ to 0 disables automatic consolidation of packs\&.
 \-\-prune=<date>
 .RS 4
 Prune loose objects older than date (default is 2 weeks ago, overridable by the config variable
-\fBgc\&.pruneExpire\fR)\&. \-\-prune=all prunes loose objects regardless of their age (do not use \-\-prune=all unless you know exactly what you are doing\&. Unless the repository is quiescent, you will lose newly created objects that haven\(cqt been anchored with the refs and end up corrupting your repository)\&. \-\-prune is on by default\&.
+\fBgc\&.pruneExpire\fR)\&. \-\-prune=all prunes loose objects regardless of their age and increases the risk of corruption if another process is writing to the repository concurrently; see "NOTES" below\&. \-\-prune is on by default\&.
 .RE
 .PP
 \-\-no\-prune
@@ -148,9 +148,35 @@ Similarly, the optional configuration variable \fBgc\&.aggressiveDepth\fR contro
 The optional configuration variable \fBgc\&.pruneExpire\fR controls how old the unreferenced loose objects have to be before they are pruned\&. The default is "2 weeks ago"\&.
 .SH "NOTES"
 .sp
-\fIgit gc\fR tries very hard to be safe about the garbage it collects\&. In particular, it will keep not only objects referenced by your current set of branches and tags, but also objects referenced by the index, remote\-tracking branches, refs saved by \fIgit filter\-branch\fR in refs/original/, or reflogs (which may reference commits in branches that were later amended or rewound)\&.
+\fIgit gc\fR tries very hard not to delete objects that are referenced anywhere in your repository\&. In particular, it will keep not only objects referenced by your current set of branches and tags, but also objects referenced by the index, remote\-tracking branches, refs saved by \fIgit filter\-branch\fR in refs/original/, or reflogs (which may reference commits in branches that were later amended or rewound)\&. If you are expecting some objects to be deleted and they aren\(cqt, check all of those locations and decide whether it makes sense in your case to remove those references\&.
 .sp
-If you are expecting some objects to be collected and they aren\(cqt, check all of those locations and decide whether it makes sense in your case to remove those references\&.
+On the other hand, when \fIgit gc\fR runs concurrently with another process, there is a risk of it deleting an object that the other process is using but hasn\(cqt created a reference to\&. This may just cause the other process to fail or may corrupt the repository if the other process later adds a reference to the deleted object\&. Git has two features that significantly mitigate this problem:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Any object with modification time newer than the
+\fB\-\-prune\fR
+date is kept, along with everything reachable from it\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Most operations that add an object to the database update the modification time of the object if it is already present so that #1 applies\&.
+.RE
+.sp
+However, these features fall short of a complete solution, so users who run commands concurrently have to live with some risk of corruption (which seems to be low in practice) unless they turn off automatic garbage collection with \fIgit config gc\&.auto 0\fR\&.
 .SH "HOOKS"
 .sp
 The \fIgit gc \-\-auto\fR command will run the \fIpre\-auto\-gc\fR hook\&. See \fBgithooks\fR(5) for more information\&.

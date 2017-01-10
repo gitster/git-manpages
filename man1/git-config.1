@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 12/27/2016
+.\"      Date: 01/10/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.11.0.258.ge05806da9
+.\"    Source: Git 2.11.0.295.gd7dffce1c
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/27/2016" "Git 2\&.11\&.0\&.258\&.ge05806" "Git Manual"
+.TH "GIT\-CONFIG" "1" "01/10/2017" "Git 2\&.11\&.0\&.295\&.gd7dffc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1675,7 +1675,7 @@ for more information\&.
 .PP
 core\&.abbrev
 .RS 4
-Set the length object names are abbreviated to\&. If unspecified, many commands abbreviate to 7 hexdigits, which may not be enough for abbreviated object names to stay unique for sufficiently long time\&.
+Set the length object names are abbreviated to\&. If unspecified or set to "auto", an appropriate value is computed based on the approximate number of packed objects in your repository, which hopefully is enough for abbreviated object names to stay unique for some time\&.
 .RE
 .PP
 add\&.ignoreErrors, add\&.ignore\-errors (deprecated)
@@ -2846,11 +2846,11 @@ xxdiff
 .RE
 .RE
 .PP
-diff\&.indentHeuristic, diff\&.compactionHeuristic
+diff\&.indentHeuristic
 .RS 4
-Set one of these options to
+Set this option to
 \fBtrue\fR
-to enable one of two experimental heuristics that shift diff hunk boundaries to make patches easier to read\&.
+to enable experimental heuristics that shift diff hunk boundaries to make patches easier to read\&.
 .RE
 .PP
 diff\&.algorithm
@@ -3149,7 +3149,10 @@ gc\&.pruneExpire
 When
 \fIgit gc\fR
 is run, it will call
-\fIprune \-\-expire 2\&.weeks\&.ago\fR\&. Override the grace period with this config variable\&. The value "now" may be used to disable this grace period and always prune unreachable objects immediately, or "never" may be used to suppress pruning\&.
+\fIprune \-\-expire 2\&.weeks\&.ago\fR\&. Override the grace period with this config variable\&. The value "now" may be used to disable this grace period and always prune unreachable objects immediately, or "never" may be used to suppress pruning\&. This feature helps prevent corruption when
+\fIgit gc\fR
+runs concurrently with another process writing to the repository; see the "NOTES" section of
+\fBgit-gc\fR(1)\&.
 .RE
 .PP
 gc\&.worktreePruneExpire
@@ -5774,6 +5777,10 @@ and
 \fB^\fR,
 \fB!\fR
 must be specified first\&.
+.sp
+Even if you hide refs, a client may still be able to steal the target objects via the techniques described in the "SECURITY" section of the
+\fBgitnamespaces\fR(7)
+man page; it\(cqs best to keep private data in a separate repository\&.
 .RE
 .PP
 transfer\&.unpackLimit
@@ -5789,9 +5796,7 @@ uploadarchive\&.allowUnreachable
 .RS 4
 If true, allow clients to use
 \fBgit archive \-\-remote\fR
-to request any tree, whether reachable from the ref tips or not\&. See the discussion in the
-\fBSECURITY\fR
-section of
+to request any tree, whether reachable from the ref tips or not\&. See the discussion in the "SECURITY" section of
 \fBgit-upload-archive\fR(1)
 for more details\&. Defaults to
 \fBfalse\fR\&.
@@ -5814,8 +5819,10 @@ When
 \fBuploadpack\&.hideRefs\fR
 is in effect, allow
 \fBupload\-pack\fR
-to accept a fetch request that asks for an object at the tip of a hidden ref (by default, such a request is rejected)\&. see also
-\fBuploadpack\&.hideRefs\fR\&.
+to accept a fetch request that asks for an object at the tip of a hidden ref (by default, such a request is rejected)\&. See also
+\fBuploadpack\&.hideRefs\fR\&. Even if this is false, a client may be able to steal objects via the techniques described in the "SECURITY" section of the
+\fBgitnamespaces\fR(7)
+man page; it\(cqs best to keep private data in a separate repository\&.
 .RE
 .PP
 uploadpack\&.allowReachableSHA1InWant
@@ -5823,6 +5830,16 @@ uploadpack\&.allowReachableSHA1InWant
 Allow
 \fBupload\-pack\fR
 to accept a fetch request that asks for an object that is reachable from any ref tip\&. However, note that calculating object reachability is computationally expensive\&. Defaults to
+\fBfalse\fR\&. Even if this is false, a client may be able to steal objects via the techniques described in the "SECURITY" section of the
+\fBgitnamespaces\fR(7)
+man page; it\(cqs best to keep private data in a separate repository\&.
+.RE
+.PP
+uploadpack\&.allowAnySHA1InWant
+.RS 4
+Allow
+\fBupload\-pack\fR
+to accept a fetch request that asks for any object at all\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
