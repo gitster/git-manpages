@@ -2,12 +2,12 @@
 .\"     Title: git-reset
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/03/2017
+.\"      Date: 02/15/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.0.rc0
+.\"    Source: Git 2.12.0.rc1.28.gd09b69279
 .\"  Language: English
 .\"
-.TH "GIT\-RESET" "1" "02/03/2017" "Git 2\&.12\&.0\&.rc0" "Git Manual"
+.TH "GIT\-RESET" "1" "02/15/2017" "Git 2\&.12\&.0\&.rc1\&.28\&.gd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -361,6 +361,45 @@ $ git reset \-\-keep start                    \fB(3)\fR
 \fB2. \fRIn the ideal world, you could have realized that the earlier commit did not belong to the new topic when you created and switched to branch2 (i\&.e\&. "git checkout \-b branch2 start"), but nobody is perfect\&.
 .br
 \fB3. \fRBut you can use "reset \-\-keep" to remove the unwanted commit after you switched to "branch2"\&.
+.br
+.RE
+.PP
+Split a commit into two
+.RS 4
+Suppose that you have created a commit, but later decide that you want to break apart the changes into two logical chunks and commit each separately\&. You want to include part of the original commit into the first commit, while including the remainder in a second commit\&. You can use git reset to rewind the history without changing the index, and then use git add \-p to interactively select which hunks to put into the first commit\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git reset HEAD^                           \fB(1)\fR
+$ git add \-p                                \fB(2)\fR
+$ git diff \-\-cached                         \fB(3)\fR
+$ git commit \-c HEAD@{1}                    \fB(4)\fR
+\&.\&.\&.
+$ git add \&.\&.\&.                               \fB(5)\fR
+$ git diff \-\-cached                         \fB(6)\fR
+$ git commit \&.\&.\&.                            \fB(7)\fR
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fB1. \fRFirst, reset the history back one commit so that we remove the original commit, but leave the working tree with all the changes\&.
+.br
+\fB2. \fRNow, interactively select hunks to add to a new commit using git add \-p\&. This will ask for each hunk separately and you can use simple commands like "yes, include", "no don\(cqt include" or even "edit"\&.
+.br
+\fB3. \fROnce satisfied with the hunks, you should verify that it is what you expected by using git diff \-\-cached to show all changes in the index\&.
+.br
+\fB4. \fRNext, commit the changes stored in the index\&. "\-c" specifies to load the editor with a commit message from a previous commit so that you can re\-use the HEAD used to be prior to the reset command\&. See
+\fBgit-reflog\fR(1)
+for more details\&.
+.br
+\fB5. \fRNow you\(cqve created the first commit, and can repeat steps 2\-4 as often as you like to break the work into any number of commits\&. Here we show a second step which simply adds the remaining changes\&.
+.br
+\fB6. \fRThen check again that the changes are what you expected to add\&.
+.br
+\fB7. \fRAnd finally commit the remaining changes\&.
 .br
 .RE
 .SH "DISCUSSION"
