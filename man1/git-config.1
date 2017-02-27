@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2017
+.\"      Date: 02/27/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.0
+.\"    Source: Git 2.12.0.189.g3bc53220c
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/24/2017" "Git 2\&.12\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/27/2017" "Git 2\&.12\&.0\&.189\&.g3bc532" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3150,6 +3150,17 @@ Make
 return immediately and run in background if the system supports it\&. Default is true\&.
 .RE
 .PP
+gc\&.logExpiry
+.RS 4
+If the file gc\&.log exists, then
+\fBgit gc \-\-auto\fR
+won\(cqt run unless that file is more than
+\fIgc\&.logExpiry\fR
+old\&. Default is "1\&.day"\&. See
+\fBgc\&.pruneExpire\fR
+for more ways to specify its value\&.
+.RE
+.PP
 gc\&.packRefs
 .RS 4
 Running
@@ -3945,7 +3956,13 @@ in
 Host/domain name (e\&.g\&.,
 \fBexample\&.com\fR
 in
-\fBhttps://example\&.com/\fR)\&. This field must match exactly between the config key and the URL\&.
+\fBhttps://example\&.com/\fR)\&. This field must match between the config key and the URL\&. It is possible to specify a
+\fB*\fR
+as part of the host name to match all subdomains at this level\&.
+\fBhttps://*\&.example\&.com/\fR
+for example would match
+\fBhttps://foo\&.example\&.com/\fR, but not
+\fBhttps://foo\&.bar\&.example\&.com/\fR\&.
 .RE
 .sp
 .RS 4
@@ -4006,6 +4023,25 @@ will be preferred over a config key match of
 \fBhttps://user@example\&.com\fR\&.
 .sp
 All URLs are normalized before attempting any matching (the password part, if embedded in the URL, is always ignored for matching purposes) so that equivalent URLs that are simply spelled differently will match properly\&. Environment variable settings always override any matches\&. The URLs that are matched against are those given directly to Git commands\&. This means any URLs visited as a result of a redirection do not participate in matching\&.
+.RE
+.PP
+ssh\&.variant
+.RS 4
+Depending on the value of the environment variables
+\fBGIT_SSH\fR
+or
+\fBGIT_SSH_COMMAND\fR, or the config setting
+\fBcore\&.sshCommand\fR, Git auto\-detects whether to adjust its command\-line parameters for use with plink or tortoiseplink, as opposed to the default (OpenSSH)\&.
+.sp
+The config variable
+\fBssh\&.variant\fR
+can be set to override this auto\-detection; valid values are
+\fBssh\fR,
+\fBplink\fR,
+\fBputty\fR
+or
+\fBtortoiseplink\fR\&. Any other value will be treated as normal ssh\&. This setting can be overridden via the environment variable
+\fBGIT_SSH_VARIANT\fR\&.
 .RE
 .PP
 i18n\&.commitEncoding

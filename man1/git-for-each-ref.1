@@ -2,12 +2,12 @@
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2017
+.\"      Date: 02/27/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.0
+.\"    Source: Git 2.12.0.189.g3bc53220c
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "02/24/2017" "Git 2\&.12\&.0" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "02/27/2017" "Git 2\&.12\&.0\&.189\&.g3bc532" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -134,18 +134,40 @@ refname
 .RS 4
 The name of the ref (the part after $GIT_DIR/)\&. For a non\-ambiguous short name of the ref append
 \fB:short\fR\&. The option core\&.warnAmbiguousRefs is used to select the strict abbreviation mode\&. If
-\fBstrip=<N>\fR
-is appended, strips
+\fBlstrip=<N>\fR
+(\fBrstrip=<N>\fR) is appended, strips
 \fB<N>\fR
-slash\-separated path components from the front of the refname (e\&.g\&.,
-\fB%(refname:strip=2)\fR
+slash\-separated path components from the front (back) of the refname (e\&.g\&.
+\fB%(refname:lstrip=2)\fR
 turns
 \fBrefs/tags/foo\fR
 into
-\fBfoo\fR\&.
+\fBfoo\fR
+and
+\fB%(refname:rstrip=2)\fR
+turns
+\fBrefs/tags/foo\fR
+into
+\fBrefs\fR)\&. If
 \fB<N>\fR
-must be a positive integer\&. If a displayed ref has fewer components than
-\fB<N>\fR, the command aborts with an error\&.
+is a negative number, strip as many path components as necessary from the specified end to leave
+\fB\-<N>\fR
+path components (e\&.g\&.
+\fB%(refname:lstrip=\-2)\fR
+turns
+\fBrefs/tags/foo\fR
+into
+\fBtags/foo\fR
+and
+\fB%(refname:rstrip=\-1)\fR
+turns
+\fBrefs/tags/foo\fR
+into
+\fBrefs\fR)\&. When the ref does not have enough components, the result becomes an empty string if stripping with positive <N>, or it becomes the full refname if stripping with negative <N>\&. Neither is an error\&.
+.sp
+\fBstrip\fR
+can be used as a synomym to
+\fBlstrip\fR\&.
 .RE
 .PP
 objecttype
@@ -166,20 +188,30 @@ reports)\&.
 objectname
 .RS 4
 The object name (aka SHA\-1)\&. For a non\-ambiguous abbreviation of the object name append
-\fB:short\fR\&.
+\fB:short\fR\&. For an abbreviation of the object name with desired length append
+\fB:short=<length>\fR, where the minimum length is MINIMUM_ABBREV\&. The length may be exceeded to ensure unique object names\&.
 .RE
 .PP
 upstream
 .RS 4
 The name of a local ref which can be considered \(lqupstream\(rq from the displayed ref\&. Respects
-\fB:short\fR
+\fB:short\fR,
+\fB:lstrip\fR
+and
+\fB:rstrip\fR
 in the same way as
 \fBrefname\fR
 above\&. Additionally respects
 \fB:track\fR
 to show "[ahead N, behind M]" and
 \fB:trackshort\fR
-to show the terse version: ">" (ahead), "<" (behind), "<>" (ahead and behind), or "=" (in sync)\&. Has no effect if the ref does not have tracking information associated with it\&.
+to show the terse version: ">" (ahead), "<" (behind), "<>" (ahead and behind), or "=" (in sync)\&.
+\fB:track\fR
+also prints "[gone]" whenever unknown upstream ref is encountered\&. Append
+\fB:track,nobracket\fR
+to show tracking information without brackets (i\&.e "ahead N, behind M")\&. Has no effect if the ref does not have tracking information associated with it\&. All the options apart from
+\fBnobracket\fR
+are mutually exclusive, but if used together the last option is selected\&.
 .RE
 .PP
 push
@@ -188,6 +220,8 @@ The name of a local ref which represents the
 \fB@{push}\fR
 location for the displayed ref\&. Respects
 \fB:short\fR,
+\fB:lstrip\fR,
+\fB:rstrip\fR,
 \fB:track\fR, and
 \fB:trackshort\fR
 options as
@@ -225,6 +259,27 @@ is the total length of the content with alignment\&. For brevity, the "width=" a
 \fB\-\-quote\fR
 everything in between %(align:\&...) and %(end) is quoted, but if nested then only the topmost level performs quoting\&.
 .RE
+.PP
+if
+.RS 4
+Used as %(if)\&...%(then)\&...%(end) or %(if)\&...%(then)\&...%(else)\&...%(end)\&. If there is an atom with value or string literal after the %(if) then everything after the %(then) is printed, else if the %(else) atom is used, then everything after %(else) is printed\&. We ignore space when evaluating the string before %(then), this is useful when we use the %(HEAD) atom which prints either "*" or " " and we want to apply the
+\fIif\fR
+condition only on the
+\fIHEAD\fR
+ref\&. Append ":equals=<string>" or ":notequals=<string>" to compare the value between the %(if:\&...) and %(then) atoms with the given string\&.
+.RE
+.PP
+symref
+.RS 4
+The ref which the given symbolic ref refers to\&. If not a symbolic ref, nothing is printed\&. Respects the
+\fB:short\fR,
+\fB:lstrip\fR
+and
+\fB:rstrip\fR
+options in the same way as
+\fBrefname\fR
+above\&.
+.RE
 .sp
 In addition to the above, for commit and tag objects, the header field names (\fBtree\fR, \fBparent\fR, \fBobject\fR, \fBtype\fR, and \fBtag\fR) can be used to specify the value in the header field\&.
 .sp
@@ -241,6 +296,10 @@ There is also an option to sort by versions, this can be done by using the field
 In any case, a field name that refers to a field inapplicable to the object referred by the ref does not cause an error\&. It returns an empty string instead\&.
 .sp
 As a special case for the date\-type fields, you may specify a format for the date by adding \fB:\fR followed by date format name (see the values the \fB\-\-date\fR option to \fBgit-rev-list\fR(1) takes)\&.
+.sp
+Some atoms like %(align) and %(if) always require a matching %(end)\&. We call them "opening atoms" and sometimes denote them as %($open)\&.
+.sp
+When a scripting language specific quoting is in effect, everything between a top\-level opening atom and its matching %(end) is evaluated according to the semantics of the opening atom and only its result from the top\-level is quoted\&.
 .SH "EXAMPLES"
 .sp
 An example directly producing formatted text\&. Show the most recent 3 tagged commits:
@@ -338,6 +397,32 @@ eval=`git for\-each\-ref \-\-shell \-\-format="$fmt" \e
         \-\-sort=\-taggerdate \e
         refs/tags`
 eval "$eval"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+An example to show the usage of %(if)\&...%(then)\&...%(else)\&...%(end)\&. This prefixes the current branch with a star\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git for\-each\-ref \-\-format="%(if)%(HEAD)%(then)* %(else)  %(end)%(refname:short)" refs/heads/
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+An example to show the usage of %(if)\&...%(then)\&...%(end)\&. This prints the authorname, if present\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git for\-each\-ref \-\-format="%(refname)%(if)%(authorname)%(then) Authored by: %(authorname)%(end)"
 .fi
 .if n \{\
 .RE
