@@ -2,12 +2,12 @@
 .\"     Title: git-stash
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2017
+.\"      Date: 03/10/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.0
+.\"    Source: Git 2.12.0.244.g625568cd8
 .\"  Language: English
 .\"
-.TH "GIT\-STASH" "1" "02/24/2017" "Git 2\&.12\&.0" "Git Manual"
+.TH "GIT\-STASH" "1" "03/10/2017" "Git 2\&.12\&.0\&.244\&.g625568" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,8 +37,11 @@ git-stash \- Stash the changes in a dirty working directory away
 \fIgit stash\fR drop [\-q|\-\-quiet] [<stash>]
 \fIgit stash\fR ( pop | apply ) [\-\-index] [\-q|\-\-quiet] [<stash>]
 \fIgit stash\fR branch <branchname> [<stash>]
-\fIgit stash\fR [save [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-q|\-\-quiet]
-             [\-u|\-\-include\-untracked] [\-a|\-\-all] [<message>]]
+\fIgit stash\fR save [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-q|\-\-quiet]
+             [\-u|\-\-include\-untracked] [\-a|\-\-all] [<message>]
+\fIgit stash\fR [push [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-q|\-\-quiet]
+             [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-m|\-\-message <message>]]
+             [\-\-] [<pathspec>\&...]]
 \fIgit stash\fR clear
 \fIgit stash\fR create [<message>]
 \fIgit stash\fR store [\-m|\-\-message <message>] [\-q|\-\-quiet] <commit>
@@ -53,13 +56,22 @@ The modifications stashed away by this command can be listed with \fBgit stash l
 The latest stash you created is stored in \fBrefs/stash\fR; older stashes are found in the reflog of this reference and can be named using the usual reflog syntax (e\&.g\&. \fBstash@{0}\fR is the most recently created stash, \fBstash@{1}\fR is the one before it, \fBstash@{2\&.hours\&.ago}\fR is also possible)\&. Stashes may also be referenced by specifying just the stash index (e\&.g\&. the integer \fBn\fR is equivalent to \fBstash@{n}\fR)\&.
 .SH "OPTIONS"
 .PP
-save [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [<message>]
+save [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [<message>], push [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [\-m|\-\-message <message>] [\-\-] [<pathspec>\&...]
 .RS 4
 Save your local modifications to a new
 \fIstash\fR
-and roll them back to HEAD (in the working tree and in the index)\&. The <message> part is optional and gives the description along with the stashed state\&. For quickly making a snapshot, you can omit
-\fIboth\fR
-"save" and <message>, but giving only <message> does not trigger this action to prevent a misspelled subcommand from making an unwanted stash\&.
+and roll them back to HEAD (in the working tree and in the index)\&. The <message> part is optional and gives the description along with the stashed state\&.
+.sp
+For quickly making a snapshot, you can omit "push"\&. In this mode, non\-option arguments are not allowed to prevent a misspelled subcommand from making an unwanted stash\&. The two exceptions to this are
+\fBstash \-p\fR
+which acts as alias for
+\fBstash push \-p\fR
+and pathspecs, which are allowed after a double hyphen
+\fB\-\-\fR
+for disambiguation\&.
+.sp
+When pathspec is given to
+\fIgit stash push\fR, the new stash records the modified states only for the files that match the pathspec\&. The index entries and working tree files are then rolled back to the state in HEAD only for these files, too, leaving files that do not match the pathspec intact\&.
 .sp
 If the
 \fB\-\-keep\-index\fR
