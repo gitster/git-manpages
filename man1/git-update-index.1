@@ -2,12 +2,12 @@
 .\"     Title: git-update-index
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2017
+.\"      Date: 03/17/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.0
+.\"    Source: Git 2.12.0.399.g9d77b0405
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "02/24/2017" "Git 2\&.12\&.0" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "03/17/2017" "Git 2\&.12\&.0\&.399\&.g9d77b0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -200,9 +200,14 @@ or
 .PP
 \-\-split\-index, \-\-no\-split\-index
 .RS 4
-Enable or disable split index mode\&. If enabled, the index is split into two files, $GIT_DIR/index and $GIT_DIR/sharedindex\&.<SHA\-1>\&. Changes are accumulated in $GIT_DIR/index while the shared index file contains all index entries stays unchanged\&. If split\-index mode is already enabled and
+Enable or disable split index mode\&. If split\-index mode is already enabled and
 \fB\-\-split\-index\fR
-is given again, all changes in $GIT_DIR/index are pushed back to the shared index file\&. This mode is designed for very large indexes that take a significant amount of time to read or write\&.
+is given again, all changes in $GIT_DIR/index are pushed back to the shared index file\&.
+.sp
+These options take effect whatever the value of the
+\fBcore\&.splitIndex\fR
+configuration variable (see
+\fBgit-config\fR(1))\&. But a warning is emitted when the change goes against the configured value, as the configured value will take effect next time the index is read and this will remove the intended effect of the option\&.
 .RE
 .PP
 \-\-untracked\-cache, \-\-no\-untracked\-cache
@@ -449,6 +454,17 @@ Skip\-worktree bit can be defined in one (long) sentence: When reading an entry,
 To elaborate, "reading" means checking for file existence, reading file attributes or file content\&. The working directory version may be present or absent\&. If present, its content may match against the index version or not\&. Writing is not affected by this bit, content safety is still first priority\&. Note that Git \fIcan\fR update working directory file, that is marked skip\-worktree, if it is safe to do so (i\&.e\&. working directory version matches index version)
 .sp
 Although this bit looks similar to assume\-unchanged bit, its goal is different from assume\-unchanged bit\(cqs\&. Skip\-worktree also takes precedence over assume\-unchanged bit when both are set\&.
+.SH "SPLIT INDEX"
+.sp
+This mode is designed for repositories with very large indexes, and aims at reducing the time it takes to repeatedly write these indexes\&.
+.sp
+In this mode, the index is split into two files, $GIT_DIR/index and $GIT_DIR/sharedindex\&.<SHA\-1>\&. Changes are accumulated in $GIT_DIR/index, the split index, while the shared index file contains all index entries and stays unchanged\&.
+.sp
+All changes in the split index are pushed back to the shared index file when the number of entries in the split index reaches a level specified by the splitIndex\&.maxPercentChange config variable (see \fBgit-config\fR(1))\&.
+.sp
+Each time a new shared index file is created, the old shared index files are deleted if their modification time is older than what is specified by the splitIndex\&.sharedIndexExpire config variable (see \fBgit-config\fR(1))\&.
+.sp
+To avoid deleting a shared index file that is still used, its modification time is updated to the current time everytime a new split index based on the shared index file is either created or read from\&.
 .SH "UNTRACKED CACHE"
 .sp
 This cache is meant to speed up commands that involve determining untracked files such as \fBgit status\fR\&.
