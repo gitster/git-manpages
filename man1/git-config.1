@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03/17/2017
+.\"      Date: 03/21/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.0.399.g9d77b0405
+.\"    Source: Git 2.12.1.430.gafd672630
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "03/17/2017" "Git 2\&.12\&.0\&.399\&.g9d77b0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "03/21/2017" "Git 2\&.12\&.1\&.430\&.gafd672" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -709,9 +709,131 @@ Inside double quotes, double quote \fB"\fR and backslash \fB\e\fR characters mus
 The following escape sequences (beside \fB\e"\fR and \fB\e\e\fR) are recognized: \fB\en\fR for newline character (NL), \fB\et\fR for horizontal tabulation (HT, TAB) and \fB\eb\fR for backspace (BS)\&. Other char escape sequences (including octal escape sequences) are invalid\&.
 .SS "Includes"
 .sp
-You can include one config file from another by setting the special \fBinclude\&.path\fR variable to the name of the file to be included\&. The variable takes a pathname as its value, and is subject to tilde expansion\&.
+You can include a config file from another by setting the special \fBinclude\&.path\fR variable to the name of the file to be included\&. The variable takes a pathname as its value, and is subject to tilde expansion\&. \fBinclude\&.path\fR can be given multiple times\&.
 .sp
 The included file is expanded immediately, as if its contents had been found at the location of the include directive\&. If the value of the \fBinclude\&.path\fR variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. See below for examples\&.
+.SS "Conditional includes"
+.sp
+You can include a config file from another conditionally by setting a \fBincludeIf\&.<condition>\&.path\fR variable to the name of the file to be included\&. The variable\(cqs value is treated the same way as \fBinclude\&.path\fR\&. \fBincludeIf\&.<condition>\&.path\fR can be given multiple times\&.
+.sp
+The condition starts with a keyword followed by a colon and some data whose format and meaning depends on the keyword\&. Supported keywords are:
+.PP
+\fBgitdir\fR
+.RS 4
+The data that follows the keyword
+\fBgitdir:\fR
+is used as a glob pattern\&. If the location of the \&.git directory matches the pattern, the include condition is met\&.
+.sp
+The \&.git location may be auto\-discovered, or come from
+\fB$GIT_DIR\fR
+environment variable\&. If the repository is auto discovered via a \&.git file (e\&.g\&. from submodules, or a linked worktree), the \&.git location would be the final location where the \&.git directory is, not where the \&.git file is\&.
+.sp
+The pattern can contain standard globbing wildcards and two additional ones,
+\fB**/\fR
+and
+\fB/**\fR, that can match multiple path components\&. Please refer to
+\fBgitignore\fR(5)
+for details\&. For convenience:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If the pattern starts with
+\fB~/\fR,
+\fB~\fR
+will be substituted with the content of the environment variable
+\fBHOME\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If the pattern starts with
+\fB\&./\fR, it is replaced with the directory containing the current config file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If the pattern does not start with either
+\fB~/\fR,
+\fB\&./\fR
+or
+\fB/\fR,
+\fB**/\fR
+will be automatically prepended\&. For example, the pattern
+\fBfoo/bar\fR
+becomes
+\fB**/foo/bar\fR
+and would match
+\fB/any/path/to/foo/bar\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If the pattern ends with
+\fB/\fR,
+\fB**\fR
+will be automatically added\&. For example, the pattern
+\fBfoo/\fR
+becomes
+\fBfoo/**\fR\&. In other words, it matches "foo" and everything inside, recursively\&.
+.RE
+.RE
+.PP
+\fBgitdir/i\fR
+.RS 4
+This is the same as
+\fBgitdir\fR
+except that matching is done case\-insensitively (e\&.g\&. on case\-insensitive file sytems)
+.RE
+.sp
+A few more notes on matching via \fBgitdir\fR and \fBgitdir/i\fR:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Symlinks in
+\fB$GIT_DIR\fR
+are not resolved before matching\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Note that "\&.\&./" is not special and will match literally, which is unlikely what you want\&.
+.RE
 .SS "Example"
 .sp
 .if n \{\
@@ -773,6 +895,42 @@ The included file is expanded immediately, as if its contents had been found at 
         path = /path/to/foo\&.inc ; include by absolute path
         path = foo ; expand "foo" relative to the current file
         path = ~/foo ; expand "foo" in your `$HOME` directory
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+; include if $GIT_DIR is /path/to/foo/\&.git
+[includeIf "gitdir:/path/to/foo/\&.git"]
+        path = /path/to/foo\&.inc
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+; include for all repositories inside /path/to/group
+[includeIf "gitdir:/path/to/group/"]
+        path = /path/to/foo\&.inc
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+; include for all repositories inside $HOME/to/group
+[includeIf "gitdir:~/to/group/"]
+        path = /path/to/foo\&.inc
 .fi
 .if n \{\
 .RE
@@ -5113,6 +5271,19 @@ is probably what you want\&. Possible values are:
 \fBupstream\fR
 \- push the current branch back to the branch whose changes are usually integrated into the current branch (which is called
 \fB@{upstream}\fR)\&. This mode only makes sense if you are pushing to the same repository you would normally pull from (i\&.e\&. central workflow)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBtracking\fR
+\- This is a deprecated synonym for
+\fBupstream\fR\&.
 .RE
 .sp
 .RS 4
