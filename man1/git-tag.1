@@ -2,12 +2,12 @@
 .\"     Title: git-tag
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2017
+.\"      Date: 04/11/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.0
+.\"    Source: Git 2.12.2.599.gcf11a6797
 .\"  Language: English
 .\"
-.TH "GIT\-TAG" "1" "02/24/2017" "Git 2\&.12\&.0" "Git Manual"
+.TH "GIT\-TAG" "1" "04/11/2017" "Git 2\&.12\&.2\&.599\&.gcf11a6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,9 +35,10 @@ git-tag \- Create, list, delete or verify a tag object signed with GPG
 \fIgit tag\fR [\-a | \-s | \-u <keyid>] [\-f] [\-m <msg> | \-F <file>]
         <tagname> [<commit> | <object>]
 \fIgit tag\fR \-d <tagname>\&...
-\fIgit tag\fR [\-n[<num>]] \-l [\-\-contains <commit>] [\-\-points\-at <object>]
-        [\-\-column[=<options>] | \-\-no\-column] [\-\-create\-reflog] [\-\-sort=<key>]
-        [\-\-format=<format>] [\-\-[no\-]merged [<commit>]] [<pattern>\&...]
+\fIgit tag\fR [\-n[<num>]] \-l [\-\-contains <commit>] [\-\-contains <commit>]
+        [\-\-points\-at <object>] [\-\-column[=<options>] | \-\-no\-column]
+        [\-\-create\-reflog] [\-\-sort=<key>] [\-\-format=<format>]
+        [\-\-[no\-]merged [<commit>]] [<pattern>\&...]
 \fIgit tag\fR \-v [\-\-format=<format>] <tagname>\&...
 .fi
 .sp
@@ -92,13 +93,24 @@ Verify the GPG signature of the given tag names\&.
 .PP
 \-n<num>
 .RS 4
-<num> specifies how many lines from the annotation, if any, are printed when using \-l\&. The default is not to print any annotation lines\&. If no number is given to
+<num> specifies how many lines from the annotation, if any, are printed when using \-l\&. Implies
+\fB\-\-list\fR\&.
+.sp
+The default is not to print any annotation lines\&. If no number is given to
 \fB\-n\fR, only the first line is printed\&. If the tag is not annotated, the commit message is displayed instead\&.
 .RE
 .PP
-\-l <pattern>, \-\-list <pattern>
+\-l, \-\-list
 .RS 4
-List tags with names that match the given pattern (or all if no pattern is given)\&. Running "git tag" without arguments also lists all tags\&. The pattern is a shell wildcard (i\&.e\&., matched using fnmatch(3))\&. Multiple patterns may be given; if any of them matches, the tag is shown\&.
+List tags\&. With optional
+\fB<pattern>\&.\&.\&.\fR, e\&.g\&.
+\fBgit tag \-\-list \(aqv\-*\(aq\fR, list only the tags that match the pattern(s)\&.
+.sp
+Running "git tag" without arguments also lists all tags\&. The pattern is a shell wildcard (i\&.e\&., matched using fnmatch(3))\&. Multiple patterns may be given; if any of them matches, the tag is shown\&.
+.sp
+This option is implicitly supplied if any other list\-like option such as
+\fB\-\-contains\fR
+is provided\&. See the documentation for each of those options for details\&.
 .RE
 .PP
 \-\-sort=<key>
@@ -133,12 +145,34 @@ This option is only applicable when listing tags without annotation lines\&.
 .PP
 \-\-contains [<commit>]
 .RS 4
-Only list tags which contain the specified commit (HEAD if not specified)\&.
+Only list tags which contain the specified commit (HEAD if not specified)\&. Implies
+\fB\-\-list\fR\&.
+.RE
+.PP
+\-\-no\-contains [<commit>]
+.RS 4
+Only list tags which don\(cqt contain the specified commit (HEAD if not specified)\&. Implies
+\fB\-\-list\fR\&.
+.RE
+.PP
+\-\-merged [<commit>]
+.RS 4
+Only list tags whose commits are reachable from the specified commit (\fBHEAD\fR
+if not specified), incompatible with
+\fB\-\-no\-merged\fR\&.
+.RE
+.PP
+\-\-no\-merged [<commit>]
+.RS 4
+Only list tags whose commits are not reachable from the specified commit (\fBHEAD\fR
+if not specified), incompatible with
+\fB\-\-merged\fR\&.
 .RE
 .PP
 \-\-points\-at <object>
 .RS 4
-Only list tags of the given object\&.
+Only list tags of the given object (HEAD if not specified)\&. Implies
+\fB\-\-list\fR\&.
 .RE
 .PP
 \-m <msg>, \-\-message=<msg>
@@ -216,14 +250,6 @@ A string that interpolates
 from the object pointed at by a ref being shown\&. The format is the same as that of
 \fBgit-for-each-ref\fR(1)\&. When unspecified, defaults to
 \fB%(refname:strip=2)\fR\&.
-.RE
-.PP
-\-\-[no\-]merged [<commit>]
-.RS 4
-Only list tags whose tips are reachable, or not reachable if
-\fB\-\-no\-merged\fR
-is used, from the specified commit (\fBHEAD\fR
-if not specified)\&.
 .RE
 .SH "CONFIGURATION"
 .sp

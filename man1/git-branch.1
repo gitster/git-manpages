@@ -2,12 +2,12 @@
 .\"     Title: git-branch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03/28/2017
+.\"      Date: 04/11/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.12.2.510.ge1104a5ee
+.\"    Source: Git 2.12.2.599.gcf11a6797
 .\"  Language: English
 .\"
-.TH "GIT\-BRANCH" "1" "03/28/2017" "Git 2\&.12\&.2\&.510\&.ge1104a" "Git Manual"
+.TH "GIT\-BRANCH" "1" "04/11/2017" "Git 2\&.12\&.2\&.599\&.gcf11a6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,8 +34,9 @@ git-branch \- List, create, or delete branches
 .nf
 \fIgit branch\fR [\-\-color[=<when>] | \-\-no\-color] [\-r | \-a]
         [\-\-list] [\-v [\-\-abbrev=<length> | \-\-no\-abbrev]]
-        [\-\-column[=<options>] | \-\-no\-column]
-        [(\-\-merged | \-\-no\-merged | \-\-contains) [<commit>]] [\-\-sort=<key>]
+        [\-\-column[=<options>] | \-\-no\-column] [\-\-sort=<key>]
+        [(\-\-merged | \-\-no\-merged) [<commit>]]
+        [\-\-contains [<commit]] [\-\-no\-contains [<commit>]]
         [\-\-points\-at <object>] [\-\-format=<format>] [<pattern>\&...]
 \fIgit branch\fR [\-\-set\-upstream | \-\-track | \-\-no\-track] [\-l] [\-f] <branchname> [<start\-point>]
 \fIgit branch\fR (\-\-set\-upstream\-to=<upstream> | \-u <upstream>) [<branchname>]
@@ -49,7 +50,7 @@ git-branch \- List, create, or delete branches
 .sp
 If \fB\-\-list\fR is given, or if there are no non\-option arguments, existing branches are listed; the current branch will be highlighted with an asterisk\&. Option \fB\-r\fR causes the remote\-tracking branches to be listed, and option \fB\-a\fR shows both local and remote branches\&. If a \fB<pattern>\fR is given, it is used as a shell wildcard to restrict the output to matching branches\&. If multiple patterns are given, a branch is shown if it matches any of the patterns\&. Note that when providing a \fB<pattern>\fR, you must use \fB\-\-list\fR; otherwise the command is interpreted as branch creation\&.
 .sp
-With \fB\-\-contains\fR, shows only the branches that contain the named commit (in other words, the branches whose tip commits are descendants of the named commit)\&. With \fB\-\-merged\fR, only branches merged into the named commit (i\&.e\&. the branches whose tip commits are reachable from the named commit) will be listed\&. With \fB\-\-no\-merged\fR only branches not merged into the named commit will be listed\&. If the <commit> argument is missing it defaults to \fBHEAD\fR (i\&.e\&. the tip of the current branch)\&.
+With \fB\-\-contains\fR, shows only the branches that contain the named commit (in other words, the branches whose tip commits are descendants of the named commit), \fB\-\-no\-contains\fR inverts it\&. With \fB\-\-merged\fR, only branches merged into the named commit (i\&.e\&. the branches whose tip commits are reachable from the named commit) will be listed\&. With \fB\-\-no\-merged\fR only branches not merged into the named commit will be listed\&. If the <commit> argument is missing it defaults to \fBHEAD\fR (i\&.e\&. the tip of the current branch)\&.
 .sp
 The command\(cqs second form creates a new branch head named <branchname> which points to the current \fBHEAD\fR, or <start\-point> if given\&.
 .sp
@@ -258,16 +259,24 @@ Only list branches which contain the specified commit (HEAD if not specified)\&.
 \fB\-\-list\fR\&.
 .RE
 .PP
+\-\-no\-contains [<commit>]
+.RS 4
+Only list branches which don\(cqt contain the specified commit (HEAD if not specified)\&. Implies
+\fB\-\-list\fR\&.
+.RE
+.PP
 \-\-merged [<commit>]
 .RS 4
 Only list branches whose tips are reachable from the specified commit (HEAD if not specified)\&. Implies
-\fB\-\-list\fR\&.
+\fB\-\-list\fR, incompatible with
+\fB\-\-no\-merged\fR\&.
 .RE
 .PP
 \-\-no\-merged [<commit>]
 .RS 4
 Only list branches whose tips are not reachable from the specified commit (HEAD if not specified)\&. Implies
-\fB\-\-list\fR\&.
+\fB\-\-list\fR, incompatible with
+\fB\-\-merged\fR\&.
 .RE
 .PP
 <branchname>
@@ -365,7 +374,7 @@ will create them again unless you configure them not to\&. See
 .sp
 If you are creating a branch that you want to checkout immediately, it is easier to use the git checkout command with its \fB\-b\fR option to create a branch and check it out with a single command\&.
 .sp
-The options \fB\-\-contains\fR, \fB\-\-merged\fR and \fB\-\-no\-merged\fR serve three related but different purposes:
+The options \fB\-\-contains\fR, \fB\-\-no\-contains\fR, \fB\-\-merged\fR and \fB\-\-no\-merged\fR serve four related but different purposes:
 .sp
 .RS 4
 .ie n \{\
@@ -377,6 +386,18 @@ The options \fB\-\-contains\fR, \fB\-\-merged\fR and \fB\-\-no\-merged\fR serve 
 .\}
 \fB\-\-contains <commit>\fR
 is used to find all branches which will need special attention if <commit> were to be rebased or amended, since those branches contain the specified <commit>\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB\-\-no\-contains <commit>\fR
+is the inverse of that, i\&.e\&. branches that don\(cqt contain the specified <commit>\&.
 .RE
 .sp
 .RS 4
