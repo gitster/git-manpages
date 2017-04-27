@@ -2,12 +2,12 @@
 .\"     Title: gitmodules
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 04/19/2017
+.\"      Date: 04/26/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.13.0.rc0
+.\"    Source: Git 2.13.0.rc1
 .\"  Language: English
 .\"
-.TH "GITMODULES" "5" "04/19/2017" "Git 2\&.13\&.0\&.rc0" "Git Manual"
+.TH "GITMODULES" "5" "04/26/2017" "Git 2\&.13\&.0\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -90,14 +90,47 @@ This option can be used to control recursive fetching of this submodule\&. If th
 .PP
 submodule\&.<name>\&.ignore
 .RS 4
-Defines under what circumstances "git status" and the diff family show a submodule as modified\&. When set to "all", it will never be considered modified (but will nonetheless show up in the output of status and commit when it has been staged), "dirty" will ignore all changes to the submodules work tree and takes only differences between the HEAD of the submodule and the commit recorded in the superproject into account\&. "untracked" will additionally let submodules with modified tracked files in their work tree show up\&. Using "none" (the default when this option is not set) also shows submodules that have untracked files in their work tree as changed\&. If this option is also present in the submodules entry in \&.git/config of the superproject, the setting there will override the one found in \&.gitmodules\&. Both settings can be overridden on the command line by using the "\-\-ignore\-submodule" option\&. The
-\fIgit submodule\fR
-commands are not affected by this setting\&.
+Defines under what circumstances "git status" and the diff family show a submodule as modified\&. The following values are supported:
+.PP
+all
+.RS 4
+The submodule will never be considered modified (but will nonetheless show up in the output of status and commit when it has been staged)\&.
+.RE
+.PP
+dirty
+.RS 4
+All changes to the submodule\(cqs work tree will be ignored, only committed differences between the HEAD of the submodule and its recorded state in the superproject are taken into account\&.
+.RE
+.PP
+untracked
+.RS 4
+Only untracked files in submodules will be ignored\&. Committed differences and modifications to tracked files will show up\&.
+.RE
+.PP
+none
+.RS 4
+No modifiations to submodules are ignored, all of committed differences, and modifications to tracked and untracked files are shown\&. This is the default option\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+If this option is also present in the submodules entry in \&.git/config
+of the superproject, the setting there will override the one found in
+\&.gitmodules\&.
+Both settings can be overridden on the command line by using the
+"\-\-ignore\-submodule" option\&. The \(aqgit submodule\(aq commands are not
+affected by this setting\&.
+.fi
+.if n \{\
+.RE
+.\}
+.RE
 .RE
 .PP
 submodule\&.<name>\&.shallow
 .RS 4
-When set to true, a clone of this submodule will be performed as a shallow clone unless the user explicitly asks for a non\-shallow clone\&.
+When set to true, a clone of this submodule will be performed as a shallow clone (with a history depth of 1) unless the user explicitly asks for a non\-shallow clone\&.
 .RE
 .SH "EXAMPLES"
 .sp
