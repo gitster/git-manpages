@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2017
+.\"      Date: 05/29/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.13.0.90.g1eb437020
+.\"    Source: Git 2.13.0.249.ge83352ef2
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "05/23/2017" "Git 2\&.13\&.0\&.90\&.g1eb4370" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/29/2017" "Git 2\&.13\&.0\&.249\&.ge83352" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -709,12 +709,14 @@ Inside double quotes, double quote \fB"\fR and backslash \fB\e\fR characters mus
 The following escape sequences (beside \fB\e"\fR and \fB\e\e\fR) are recognized: \fB\en\fR for newline character (NL), \fB\et\fR for horizontal tabulation (HT, TAB) and \fB\eb\fR for backspace (BS)\&. Other char escape sequences (including octal escape sequences) are invalid\&.
 .SS "Includes"
 .sp
-You can include a config file from another by setting the special \fBinclude\&.path\fR variable to the name of the file to be included\&. The variable takes a pathname as its value, and is subject to tilde expansion\&. \fBinclude\&.path\fR can be given multiple times\&.
+The \fBinclude\fR and \fBincludeIf\fR sections allow you to include config directives from another source\&. These sections behave identically to each other with the exception that \fBincludeIf\fR sections may be ignored if their condition does not evaluate to true; see "Conditional includes" below\&.
 .sp
-The included file is expanded immediately, as if its contents had been found at the location of the include directive\&. If the value of the \fBinclude\&.path\fR variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. See below for examples\&.
+You can include a config file from another by setting the special \fBinclude\&.path\fR (or \fBincludeIf\&.*\&.path\fR) variable to the name of the file to be included\&. The variable takes a pathname as its value, and is subject to tilde expansion\&. These variables can be given multiple times\&.
+.sp
+The contents of the included file are inserted immediately, as if they had been found at the location of the include directive\&. If the value of the variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. See below for examples\&.
 .SS "Conditional includes"
 .sp
-You can include a config file from another conditionally by setting a \fBincludeIf\&.<condition>\&.path\fR variable to the name of the file to be included\&. The variable\(cqs value is treated the same way as \fBinclude\&.path\fR\&. \fBincludeIf\&.<condition>\&.path\fR can be given multiple times\&.
+You can include a config file from another conditionally by setting a \fBincludeIf\&.<condition>\&.path\fR variable to the name of the file to be included\&.
 .sp
 The condition starts with a keyword followed by a colon and some data whose format and meaning depends on the keyword\&. Supported keywords are:
 .PP
@@ -893,8 +895,8 @@ Note that "\&.\&./" is not special and will match literally, which is unlikely w
 .nf
 [include]
         path = /path/to/foo\&.inc ; include by absolute path
-        path = foo ; expand "foo" relative to the current file
-        path = ~/foo ; expand "foo" in your `$HOME` directory
+        path = foo\&.inc ; find "foo\&.inc" relative to the current file
+        path = ~/foo\&.inc ; find "foo\&.inc" in your `$HOME` directory
 .fi
 .if n \{\
 .RE
@@ -931,6 +933,20 @@ Note that "\&.\&./" is not special and will match literally, which is unlikely w
 ; include for all repositories inside $HOME/to/group
 [includeIf "gitdir:~/to/group/"]
         path = /path/to/foo\&.inc
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+; relative paths are always relative to the including
+; file (if the condition is true); their location is not
+; affected by the condition
+[includeIf "gitdir:/path/to/group/"]
+        path = foo\&.inc
 .fi
 .if n \{\
 .RE
@@ -1163,7 +1179,7 @@ core\&.fileMode
 .RS 4
 Tells Git if the executable bit of files in the working tree is to be honored\&.
 .sp
-Some filesystems lose the executable bit when a file that is marked as executable is checked out, or checks out an non\-executable file with executable bit on\&.
+Some filesystems lose the executable bit when a file that is marked as executable is checked out, or checks out a non\-executable file with executable bit on\&.
 \fBgit-clone\fR(1)
 or
 \fBgit-init\fR(1)
@@ -4368,6 +4384,16 @@ If true, the initial commit will be shown as a big creation event\&. This is equ
 \fBgit-log\fR(1)
 or
 \fBgit-whatchanged\fR(1), which normally hide the root commit will now show it\&. True by default\&.
+.RE
+.PP
+log\&.showSignature
+.RS 4
+If true, makes
+\fBgit-log\fR(1),
+\fBgit-show\fR(1), and
+\fBgit-whatchanged\fR(1)
+assume
+\fB\-\-show\-signature\fR\&.
 .RE
 .PP
 log\&.mailmap
