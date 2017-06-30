@@ -2,12 +2,12 @@
 .\"     Title: git-stash
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 05/09/2017
+.\"      Date: 06/30/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.13.0
+.\"    Source: Git 2.13.2.556.g5116f791c
 .\"  Language: English
 .\"
-.TH "GIT\-STASH" "1" "05/09/2017" "Git 2\&.13\&.0" "Git Manual"
+.TH "GIT\-STASH" "1" "06/30/2017" "Git 2\&.13\&.2\&.556\&.g5116f7" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -59,10 +59,10 @@ The latest stash you created is stored in \fBrefs/stash\fR; older stashes are fo
 save [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [<message>], push [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [\-m|\-\-message <message>] [\-\-] [<pathspec>\&...]
 .RS 4
 Save your local modifications to a new
-\fIstash\fR
+\fIstash entry\fR
 and roll them back to HEAD (in the working tree and in the index)\&. The <message> part is optional and gives the description along with the stashed state\&.
 .sp
-For quickly making a snapshot, you can omit "push"\&. In this mode, non\-option arguments are not allowed to prevent a misspelled subcommand from making an unwanted stash\&. The two exceptions to this are
+For quickly making a snapshot, you can omit "push"\&. In this mode, non\-option arguments are not allowed to prevent a misspelled subcommand from making an unwanted stash entry\&. The two exceptions to this are
 \fBstash \-p\fR
 which acts as alias for
 \fBstash push \-p\fR
@@ -71,7 +71,7 @@ and pathspecs, which are allowed after a double hyphen
 for disambiguation\&.
 .sp
 When pathspec is given to
-\fIgit stash push\fR, the new stash records the modified states only for the files that match the pathspec\&. The index entries and working tree files are then rolled back to the state in HEAD only for these files, too, leaving files that do not match the pathspec intact\&.
+\fIgit stash push\fR, the new stash entry records the modified states only for the files that match the pathspec\&. The index entries and working tree files are then rolled back to the state in HEAD only for these files, too, leaving files that do not match the pathspec intact\&.
 .sp
 If the
 \fB\-\-keep\-index\fR
@@ -101,13 +101,13 @@ to override this\&.
 .PP
 list [<options>]
 .RS 4
-List the stashes that you currently have\&. Each
-\fIstash\fR
+List the stash entries that you currently have\&. Each
+\fIstash entry\fR
 is listed with its name (e\&.g\&.
 \fBstash@{0}\fR
-is the latest stash,
+is the latest entry,
 \fBstash@{1}\fR
-is the one before, etc\&.), the name of the branch that was current when the stash was made, and a short description of the commit the stash was based on\&.
+is the one before, etc\&.), the name of the branch that was current when the entry was made, and a short description of the commit the entry was based on\&.
 .sp
 .if n \{\
 .RS 4
@@ -128,13 +128,13 @@ command to control what is shown and how\&. See
 .PP
 show [<stash>]
 .RS 4
-Show the changes recorded in the stash as a diff between the stashed state and its original parent\&. When no
+Show the changes recorded in the stash entry as a diff between the stashed contents and the commit back when the stash entry was first created\&. When no
 \fB<stash>\fR
-is given, shows the latest one\&. By default, the command shows the diffstat, but it will accept any format known to
+is given, it shows the latest one\&. By default, the command shows the diffstat, but it will accept any format known to
 \fIgit diff\fR
 (e\&.g\&.,
 \fBgit stash show \-p stash@{1}\fR
-to view the second most recent stash in patch form)\&. You can use stash\&.showStat and/or stash\&.showPatch config variables to change the default behavior\&.
+to view the second most recent entry in patch form)\&. You can use stash\&.showStat and/or stash\&.showPatch config variables to change the default behavior\&.
 .RE
 .PP
 pop [\-\-index] [\-q|\-\-quiet] [<stash>]
@@ -192,21 +192,21 @@ This is useful if the branch on which you ran
 \fBgit stash save\fR
 has changed enough that
 \fBgit stash apply\fR
-fails due to conflicts\&. Since the stash is applied on top of the commit that was HEAD at the time
+fails due to conflicts\&. Since the stash entry is applied on top of the commit that was HEAD at the time
 \fBgit stash\fR
 was run, it restores the originally stashed state with no conflicts\&.
 .RE
 .PP
 clear
 .RS 4
-Remove all the stashed states\&. Note that those states will then be subject to pruning, and may be impossible to recover (see
+Remove all the stash entries\&. Note that those entries will then be subject to pruning, and may be impossible to recover (see
 \fIExamples\fR
 below for a possible strategy)\&.
 .RE
 .PP
 drop [\-q|\-\-quiet] [<stash>]
 .RS 4
-Remove a single stashed state from the stash list\&. When no
+Remove a single stash entry from the list of stash entries\&. When no
 \fB<stash>\fR
 is given, it removes the latest one\&. i\&.e\&.
 \fBstash@{0}\fR, otherwise
@@ -217,7 +217,7 @@ must be a valid stash log reference of the form
 .PP
 create
 .RS 4
-Create a stash (which is a regular commit object) and return its object name, without storing it anywhere in the ref namespace\&. This is intended to be useful for scripts\&. It is probably not the command you want to use; see "save" above\&.
+Create a stash entry (which is a regular commit object) and return its object name, without storing it anywhere in the ref namespace\&. This is intended to be useful for scripts\&. It is probably not the command you want to use; see "save" above\&.
 .RE
 .PP
 store
@@ -228,7 +228,7 @@ Store a given stash created via
 .RE
 .SH "DISCUSSION"
 .sp
-A stash is represented as a commit whose tree records the state of the working directory, and its first parent is the commit at \fBHEAD\fR when the stash was created\&. The tree of the second parent records the state of the index when the stash is made, and it is made a child of the \fBHEAD\fR commit\&. The ancestry graph looks like this:
+A stash entry is represented as a commit whose tree records the state of the working directory, and its first parent is the commit at \fBHEAD\fR when the entry was created\&. The tree of the second parent records the state of the index when the entry is made, and it is made a child of the \fBHEAD\fR commit\&. The ancestry graph looks like this:
 .sp
 .if n \{\
 .RS 4
@@ -341,9 +341,9 @@ $ git commit foo \-m \(aqRemaining parts\(aq
 .sp
 .RE
 .PP
-Recovering stashes that were cleared/dropped erroneously
+Recovering stash entries that were cleared/dropped erroneously
 .RS 4
-If you mistakenly drop or clear stashes, they cannot be recovered through the normal safety mechanisms\&. However, you can try the following incantation to get a list of stashes that are still in your repository, but not reachable any more:
+If you mistakenly drop or clear stash entries, they cannot be recovered through the normal safety mechanisms\&. However, you can try the following incantation to get a list of stash entries that are still in your repository, but not reachable any more:
 .sp
 .if n \{\
 .RS 4
