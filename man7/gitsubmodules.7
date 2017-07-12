@@ -1,0 +1,400 @@
+'\" t
+.\"     Title: gitsubmodules
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 07/12/2017
+.\"    Manual: Git Manual
+.\"    Source: Git 2.13.3.649.g80145b1e4
+.\"  Language: English
+.\"
+.TH "GITSUBMODULES" "7" "07/12/2017" "Git 2\&.13\&.3\&.649\&.g80145b" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+gitsubmodules \- mounting one repository inside another
+.SH "SYNOPSIS"
+.sp
+.nf
+\&.gitmodules, $GIT_DIR/config
+.fi
+.sp
+.nf
+git submodule
+git <command> \-\-recurse\-submodules
+.fi
+.sp
+.SH "DESCRIPTION"
+.sp
+A submodule is a repository embedded inside another repository\&. The submodule has its own history; the repository it is embedded in is called a superproject\&.
+.sp
+On the filesystem, a submodule usually (but not always \- see FORMS below) consists of (i) a Git directory located under the \fB$GIT_DIR/modules/\fR directory of its superproject, (ii) a working directory inside the superproject\(cqs working directory, and a \fB\&.git\fR file at the root of the submodule\(cqs working directory pointing to (i)\&.
+.sp
+Assuming the submodule has a Git directory at \fB$GIT_DIR/modules/foo/\fR and a working directory at \fBpath/to/bar/\fR, the superproject tracks the submodule via a \fBgitlink\fR entry in the tree at \fBpath/to/bar\fR and an entry in its \fB\&.gitmodules\fR file (see \fBgitmodules\fR(5)) of the form \fBsubmodule\&.foo\&.path = path/to/bar\fR\&.
+.sp
+The \fBgitlink\fR entry contains the object name of the commit that the superproject expects the submodule\(cqs working directory to be at\&.
+.sp
+The section \fBsubmodule\&.foo\&.*\fR in the \fB\&.gitmodules\fR file gives additional hints to Gits porcelain layer such as where to obtain the submodule via the \fBsubmodule\&.foo\&.url\fR setting\&.
+.sp
+Submodules can be used for at least two different use cases:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Using another project while maintaining independent history\&. Submodules allow you to contain the working tree of another project within your own working tree while keeping the history of both projects separate\&. Also, since submodules are fixed to an arbitrary version, the other project can be independently developed without affecting the superproject, allowing the superproject project to fix itself to new versions only when desired\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Splitting a (logically single) project into multiple repositories and tying them back together\&. This can be used to overcome current limitations of Gits implementation to have finer grained access:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Size of the git repository: In its current form Git scales up poorly for large repositories containing content that is not compressed by delta computation between trees\&. However you can also use submodules to e\&.g\&. hold large binary assets and these repositories are then shallowly cloned such that you do not have a large history locally\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Transfer size: In its current form Git requires the whole working tree present\&. It does not allow partial trees to be transferred in fetch or clone\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Access control: By restricting user access to submodules, this can be used to implement read/write policies for different users\&.
+.RE
+.RE
+.SH "THE CONFIGURATION OF SUBMODULES"
+.sp
+Submodule operations can be configured using the following mechanisms (from highest to lowest precedence):
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The command line for those commands that support taking submodule specs\&. Most commands have a boolean flag
+\fI\-\-recurse\-submodules\fR
+whether to recurse into submodules\&. Examples are
+\fBls\-files\fR
+or
+\fBcheckout\fR\&. Some commands take enums, such as
+\fBfetch\fR
+and
+\fBpush\fR, where you can specify how submodules are affected\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The configuration inside the submodule\&. This includes
+\fB$GIT_DIR/config\fR
+in the submodule, but also settings in the tree such as a
+\fB\&.gitattributes\fR
+or
+\fB\&.gitignore\fR
+files that specify behavior of commands inside the submodule\&.
+.sp
+For example an effect from the submodule\(cqs
+\fB\&.gitignore\fR
+file would be observed when you run
+\fBgit status \-\-ignore\-submodules=none\fR
+in the superproject\&. This collects information from the submodule\(cqs working directory by running
+\fBstatus\fR
+in the submodule, which does pay attention to its
+\fB\&.gitignore\fR
+file\&.
+.sp
+The submodule\(cqs
+\fB$GIT_DIR/config\fR
+file would come into play when running
+\fBgit push \-\-recurse\-submodules=check\fR
+in the superproject, as this would check if the submodule has any changes not published to any remote\&. The remotes are configured in the submodule as usual in the
+\fB$GIT_DIR/config\fR
+file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The configuration file
+\fB$GIT_DIR/config\fR
+in the superproject\&. Typical configuration at this place is controlling if a submodule is recursed into at all via the
+\fBactive\fR
+flag for example\&.
+.sp
+If the submodule is not yet initialized, then the configuration inside the submodule does not exist yet, so configuration where to obtain the submodule from is configured here for example\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+the
+\fB\&.gitmodules\fR
+file inside the superproject\&. Additionally to the required mapping between submodule\(cqs name and path, a project usually uses this file to suggest defaults for the upstream collection of repositories\&.
+.sp
+This file mainly serves as the mapping between name and path in the superproject, such that the submodule\(cqs git directory can be located\&.
+.sp
+If the submodule has never been initialized, this is the only place where submodule configuration is found\&. It serves as the last fallback to specify where to obtain the submodule from\&.
+.RE
+.SH "FORMS"
+.sp
+Submodules can take the following forms:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The basic form described in DESCRIPTION with a Git directory, a working directory, a
+\fBgitlink\fR, and a
+\fB\&.gitmodules\fR
+entry\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"Old\-form" submodule: A working directory with an embedded
+\fB\&.git\fR
+directory, and the tracking
+\fBgitlink\fR
+and
+\fB\&.gitmodules\fR
+entry in the superproject\&. This is typically found in repositories generated using older versions of Git\&.
+.sp
+It is possible to construct these old form repositories manually\&.
+.sp
+When deinitialized or deleted (see below), the submodule\(cqs Git directory is automatically moved to
+\fB$GIT_DIR/modules/<name>/\fR
+of the superproject\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Deinitialized submodule: A
+\fBgitlink\fR, and a
+\fB\&.gitmodules\fR
+entry, but no submodule working directory\&. The submodule\(cqs git directory may be there as after deinitializing the git directory is kept around\&. The directory which is supposed to be the working directory is empty instead\&.
+.sp
+A submodule can be deinitialized by running
+\fBgit submodule deinit\fR\&. Besides emptying the working directory, this command only modifies the superproject\(cqs
+\fB$GIT_DIR/config\fR
+file, so the superproject\(cqs history is not affected\&. This can be undone using
+\fBgit submodule init\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Deleted submodule: A submodule can be deleted by running
+\fBgit rm <submodule path> && git commit\fR\&. This can be undone using
+\fBgit revert\fR\&.
+.sp
+The deletion removes the superproject\(cqs tracking data, which are both the
+\fBgitlink\fR
+entry and the section in the
+\fB\&.gitmodules\fR
+file\&. The submodule\(cqs working directory is removed from the file system, but the Git directory is kept around as it to make it possible to checkout past commits without requiring fetching from another repository\&.
+.sp
+To completely remove a submodule, manually delete
+\fB$GIT_DIR/modules/<name>/\fR\&.
+.RE
+.SH "WORKFLOW FOR A THIRD PARTY LIBRARY"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# add a submodule
+git submodule add <url> <path>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# occasionally update the submodule to a new version:
+git \-C <path> checkout <new version>
+git add <path>
+git commit \-m "update submodule to new version"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# See the list of submodules in a superproject
+git submodule status
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# See FORMS on removing submodules
+.fi
+.if n \{\
+.RE
+.\}
+.SH "WORKFLOW FOR AN ARTIFICIALLY SPLIT REPO"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# Enable recursion for relevant commands, such that
+# regular commands recurse into submodules by default
+git config \-\-global submodule\&.recurse true
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# Unlike the other commands below clone still needs
+# its own recurse flag:
+git clone \-\-recurse <URL> <directory>
+cd <directory>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# Get to know the code:
+git grep foo
+git ls\-files
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# Get new code
+git fetch
+git pull \-\-rebase
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# change worktree
+git checkout
+git reset
+.fi
+.if n \{\
+.RE
+.\}
+.SH "IMPLEMENTATION DETAILS"
+.sp
+When cloning or pulling a repository containing submodules the submodules will not be checked out by default; You can instruct \fIclone\fR to recurse into submodules\&. The \fIinit\fR and \fIupdate\fR subcommands of \fIgit submodule\fR will maintain submodules checked out and at an appropriate revision in your working tree\&. Alternatively you can set \fIsubmodule\&.recurse\fR to have \fIcheckout\fR recursing into submodules\&.
+.SH "SEE ALSO"
+.sp
+\fBgit-submodule\fR(1), \fBgitmodules\fR(5)\&.
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
