@@ -2,12 +2,12 @@
 .\"     Title: git-interpret-trailers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/04/2017
+.\"      Date: 08/26/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.14.0
+.\"    Source: Git 2.14.1.459.g238e487ea
 .\"  Language: English
 .\"
-.TH "GIT\-INTERPRET\-TRAI" "1" "08/04/2017" "Git 2\&.14\&.0" "Git Manual"
+.TH "GIT\-INTERPRET\-TRAI" "1" "08/26/2017" "Git 2\&.14\&.1\&.459\&.g238e48" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,18 +28,21 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-interpret-trailers \- help add structured information into commit messages
+git-interpret-trailers \- add or parse structured information in commit messages
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit interpret\-trailers\fR [\-\-in\-place] [\-\-trim\-empty] [(\-\-trailer <token>[(=|:)<value>])\&...] [<file>\&...]
+\fIgit interpret\-trailers\fR [options] [(\-\-trailer <token>[(=|:)<value>])\&...] [<file>\&...]
+\fIgit interpret\-trailers\fR [options] [\-\-parse] [<file>\&...]
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-Help adding \fItrailers\fR lines, that look similar to RFC 822 e\-mail headers, at the end of the otherwise free\-form part of a commit message\&.
+Help parsing or adding \fItrailers\fR lines, that look similar to RFC 822 e\-mail headers, at the end of the otherwise free\-form part of a commit message\&.
 .sp
-This command reads some patches or commit messages from either the <file> arguments or the standard input if no <file> is specified\&. Then this command applies the arguments passed using the \fB\-\-trailer\fR option, if any, to the commit message part of each input file\&. The result is emitted on the standard output\&.
+This command reads some patches or commit messages from either the <file> arguments or the standard input if no <file> is specified\&. If \fB\-\-parse\fR is specified, the output consists of the parsed trailers\&.
+.sp
+Otherwise, this command applies the arguments passed using the \fB\-\-trailer\fR option, if any, to the commit message part of each input file\&. The result is emitted on the standard output\&.
 .sp
 Some configuration variables control the way the \fB\-\-trailer\fR arguments are applied to each commit message and the way any existing trailer in the commit message is changed\&. They also make it possible to automatically add some trailers\&.
 .sp
@@ -80,6 +83,65 @@ If the <value> part of any trailer contains only whitespace, the whole trailer w
 \-\-trailer <token>[(=|:)<value>]
 .RS 4
 Specify a (<token>, <value>) pair that should be applied as a trailer to the input messages\&. See the description of this command\&.
+.RE
+.PP
+\-\-where <placement>, \-\-no\-where
+.RS 4
+Specify where all new trailers will be added\&. A setting provided with
+\fI\-\-where\fR
+overrides all configuration variables and applies to all
+\fI\-\-trailer\fR
+options until the next occurrence of
+\fI\-\-where\fR
+or
+\fI\-\-no\-where\fR\&.
+.RE
+.PP
+\-\-if\-exists <action>, \-\-no\-if\-exists
+.RS 4
+Specify what action will be performed when there is already at least one trailer with the same <token> in the message\&. A setting provided with
+\fI\-\-if\-exists\fR
+overrides all configuration variables and applies to all
+\fI\-\-trailer\fR
+options until the next occurrence of
+\fI\-\-if\-exists\fR
+or
+\fI\-\-no\-if\-exists\fR\&.
+.RE
+.PP
+\-\-if\-missing <action>, \-\-no\-if\-missing
+.RS 4
+Specify what action will be performed when there is no other trailer with the same <token> in the message\&. A setting provided with
+\fI\-\-if\-missing\fR
+overrides all configuration variables and applies to all
+\fI\-\-trailer\fR
+options until the next occurrence of
+\fI\-\-if\-missing\fR
+or
+\fI\-\-no\-if\-missing\fR\&.
+.RE
+.PP
+\-\-only\-trailers
+.RS 4
+Output only the trailers, not any other parts of the input\&.
+.RE
+.PP
+\-\-only\-input
+.RS 4
+Output only trailers that exist in the input; do not add any from the command\-line or by following configured
+\fBtrailer\&.*\fR
+rules\&.
+.RE
+.PP
+\-\-unfold
+.RS 4
+Remove any whitespace\-continuation in trailers, so that each trailer appears on a line by itself with its full content\&.
+.RE
+.PP
+\-\-parse
+.RS 4
+A convenience alias for
+\fB\-\-only\-trailers \-\-only\-input \-\-unfold\fR\&.
 .RE
 .SH "CONFIGURATION VARIABLES"
 .PP
@@ -195,10 +257,10 @@ This option takes the same values as the
 configuration variable and it overrides what is specified by that option for trailers with the specified <token>\&.
 .RE
 .PP
-trailer\&.<token>\&.ifexist
+trailer\&.<token>\&.ifexists
 .RS 4
 This option takes the same values as the
-\fItrailer\&.ifexist\fR
+\fItrailer\&.ifexists\fR
 configuration variable and it overrides what is specified by that option for trailers with the specified <token>\&.
 .RE
 .PP

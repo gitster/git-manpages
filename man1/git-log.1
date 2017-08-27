@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/22/2017
+.\"      Date: 08/26/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.14.1.248.gf0294f474
+.\"    Source: Git 2.14.1.459.g238e487ea
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "08/22/2017" "Git 2\&.14\&.1\&.248\&.gf0294f" "Git Manual"
+.TH "GIT\-LOG" "1" "08/26/2017" "Git 2\&.14\&.1\&.459\&.g238e48" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2581,7 +2581,15 @@ respectively, but padding both sides (i\&.e\&. the text is centered)
 .IP \(bu 2.3
 .\}
 %(trailers): display the trailers of the body as interpreted by
-\fBgit-interpret-trailers\fR(1)
+\fBgit-interpret-trailers\fR(1)\&. If the
+\fB:only\fR
+option is given, omit non\-trailer lines from the trailer block\&. If the
+\fB:unfold\fR
+option is given, behave as if interpret\-trailer\(cqs
+\fB\-\-unfold\fR
+option was given\&. E\&.g\&.,
+\fB%(trailers:only:unfold)\fR
+to do both\&.
 .RE
 .RE
 .if n \{\
@@ -2912,6 +2920,48 @@ can be one of
 .RS 4
 Turn off colored diff\&. It is the same as
 \fB\-\-color=never\fR\&.
+.RE
+.PP
+\-\-color\-moved[=<mode>]
+.RS 4
+Moved lines of code are colored differently\&. The <mode> defaults to
+\fIno\fR
+if the option is not given and to
+\fIzebra\fR
+if the option with no mode is given\&. The mode must be one of:
+.PP
+no
+.RS 4
+Moved lines are not highlighted\&.
+.RE
+.PP
+default
+.RS 4
+Is a synonym for
+\fBzebra\fR\&. This may change to a more sensible mode in the future\&.
+.RE
+.PP
+plain
+.RS 4
+Any line that is added in one location and was removed in another location will be colored with
+\fIcolor\&.diff\&.newMoved\fR\&. Similarly
+\fIcolor\&.diff\&.oldMoved\fR
+will be used for removed lines that are added somewhere else in the diff\&. This mode picks up any moved line, but it is not very useful in a review to determine if a block of code was moved without permutation\&.
+.RE
+.PP
+zebra
+.RS 4
+Blocks of moved text of at least 20 alphanumeric characters are detected greedily\&. The detected blocks are painted using either the
+\fIcolor\&.diff\&.{old,new}Moved\fR
+color or
+\fIcolor\&.diff\&.{old,new}MovedAlternative\fR\&. The change between the two colors indicates that a new block was detected\&.
+.RE
+.PP
+dimmed_zebra
+.RS 4
+Similar to
+\fIzebra\fR, but additional dimming of uninteresting parts of moved code is performed\&. The bordering lines of two adjacent blocks are considered interesting, the rest is uninteresting\&.
+.RE
 .RE
 .PP
 \-\-word\-diff[=<mode>]
