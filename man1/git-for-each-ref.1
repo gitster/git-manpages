@@ -2,12 +2,12 @@
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2017
+.\"      Date: 09/25/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.14.1.310.g395664942
+.\"    Source: Git 2.14.1.802.g28996cec8
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "08/23/2017" "Git 2\&.14\&.1\&.310\&.g395664" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "09/25/2017" "Git 2\&.14\&.1\&.802\&.g28996c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,8 +34,9 @@ git-for-each-ref \- Output information on each ref
 .nf
 \fIgit for\-each\-ref\fR [\-\-count=<count>] [\-\-shell|\-\-perl|\-\-python|\-\-tcl]
                    [(\-\-sort=<key>)\&...] [\-\-format=<format>] [<pattern>\&...]
-                   [\-\-points\-at <object>] [(\-\-merged | \-\-no\-merged) [<object>]]
-                   [\-\-contains [<object>]] [\-\-no\-contains [<object>]]
+                   [\-\-points\-at=<object>]
+                   (\-\-merged[=<object>] | \-\-no\-merged[=<object>])
+                   [\-\-contains[=<object>]] [\-\-no\-contains[=<object>]]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -43,13 +44,18 @@ git-for-each-ref \- Output information on each ref
 Iterate over all refs that match \fB<pattern>\fR and show them according to the given \fB<format>\fR, after sorting them according to the given set of \fB<key>\fR\&. If \fB<count>\fR is given, stop after showing that many refs\&. The interpolated values in \fB<format>\fR can optionally be quoted as string literals in the specified host language allowing their direct evaluation in that language\&.
 .SH "OPTIONS"
 .PP
-<count>
+<pattern>\&...
+.RS 4
+If one or more patterns are given, only refs are shown that match against at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash\&.
+.RE
+.PP
+\-\-count=<count>
 .RS 4
 By default the command shows all refs that match
 \fB<pattern>\fR\&. This option makes it stop after showing that many refs\&.
 .RE
 .PP
-<key>
+\-\-sort=<key>
 .RS 4
 A field name to sort on\&. Prefix
 \fB\-\fR
@@ -58,7 +64,7 @@ to sort in descending order of the value\&. When unspecified,
 is used\&. You may use the \-\-sort=<key> option multiple times, in which case the last key becomes the primary key\&.
 .RE
 .PP
-<format>
+\-\-format=<format>
 .RS 4
 A string that interpolates
 \fB%(fieldname)\fR
@@ -90,11 +96,6 @@ to
 (LF)\&.
 .RE
 .PP
-<pattern>\&...
-.RS 4
-If one or more patterns are given, only refs are shown that match against at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash\&.
-.RE
-.PP
 \-\-shell, \-\-perl, \-\-python, \-\-tcl
 .RS 4
 If given, strings that substitute
@@ -102,29 +103,29 @@ If given, strings that substitute
 placeholders are quoted as string literals suitable for the specified host language\&. This is meant to produce a scriptlet that can directly be `eval`ed\&.
 .RE
 .PP
-\-\-points\-at <object>
+\-\-points\-at=<object>
 .RS 4
 Only list refs which points at the given object\&.
 .RE
 .PP
-\-\-merged [<object>]
+\-\-merged[=<object>]
 .RS 4
 Only list refs whose tips are reachable from the specified commit (HEAD if not specified), incompatible with
 \fB\-\-no\-merged\fR\&.
 .RE
 .PP
-\-\-no\-merged [<object>]
+\-\-no\-merged[=<object>]
 .RS 4
 Only list refs whose tips are not reachable from the specified commit (HEAD if not specified), incompatible with
 \fB\-\-merged\fR\&.
 .RE
 .PP
-\-\-contains [<object>]
+\-\-contains[=<object>]
 .RS 4
 Only list refs which contain the specified commit (HEAD if not specified)\&.
 .RE
 .PP
-\-\-no\-contains [<object>]
+\-\-no\-contains[=<object>]
 .RS 4
 Only list refs which don\(cqt contain the specified commit (HEAD if not specified)\&.
 .RE
