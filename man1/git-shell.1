@@ -2,12 +2,12 @@
 .\"     Title: git-shell
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 08/04/2017
+.\"      Date: 09/26/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.14.0
+.\"    Source: Git 2.14.2.606.g7451fcdc0
 .\"  Language: English
 .\"
-.TH "GIT\-SHELL" "1" "08/04/2017" "Git 2\&.14\&.0" "Git Manual"
+.TH "GIT\-SHELL" "1" "09/26/2017" "Git 2\&.14\&.2\&.606\&.g7451fc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -86,6 +86,27 @@ printf \(aq%s\en\(aq "provide interactive shell access\&."
 exit 128
 EOF
 $ chmod +x $HOME/git\-shell\-commands/no\-interactive\-login
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+To enable git\-cvsserver access (which should generally have the \fBno\-interactive\-login\fR example above as a prerequisite, as creating the git\-shell\-commands directory allows interactive logins):
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cat >$HOME/git\-shell\-commands/cvs <<\eEOF
+if ! test $# = 1 && test "$1" = "server"
+then
+        echo >&2 "git\-cvsserver only handles \e"server\e""
+        exit 1
+fi
+exec git cvsserver server
+EOF
+$ chmod +x $HOME/git\-shell\-commands/cvs
 .fi
 .if n \{\
 .RE
