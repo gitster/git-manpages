@@ -2,12 +2,12 @@
 .\"     Title: git-branch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 09/28/2017
+.\"      Date: 10/03/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.14.2.642.g20fed7cad
+.\"    Source: Git 2.14.2.746.g8fb8a945b
 .\"  Language: English
 .\"
-.TH "GIT\-BRANCH" "1" "09/28/2017" "Git 2\&.14\&.2\&.642\&.g20fed7" "Git Manual"
+.TH "GIT\-BRANCH" "1" "10/03/2017" "Git 2\&.14\&.2\&.746\&.g8fb8a9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,6 +42,7 @@ git-branch \- List, create, or delete branches
 \fIgit branch\fR (\-\-set\-upstream\-to=<upstream> | \-u <upstream>) [<branchname>]
 \fIgit branch\fR \-\-unset\-upstream [<branchname>]
 \fIgit branch\fR (\-m | \-M) [<oldbranch>] <newbranch>
+\fIgit branch\fR (\-c | \-C) [<oldbranch>] <newbranch>
 \fIgit branch\fR (\-d | \-D) [\-r] <branchname>\&...
 \fIgit branch\fR \-\-edit\-description [<branchname>]
 .fi
@@ -59,6 +60,8 @@ Note that this will create the new branch, but it will not switch the working tr
 When a local branch is started off a remote\-tracking branch, Git sets up the branch (specifically the \fBbranch\&.<name>\&.remote\fR and \fBbranch\&.<name>\&.merge\fR configuration entries) so that \fIgit pull\fR will appropriately merge from the remote\-tracking branch\&. This behavior may be changed via the global \fBbranch\&.autoSetupMerge\fR configuration flag\&. That setting can be overridden by using the \fB\-\-track\fR and \fB\-\-no\-track\fR options, and changed later using \fBgit branch \-\-set\-upstream\-to\fR\&.
 .sp
 With a \fB\-m\fR or \fB\-M\fR option, <oldbranch> will be renamed to <newbranch>\&. If <oldbranch> had a corresponding reflog, it is renamed to match <newbranch>, and a reflog entry is created to remember the branch renaming\&. If <newbranch> exists, \-M must be used to force the rename to happen\&.
+.sp
+The \fB\-c\fR and \fB\-C\fR options have the exact same semantics as \fB\-m\fR and \fB\-M\fR, except instead of the branch being renamed it along with its config and reflog will be copied to a new name\&.
 .sp
 With a \fB\-d\fR or \fB\-D\fR option, \fB<branchname>\fR will be deleted\&. You may specify more than one branch for deletion\&. If the branch currently has a reflog then the reflog will also be deleted\&.
 .sp
@@ -102,7 +105,10 @@ refuses to change an existing branch\&. In combination with
 \fB\-\-delete\fR), allow deleting the branch irrespective of its merged status\&. In combination with
 \fB\-m\fR
 (or
-\fB\-\-move\fR), allow renaming the branch even if the new branch name already exists\&.
+\fB\-\-move\fR), allow renaming the branch even if the new branch name already exists, the same applies for
+\fB\-c\fR
+(or
+\fB\-\-copy\fR)\&.
 .RE
 .PP
 \-m, \-\-move
@@ -114,6 +120,17 @@ Move/rename a branch and the corresponding reflog\&.
 .RS 4
 Shortcut for
 \fB\-\-move \-\-force\fR\&.
+.RE
+.PP
+\-c, \-\-copy
+.RS 4
+Copy a branch and the corresponding reflog\&.
+.RE
+.PP
+\-C
+.RS 4
+Shortcut for
+\fB\-\-copy \-\-force\fR\&.
 .RE
 .PP
 \-\-color[=<when>]
