@@ -2,12 +2,12 @@
 .\"     Title: git-checkout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 10/11/2017
+.\"      Date: 10/17/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.0.rc1
+.\"    Source: Git 2.15.0.rc1.7.g2ac9cf7af
 .\"  Language: English
 .\"
-.TH "GIT\-CHECKOUT" "1" "10/11/2017" "Git 2\&.15\&.0\&.rc1" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "10/17/2017" "Git 2\&.15\&.0\&.rc1\&.7\&.g2a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,7 +37,8 @@ git-checkout \- Switch branches or restore working tree files
 \fIgit checkout\fR [\-q] [\-f] [\-m] [\-\-detach] <commit>
 \fIgit checkout\fR [\-q] [\-f] [\-m] [[\-b|\-B|\-\-orphan] <new_branch>] [<start_point>]
 \fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <paths>\&...
-\fIgit checkout\fR [\-p|\-\-patch] [<tree\-ish>] [\-\-] [<paths>\&...]
+\fIgit checkout\fR [<tree\-ish>] [\-\-] <pathspec>\&...
+\fIgit checkout\fR (\-p|\-\-patch) [<tree\-ish>] [\-\-] [<paths>\&...]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -112,24 +113,9 @@ would check out that branch without detaching HEAD)\&.
 Omitting <branch> detaches HEAD at the tip of the current branch\&.
 .RE
 .PP
-\fIgit checkout\fR [\-p|\-\-patch] [<tree\-ish>] [\-\-] <pathspec>\&...
+\fIgit checkout\fR [<tree\-ish>] [\-\-] <pathspec>\&...
 .RS 4
-When <paths> or
-\fB\-\-patch\fR
-are given,
-\fIgit checkout\fR
-does
-\fBnot\fR
-switch branches\&. It updates the named paths in the working tree from the index file or from a named <tree\-ish> (most often a commit)\&. In this case, the
-\fB\-b\fR
-and
-\fB\-\-track\fR
-options are meaningless and giving either of them results in an error\&. The <tree\-ish> argument can be used to specify a specific tree\-ish (i\&.e\&. commit, tag or tree) to update the index for the given paths before updating the working tree\&.
-.sp
-\fIgit checkout\fR
-with <paths> or
-\fB\-\-patch\fR
-is used to restore modified or deleted paths to their original contents from the index or replace paths with the contents from a named <tree\-ish> (most often a commit\-ish)\&.
+Overwrite paths in the working tree by replacing with the contents in the index or in the <tree\-ish> (most often a commit)\&. When a <tree\-ish> is given, the paths that match the <pathspec> are updated both in the index and in the working tree\&.
 .sp
 The index may contain unmerged entries because of a previous failed merge\&. By default, if you try to check out such an entry from the index, the checkout operation will fail and nothing will be checked out\&. Using
 \fB\-f\fR
@@ -138,6 +124,13 @@ will ignore these unmerged entries\&. The contents from a specific side of the m
 or
 \fB\-\-theirs\fR\&. With
 \fB\-m\fR, changes made to the working tree file can be discarded to re\-create the original conflicted merge result\&.
+.RE
+.PP
+\fIgit checkout\fR (\-p|\-\-patch) [<tree\-ish>] [\-\-] [<pathspec>\&...]
+.RS 4
+This is similar to the "check out paths to the working tree from either the index or from a tree\-ish" mode described above, but lets you use the interactive interface to show the "diff" output and choose which hunks to use in the result\&. See below for the description of
+\fB\-\-patch\fR
+option\&.
 .RE
 .SH "OPTIONS"
 .PP
