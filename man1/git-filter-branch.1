@@ -2,12 +2,12 @@
 .\"     Title: git-filter-branch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 10/11/2017
+.\"      Date: 10/20/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.0.rc1
+.\"    Source: Git 2.15.0.rc2
 .\"  Language: English
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "10/11/2017" "Git 2\&.15\&.0\&.rc1" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "10/20/2017" "Git 2\&.15\&.0\&.rc2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,11 +32,11 @@ git-filter-branch \- Rewrite branches
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit filter\-branch\fR [\-\-setup <command>] [\-\-env\-filter <command>]
-        [\-\-tree\-filter <command>] [\-\-index\-filter <command>]
-        [\-\-parent\-filter <command>] [\-\-msg\-filter <command>]
-        [\-\-commit\-filter <command>] [\-\-tag\-name\-filter <command>]
-        [\-\-subdirectory\-filter <directory>] [\-\-prune\-empty]
+\fIgit filter\-branch\fR [\-\-setup <command>] [\-\-subdirectory\-filter <directory>]
+        [\-\-env\-filter <command>] [\-\-tree\-filter <command>]
+        [\-\-index\-filter <command>] [\-\-parent\-filter <command>]
+        [\-\-msg\-filter <command>] [\-\-commit\-filter <command>]
+        [\-\-tag\-name\-filter <command>] [\-\-prune\-empty]
         [\-\-original <namespace>] [\-d <directory>] [\-f | \-\-force]
         [\-\-state\-branch <branch>] [\-\-] [<rev\-list options>\&...]
 .fi
@@ -66,6 +66,12 @@ A \fImap\fR function is available that takes an "original sha1 id" argument and 
 \-\-setup <command>
 .RS 4
 This is not a real filter executed for each commit but a one time setup just before the loop\&. Therefore no commit\-specific variables are defined yet\&. Functions or variables defined here can be used or modified in the following filter steps except the commit filter, for technical reasons\&.
+.RE
+.PP
+\-\-subdirectory\-filter <directory>
+.RS 4
+Only look at the history which touches the given subdirectory\&. The result will contain that directory (and only that) as its project root\&. Implies
+the section called \(lqRemap to ancestor\(rq\&.
 .RE
 .PP
 \-\-env\-filter <command>
@@ -129,12 +135,6 @@ This is the filter for rewriting tag names\&. When passed, it will be called for
 The original tags are not deleted, but can be overwritten; use "\-\-tag\-name\-filter cat" to simply update the tags\&. In this case, be very careful and make sure you have the old tags backed up in case the conversion has run afoul\&.
 .sp
 Nearly proper rewriting of tag objects is supported\&. If the tag has a message attached, a new tag object will be created with the same message, author, and timestamp\&. If the tag has a signature attached, the signature will be stripped\&. It is by definition impossible to preserve signatures\&. The reason this is "nearly" proper, is because ideally if the tag did not change (points to the same object, has the same name, etc\&.) it should retain any signature\&. That is not the case, signatures will always be removed, buyer beware\&. There is also no support for changing the author or timestamp (or the tag message for that matter)\&. Tags which point to other tags will be rewritten to point to the underlying commit\&.
-.RE
-.PP
-\-\-subdirectory\-filter <directory>
-.RS 4
-Only look at the history which touches the given subdirectory\&. The result will contain that directory (and only that) as its project root\&. Implies
-the section called \(lqRemap to ancestor\(rq\&.
 .RE
 .PP
 \-\-prune\-empty
