@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 10/30/2017
+.\"      Date: 11/10/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.0
+.\"    Source: Git 2.15.0.164.g4123bcaed
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "10/30/2017" "Git 2\&.15\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "11/10/2017" "Git 2\&.15\&.0\&.164\&.g4123bc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1197,6 +1197,11 @@ addEmbeddedRepo
 .RS 4
 Advice on what to do when you\(cqve accidentally added one git repo inside of another\&.
 .RE
+.PP
+ignoredHook
+.RS 4
+Advice shown if an hook is ignored because the hook is not set as executable\&.
+.RE
 .RE
 .PP
 core\&.fileMode
@@ -1975,6 +1980,33 @@ how to handle whitespaces, in the same way as the
 \fB\-\-whitespace\fR
 option\&. See
 \fBgit-apply\fR(1)\&.
+.RE
+.PP
+blame\&.showRoot
+.RS 4
+Do not treat root commits as boundaries in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
+.RE
+.PP
+blame\&.blankBoundary
+.RS 4
+Show blank commit object name for boundary commits in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
+.RE
+.PP
+blame\&.showEmail
+.RS 4
+Show the author email instead of author name in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
+.RE
+.PP
+blame\&.date
+.RS 4
+Specifies the format used to output dates in
+\fBgit-blame\fR(1)\&. If unset the iso format is used\&. For supported values, see the discussion of the
+\fB\-\-date\fR
+option at
+\fBgit-log\fR(1)\&.
 .RE
 .PP
 branch\&.autoSetupMerge
@@ -5453,6 +5485,31 @@ causes pushes to be signed if the server supports it, as if
 \fB\-\-signed=if\-asked\fR
 is passed to
 \fIgit push\fR\&. A false value may override a value from a lower\-priority config file\&. An explicit command\-line flag always overrides this config option\&.
+.RE
+.PP
+push\&.pushOption
+.RS 4
+When no
+\fB\-\-push\-option=<option>\fR
+argument is given from the command line,
+\fBgit push\fR
+behaves as if each <value> of this variable is given as
+\fB\-\-push\-option=<value>\fR\&.
+.sp
+This is a multi\-valued variable, and an empty value can be used in a higher priority configuration file (e\&.g\&.
+\fB\&.git/config\fR
+in a repository) to clear the values inherited from a lower priority configuration files (e\&.g\&.
+\fB$HOME/\&.gitconfig\fR)\&.
+.sp
+Example:
+.sp
+/etc/gitconfig push\&.pushoption = a push\&.pushoption = b
+.sp
+~/\&.gitconfig push\&.pushoption = c
+.sp
+repo/\&.git/config push\&.pushoption = push\&.pushoption = b
+.sp
+This will result in only b (a and c are cleared)\&.
 .RE
 .PP
 push\&.recurseSubmodules
