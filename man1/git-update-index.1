@@ -2,12 +2,12 @@
 .\"     Title: git-update-index
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 10/30/2017
+.\"      Date: 11/21/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.0
+.\"    Source: Git 2.15.0.317.g14c63a9dc
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "10/30/2017" "Git 2\&.15\&.0" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "11/21/2017" "Git 2\&.15\&.0\&.317\&.g14c63a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,9 +39,11 @@ git-update-index \- Register file contents in the working tree to the index
              [\-\-chmod=(+|\-)x]
              [\-\-[no\-]assume\-unchanged]
              [\-\-[no\-]skip\-worktree]
+             [\-\-[no\-]fsmonitor\-valid]
              [\-\-ignore\-submodules]
              [\-\-[no\-]split\-index]
              [\-\-[no\-|test\-|force\-]untracked\-cache]
+             [\-\-[no\-]fsmonitor]
              [\-\-really\-refresh] [\-\-unresolve] [\-\-again | \-g]
              [\-\-info\-only] [\-\-index\-info]
              [\-z] [\-\-stdin] [\-\-index\-version <n>]
@@ -128,6 +130,11 @@ Like
 \-\-[no\-]skip\-worktree
 .RS 4
 When one of these flags is specified, the object name recorded for the paths are not updated\&. Instead, these options set and unset the "skip\-worktree" bit for the paths\&. See section "Skip\-worktree bit" below for more information\&.
+.RE
+.PP
+\-\-[no\-]fsmonitor\-valid
+.RS 4
+When one of these flags is specified, the object name recorded for the paths are not updated\&. Instead, these options set and unset the "fsmonitor valid" bit for the paths\&. See section "File System Monitor" below for more information\&.
 .RE
 .PP
 \-g, \-\-again
@@ -241,6 +248,14 @@ Same as
 used to imply
 \fB\-\-test\-untracked\-cache\fR
 but this option would enable the extension unconditionally\&.
+.RE
+.PP
+\-\-fsmonitor, \-\-no\-fsmonitor
+.RS 4
+Enable or disable files system monitor feature\&. These options take effect whatever the value of the
+\fBcore\&.fsmonitor\fR
+configuration variable (see
+\fBgit-config\fR(1))\&. But a warning is emitted when the change goes against the configured value, as the configured value will take effect next time the index is read and this will remove the intended effect of the option\&.
 .RE
 .PP
 \-\-
@@ -476,6 +491,17 @@ You can test whether the filesystem supports that with the \fB\-\-test\-untracke
 If you want to enable (or disable) this feature, it is easier to use the \fBcore\&.untrackedCache\fR configuration variable (see \fBgit-config\fR(1)) than using the \fB\-\-untracked\-cache\fR option to \fBgit update\-index\fR in each repository, especially if you want to do so across all repositories you use, because you can set the configuration variable to \fBtrue\fR (or \fBfalse\fR) in your \fB$HOME/\&.gitconfig\fR just once and have it affect all repositories you touch\&.
 .sp
 When the \fBcore\&.untrackedCache\fR configuration variable is changed, the untracked cache is added to or removed from the index the next time a command reads the index; while when \fB\-\-[no\-|force\-]untracked\-cache\fR are used, the untracked cache is immediately added to or removed from the index\&.
+.SH "FILE SYSTEM MONITOR"
+.sp
+This feature is intended to speed up git operations for repos that have large working directories\&.
+.sp
+It enables git to work together with a file system monitor (see the "fsmonitor\-watchman" section of \fBgithooks\fR(5)) that can inform it as to what files have been modified\&. This enables git to avoid having to lstat() every file to find modified files\&.
+.sp
+When used in conjunction with the untracked cache, it can further improve performance by avoiding the cost of scanning the entire working directory looking for new files\&.
+.sp
+If you want to enable (or disable) this feature, it is easier to use the \fBcore\&.fsmonitor\fR configuration variable (see \fBgit-config\fR(1)) than using the \fB\-\-fsmonitor\fR option to \fBgit update\-index\fR in each repository, especially if you want to do so across all repositories you use, because you can set the configuration variable to \fBtrue\fR (or \fBfalse\fR) in your \fB$HOME/\&.gitconfig\fR just once and have it affect all repositories you touch\&.
+.sp
+When the \fBcore\&.fsmonitor\fR configuration variable is changed, the file system monitor is added to or removed from the index the next time a command reads the index\&. When \fB\-\-[no\-]fsmonitor\fR are used, the file system monitor is immediately added to or removed from the index\&.
 .SH "CONFIGURATION"
 .sp
 The command honors \fBcore\&.filemode\fR configuration variable\&. If your repository is on a filesystem whose executable bits are unreliable, this should be set to \fIfalse\fR (see \fBgit-config\fR(1))\&. This causes the command to ignore differences in file modes recorded in the index and the file mode on the filesystem if they differ only on executable bit\&. On such an unfortunate filesystem, you may need to use \fIgit update\-index \-\-chmod=\fR\&.
