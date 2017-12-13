@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 11/21/2017
+.\"      Date: 12/13/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.0.317.g14c63a9dc
+.\"    Source: Git 2.15.1.388.gd9a3764af
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "11/21/2017" "Git 2\&.15\&.0\&.317\&.g14c63a" "Git Manual"
+.TH "GITHOOKS" "5" "12/13/2017" "Git 2\&.15\&.1\&.388\&.gd9a376" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -145,7 +145,7 @@ although the full, 40\-character SHA\-1s would be supplied\&. If the foreign ref
 If this hook exits with a non\-zero status, \fIgit push\fR will abort without pushing anything\&. Information about why the push is rejected may be sent to the user by writing to standard error\&.
 .SS "pre\-receive"
 .sp
-This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit push\fR is done on a local repository\&. Just before starting to update refs on the remote repository, the pre\-receive hook is invoked\&. Its exit status determines the success or failure of the update\&.
+This hook is invoked by \fIgit\-receive\-pack\fR when it reacts to \fIgit push\fR and updates reference(s) in its repository\&. Just before starting to update refs on the remote repository, the pre\-receive hook is invoked\&. Its exit status determines the success or failure of the update\&.
 .sp
 This hook executes once for the receive operation\&. It takes no arguments, but for each ref to be updated it receives on standard input a line of the format:
 .sp
@@ -170,7 +170,7 @@ The number of push options given on the command line of \fBgit push \-\-push\-op
 See the section on "Quarantine Environment" in \fBgit-receive-pack\fR(1) for some caveats\&.
 .SS "update"
 .sp
-This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit push\fR is done on a local repository\&. Just before updating the ref on the remote repository, the update hook is invoked\&. Its exit status determines the success or failure of the ref update\&.
+This hook is invoked by \fIgit\-receive\-pack\fR when it reacts to \fIgit push\fR and updates reference(s) in its repository\&. Just before updating the ref on the remote repository, the update hook is invoked\&. Its exit status determines the success or failure of the ref update\&.
 .sp
 The hook executes once for each ref to be updated, and takes three parameters:
 .sp
@@ -220,7 +220,7 @@ Both standard output and standard error output are forwarded to \fIgit send\-pac
 The default \fIupdate\fR hook, when enabled\(emand with \fBhooks\&.allowunannotated\fR config option unset or set to false\(emprevents unannotated tags to be pushed\&.
 .SS "post\-receive"
 .sp
-This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit push\fR is done on a local repository\&. It executes on the remote repository once after all the refs have been updated\&.
+This hook is invoked by \fIgit\-receive\-pack\fR when it reacts to \fIgit push\fR and updates reference(s) in its repository\&. It executes on the remote repository once after all the refs have been updated\&.
 .sp
 This hook executes once for the receive operation\&. It takes no arguments, but gets the same information as the \fIpre\-receive\fR hook does on its standard input\&.
 .sp
@@ -235,7 +235,7 @@ The default \fIpost\-receive\fR hook is empty, but there is a sample script \fBp
 The number of push options given on the command line of \fBgit push \-\-push\-option=\&.\&.\&.\fR can be read from the environment variable \fBGIT_PUSH_OPTION_COUNT\fR, and the options themselves are found in \fBGIT_PUSH_OPTION_0\fR, \fBGIT_PUSH_OPTION_1\fR,\&... If it is negotiated to not use the push options phase, the environment variables will not be set\&. If the client selects to use push options, but doesn\(cqt transmit any, the count variable will be set to zero, \fBGIT_PUSH_OPTION_COUNT=0\fR\&.
 .SS "post\-update"
 .sp
-This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit push\fR is done on a local repository\&. It executes on the remote repository once after all the refs have been updated\&.
+This hook is invoked by \fIgit\-receive\-pack\fR when it reacts to \fIgit push\fR and updates reference(s) in its repository\&. It executes on the remote repository once after all the refs have been updated\&.
 .sp
 It takes a variable number of parameters, each of which is the name of ref that was actually updated\&.
 .sp
@@ -248,7 +248,7 @@ When enabled, the default \fIpost\-update\fR hook runs \fIgit update\-server\-in
 Both standard output and standard error output are forwarded to \fIgit send\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
 .SS "push\-to\-checkout"
 .sp
-This hook is invoked by \fIgit\-receive\-pack\fR on the remote repository, which happens when a \fIgit push\fR is done on a local repository, when the push tries to update the branch that is currently checked out and the \fBreceive\&.denyCurrentBranch\fR configuration variable is set to \fBupdateInstead\fR\&. Such a push by default is refused if the working tree and the index of the remote repository has any difference from the currently checked out commit; when both the working tree and the index match the current commit, they are updated to match the newly pushed tip of the branch\&. This hook is to be used to override the default behaviour\&.
+This hook is invoked by \fIgit\-receive\-pack\fR when it reacts to \fIgit push\fR and updates reference(s) in its repository, and when the push tries to update the branch that is currently checked out and the \fBreceive\&.denyCurrentBranch\fR configuration variable is set to \fBupdateInstead\fR\&. Such a push by default is refused if the working tree and the index of the remote repository has any difference from the currently checked out commit; when both the working tree and the index match the current commit, they are updated to match the newly pushed tip of the branch\&. This hook is to be used to override the default behaviour\&.
 .sp
 The hook receives the commit with which the tip of the current branch is going to be updated\&. It can exit with a non\-zero status to refuse the push (when it does so, it must not modify the index or the working tree)\&. Or it can make any necessary changes to the working tree and to the index to bring them to the desired state when the tip of the current branch is updated to the new commit, and exit with a zero status\&.
 .sp
