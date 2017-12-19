@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 10/30/2017
+.\"      Date: 12/19/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.0
+.\"    Source: Git 2.15.1.433.g936d1b989
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "10/30/2017" "Git 2\&.15\&.0" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "12/19/2017" "Git 2\&.15\&.1\&.433\&.g936d1b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-worktree \- Manage multiple working trees
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit worktree add\fR [\-f] [\-\-detach] [\-\-checkout] [\-\-lock] [\-b <new\-branch>] <path> [<branch>]
+\fIgit worktree add\fR [\-f] [\-\-detach] [\-\-checkout] [\-\-lock] [\-b <new\-branch>] <path> [<commit\-ish>]
 \fIgit worktree list\fR [\-\-porcelain]
 \fIgit worktree lock\fR [\-\-reason <string>] <worktree>
 \fIgit worktree prune\fR [\-n] [\-v] [\-\-expire <expire>]
@@ -52,30 +52,42 @@ If you move a linked working tree, you need to manually update the administrativ
 If a linked working tree is stored on a portable device or network share which is not always mounted, you can prevent its administrative files from being pruned by issuing the \fBgit worktree lock\fR command, optionally specifying \fB\-\-reason\fR to explain why the working tree is locked\&.
 .SH "COMMANDS"
 .PP
-add <path> [<branch>]
+add <path> [<commit\-ish>]
 .RS 4
 Create
 \fB<path>\fR
 and checkout
-\fB<branch>\fR
+\fB<commit\-ish>\fR
 into it\&. The new working directory is linked to the current repository, sharing everything except working directory specific files such as HEAD, index, etc\&.
 \fB\-\fR
 may also be specified as
-\fB<branch>\fR; it is synonymous with
+\fB<commit\-ish>\fR; it is synonymous with
 \fB@{\-1}\fR\&.
 .sp
-If
+If <commit\-ish> is a branch name (call it
 \fB<branch>\fR
-is omitted and neither
+and is not found, and neither
 \fB\-b\fR
 nor
 \fB\-B\fR
 nor
 \fB\-\-detach\fR
-used, then, as a convenience, a new branch based at HEAD is created automatically, as if
-\fB\-b $(basename <path>)\fR
-was specified\&.
+are used, but there does exist a tracking branch in exactly one remote (call it
+\fB<remote>\fR) with a matching name, treat as equivalent to
 .RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git worktree add \-\-track \-b <branch> <path> <remote>/<branch>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
++ If \fB<commit\-ish>\fR is omitted and neither \fB\-b\fR nor \fB\-B\fR nor \fB\-\-detach\fR used, then, as a convenience, a new branch based at HEAD is created automatically, as if \fB\-b $(basename <path>)\fR was specified\&.
 .PP
 list
 .RS 4
@@ -106,8 +118,8 @@ Unlock a working tree, allowing it to be pruned, moved or deleted\&.
 By default,
 \fBadd\fR
 refuses to create a new working tree when
-\fB<branch>\fR
-is already checked out by another working tree\&. This option overrides that safeguard\&.
+\fB<commit\-ish>\fR
+is a branch name and is already checked out by another working tree\&. This option overrides that safeguard\&.
 .RE
 .PP
 \-b <new\-branch>, \-B <new\-branch>
@@ -116,10 +128,10 @@ With
 \fBadd\fR, create a new branch named
 \fB<new\-branch>\fR
 starting at
-\fB<branch>\fR, and check out
+\fB<commit\-ish>\fR, and check out
 \fB<new\-branch>\fR
 into the new working tree\&. If
-\fB<branch>\fR
+\fB<commit\-ish>\fR
 is omitted, it defaults to HEAD\&. By default,
 \fB\-b\fR
 refuses to create a new branch if it already exists\&.
@@ -127,7 +139,7 @@ refuses to create a new branch if it already exists\&.
 overrides this safeguard, resetting
 \fB<new\-branch>\fR
 to
-\fB<branch>\fR\&.
+\fB<commit\-ish>\fR\&.
 .RE
 .PP
 \-\-detach
@@ -142,10 +154,32 @@ With
 By default,
 \fBadd\fR
 checks out
-\fB<branch>\fR, however,
+\fB<commit\-ish>\fR, however,
 \fB\-\-no\-checkout\fR
 can be used to suppress checkout in order to make customizations, such as configuring sparse\-checkout\&. See "Sparse checkout" in
 \fBgit-read-tree\fR(1)\&.
+.RE
+.PP
+\-\-[no\-]guess\-remote
+.RS 4
+With
+\fBworktree add <path>\fR, without
+\fB<commit\-ish>\fR, instead of creating a new branch from HEAD, if there exists a tracking branch in exactly one remote matching the basename of `<path>, base the new branch on the remote\-tracking branch, and mark the remote\-tracking branch as "upstream" from the new branch\&.
+.sp
+This can also be set up as the default behaviour by using the
+\fBworktree\&.guessRemote\fR
+config option\&.
+.RE
+.PP
+\-\-[no\-]track
+.RS 4
+When creating a new branch, if
+\fB<commit\-ish>\fR
+is a branch, mark it as "upstream" from the new branch\&. This is the default if
+\fB<commit\-ish>\fR
+is a remote\-tracking branch\&. See "\-\-track" in
+\fBgit-branch\fR(1)
+for details\&.
 .RE
 .PP
 \-\-lock
