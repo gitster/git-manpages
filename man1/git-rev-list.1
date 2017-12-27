@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 10/30/2017
+.\"      Date: 12/27/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.0
+.\"    Source: Git 2.15.1.501.g29533fb16
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "10/30/2017" "Git 2\&.15\&.0" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "12/27/2017" "Git 2\&.15\&.1\&.501\&.g29533f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -70,7 +70,9 @@ git-rev-list \- Lists commit objects in reverse chronological order
              [ \-\-fixed\-strings | \-F ]
              [ \-\-date=<format>]
              [ [ \-\-objects | \-\-objects\-edge | \-\-objects\-edge\-aggressive ]
-               [ \-\-unpacked ] ]
+               [ \-\-unpacked ]
+               [ \-\-filter=<filter\-spec> [ \-\-filter\-print\-omitted ] ] ]
+             [ \-\-missing=<missing\-action> ]
              [ \-\-pretty | \-\-header ]
              [ \-\-bisect ]
              [ \-\-bisect\-vars ]
@@ -1266,6 +1268,66 @@ Pretend as if all trees and blobs used by the index are listed on the command li
 .RS 4
 Only useful with
 \fB\-\-objects\fR; print the object IDs that are not in packs\&.
+.RE
+.PP
+\-\-filter=<filter\-spec>
+.RS 4
+Only useful with one of the
+\fB\-\-objects*\fR; omits objects (usually blobs) from the list of printed objects\&. The
+\fI<filter\-spec>\fR
+may be one of the following:
+.sp
+The form
+\fI\-\-filter=blob:none\fR
+omits all blobs\&.
+.sp
+The form
+\fI\-\-filter=blob:limit=<n>[kmg]\fR
+omits blobs larger than n bytes or units\&. n may be zero\&. The suffixes k, m, and g can be used to name units in KiB, MiB, or GiB\&. For example,
+\fIblob:limit=1k\fR
+is the same as
+\fIblob:limit=1024\fR\&.
+.sp
+The form
+\fI\-\-filter=sparse:oid=<blob\-ish>\fR
+uses a sparse\-checkout specification contained in the blob (or blob\-expression)
+\fI<blob\-ish>\fR
+to omit blobs that would not be not required for a sparse checkout on the requested refs\&.
+.sp
+The form
+\fI\-\-filter=sparse:path=<path>\fR
+similarly uses a sparse\-checkout specification contained in <path>\&.
+.RE
+.PP
+\-\-no\-filter
+.RS 4
+Turn off any previous
+\fB\-\-filter=\fR
+argument\&.
+.RE
+.PP
+\-\-filter\-print\-omitted
+.RS 4
+Only useful with
+\fB\-\-filter=\fR; prints a list of the objects omitted by the filter\&. Object IDs are prefixed with a \(lq~\(rq character\&.
+.RE
+.PP
+\-\-missing=<missing\-action>
+.RS 4
+A debug option to help with future "partial clone" development\&. This option specifies how missing objects are handled\&.
+.sp
+The form
+\fI\-\-missing=error\fR
+requests that rev\-list stop with an error if a missing object is encountered\&. This is the default action\&.
+.sp
+The form
+\fI\-\-missing=allow\-any\fR
+will allow object traversal to continue if a missing object is encountered\&. Missing objects will silently be omitted from the results\&.
+.sp
+The form
+\fI\-\-missing=print\fR
+is like
+\fIallow\-any\fR, but will also print a list of the missing objects\&. Object IDs are prefixed with a \(lq?\(rq character\&.
 .RE
 .PP
 \-\-no\-walk[=(sorted|unsorted)]
@@ -2602,15 +2664,17 @@ respectively, but padding both sides (i\&.e\&. the text is centered)
 .sp -1
 .IP \(bu 2.3
 .\}
-%(trailers): display the trailers of the body as interpreted by
-\fBgit-interpret-trailers\fR(1)\&. If the
-\fB:only\fR
+%(trailers[:options]): display the trailers of the body as interpreted by
+\fBgit-interpret-trailers\fR(1)\&. The
+\fBtrailers\fR
+string may be followed by a colon and zero or more comma\-separated options\&. If the
+\fBonly\fR
 option is given, omit non\-trailer lines from the trailer block\&. If the
-\fB:unfold\fR
+\fBunfold\fR
 option is given, behave as if interpret\-trailer\(cqs
 \fB\-\-unfold\fR
 option was given\&. E\&.g\&.,
-\fB%(trailers:only:unfold)\fR
+\fB%(trailers:only,unfold)\fR
 to do both\&.
 .RE
 .RE

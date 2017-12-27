@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 12/19/2017
+.\"      Date: 12/27/2017
 .\"    Manual: Git Manual
-.\"    Source: Git 2.15.1.433.g936d1b989
+.\"    Source: Git 2.15.1.501.g29533fb16
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/19/2017" "Git 2\&.15\&.1\&.433\&.g936d1b" "Git Manual"
+.TH "GIT\-CONFIG" "1" "12/27/2017" "Git 2\&.15\&.1\&.501\&.g29533f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -5647,7 +5647,12 @@ option by default\&.
 .PP
 rebase\&.autoStash
 .RS 4
-When set to true, automatically create a temporary stash entry before the operation begins, and apply it after the operation ends\&. This means that you can run rebase on a dirty worktree\&. However, use with care: the final stash application after a successful rebase might result in non\-trivial conflicts\&. Defaults to false\&.
+When set to true, automatically create a temporary stash entry before the operation begins, and apply it after the operation ends\&. This means that you can run rebase on a dirty worktree\&. However, use with care: the final stash application after a successful rebase might result in non\-trivial conflicts\&. This option can be overridden by the
+\fB\-\-no\-autostash\fR
+and
+\fB\-\-autostash\fR
+options of
+\fBgit-rebase\fR(1)\&. Defaults to false\&.
 .RE
 .PP
 rebase\&.missingCommitsCheck
@@ -5656,13 +5661,48 @@ If set to "warn", git rebase \-i will print a warning if some commits are remove
 \fIgit rebase \-\-edit\-todo\fR
 can then be used to correct the error\&. If set to "ignore", no checking is done\&. To drop a commit without warning or error, use the
 \fBdrop\fR
-command in the todo\-list\&. Defaults to "ignore"\&.
+command in the todo list\&. Defaults to "ignore"\&.
 .RE
 .PP
 rebase\&.instructionFormat
 .RS 4
 A format string, as specified in
-\fBgit-log\fR(1), to be used for the instruction list during an interactive rebase\&. The format will automatically have the long commit hash prepended to the format\&.
+\fBgit-log\fR(1), to be used for the todo list during an interactive rebase\&. The format will automatically have the long commit hash prepended to the format\&.
+.RE
+.PP
+rebase\&.abbreviateCommands
+.RS 4
+If set to true,
+\fBgit rebase\fR
+will use abbreviated command names in the todo list resulting in something like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        p deadbee The oneline of the commit
+        p fa1afe1 The oneline of the next commit
+        \&.\&.\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+instead of:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        pick deadbee The oneline of the commit
+        pick fa1afe1 The oneline of the next commit
+        \&.\&.\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Defaults to false\&.
 .RE
 .PP
 receive\&.advertiseAtomic
