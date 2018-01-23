@@ -2,12 +2,12 @@
 .\"     Title: git-status
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/17/2018
+.\"      Date: 01/23/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.16.0
+.\"    Source: Git 2.16.1.72.g5be1f00a9
 .\"  Language: English
 .\"
-.TH "GIT\-STATUS" "1" "01/17/2018" "Git 2\&.16\&.0" "Git Manual"
+.TH "GIT\-STATUS" "1" "01/23/2018" "Git 2\&.16\&.1\&.72\&.g5be1f00" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -236,19 +236,20 @@ The output from this command is designed to be used as a commit template comment
 The paths mentioned in the output, unlike many other Git commands, are made relative to the current directory if you are working in a subdirectory (this is on purpose, to help cutting and pasting)\&. See the status\&.relativePaths config option below\&.
 .SS "Short Format"
 .sp
-In the short\-format, the status of each path is shown as
+In the short\-format, the status of each path is shown as one of these forms
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-XY PATH1 \-> PATH2
+XY PATH
+XY ORIG_PATH \-> PATH
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-where \fBPATH1\fR is the path in the \fBHEAD\fR, and the " \fB\-> PATH2\fR" part is shown only when \fBPATH1\fR corresponds to a different path in the index/worktree (i\&.e\&. the file is renamed)\&. The \fBXY\fR is a two\-letter status code\&.
+where \fBORIG_PATH\fR is where the renamed/copied contents came from\&. \fBORIG_PATH\fR is only shown when the entry is renamed or copied\&. The \fBXY\fR is a two\-letter status code\&.
 .sp
 The fields (including the \fB\->\fR) are separated from each other by a single space\&. If a filename contains whitespace or other nonprintable characters, that field will be quoted in the manner of a C string literal: surrounded by ASCII double quote (34) characters, and with interior special characters backslash\-escaped\&.
 .sp
@@ -354,6 +355,8 @@ C        [ MD]   copied in index
 [MARC]           index and work tree matches
 [ MARC]     M    work tree changed since index
 [ MARC]     D    deleted in work tree
+[ D]        R    renamed in work tree
+[ D]        C    copied in work tree
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 D           D    unmerged, both deleted
 A           U    unmerged, added by us
@@ -495,13 +498,13 @@ Field       Meaning
             of similarity between the source and target of the
             move or copy)\&. For example "R100" or "C75"\&.
 <path>      The pathname\&.  In a renamed/copied entry, this
-            is the path in the index and in the working tree\&.
+            is the target path\&.
 <sep>       When the `\-z` option is used, the 2 pathnames are separated
             with a NUL (ASCII 0x00) byte; otherwise, a tab (ASCII 0x09)
             byte separates them\&.
-<origPath>  The pathname in the commit at HEAD\&.  This is only
-            present in a renamed/copied entry, and tells
-            where the renamed/copied contents came from\&.
+<origPath>  The pathname in the commit at HEAD or in the index\&.
+            This is only present in a renamed/copied entry, and
+            tells where the renamed/copied contents came from\&.
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 .fi
 .if n \{\
