@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gitdiffcore
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
-.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 01/17/2018
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 01/26/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.16.0
+.\"    Source: Git 2.16.1.72.g5be1f00a9
 .\"  Language: English
 .\"
-.TH "GITDIFFCORE" "7" "01/17/2018" "Git 2\&.16\&.0" "Git Manual"
+.TH "GITDIFFCORE" "7" "01/26/2018" "Git 2\&.16\&.1\&.72\&.g5be1f00" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -173,7 +173,7 @@ diffcore\-order
 .RE
 .sp
 These are applied in sequence\&. The set of filepairs \fIgit diff\-*\fR commands find are used as the input to diffcore\-break, and the output from diffcore\-break is used as the input to the next transformation\&. The final result is then passed to the output routine and generates either diff\-raw format (see Output format sections of the manual for \fIgit diff\-*\fR commands) or diff\-patch format\&.
-.SH "DIFFCORE-BREAK: FOR SPLITTING UP COMPLETE REWRITES"
+.SH "DIFFCORE\-BREAK: FOR SPLITTING UP COMPLETE REWRITES"
 .sp
 The second transformation in the chain is diffcore\-break, and is controlled by the \-B option to the \fIgit diff\-*\fR commands\&. This is used to detect a filepair that represents "complete rewrite" and break such filepair into two filepairs that represent delete and create\&. E\&.g\&. If the input contained this filepair:
 .sp
@@ -203,7 +203,7 @@ and if it detects that the file "file0" is completely rewritten, it changes it t
 .sp
 .sp
 For the purpose of breaking a filepair, diffcore\-break examines the extent of changes between the contents of the files before and after modification (i\&.e\&. the contents that have "bcd1234\&..." and "0123456\&..." as their SHA\-1 content ID, in the above example)\&. The amount of deletion of original contents and insertion of new material are added together, and if it exceeds the "break score", the filepair is broken into two\&. The break score defaults to 50% of the size of the smaller of the original and the result (i\&.e\&. if the edit shrinks the file, the size of the result is used; if the edit lengthens the file, the size of the original is used), and can be customized by giving a number after "\-B" option (e\&.g\&. "\-B75" to tell it to use 75%)\&.
-.SH "DIFFCORE-RENAME: FOR DETECTING RENAMES AND COPIES"
+.SH "DIFFCORE\-RENAME: FOR DETECTING RENAMES AND COPIES"
 .sp
 This transformation is used to detect renames and copies, and is controlled by the \-M option (to detect renames) and the \-C option (to detect copies as well) to the \fIgit diff\-*\fR commands\&. If the input contained these filepairs:
 .sp
@@ -263,7 +263,7 @@ the original contents of fileY and the resulting contents of file0 are compared,
 In both rename and copy detection, the same "extent of changes" algorithm used in diffcore\-break is used to determine if two files are "similar enough", and can be customized to use a similarity score different from the default of 50% by giving a number after the "\-M" or "\-C" option (e\&.g\&. "\-M8" to tell it to use 8/10 = 80%)\&.
 .sp
 Note\&. When the "\-C" option is used with \fB\-\-find\-copies\-harder\fR option, \fIgit diff\-*\fR commands feed unmodified filepairs to diffcore mechanism as well as modified ones\&. This lets the copy detector consider unmodified files as copy source candidates at the expense of making it slower\&. Without \fB\-\-find\-copies\-harder\fR, \fIgit diff\-*\fR commands can detect copies only if the file that was copied happened to have been modified in the same changeset\&.
-.SH "DIFFCORE-MERGE-BROKEN: FOR PUTTING COMPLETE REWRITES BACK TOGETHER"
+.SH "DIFFCORE\-MERGE\-BROKEN: FOR PUTTING COMPLETE REWRITES BACK TOGETHER"
 .sp
 This transformation is used to merge filepairs broken by diffcore\-break, and not transformed into rename/copy by diffcore\-rename, back into a single modification\&. This always runs when diffcore\-break is used\&.
 .sp
@@ -294,7 +294,7 @@ The "extent of changes" parameter can be tweaked from the default 80% (that is, 
 .RE
 .sp
 Note that earlier implementation left a broken pair as a separate creation and deletion patches\&. This was an unnecessary hack and the latest implementation always merges all the broken pairs back into modifications, but the resulting patch output is formatted differently for easier review in case of such a complete rewrite by showing the entire contents of old version prefixed with \fI\-\fR, followed by the entire contents of new version prefixed with \fI+\fR\&.
-.SH "DIFFCORE-PICKAXE: FOR DETECTING ADDITION/DELETION OF SPECIFIED STRING"
+.SH "DIFFCORE\-PICKAXE: FOR DETECTING ADDITION/DELETION OF SPECIFIED STRING"
 .sp
 This transformation limits the set of filepairs to those that change specified strings between the preimage and the postimage in a certain way\&. \-S<block of text> and \-G<regular expression> options are used to specify different ways these strings are sought\&.
 .sp
@@ -303,7 +303,7 @@ This transformation limits the set of filepairs to those that change specified s
 "\-G<regular expression>" (mnemonic: grep) detects filepairs whose textual diff has an added or a deleted line that matches the given regular expression\&. This means that it will detect in\-file (or what rename\-detection considers the same file) moves, which is noise\&. The implementation runs diff twice and greps, and this can be quite expensive\&.
 .sp
 When \fB\-S\fR or \fB\-G\fR are used without \fB\-\-pickaxe\-all\fR, only filepairs that match their respective criterion are kept in the output\&. When \fB\-\-pickaxe\-all\fR is used, if even one filepair matches their respective criterion in a changeset, the entire changeset is kept\&. This behavior is designed to make reviewing changes in the context of the whole changeset easier\&.
-.SH "DIFFCORE-ORDER: FOR SORTING THE OUTPUT BASED ON FILENAMES"
+.SH "DIFFCORE\-ORDER: FOR SORTING THE OUTPUT BASED ON FILENAMES"
 .sp
 This is used to reorder the filepairs according to the user\(cqs (or project\(cqs) taste, and is controlled by the \-O option to the \fIgit diff\-*\fR commands\&.
 .sp
