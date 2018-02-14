@@ -2,12 +2,12 @@
 .\"     Title: gitsubmodules
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/26/2018
+.\"      Date: 02/13/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.16.1.72.g5be1f00a9
+.\"    Source: Git 2.16.1.194.gb2e45c695
 .\"  Language: English
 .\"
-.TH "GITSUBMODULES" "7" "01/26/2018" "Git 2\&.16\&.1\&.72\&.g5be1f00" "Git Manual"
+.TH "GITSUBMODULES" "7" "02/13/2018" "Git 2\&.16\&.1\&.194\&.gb2e45c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -50,7 +50,7 @@ Assuming the submodule has a Git directory at \fB$GIT_DIR/modules/foo/\fR and a 
 .sp
 The \fBgitlink\fR entry contains the object name of the commit that the superproject expects the submodule\(cqs working directory to be at\&.
 .sp
-The section \fBsubmodule\&.foo\&.*\fR in the \fB\&.gitmodules\fR file gives additional hints to Gits porcelain layer such as where to obtain the submodule via the \fBsubmodule\&.foo\&.url\fR setting\&.
+The section \fBsubmodule\&.foo\&.*\fR in the \fB\&.gitmodules\fR file gives additional hints to Git\(cqs porcelain layer\&. For example, the \fBsubmodule\&.foo\&.url\fR setting specifies where to obtain the submodule\&.
 .sp
 Submodules can be used for at least two different use cases:
 .sp
@@ -73,7 +73,7 @@ Using another project while maintaining independent history\&. Submodules allow 
 .sp -1
 .IP "  2." 4.2
 .\}
-Splitting a (logically single) project into multiple repositories and tying them back together\&. This can be used to overcome current limitations of Gits implementation to have finer grained access:
+Splitting a (logically single) project into multiple repositories and tying them back together\&. This can be used to overcome current limitations of Git\(cqs implementation to have finer grained access:
 .sp
 .RS 4
 .ie n \{\
@@ -83,7 +83,7 @@ Splitting a (logically single) project into multiple repositories and tying them
 .sp -1
 .IP \(bu 2.3
 .\}
-Size of the git repository: In its current form Git scales up poorly for large repositories containing content that is not compressed by delta computation between trees\&. However you can also use submodules to e\&.g\&. hold large binary assets and these repositories are then shallowly cloned such that you do not have a large history locally\&.
+Size of the Git repository: In its current form Git scales up poorly for large repositories containing content that is not compressed by delta computation between trees\&. For example, you can use submodules to hold large binary assets and these repositories can be shallowly cloned such that you do not have a large history locally\&.
 .RE
 .sp
 .RS 4
@@ -94,7 +94,7 @@ Size of the git repository: In its current form Git scales up poorly for large r
 .sp -1
 .IP \(bu 2.3
 .\}
-Transfer size: In its current form Git requires the whole working tree present\&. It does not allow partial trees to be transferred in fetch or clone\&.
+Transfer size: In its current form Git requires the whole working tree present\&. It does not allow partial trees to be transferred in fetch or clone\&. If the project you work on consists of multiple repositories tied together as submodules in a superproject, you can avoid fetching the working trees of the repositories you are not interested in\&.
 .RE
 .sp
 .RS 4
@@ -120,11 +120,11 @@ Submodule operations can be configured using the following mechanisms (from high
 .sp -1
 .IP \(bu 2.3
 .\}
-The command line for those commands that support taking submodule specs\&. Most commands have a boolean flag
-\fI\-\-recurse\-submodules\fR
-whether to recurse into submodules\&. Examples are
-\fBls\-files\fR
-or
+The command line for those commands that support taking submodules as part of their pathspecs\&. Most commands have a boolean flag
+\fB\-\-recurse\-submodules\fR
+which specify whether to recurse into submodules\&. Examples are
+\fBgrep\fR
+and
 \fBcheckout\fR\&. Some commands take enums, such as
 \fBfetch\fR
 and
@@ -153,9 +153,9 @@ file would be observed when you run
 \fBgit status \-\-ignore\-submodules=none\fR
 in the superproject\&. This collects information from the submodule\(cqs working directory by running
 \fBstatus\fR
-in the submodule, which does pay attention to its
+in the submodule while paying attention to the
 \fB\&.gitignore\fR
-file\&.
+file of the submodule\&.
 .sp
 The submodule\(cqs
 \fB$GIT_DIR/config\fR
@@ -176,11 +176,9 @@ file\&.
 .\}
 The configuration file
 \fB$GIT_DIR/config\fR
-in the superproject\&. Typical configuration at this place is controlling if a submodule is recursed into at all via the
-\fBactive\fR
-flag for example\&.
+in the superproject\&. Git only recurses into active submodules (see "ACTIVE SUBMODULES" section below)\&.
 .sp
-If the submodule is not yet initialized, then the configuration inside the submodule does not exist yet, so configuration where to obtain the submodule from is configured here for example\&.
+If the submodule is not yet initialized, then the configuration inside the submodule does not exist yet, so where to obtain the submodule from is configured here for example\&.
 .RE
 .sp
 .RS 4
@@ -191,11 +189,11 @@ If the submodule is not yet initialized, then the configuration inside the submo
 .sp -1
 .IP \(bu 2.3
 .\}
-the
+The
 \fB\&.gitmodules\fR
-file inside the superproject\&. Additionally to the required mapping between submodule\(cqs name and path, a project usually uses this file to suggest defaults for the upstream collection of repositories\&.
+file inside the superproject\&. A project usually uses this file to suggest defaults for the upstream collection of repositories for the mapping that is required between a submodule\(cqs name and its path\&.
 .sp
-This file mainly serves as the mapping between name and path in the superproject, such that the submodule\(cqs git directory can be located\&.
+This file mainly serves as the mapping between the name and path of submodules in the superproject, such that the submodule\(cqs Git directory can be located\&.
 .sp
 If the submodule has never been initialized, this is the only place where submodule configuration is found\&. It serves as the last fallback to specify where to obtain the submodule from\&.
 .RE
@@ -251,7 +249,7 @@ of the superproject\&.
 Deinitialized submodule: A
 \fBgitlink\fR, and a
 \fB\&.gitmodules\fR
-entry, but no submodule working directory\&. The submodule\(cqs git directory may be there as after deinitializing the git directory is kept around\&. The directory which is supposed to be the working directory is empty instead\&.
+entry, but no submodule working directory\&. The submodule\(cqs Git directory may be there as after deinitializing the Git directory is kept around\&. The directory which is supposed to be the working directory is empty instead\&.
 .sp
 A submodule can be deinitialized by running
 \fBgit submodule deinit\fR\&. Besides emptying the working directory, this command only modifies the superproject\(cqs
@@ -281,6 +279,71 @@ file\&. The submodule\(cqs working directory is removed from the file system, bu
 To completely remove a submodule, manually delete
 \fB$GIT_DIR/modules/<name>/\fR\&.
 .RE
+.SH "ACTIVE SUBMODULES"
+.sp
+A submodule is considered active,
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+(a) if `submodule\&.<name>\&.active` is set to `true`
+   or
+(b) if the submodule\(aqs path matches the pathspec in `submodule\&.active`
+   or
+(c) if `submodule\&.<name>\&.url` is set\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+and these are evaluated in this order\&.
+.sp
+For example:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[submodule "foo"]
+  active = false
+  url = https://example\&.org/foo
+[submodule "bar"]
+  active = true
+  url = https://example\&.org/bar
+[submodule "baz"]
+  url = https://example\&.org/baz
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+In the above config only the submodule \fIbar\fR and \fIbaz\fR are active, \fIbar\fR due to (a) and \fIbaz\fR due to (c)\&. \fIfoo\fR is inactive because (a) takes precedence over (c)
+.sp
+Note that (c) is a historical artefact and will be ignored if the (a) and (b) specify that the submodule is not active\&. In other words, if we have an \fBsubmodule\&.<name>\&.active\fR set to \fBfalse\fR or if the submodule\(cqs path is excluded in the pathspec in \fBsubmodule\&.active\fR, the url doesn\(cqt matter whether it is present or not\&. This is illustrated in the example that follows\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[submodule "foo"]
+  active = true
+  url = https://example\&.org/foo
+[submodule "bar"]
+  url = https://example\&.org/bar
+[submodule "baz"]
+  url = https://example\&.org/baz
+[submodule "bob"]
+  ignore = true
+[submodule]
+  active = b*
+  active = :(exclude) baz
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+In here all submodules except \fIbaz\fR (foo, bar, bob) are active\&. \fIfoo\fR due to its own active flag and all the others due to the submodule active pathspec, which specifies that any submodule starting with \fIb\fR except \fIbaz\fR are also active, regardless of the presence of the \&.url field\&.
 .SH "WORKFLOW FOR A THIRD PARTY LIBRARY"
 .sp
 .if n \{\
