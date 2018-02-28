@@ -2,12 +2,12 @@
 .\"     Title: git-daemon
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/26/2018
+.\"      Date: 02/28/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.16.1.72.g5be1f00a9
+.\"    Source: Git 2.16.2.345.g7e31236f6
 .\"  Language: English
 .\"
-.TH "GIT\-DAEMON" "1" "01/26/2018" "Git 2\&.16\&.1\&.72\&.g5be1f00" "Git Manual"
+.TH "GIT\-DAEMON" "1" "02/28/2018" "Git 2\&.16\&.2\&.345\&.g7e3123" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -44,6 +44,7 @@ git-daemon \- A really simple server for Git repositories
              [\-\-inetd |
               [\-\-listen=<host_or_ipaddr>] [\-\-port=<n>]
               [\-\-user=<user> [\-\-group=<group>]]]
+             [\-\-log\-destination=(stderr|syslog|none)]
              [<directory>\&...]
 .fi
 .sp
@@ -105,7 +106,8 @@ file\&.
 .PP
 \-\-inetd
 .RS 4
-Have the server run as an inetd service\&. Implies \-\-syslog\&. Incompatible with \-\-detach, \-\-port, \-\-listen, \-\-user and \-\-group options\&.
+Have the server run as an inetd service\&. Implies \-\-syslog (may be overridden with
+\fB\-\-log\-destination=\fR)\&. Incompatible with \-\-detach, \-\-port, \-\-listen, \-\-user and \-\-group options\&.
 .RE
 .PP
 \-\-listen=<host_or_ipaddr>
@@ -139,7 +141,42 @@ Maximum number of concurrent clients, defaults to 32\&. Set it to zero for no li
 .PP
 \-\-syslog
 .RS 4
-Log to syslog instead of stderr\&. Note that this option does not imply \-\-verbose, thus by default only error conditions will be logged\&.
+Short for
+\fB\-\-log\-destination=syslog\fR\&.
+.RE
+.PP
+\-\-log\-destination=<destination>
+.RS 4
+Send log messages to the specified destination\&. Note that this option does not imply \-\-verbose, thus by default only error conditions will be logged\&. The <destination> must be one of:
+.PP
+stderr
+.RS 4
+Write to standard error\&. Note that if
+\fB\-\-detach\fR
+is specified, the process disconnects from the real standard error, making this destination effectively equivalent to
+\fBnone\fR\&.
+.RE
+.PP
+syslog
+.RS 4
+Write to syslog, using the
+\fBgit\-daemon\fR
+identifier\&.
+.RE
+.PP
+none
+.RS 4
+Disable all logging\&.
+.RE
+.sp
+The default destination is
+\fBsyslog\fR
+if
+\fB\-\-inetd\fR
+or
+\fB\-\-detach\fR
+is specified, otherwise
+\fBstderr\fR\&.
 .RE
 .PP
 \-\-user\-path, \-\-user\-path=<path>
