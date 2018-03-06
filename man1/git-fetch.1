@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/26/2018
+.\"      Date: 03/06/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.16.1.72.g5be1f00a9
+.\"    Source: Git 2.16.2.440.gc6284da4f
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "01/26/2018" "Git 2\&.16\&.1\&.72\&.g5be1f00" "Git Manual"
+.TH "GIT\-FETCH" "1" "03/06/2018" "Git 2\&.16\&.2\&.440\&.gc6284d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -136,7 +136,23 @@ Allow several <repository> and <group> arguments to be specified\&. No <refspec>
 .PP
 \-p, \-\-prune
 .RS 4
-Before fetching, remove any remote\-tracking references that no longer exist on the remote\&. Tags are not subject to pruning if they are fetched only because of the default tag auto\-following or due to a \-\-tags option\&. However, if tags are fetched due to an explicit refspec (either on the command line or in the remote configuration, for example if the remote was cloned with the \-\-mirror option), then they are also subject to pruning\&.
+Before fetching, remove any remote\-tracking references that no longer exist on the remote\&. Tags are not subject to pruning if they are fetched only because of the default tag auto\-following or due to a \-\-tags option\&. However, if tags are fetched due to an explicit refspec (either on the command line or in the remote configuration, for example if the remote was cloned with the \-\-mirror option), then they are also subject to pruning\&. Supplying
+\fB\-\-prune\-tags\fR
+is a shorthand for providing the tag refspec\&.
+.sp
+See the PRUNING section below for more details\&.
+.RE
+.PP
+\-P, \-\-prune\-tags
+.RS 4
+Before fetching, remove any local tags that no longer exist on the remote if
+\fB\-\-prune\fR
+is enabled\&. This option should be used more carefully, unlike
+\fB\-\-prune\fR
+it will remove any local references (local tags) that have been created\&. This option is a shorthand for providing the explicit tag refspec along with
+\fB\-\-prune\fR, see the discussion about that in its documentation\&.
+.sp
+See the PRUNING section below for more details\&.
 .RE
 .PP
 \-n, \-\-no\-tags
@@ -695,6 +711,75 @@ the refs that are fetched are stored by acting as a mapping\&.
 .RE
 .sp
 The latter use of the \fBremote\&.<repository>\&.fetch\fR values can be overridden by giving the \fB\-\-refmap=<refspec>\fR parameter(s) on the command line\&.
+.SH "PRUNING"
+.sp
+Git has a default disposition of keeping data unless it\(cqs explicitly thrown away; this extends to holding onto local references to branches on remotes that have themselves deleted those branches\&.
+.sp
+If left to accumulate, these stale references might make performance worse on big and busy repos that have a lot of branch churn, and e\&.g\&. make the output of commands like \fBgit branch \-a \-\-contains <commit>\fR needlessly verbose, as well as impacting anything else that\(cqll work with the complete set of known references\&.
+.sp
+These remote\-tracking references can be deleted as a one\-off with either of:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# While fetching
+$ git fetch \-\-prune <name>
+
+# Only prune, don\(aqt fetch
+$ git remote prune <name>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+To prune references as part of your normal workflow without needing to remember to run that, set \fBfetch\&.prune\fR globally, or \fBremote\&.<name>\&.prune\fR per\-remote in the config\&. See \fBgit-config\fR(1)\&.
+.sp
+Here\(cqs where things get tricky and more specific\&. The pruning feature doesn\(cqt actually care about branches, instead it\(cqll prune local <\(-> remote\-references as a function of the refspec of the remote (see \fB<refspec>\fR and CONFIGURED REMOTE\-TRACKING BRANCHES above)\&.
+.sp
+Therefore if the refspec for the remote includes e\&.g\&. \fBrefs/tags/*:refs/tags/*\fR, or you manually run e\&.g\&. \fBgit fetch \-\-prune <name> "refs/tags/*:refs/tags/*"\fR it won\(cqt be stale remote tracking branches that are deleted, but any local tag that doesn\(cqt exist on the remote\&.
+.sp
+This might not be what you expect, i\&.e\&. you want to prune remote \fB<name>\fR, but also explicitly fetch tags from it, so when you fetch from it you delete all your local tags, most of which may not have come from the \fB<name>\fR remote in the first place\&.
+.sp
+So be careful when using this with a refspec like \fBrefs/tags/*:refs/tags/*\fR, or any other refspec which might map references from multiple remotes to the same local namespace\&.
+.sp
+Since keeping up\-to\-date with both branches and tags on the remote is a common use\-case the \fB\-\-prune\-tags\fR option can be supplied along with \fB\-\-prune\fR to prune local tags that don\(cqt exist on the remote, and force\-update those tags that differ\&. Tag pruning can also be enabled with \fBfetch\&.pruneTags\fR or \fBremote\&.<name>\&.pruneTags\fR in the config\&. See \fBgit-config\fR(1)\&.
+.sp
+The \fB\-\-prune\-tags\fR option is equivalent to having \fBrefs/tags/*:refs/tags/*\fR declared in the refspecs of the remote\&. This can lead to some seemingly strange interactions:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# These both fetch tags
+$ git fetch \-\-no\-tags origin \(aqrefs/tags/*:refs/tags/*\(aq
+$ git fetch \-\-no\-tags \-\-prune\-tags origin
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+The reason it doesn\(cqt error out when provided without \fB\-\-prune\fR or its config versions is for flexibility of the configured versions, and to maintain a 1=1 mapping between what the command line flags do, and what the configuration versions do\&.
+.sp
+It\(cqs reasonable to e\&.g\&. configure \fBfetch\&.pruneTags=true\fR in \fB~/\&.gitconfig\fR to have tags pruned whenever \fBgit fetch \-\-prune\fR is run, without making every invocation of \fBgit fetch\fR without \fB\-\-prune\fR an error\&.
+.sp
+Pruning tags with \fB\-\-prune\-tags\fR also works when fetching a URL instead of a named remote\&. These will all prune tags not found on origin:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git fetch origin \-\-prune \-\-prune\-tags
+$ git fetch origin \-\-prune \(aqrefs/tags/*:refs/tags/*\(aq
+$ git fetch <url of origin> \-\-prune \-\-prune\-tags
+$ git fetch <url of origin> \-\-prune \(aqrefs/tags/*:refs/tags/*\(aq
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "OUTPUT"
 .sp
 The output of "git fetch" depends on the transport method used; this section describes the output when fetching over the Git protocol (either locally or via ssh) and Smart HTTP protocol\&.

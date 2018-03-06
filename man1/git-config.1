@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 02/13/2018
+.\"      Date: 03/06/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.16.1.194.gb2e45c695
+.\"    Source: Git 2.16.2.440.gc6284da4f
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/13/2018" "Git 2\&.16\&.1\&.194\&.gb2e45c" "Git Manual"
+.TH "GIT\-CONFIG" "1" "03/06/2018" "Git 2\&.16\&.2\&.440\&.gc6284d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3271,7 +3271,21 @@ fetch\&.prune
 If true, fetch will automatically behave as if the
 \fB\-\-prune\fR
 option was given on the command line\&. See also
-\fBremote\&.<name>\&.prune\fR\&.
+\fBremote\&.<name>\&.prune\fR
+and the PRUNING section of
+\fBgit-fetch\fR(1)\&.
+.RE
+.PP
+fetch\&.pruneTags
+.RS 4
+If true, fetch will automatically behave as if the
+\fBrefs/tags/*:refs/tags/*\fR
+refspec was provided when pruning, if not set already\&. This allows for setting both this option and
+\fBfetch\&.prune\fR
+to maintain a 1=1 mapping to upstream refs\&. See also
+\fBremote\&.<name>\&.pruneTags\fR
+and the PRUNING section of
+\fBgit-fetch\fR(1)\&.
 .RE
 .PP
 fetch\&.output
@@ -5970,6 +5984,22 @@ option was given on the command line)\&. Overrides
 settings, if any\&.
 .RE
 .PP
+remote\&.<name>\&.pruneTags
+.RS 4
+When set to true, fetching from this remote by default will also remove any local tags that no longer exist on the remote if pruning is activated in general via
+\fBremote\&.<name>\&.prune\fR,
+\fBfetch\&.prune\fR
+or
+\fB\-\-prune\fR\&. Overrides
+\fBfetch\&.pruneTags\fR
+settings, if any\&.
+.sp
+See also
+\fBremote\&.<name>\&.prune\fR
+and the PRUNING section of
+\fBgit-fetch\fR(1)\&.
+.RE
+.PP
 remotes\&.<group>
 .RS 4
 The list of remotes which are fetched by "git remote update <group>"\&. See
@@ -6307,7 +6337,8 @@ submodule\&.recurse
 .RS 4
 Specifies if commands recurse into submodules by default\&. This applies to all commands that have a
 \fB\-\-recurse\-submodules\fR
-option\&. Defaults to false\&.
+option, except
+\fBclone\fR\&. Defaults to false\&.
 .RE
 .PP
 submodule\&.fetchJobs
