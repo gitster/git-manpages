@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 02/28/2018
+.\"      Date: 03/14/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.16.2.345.g7e31236f6
+.\"    Source: Git 2.16.2.619.g7fb6aefd2
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "02/28/2018" "Git 2\&.16\&.2\&.345\&.g7e3123" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "03/14/2018" "Git 2\&.16\&.2\&.619\&.g7fb6ae" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,7 +35,9 @@ git-worktree \- Manage multiple working trees
 \fIgit worktree add\fR [\-f] [\-\-detach] [\-\-checkout] [\-\-lock] [\-b <new\-branch>] <path> [<commit\-ish>]
 \fIgit worktree list\fR [\-\-porcelain]
 \fIgit worktree lock\fR [\-\-reason <string>] <worktree>
+\fIgit worktree move\fR <worktree> <new\-path>
 \fIgit worktree prune\fR [\-n] [\-v] [\-\-expire <expire>]
+\fIgit worktree remove\fR [\-\-force] <worktree>
 \fIgit worktree unlock\fR <worktree>
 .fi
 .sp
@@ -46,8 +48,6 @@ Manage multiple working trees attached to the same repository\&.
 A git repository can support multiple working trees, allowing you to check out more than one branch at a time\&. With \fBgit worktree add\fR a new working tree is associated with the repository\&. This new working tree is called a "linked working tree" as opposed to the "main working tree" prepared by "git init" or "git clone"\&. A repository has one main working tree (if it\(cqs not a bare repository) and zero or more linked working trees\&.
 .sp
 When you are done with a linked working tree you can simply delete it\&. The working tree\(cqs administrative files in the repository (see "DETAILS" below) will eventually be removed automatically (see \fBgc\&.worktreePruneExpire\fR in \fBgit-config\fR(1)), or you can run \fBgit worktree prune\fR in the main or any linked working tree to clean up any stale administrative files\&.
-.sp
-If you move a linked working tree, you need to manually update the administrative files so that they do not get pruned automatically\&. See section "DETAILS" for more information\&.
 .sp
 If a linked working tree is stored on a portable device or network share which is not always mounted, you can prevent its administrative files from being pruned by issuing the \fBgit worktree lock\fR command, optionally specifying \fB\-\-reason\fR to explain why the working tree is locked\&.
 .SH "COMMANDS"
@@ -110,9 +110,20 @@ If a working tree is on a portable device or network share which is not always m
 \fB\-\-reason\fR\&.
 .RE
 .PP
+move
+.RS 4
+Move a working tree to a new location\&. Note that the main working tree or linked working trees containing submodules cannot be moved\&.
+.RE
+.PP
 prune
 .RS 4
 Prune working tree information in $GIT_DIR/worktrees\&.
+.RE
+.PP
+remove
+.RS 4
+Remove a working tree\&. Only clean working trees (no untracked files and no modification in tracked files) can be removed\&. Unclean working trees or ones with submodules can be removed with
+\fB\-\-force\fR\&. The main working tree cannot be removed\&.
 .RE
 .PP
 unlock
@@ -127,7 +138,9 @@ By default,
 \fBadd\fR
 refuses to create a new working tree when
 \fB<commit\-ish>\fR
-is a branch name and is already checked out by another working tree\&. This option overrides that safeguard\&.
+is a branch name and is already checked out by another working tree and
+\fBremove\fR
+refuses to remove an unclean working tree\&. This option overrides that safeguard\&.
 .RE
 .PP
 \-b <new\-branch>, \-B <new\-branch>
@@ -245,7 +258,7 @@ Path resolution via \fBgit rev\-parse \-\-git\-path\fR uses either $GIT_DIR or $
 .sp
 See \fBgitrepository-layout\fR(5) for more information\&. The rule of thumb is do not make any assumption about whether a path belongs to $GIT_DIR or $GIT_COMMON_DIR when you need to directly access something inside $GIT_DIR\&. Use \fBgit rev\-parse \-\-git\-path\fR to get the final path\&.
 .sp
-If you move a linked working tree, you need to update the \fIgitdir\fR file in the entry\(cqs directory\&. For example, if a linked working tree is moved to \fB/newpath/test\-next\fR and its \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR, then update \fB/path/main/\&.git/worktrees/test\-next/gitdir\fR to reference \fB/newpath/test\-next\fR instead\&.
+If you manually move a linked working tree, you need to update the \fIgitdir\fR file in the entry\(cqs directory\&. For example, if a linked working tree is moved to \fB/newpath/test\-next\fR and its \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR, then update \fB/path/main/\&.git/worktrees/test\-next/gitdir\fR to reference \fB/newpath/test\-next\fR instead\&.
 .sp
 To prevent a $GIT_DIR/worktrees entry from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), use the \fBgit worktree lock\fR command, which adds a file named \fIlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR then a file named \fB/path/main/\&.git/worktrees/test\-next/locked\fR will prevent the \fBtest\-next\fR entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
 .SH "LIST OUTPUT FORMAT"
@@ -312,32 +325,6 @@ $ git worktree prune
 .SH "BUGS"
 .sp
 Multiple checkout in general is still experimental, and the support for submodules is incomplete\&. It is NOT recommended to make multiple checkouts of a superproject\&.
-.sp
-git\-worktree could provide more automation for tasks currently performed manually, such as:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBremove\fR
-to remove a linked working tree and its administrative files (and warn if the working tree is dirty)
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBmv\fR
-to move or rename a working tree and update its administrative files
-.RE
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
