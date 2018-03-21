@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/20/2018
+.\"      Date: 03/21/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0.rc0
+.\"    Source: Git 2.17.0.rc1
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "03/20/2018" "Git 2\&.17\&.0\&.rc0" "Git Manual"
+.TH "GITATTRIBUTES" "5" "03/21/2018" "Git 2\&.17\&.0\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -76,7 +76,35 @@ Unspecified
 No pattern matches the path, and nothing says if the path has or does not have the attribute, the attribute for the path is said to be Unspecified\&.
 .RE
 .sp
-When more than one pattern matches the path, a later line overrides an earlier line\&. This overriding is done per attribute\&. The rules how the pattern matches paths are the same as in \fB\&.gitignore\fR files; see \fBgitignore\fR(5)\&. Unlike \fB\&.gitignore\fR, negative patterns are forbidden\&.
+When more than one pattern matches the path, a later line overrides an earlier line\&. This overriding is done per attribute\&.
+.sp
+The rules by which the pattern matches paths are the same as in \fB\&.gitignore\fR files (see \fBgitignore\fR(5)), with a few exceptions:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+negative patterns are forbidden
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+patterns that match a directory do not recursively match paths inside that directory (so using the trailing\-slash
+\fBpath/\fR
+syntax is pointless in an attributes file; use
+\fBpath/**\fR
+instead)
+.RE
 .sp
 When deciding what attributes are assigned to a path, Git consults \fB$GIT_DIR/info/attributes\fR file (which has the highest precedence), \fB\&.gitattributes\fR file in the same directory as the path in question, and its parent directories up to the toplevel of the work tree (the further the directory that contains \fB\&.gitattributes\fR is from the path in question, the lower its precedence)\&. Finally global and system\-wide files are considered (they have the lowest precedence)\&.
 .sp
