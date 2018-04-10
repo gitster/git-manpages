@@ -2,12 +2,12 @@
 .\"     Title: git-gc
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/02/2018
+.\"      Date: 04/10/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0
+.\"    Source: Git 2.17.0.93.g69d71ec44
 .\"  Language: English
 .\"
-.TH "GIT\-GC" "1" "04/02/2018" "Git 2\&.17\&.0" "Git Manual"
+.TH "GIT\-GC" "1" "04/10/2018" "Git 2\&.17\&.0\&.93\&.g69d71ec" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,7 +37,7 @@ git-gc \- Cleanup unnecessary files and optimize the local repository
 .sp
 .SH "DESCRIPTION"
 .sp
-Runs a number of housekeeping tasks within the current repository, such as compressing file revisions (to reduce disk space and increase performance) and removing unreachable objects which may have been created from prior invocations of \fIgit add\fR\&.
+Runs a number of housekeeping tasks within the current repository, such as compressing file revisions (to reduce disk space and increase performance), removing unreachable objects which may have been created from prior invocations of \fIgit add\fR, packing refs, pruning reflog, rerere metadata or stale working trees\&.
 .sp
 Users are encouraged to run this task on a regular basis within each repository to maintain good disk space utilization and good operating performance\&.
 .sp
@@ -70,9 +70,9 @@ With this option,
 \fIgit gc\fR
 checks whether any housekeeping is required; if not, it exits without performing any work\&. Some git commands run
 \fBgit gc \-\-auto\fR
-after performing operations that could create many loose objects\&.
+after performing operations that could create many loose objects\&. Housekeeping is required if there are too many loose objects or too many packs in the repository\&.
 .sp
-Housekeeping is required if there are too many loose objects or too many packs in the repository\&. If the number of loose objects exceeds the value of the
+If the number of loose objects exceeds the value of the
 \fBgc\&.auto\fR
 configuration variable, then all loose objects are combined into a single pack using
 \fBgit repack \-d \-l\fR\&. Setting the value of
@@ -88,6 +88,8 @@ option of
 \fIgit repack\fR\&. Setting
 \fBgc\&.autoPackLimit\fR
 to 0 disables automatic consolidation of packs\&.
+.sp
+If houskeeping is required due to many loose objects or packs, all other housekeeping tasks (e\&.g\&. rerere, working trees, reflog\&...) will be performed as well\&.
 .RE
 .PP
 \-\-prune=<date>
@@ -146,6 +148,8 @@ The optional configuration variable \(oqgc\&.aggressiveWindow` controls how much
 Similarly, the optional configuration variable \fBgc\&.aggressiveDepth\fR controls \-\-depth option in \fBgit-repack\fR(1)\&. This defaults to 50\&.
 .sp
 The optional configuration variable \fBgc\&.pruneExpire\fR controls how old the unreferenced loose objects have to be before they are pruned\&. The default is "2 weeks ago"\&.
+.sp
+Optional configuration variable \fBgc\&.worktreePruneExpire\fR controls how old a stale working tree should be before \fBgit worktree prune\fR deletes it\&. Default is "3 months ago"\&.
 .SH "NOTES"
 .sp
 \fIgit gc\fR tries very hard not to delete objects that are referenced anywhere in your repository\&. In particular, it will keep not only objects referenced by your current set of branches and tags, but also objects referenced by the index, remote\-tracking branches, refs saved by \fIgit filter\-branch\fR in refs/original/, or reflogs (which may reference commits in branches that were later amended or rewound)\&. If you are expecting some objects to be deleted and they aren\(cqt, check all of those locations and decide whether it makes sense in your case to remove those references\&.
