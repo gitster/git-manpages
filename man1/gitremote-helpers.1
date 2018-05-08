@@ -2,12 +2,12 @@
 .\"     Title: gitremote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/02/2018
+.\"      Date: 05/08/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0
+.\"    Source: Git 2.17.0.582.gccdcbd54c
 .\"  Language: English
 .\"
-.TH "GITREMOTE\-HELPERS" "1" "04/02/2018" "Git 2\&.17\&.0" "Git Manual"
+.TH "GITREMOTE\-HELPERS" "1" "05/08/2018" "Git 2\&.17\&.0\&.582\&.gccdcbd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -81,6 +81,14 @@ Supported commands:
 \fIconnect\fR\&.
 .RE
 .PP
+\fIstateless\-connect\fR
+.RS 4
+Experimental; for internal use only\&. Can attempt to connect to a remote server for communication using git\(cqs wire\-protocol version 2\&. See the documentation for the stateless\-connect command for more information\&.
+.sp
+Supported commands:
+\fIstateless\-connect\fR\&.
+.RE
+.PP
 \fIpush\fR
 .RS 4
 Can discover remote refs and push local commits and the history leading up to them to new or existing remote refs\&.
@@ -127,6 +135,14 @@ Can try to connect to
 .sp
 Supported commands:
 \fIconnect\fR\&.
+.RE
+.PP
+\fIstateless\-connect\fR
+.RS 4
+Experimental; for internal use only\&. Can attempt to connect to a remote server for communication using git\(cqs wire\-protocol version 2\&. See the documentation for the stateless\-connect command for more information\&.
+.sp
+Supported commands:
+\fIstateless\-connect\fR\&.
 .RE
 .PP
 \fIfetch\fR
@@ -403,6 +419,15 @@ as service) on remote side\&. Valid replies to this command are empty line (conn
 (no smart transport support, fall back to dumb transports) and just exiting with error message printed (can\(cqt connect, don\(cqt bother trying to fall back)\&. After line feed terminating the positive (empty) response, the output of service starts\&. After the connection ends, the remote helper exits\&.
 .sp
 Supported if the helper has the "connect" capability\&.
+.RE
+.PP
+\fIstateless\-connect\fR <service>
+.RS 4
+Experimental; for internal use only\&. Connects to the given remote service for communication using git\(cqs wire\-protocol version 2\&. Valid replies to this command are empty line (connection established),
+\fIfallback\fR
+(no smart transport support, fall back to dumb transports) and just exiting with error message printed (can\(cqt connect, don\(cqt bother trying to fall back)\&. After line feed terminating the positive (empty) response, the output of the service starts\&. Messages (both request and response) must consist of zero or more PKT\-LINEs, terminating in a flush packet\&. The client must not expect the server to store any state in between request\-response pairs\&. After the connection ends, the remote helper exits\&.
+.sp
+Supported if the helper has the "stateless\-connect" capability\&.
 .RE
 .sp
 If a fatal error occurs, the program writes the error message to stderr and exits\&. The caller should expect that a suitable error message has been printed if the child closes the connection without completing a valid response for the current command\&.

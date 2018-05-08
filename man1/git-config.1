@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/25/2018
+.\"      Date: 05/08/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0.391.g1f1cddd55
+.\"    Source: Git 2.17.0.582.gccdcbd54c
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "04/25/2018" "Git 2\&.17\&.0\&.391\&.g1f1cdd" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/08/2018" "Git 2\&.17\&.0\&.582\&.gccdcbd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,13 +32,13 @@ git-config \- Get and set repository or global options
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit config\fR [<file\-option>] [type] [\-\-show\-origin] [\-z|\-\-null] name [value [value_regex]]
-\fIgit config\fR [<file\-option>] [type] \-\-add name value
-\fIgit config\fR [<file\-option>] [type] \-\-replace\-all name value [value_regex]
-\fIgit config\fR [<file\-option>] [type] [\-\-show\-origin] [\-z|\-\-null] \-\-get name [value_regex]
-\fIgit config\fR [<file\-option>] [type] [\-\-show\-origin] [\-z|\-\-null] \-\-get\-all name [value_regex]
-\fIgit config\fR [<file\-option>] [type] [\-\-show\-origin] [\-z|\-\-null] [\-\-name\-only] \-\-get\-regexp name_regex [value_regex]
-\fIgit config\fR [<file\-option>] [type] [\-z|\-\-null] \-\-get\-urlmatch name URL
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-z|\-\-null] name [value [value_regex]]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] \-\-add name value
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] \-\-replace\-all name value [value_regex]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-z|\-\-null] \-\-get name [value_regex]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-z|\-\-null] \-\-get\-all name [value_regex]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-z|\-\-null] [\-\-name\-only] \-\-get\-regexp name_regex [value_regex]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-z|\-\-null] \-\-get\-urlmatch name URL
 \fIgit config\fR [<file\-option>] \-\-unset name [value_regex]
 \fIgit config\fR [<file\-option>] \-\-unset\-all name [value_regex]
 \fIgit config\fR [<file\-option>] \-\-rename\-section old_name new_name
@@ -55,7 +55,7 @@ You can query/set/replace/unset options with this command\&. The name is actuall
 .sp
 Multiple lines can be added to an option by using the \fB\-\-add\fR option\&. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp \fBvalue_regex\fR needs to be given\&. Only the existing values that match the regexp are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq)\&.
 .sp
-The type specifier can be either \fB\-\-int\fR or \fB\-\-bool\fR, to make \fIgit config\fR ensure that the variable(s) are of the given type and convert the value to the canonical form (simple decimal number for int, a "true" or "false" string for bool), or \fB\-\-path\fR, which does some path expansion (see \fB\-\-path\fR below)\&. If no type specifier is passed, no checks or transformations are performed on the value\&.
+The \fB\-\-type=<type>\fR option instructs \fIgit config\fR to ensure that incoming and outgoing values are canonicalize\-able under the given <type>\&. If no \fB\-\-type=<type>\fR is given, no canonicalization will be performed\&. Callers may unset an existing \fB\-\-type\fR specifier with \fB\-\-no\-type\fR\&.
 .sp
 When reading, the values are read from the system, global and repository local configuration files by default, and options \fB\-\-system\fR, \fB\-\-global\fR, \fB\-\-local\fR and \fB\-\-file <filename>\fR can be used to tell the command to read from only that location (see the section called \(lqFILES\(rq)\&.
 .sp
@@ -269,45 +269,113 @@ Remove all lines matching the key from config file\&.
 List all variables set in config file, along with their values\&.
 .RE
 .PP
-\-\-bool
+\-\-type <type>
 .RS 4
 \fIgit config\fR
-will ensure that the output is "true" or "false"
+will ensure that any input or output is valid under the given type constraint(s), and will canonicalize outgoing values in
+\fB<type>\fR\(aqs canonical form\&.
+.sp
+Valid
+\fB<type>\fR\(aqs include:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIbool\fR: canonicalize values as either "true" or "false"\&.
 .RE
-.PP
-\-\-int
+.sp
 .RS 4
-\fIgit config\fR
-will ensure that the output is a simple decimal number\&. An optional value suffix of
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIint\fR: canonicalize values as simple decimal numbers\&. An optional suffix of
 \fIk\fR,
 \fIm\fR, or
 \fIg\fR
-in the config file will cause the value to be multiplied by 1024, 1048576, or 1073741824 prior to output\&.
+will cause the value to be multiplied by 1024, 1048576, or 1073741824 upon input\&.
 .RE
-.PP
-\-\-bool\-or\-int
+.sp
 .RS 4
-\fIgit config\fR
-will ensure that the output matches the format of either \-\-bool or \-\-int, as described above\&.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIbool\-or\-int\fR: canonicalize according to either
+\fIbool\fR
+or
+\fIint\fR, as described above\&.
 .RE
-.PP
-\-\-path
+.sp
 .RS 4
-\fBgit config\fR
-will expand a leading
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIpath\fR: canonicalize by adding a leading
 \fB~\fR
 to the value of
-\fB$HOME\fR, and
+\fB$HOME\fR
+and
 \fB~user\fR
-to the home directory for the specified user\&. This option has no effect when setting the value (but you can use
+to the home directory for the specified user\&. This specifier has no effect when setting the value (but you can use
 \fBgit config section\&.variable ~/\fR
-from the command line to let your shell do the expansion)\&.
+from the command line to let your shell do the expansion\&.)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIexpiry\-date\fR: canonicalize by converting from a fixed or relative date\-string to a timestamp\&. This specifier has no effect when setting the value\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIcolor\fR: When getting a value, canonicalize by converting to an ANSI color escape sequence\&. When setting a value, a sanity\-check is performed to ensure that the given value is canonicalize\-able as an ANSI color, but it is written as\-is\&.
+.RE
 .RE
 .PP
-\-\-expiry\-date
+\-\-bool, \-\-int, \-\-bool\-or\-int, \-\-path, \-\-expiry\-date
 .RS 4
-\fBgit config\fR
-will ensure that the output is converted from a fixed or relative date\-string to a timestamp\&. This option has no effect when setting the value\&.
+Historical options for selecting a type specifier\&. Prefer instead
+\fB\-\-type\fR, (see: above)\&.
+.RE
+.PP
+\-\-no\-type
+.RS 4
+Un\-sets the previously set type specifier (if one was previously set)\&. This option requests that
+\fIgit config\fR
+not canonicalize the retrieved variable\&.
+\fB\-\-no\-type\fR
+has no effect without
+\fB\-\-type=<type>\fR
+or
+\fB\-\-<type>\fR\&.
 .RE
 .PP
 \-z, \-\-null
@@ -353,6 +421,10 @@ Find the color configured for
 \fBdefault\fR
 parameter is used instead, if there is no color configured for
 \fBname\fR\&.
+.sp
+\fB\-\-type=color [\-\-default=<default>]\fR
+is preferred over
+\fB\-\-get\-color\fR\&.
 .RE
 .PP
 \-e, \-\-edit
@@ -373,6 +445,12 @@ when a specific file is given (e\&.g\&., using
 \fB\-\-global\fR, etc) and
 \fBon\fR
 when searching all config files\&.
+.RE
+.PP
+\-\-default <value>
+.RS 4
+When using
+\fB\-\-get\fR, and the requested variable is not found, behave as if <value> were the value assigned to the that variable\&.
 .RE
 .SH "CONFIGURATION"
 .sp
@@ -1393,6 +1471,15 @@ line endings in your working directory and the repository has LF line endings\&.
 \fIinput\fR, in which case no output conversion is performed\&.
 .RE
 .PP
+core\&.checkRoundtripEncoding
+.RS 4
+A comma and/or whitespace separated list of encodings that Git performs UTF\-8 round trip checks on if they are used in an
+\fBworking\-tree\-encoding\fR
+attribute (see
+\fBgitattributes\fR(5))\&. The default value is
+\fBSHIFT\-JIS\fR\&.
+.RE
+.PP
 core\&.symlinks
 .RS 4
 If false, symbolic links are checked out as small plain files that contain the link text\&.
@@ -1915,6 +2002,11 @@ environment variable\&. See
 \fBgit-notes\fR(1)\&.
 .RE
 .PP
+core\&.commitGraph
+.RS 4
+Enable git commit graph feature\&. Allows reading from the commit\-graph file\&.
+.RE
+.PP
 core\&.sparseCheckout
 .RS 4
 Enable "sparse checkout" feature\&. See section "Sparse checkout" in
@@ -2163,6 +2255,28 @@ clean\&.requireForce
 A boolean to make git\-clean do nothing unless given \-f, \-i or \-n\&. Defaults to true\&.
 .RE
 .PP
+color\&.advice
+.RS 4
+A boolean to enable/disable color in hints (e\&.g\&. when a push failed, see
+\fBadvice\&.*\fR
+for a list)\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.advice\&.hint
+.RS 4
+Use customized color for hints\&.
+.RE
+.PP
 color\&.branch
 .RS 4
 A boolean to enable/disable color in the output of
@@ -2401,6 +2515,26 @@ color\&.pager
 A boolean to enable/disable colored output when the pager is in use (default is true)\&.
 .RE
 .PP
+color\&.push
+.RS 4
+A boolean to enable/disable color in push errors\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.push\&.error
+.RS 4
+Use customized color for push errors\&.
+.RE
+.PP
 color\&.showBranch
 .RS 4
 A boolean to enable/disable color in the output of
@@ -2460,6 +2594,26 @@ or
 (the local and remote branch names, respectively, when branch and tracking information is displayed in the status short\-format), or
 \fBunmerged\fR
 (files which have unmerged changes)\&.
+.RE
+.PP
+color\&.transport
+.RS 4
+A boolean to enable/disable color when pushes are rejected\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.transport\&.rejected
+.RS 4
+Use customized color when a push was rejected\&.
 .RE
 .PP
 color\&.ui
