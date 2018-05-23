@@ -2,12 +2,12 @@
 .\"     Title: git-pack-objects
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/02/2018
+.\"      Date: 05/23/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0
+.\"    Source: Git 2.17.0.775.ge144d126d
 .\"  Language: English
 .\"
-.TH "GIT\-PACK\-OBJECTS" "1" "04/02/2018" "Git 2\&.17\&.0" "Git Manual"
+.TH "GIT\-PACK\-OBJECTS" "1" "05/23/2018" "Git 2\&.17\&.0\&.775\&.ge144d1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,7 +35,7 @@ git-pack-objects \- Create a packed archive of objects
 \fIgit pack\-objects\fR [\-q | \-\-progress | \-\-all\-progress] [\-\-all\-progress\-implied]
         [\-\-no\-reuse\-delta] [\-\-delta\-base\-offset] [\-\-non\-empty]
         [\-\-local] [\-\-incremental] [\-\-window=<n>] [\-\-depth=<n>]
-        [\-\-revs [\-\-unpacked | \-\-all]]
+        [\-\-revs [\-\-unpacked | \-\-all]] [\-\-keep\-pack=<pack\-name>]
         [\-\-stdout [\-\-filter=<filter\-spec>] | base\-name]
         [\-\-shallow] [\-\-keep\-true\-parents] < object\-list
 .fi
@@ -99,7 +99,9 @@ Include unasked\-for annotated tags if the object they reference was included in
 .PP
 \-\-window=<n>, \-\-depth=<n>
 .RS 4
-These two options affect how the objects contained in the pack are stored using delta compression\&. The objects are first internally sorted by type, size and optionally names and compared against the other objects within \-\-window to see if using delta compression saves space\&. \-\-depth limits the maximum delta depth; making it too deep affects the performance on the unpacker side, because delta data needs to be applied that many times to get to the necessary object\&. The default value for \-\-window is 10 and \-\-depth is 50\&.
+These two options affect how the objects contained in the pack are stored using delta compression\&. The objects are first internally sorted by type, size and optionally names and compared against the other objects within \-\-window to see if using delta compression saves space\&. \-\-depth limits the maximum delta depth; making it too deep affects the performance on the unpacker side, because delta data needs to be applied that many times to get to the necessary object\&.
+.sp
+The default value for \-\-window is 10 and \-\-depth is 50\&. The maximum depth is 4095\&.
 .RE
 .PP
 \-\-window\-memory=<n>
@@ -124,6 +126,14 @@ is set\&.
 \-\-honor\-pack\-keep
 .RS 4
 This flag causes an object already in a local pack that has a \&.keep file to be ignored, even if it would have otherwise been packed\&.
+.RE
+.PP
+\-\-keep\-pack=<pack\-name>
+.RS 4
+This flag causes an object already in the given pack to be ignored, even if it would have otherwise been packed\&.
+\fB<pack\-name>\fR
+is the the pack file name without leading directory (e\&.g\&.
+\fBpack\-123\&.pack\fR)\&. The option could be specified multiple times to keep multiple packs\&.
 .RE
 .PP
 \-\-incremental
@@ -262,6 +272,24 @@ is like
 \-\-exclude\-promisor\-objects
 .RS 4
 Omit objects that are known to be in the promisor remote\&. (This option has the purpose of operating only on locally created objects, so that when we repack, we still maintain a distinction between locally created objects [without \&.promisor] and objects from the promisor remote [with \&.promisor]\&.) This is used with partial clone\&.
+.RE
+.PP
+\-\-keep\-unreachable
+.RS 4
+Objects unreachable from the refs in packs named with \-\-unpacked= option are added to the resulting pack, in addition to the reachable objects that are not in packs marked with *\&.keep files\&. This implies
+\fB\-\-revs\fR\&.
+.RE
+.PP
+\-\-pack\-loose\-unreachable
+.RS 4
+Pack unreachable loose objects (and their loose counterparts removed)\&. This implies
+\fB\-\-revs\fR\&.
+.RE
+.PP
+\-\-unpack\-unreachable
+.RS 4
+Keep unreachable objects in loose form\&. This implies
+\fB\-\-revs\fR\&.
 .RE
 .SH "SEE ALSO"
 .sp

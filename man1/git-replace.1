@@ -2,12 +2,12 @@
 .\"     Title: git-replace
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/02/2018
+.\"      Date: 05/23/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0
+.\"    Source: Git 2.17.0.775.ge144d126d
 .\"  Language: English
 .\"
-.TH "GIT\-REPLACE" "1" "04/02/2018" "Git 2\&.17\&.0" "Git Manual"
+.TH "GIT\-REPLACE" "1" "05/23/2018" "Git 2\&.17\&.0\&.775\&.ge144d1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,6 +35,7 @@ git-replace \- Create, list, delete refs to replace objects
 \fIgit replace\fR [\-f] <object> <replacement>
 \fIgit replace\fR [\-f] \-\-edit <object>
 \fIgit replace\fR [\-f] \-\-graft <commit> [<parent>\&...]
+\fIgit replace\fR [\-f] \-\-convert\-graft\-file
 \fIgit replace\fR \-d <object>\&...
 \fIgit replace\fR [\-\-format=<format>] [\-l [<pattern>]]
 .fi
@@ -110,7 +111,18 @@ When editing, provide the raw object contents rather than pretty\-printed ones\&
 .PP
 \-\-graft <commit> [<parent>\&...]
 .RS 4
-Create a graft commit\&. A new commit is created with the same content as <commit> except that its parents will be [<parent>\&...] instead of <commit>\(aqs parents\&. A replacement ref is then created to replace <commit> with the newly created commit\&. See contrib/convert\-grafts\-to\-replace\-refs\&.sh for an example script based on this option that can convert grafts to replace refs\&.
+Create a graft commit\&. A new commit is created with the same content as <commit> except that its parents will be [<parent>\&...] instead of <commit>\(aqs parents\&. A replacement ref is then created to replace <commit> with the newly created commit\&. Use
+\fB\-\-convert\-graft\-file\fR
+to convert a
+\fB$GIT_DIR/info/grafts\fR
+file and use replace refs instead\&.
+.RE
+.PP
+\-\-convert\-graft\-file
+.RS 4
+Creates graft commits for all entries in
+\fB$GIT_DIR/info/grafts\fR
+and deletes that file upon success\&. The purpose is to help users with transitioning off of the now\-deprecated graft file\&.
 .RE
 .PP
 \-l <pattern>, \-\-list <pattern>

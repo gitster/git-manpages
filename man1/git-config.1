@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 05/08/2018
+.\"      Date: 05/23/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0.582.gccdcbd54c
+.\"    Source: Git 2.17.0.775.ge144d126d
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "05/08/2018" "Git 2\&.17\&.0\&.582\&.gccdcbd" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/23/2018" "Git 2\&.17\&.0\&.775\&.ge144d1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2212,6 +2212,15 @@ branch\&.<name>\&.rebase
 .RS 4
 When true, rebase the branch <name> on top of the fetched branch, instead of merging the default branch from the default remote when "git pull" is run\&. See "pull\&.rebase" for doing this in a non branch\-specific manner\&.
 .sp
+When
+\fBmerges\fR, pass the
+\fB\-\-rebase\-merges\fR
+option to
+\fIgit rebase\fR
+so that the local merge commits are included in the rebase (see
+\fBgit-rebase\fR(1)
+for details)\&.
+.sp
 When preserve, also pass
 \fB\-\-preserve\-merges\fR
 along to
@@ -3639,6 +3648,21 @@ gc\&.autoDetach
 Make
 \fBgit gc \-\-auto\fR
 return immediately and run in background if the system supports it\&. Default is true\&.
+.RE
+.PP
+gc\&.bigPackThreshold
+.RS 4
+If non\-zero, all packs larger than this limit are kept when
+\fBgit gc\fR
+is run\&. This is very similar to
+\fB\-\-keep\-base\-pack\fR
+except that all packs that meet the threshold are kept, not just the base pack\&. Defaults to zero\&. Common unit suffixes of
+\fIk\fR,
+\fIm\fR, or
+\fIg\fR
+are supported\&.
+.sp
+Note that if the number of kept packs is more than gc\&.autoPackLimit, this configuration variable is ignored, all packs except the base pack will be repacked\&. After this the number of packs should go below gc\&.autoPackLimit and gc\&.bigPackThreshold should be respected again\&.
 .RE
 .PP
 gc\&.logExpiry
@@ -5373,7 +5397,7 @@ pack\&.depth
 .RS 4
 The maximum delta depth used by
 \fBgit-pack-objects\fR(1)
-when no maximum depth is given on the command line\&. Defaults to 50\&.
+when no maximum depth is given on the command line\&. Defaults to 50\&. Maximum value is 4095\&.
 .RE
 .PP
 pack\&.windowMemory
@@ -5401,7 +5425,7 @@ before writing them out to a pack\&. This cache is used to speed up the writing 
 pack\&.deltaCacheLimit
 .RS 4
 The maximum size of a delta, that is cached in
-\fBgit-pack-objects\fR(1)\&. This cache is used to speed up the writing object phase by not having to recompute the final delta result once the best match for all objects is found\&. Defaults to 1000\&.
+\fBgit-pack-objects\fR(1)\&. This cache is used to speed up the writing object phase by not having to recompute the final delta result once the best match for all objects is found\&. Defaults to 1000\&. Maximum value is 65535\&.
 .RE
 .PP
 pack\&.threads
@@ -5653,6 +5677,15 @@ when pulling\&.
 pull\&.rebase
 .RS 4
 When true, rebase branches on top of the fetched branch, instead of merging the default branch from the default remote when "git pull" is run\&. See "branch\&.<name>\&.rebase" for setting this on a per\-branch basis\&.
+.sp
+When
+\fBmerges\fR, pass the
+\fB\-\-rebase\-merges\fR
+option to
+\fIgit rebase\fR
+so that the local merge commits are included in the rebase (see
+\fBgit-rebase\fR(1)
+for details)\&.
 .sp
 When preserve, also pass
 \fB\-\-preserve\-merges\fR
