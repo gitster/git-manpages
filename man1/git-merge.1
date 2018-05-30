@@ -2,12 +2,12 @@
 .\"     Title: git-merge
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/25/2018
+.\"      Date: 05/30/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0.391.g1f1cddd55
+.\"    Source: Git 2.17.1.904.gf15a486ca
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "04/25/2018" "Git 2\&.17\&.0\&.391\&.g1f1cdd" "Git Manual"
+.TH "GIT\-MERGE" "1" "05/30/2018" "Git 2\&.17\&.1\&.904\&.gf15a48" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -634,7 +634,7 @@ This can only resolve two heads (i\&.e\&. the current branch and another branch 
 .PP
 recursive
 .RS 4
-This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mismerges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames\&. This is the default merge strategy when pulling or merging one branch\&.
+This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mismerges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames, but currently cannot make use of detected copies\&. This is the default merge strategy when pulling or merging one branch\&.
 .sp
 The
 \fIrecursive\fR
@@ -751,14 +751,18 @@ configuration variable\&.
 .PP
 no\-renames
 .RS 4
-Turn off rename detection\&. See also
+Turn off rename detection\&. This overrides the
+\fBmerge\&.renames\fR
+configuration variable\&. See also
 \fBgit-diff\fR(1)
 \fB\-\-no\-renames\fR\&.
 .RE
 .PP
 find\-renames[=<n>]
 .RS 4
-Turn on rename detection, optionally setting the similarity threshold\&. This is the default\&. See also
+Turn on rename detection, optionally setting the similarity threshold\&. This is the default\&. This overrides the
+\fImerge\&.renames\fR
+configuration variable\&. See also
 \fBgit-diff\fR(1)
 \fB\-\-find\-renames\fR\&.
 .RE
@@ -853,7 +857,12 @@ In addition to branch names, populate the log message with at most the specified
 .PP
 merge\&.renameLimit
 .RS 4
-The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff\&.renameLimit\&.
+The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff\&.renameLimit\&. This setting has no effect if rename detection is turned off\&.
+.RE
+.PP
+merge\&.renames
+.RS 4
+Whether and how Git detects renames\&. If set to "false", rename detection is disabled\&. If set to "true", basic rename detection is enabled\&. Defaults to the value of diff\&.renames\&.
 .RE
 .PP
 merge\&.renormalize

@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 05/23/2018
+.\"      Date: 05/30/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.17.0.775.ge144d126d
+.\"    Source: Git 2.17.1.904.gf15a486ca
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "05/23/2018" "Git 2\&.17\&.0\&.775\&.ge144d1" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/30/2018" "Git 2\&.17\&.1\&.904\&.gf15a48" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2605,6 +2605,32 @@ or
 (files which have unmerged changes)\&.
 .RE
 .PP
+color\&.blame\&.repeatedLines
+.RS 4
+Use the customized color for the part of git\-blame output that is repeated meta information per line (such as commit id, author name, date and timezone)\&. Defaults to cyan\&.
+.RE
+.PP
+color\&.blame\&.highlightRecent
+.RS 4
+This can be used to color the metadata of a blame line depending on age of the line\&.
+.sp
+This setting should be set to a comma\-separated list of color and date settings, starting and ending with a color, the dates should be set from oldest to newest\&. The metadata will be colored given the colors if the the line was introduced before the given timestamp, overwriting older timestamped colors\&.
+.sp
+Instead of an absolute timestamp relative timestamps work as well, e\&.g\&. 2\&.weeks\&.ago is valid to address anything older than 2 weeks\&.
+.sp
+It defaults to
+\fIblue,12 month ago,white,1 month ago,red\fR, which colors everything older than one year blue, recent changes between one month and one year old are kept white, and lines introduced within the last month are colored red\&.
+.RE
+.PP
+blame\&.coloring
+.RS 4
+This determines the coloring scheme to be applied to blame output\&. It can be
+\fIrepeatedLines\fR,
+\fIhighlightRecent\fR, or
+\fInone\fR
+which is the default\&.
+.RE
+.PP
 color\&.transport
 .RS 4
 A boolean to enable/disable color when pushes are rejected\&. May be set to
@@ -2981,7 +3007,7 @@ diff\&.renameLimit
 The number of files to consider when performing the copy/rename detection; equivalent to the
 \fIgit diff\fR
 option
-\fB\-l\fR\&.
+\fB\-l\fR\&. This setting has no effect if rename detection is turned off\&.
 .RE
 .PP
 diff\&.renames
@@ -4913,7 +4939,12 @@ In addition to branch names, populate the log message with at most the specified
 .PP
 merge\&.renameLimit
 .RS 4
-The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff\&.renameLimit\&.
+The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff\&.renameLimit\&. This setting has no effect if rename detection is turned off\&.
+.RE
+.PP
+merge\&.renames
+.RS 4
+Whether and how Git detects renames\&. If set to "false", rename detection is disabled\&. If set to "true", basic rename detection is enabled\&. Defaults to the value of diff\&.renames\&.
 .RE
 .PP
 merge\&.renormalize
@@ -6395,6 +6426,23 @@ will insert a comment prefix before each output line (starting with
 by default)\&. This was the behavior of
 \fBgit-status\fR(1)
 in Git 1\&.8\&.4 and previous\&. Defaults to false\&.
+.RE
+.PP
+status\&.renameLimit
+.RS 4
+The number of files to consider when performing rename detection in
+\fBgit-status\fR(1)
+and
+\fBgit-commit\fR(1)\&. Defaults to the value of diff\&.renameLimit\&.
+.RE
+.PP
+status\&.renames
+.RS 4
+Whether and how Git detects renames in
+\fBgit-status\fR(1)
+and
+\fBgit-commit\fR(1)
+\&. If set to "false", rename detection is disabled\&. If set to "true", basic rename detection is enabled\&. If set to "copies" or "copy", Git will detect copies, as well\&. Defaults to the value of diff\&.renames\&.
 .RE
 .PP
 status\&.showStash
