@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/28/2018
+.\"      Date: 07/18/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.18.0.129.ge3331758f
+.\"    Source: Git 2.18.0.232.gb7bd9486b
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "06/28/2018" "Git 2\&.18\&.0\&.129\&.ge33317" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/18/2018" "Git 2\&.18\&.0\&.232\&.gb7bd94" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1287,7 +1287,7 @@ Advice on what to do when you\(cqve accidentally added one git repo inside of an
 .PP
 ignoredHook
 .RS 4
-Advice shown if an hook is ignored because the hook is not set as executable\&.
+Advice shown if a hook is ignored because the hook is not set as executable\&.
 .RE
 .PP
 waitingForEditor
@@ -1326,13 +1326,15 @@ directory is hidden, but no other files starting with a dot\&. The default mode 
 .PP
 core\&.ignoreCase
 .RS 4
-If true, this option enables various workarounds to enable Git to work better on filesystems that are not case sensitive, like FAT\&. For example, if a directory listing finds "makefile" when Git expects "Makefile", Git will assume it is really the same file, and continue to remember it as "Makefile"\&.
+Internal variable which enables various workarounds to enable Git to work better on filesystems that are not case sensitive, like APFS, HFS+, FAT, NTFS, etc\&. For example, if a directory listing finds "makefile" when Git expects "Makefile", Git will assume it is really the same file, and continue to remember it as "Makefile"\&.
 .sp
 The default is false, except
 \fBgit-clone\fR(1)
 or
 \fBgit-init\fR(1)
 will probe and set core\&.ignoreCase true if appropriate when the repository is created\&.
+.sp
+Git relies on the proper configuration of this variable for your operating and file system\&. Modifying this value may result in unexpected behavior\&.
 .RE
 .PP
 core\&.precomposeUnicode
@@ -2455,10 +2457,16 @@ function name lines (when using
 \fB\-p\fR)
 .RE
 .PP
-\fBlinenumber\fR
+\fBlineNumber\fR
 .RS 4
 line number prefix (when using
 \fB\-n\fR)
+.RE
+.PP
+\fBcolumn\fR
+.RS 4
+column number prefix (when using
+\fB\-\-column\fR)
 .RE
 .PP
 \fBmatch\fR
@@ -3872,6 +3880,13 @@ grep\&.lineNumber
 .RS 4
 If set to true, enable
 \fB\-n\fR
+option by default\&.
+.RE
+.PP
+grep\&.column
+.RS 4
+If set to true, enable the
+\fB\-\-column\fR
 option by default\&.
 .RE
 .PP
@@ -6605,12 +6620,16 @@ commands are not affected by this setting\&.
 .PP
 submodule\&.<name>\&.active
 .RS 4
-Boolean value indicating if the submodule is of interest to git commands\&. This config option takes precedence over the submodule\&.active config option\&.
+Boolean value indicating if the submodule is of interest to git commands\&. This config option takes precedence over the submodule\&.active config option\&. See
+\fBgitsubmodules\fR(7)
+for details\&.
 .RE
 .PP
 submodule\&.active
 .RS 4
-A repeated field which contains a pathspec used to match against a submodule\(cqs path to determine if the submodule is of interest to git commands\&.
+A repeated field which contains a pathspec used to match against a submodule\(cqs path to determine if the submodule is of interest to git commands\&. See
+\fBgitsubmodules\fR(7)
+for details\&.
 .RE
 .PP
 submodule\&.recurse
