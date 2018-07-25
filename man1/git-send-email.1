@@ -2,12 +2,12 @@
 .\"     Title: git-send-email
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2018
+.\"      Date: 07/25/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.18.0
+.\"    Source: Git 2.18.0.321.gffc6fa0e3
 .\"  Language: English
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "06/21/2018" "Git 2\&.18\&.0" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "07/25/2018" "Git 2\&.18\&.0\&.321\&.gffc6fa" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -191,11 +191,14 @@ Specify encoding of compose message\&. Default is the value of the
 \fIsendemail\&.composeencoding\fR; if that is unspecified, UTF\-8 is assumed\&.
 .RE
 .PP
-\-\-transfer\-encoding=(7bit|8bit|quoted\-printable|base64)
+\-\-transfer\-encoding=(7bit|8bit|quoted\-printable|base64|auto)
 .RS 4
-Specify the transfer encoding to be used to send the message over SMTP\&. 7bit will fail upon encountering a non\-ASCII message\&. quoted\-printable can be useful when the repository contains files that contain carriage returns, but makes the raw patch email file (as saved from a MUA) much harder to inspect manually\&. base64 is even more fool proof, but also even more opaque\&. Default is the value of the
+Specify the transfer encoding to be used to send the message over SMTP\&. 7bit will fail upon encountering a non\-ASCII message\&. quoted\-printable can be useful when the repository contains files that contain carriage returns, but makes the raw patch email file (as saved from a MUA) much harder to inspect manually\&. base64 is even more fool proof, but also even more opaque\&. auto will use 8bit when possible, and quoted\-printable otherwise\&.
+.sp
+Default is the value of the
 \fBsendemail\&.transferEncoding\fR
-configuration value; if that is unspecified, git will use 8bit and not add a Content\-Transfer\-Encoding header\&.
+configuration value; if that is unspecified, default to
+\fBauto\fR\&.
 .RE
 .PP
 \-\-xmailer, \-\-no\-xmailer
@@ -657,8 +660,10 @@ Invoke the sendemail\-validate hook if present (see
 .sp -1
 .IP \(bu 2.3
 .\}
-Warn of patches that contain lines longer than 998 characters; this is due to SMTP limits as described by
-\m[blue]\fBhttp://www\&.ietf\&.org/rfc/rfc2821\&.txt\fR\m[]\&.
+Warn of patches that contain lines longer than 998 characters unless a suitable transfer encoding (\fIauto\fR,
+\fIbase64\fR, or
+\fIquoted\-printable\fR) is used; this is due to SMTP limits as described by
+\m[blue]\fBhttp://www\&.ietf\&.org/rfc/rfc5322\&.txt\fR\m[]\&.
 .RE
 .sp
 Default is the value of
