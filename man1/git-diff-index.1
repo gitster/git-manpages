@@ -2,12 +2,12 @@
 .\"     Title: git-diff-index
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2018
+.\"      Date: 08/02/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.18.0
+.\"    Source: Git 2.18.0.547.g1d89318c4
 .\"  Language: English
 .\"
-.TH "GIT\-DIFF\-INDEX" "1" "06/21/2018" "Git 2\&.18\&.0" "Git Manual"
+.TH "GIT\-DIFF\-INDEX" "1" "08/02/2018" "Git 2\&.18\&.0\&.547\&.g1d8931" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -342,9 +342,18 @@ Any line that is added in one location and was removed in another location will 
 will be used for removed lines that are added somewhere else in the diff\&. This mode picks up any moved line, but it is not very useful in a review to determine if a block of code was moved without permutation\&.
 .RE
 .PP
-zebra
+blocks
 .RS 4
 Blocks of moved text of at least 20 alphanumeric characters are detected greedily\&. The detected blocks are painted using either the
+\fIcolor\&.diff\&.{old,new}Moved\fR
+color\&. Adjacent blocks cannot be told apart\&.
+.RE
+.PP
+zebra
+.RS 4
+Blocks of moved text are detected as in
+\fIblocks\fR
+mode\&. The blocks are painted using either the
 \fIcolor\&.diff\&.{old,new}Moved\fR
 color or
 \fIcolor\&.diff\&.{old,new}MovedAlternative\fR\&. The change between the two colors indicates that a new block was detected\&.
@@ -354,6 +363,32 @@ dimmed_zebra
 .RS 4
 Similar to
 \fIzebra\fR, but additional dimming of uninteresting parts of moved code is performed\&. The bordering lines of two adjacent blocks are considered interesting, the rest is uninteresting\&.
+.RE
+.RE
+.PP
+\-\-color\-moved\-ws=<modes>
+.RS 4
+This configures how white spaces are ignored when performing the move detection for
+\fB\-\-color\-moved\fR\&. These modes can be given as a comma separated list:
+.PP
+ignore\-space\-at\-eol
+.RS 4
+Ignore changes in whitespace at EOL\&.
+.RE
+.PP
+ignore\-space\-change
+.RS 4
+Ignore changes in amount of whitespace\&. This ignores whitespace at line end, and considers all other sequences of one or more whitespace characters to be equivalent\&.
+.RE
+.PP
+ignore\-all\-space
+.RS 4
+Ignore whitespace when comparing lines\&. This ignores differences even if one line has whitespace where the other line has none\&.
+.RE
+.PP
+allow\-indentation\-change
+.RS 4
+Initially ignore any white spaces in the move detection, then group the moved code blocks only into a block if the change in whitespace is the same per line\&. This is incompatible with the other modes\&.
 .RE
 .RE
 .PP

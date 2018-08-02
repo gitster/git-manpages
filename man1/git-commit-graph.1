@@ -2,12 +2,12 @@
 .\"     Title: git-commit-graph
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2018
+.\"      Date: 08/02/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.18.0
+.\"    Source: Git 2.18.0.547.g1d89318c4
 .\"  Language: English
 .\"
-.TH "GIT\-COMMIT\-GRAPH" "1" "06/21/2018" "Git 2\&.18\&.0" "Git Manual"
+.TH "GIT\-COMMIT\-GRAPH" "1" "08/02/2018" "Git 2\&.18\&.0\&.547\&.g1d8931" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,6 +33,7 @@ git-commit-graph \- Write and verify Git commit graph files
 .sp
 .nf
 \fIgit commit\-graph read\fR [\-\-object\-dir <dir>]
+\fIgit commit\-graph verify\fR [\-\-object\-dir <dir>]
 \fIgit commit\-graph write\fR <options> [\-\-object\-dir <dir>]
 .fi
 .sp
@@ -53,11 +54,24 @@ Write a commit graph file based on the commits found in packfiles\&.
 .sp
 With the
 \fB\-\-stdin\-packs\fR
-option, generate the new commit graph by walking objects only in the specified pack\-indexes\&. (Cannot be combined with \-\-stdin\-commits\&.)
+option, generate the new commit graph by walking objects only in the specified pack\-indexes\&. (Cannot be combined with
+\fB\-\-stdin\-commits\fR
+or
+\fB\-\-reachable\fR\&.)
 .sp
 With the
 \fB\-\-stdin\-commits\fR
-option, generate the new commit graph by walking commits starting at the commits specified in stdin as a list of OIDs in hex, one OID per line\&. (Cannot be combined with \-\-stdin\-packs\&.)
+option, generate the new commit graph by walking commits starting at the commits specified in stdin as a list of OIDs in hex, one OID per line\&. (Cannot be combined with
+\fB\-\-stdin\-packs\fR
+or
+\fB\-\-reachable\fR\&.)
+.sp
+With the
+\fB\-\-reachable\fR
+option, generate the new commit graph by walking commits starting at all refs\&. (Cannot be combined with
+\fB\-\-stdin\-commits\fR
+or
+\fB\-\-stdin\-packs\fR\&.)
 .sp
 With the
 \fB\-\-append\fR
@@ -67,6 +81,11 @@ option, include all commits that are present in the existing commit\-graph file\
 \fIread\fR
 .RS 4
 Read a graph file given by the commit\-graph file and output basic details about the graph file\&. Used for debugging purposes\&.
+.RE
+.PP
+\fIverify\fR
+.RS 4
+Read the commit\-graph file and verify its contents against the object database\&. Used to check for corrupted data\&.
 .RE
 .SH "EXAMPLES"
 .sp
