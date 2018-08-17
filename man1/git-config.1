@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/02/2018
+.\"      Date: 08/17/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.18.0.547.g1d89318c4
+.\"    Source: Git 2.18.0.748.gfa03cdc39
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "08/02/2018" "Git 2\&.18\&.0\&.547\&.g1d8931" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/17/2018" "Git 2\&.18\&.0\&.748\&.gfa03cd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2025,6 +2025,18 @@ the commit\-graph will be updated if housekeeping is required\&. Default is fals
 for details\&.
 .RE
 .PP
+core\&.useReplaceRefs
+.RS 4
+If set to
+\fBfalse\fR, behave as if the
+\fB\-\-no\-replace\-objects\fR
+option was given on the command line\&. See
+\fBgit\fR(1)
+and
+\fBgit-replace\fR(1)
+for more information\&.
+.RE
+.PP
 core\&.sparseCheckout
 .RS 4
 Enable "sparse checkout" feature\&. See section "Sparse checkout" in
@@ -2112,22 +2124,19 @@ option\&. See
 \fBgit-apply\fR(1)\&.
 .RE
 .PP
-blame\&.showRoot
-.RS 4
-Do not treat root commits as boundaries in
-\fBgit-blame\fR(1)\&. This option defaults to false\&.
-.RE
-.PP
 blame\&.blankBoundary
 .RS 4
 Show blank commit object name for boundary commits in
 \fBgit-blame\fR(1)\&. This option defaults to false\&.
 .RE
 .PP
-blame\&.showEmail
+blame\&.coloring
 .RS 4
-Show the author email instead of author name in
-\fBgit-blame\fR(1)\&. This option defaults to false\&.
+This determines the coloring scheme to be applied to blame output\&. It can be
+\fIrepeatedLines\fR,
+\fIhighlightRecent\fR, or
+\fInone\fR
+which is the default\&.
 .RE
 .PP
 blame\&.date
@@ -2137,6 +2146,18 @@ Specifies the format used to output dates in
 \fB\-\-date\fR
 option at
 \fBgit-log\fR(1)\&.
+.RE
+.PP
+blame\&.showEmail
+.RS 4
+Show the author email instead of author name in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
+.RE
+.PP
+blame\&.showRoot
+.RS 4
+Do not treat root commits as boundaries in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
 .RE
 .PP
 branch\&.autoSetupMerge
@@ -2325,6 +2346,23 @@ by default)\&.
 color\&.advice\&.hint
 .RS 4
 Use customized color for hints\&.
+.RE
+.PP
+color\&.blame\&.highlightRecent
+.RS 4
+This can be used to color the metadata of a blame line depending on age of the line\&.
+.sp
+This setting should be set to a comma\-separated list of color and date settings, starting and ending with a color, the dates should be set from oldest to newest\&. The metadata will be colored given the colors if the the line was introduced before the given timestamp, overwriting older timestamped colors\&.
+.sp
+Instead of an absolute timestamp relative timestamps work as well, e\&.g\&. 2\&.weeks\&.ago is valid to address anything older than 2 weeks\&.
+.sp
+It defaults to
+\fIblue,12 month ago,white,1 month ago,red\fR, which colors everything older than one year blue, recent changes between one month and one year old are kept white, and lines introduced within the last month are colored red\&.
+.RE
+.PP
+color\&.blame\&.repeatedLines
+.RS 4
+Use the customized color for the part of git\-blame output that is repeated meta information per line (such as commit id, author name, date and timezone)\&. Defaults to cyan\&.
 .RE
 .PP
 color\&.branch
@@ -2664,32 +2702,6 @@ or
 (the local and remote branch names, respectively, when branch and tracking information is displayed in the status short\-format), or
 \fBunmerged\fR
 (files which have unmerged changes)\&.
-.RE
-.PP
-color\&.blame\&.repeatedLines
-.RS 4
-Use the customized color for the part of git\-blame output that is repeated meta information per line (such as commit id, author name, date and timezone)\&. Defaults to cyan\&.
-.RE
-.PP
-color\&.blame\&.highlightRecent
-.RS 4
-This can be used to color the metadata of a blame line depending on age of the line\&.
-.sp
-This setting should be set to a comma\-separated list of color and date settings, starting and ending with a color, the dates should be set from oldest to newest\&. The metadata will be colored given the colors if the the line was introduced before the given timestamp, overwriting older timestamped colors\&.
-.sp
-Instead of an absolute timestamp relative timestamps work as well, e\&.g\&. 2\&.weeks\&.ago is valid to address anything older than 2 weeks\&.
-.sp
-It defaults to
-\fIblue,12 month ago,white,1 month ago,red\fR, which colors everything older than one year blue, recent changes between one month and one year old are kept white, and lines introduced within the last month are colored red\&.
-.RE
-.PP
-blame\&.coloring
-.RS 4
-This determines the coloring scheme to be applied to blame output\&. It can be
-\fIrepeatedLines\fR,
-\fIhighlightRecent\fR, or
-\fInone\fR
-which is the default\&.
 .RE
 .PP
 color\&.transport
@@ -3525,9 +3537,33 @@ This option can be either set to a boolean value or to
 .PP
 fetch\&.fsckObjects
 .RS 4
-If it is set to true, git\-fetch\-pack will check all fetched objects\&. It will abort in the case of a malformed object or a broken link\&. The result of an abort are only dangling objects\&. Defaults to false\&. If not set, the value of
+If it is set to true, git\-fetch\-pack will check all fetched objects\&. See
+\fBtransfer\&.fsckObjects\fR
+for what\(cqs checked\&. Defaults to false\&. If not set, the value of
 \fBtransfer\&.fsckObjects\fR
 is used instead\&.
+.RE
+.PP
+fetch\&.fsck\&.<msg\-id>
+.RS 4
+Acts like
+\fBfsck\&.<msg\-id>\fR, but is used by
+\fBgit-fetch-pack\fR(1)
+instead of
+\fBgit-fsck\fR(1)\&. See the
+\fBfsck\&.<msg\-id>\fR
+documentation for details\&.
+.RE
+.PP
+fetch\&.fsck\&.skipList
+.RS 4
+Acts like
+\fBfsck\&.skipList\fR, but is used by
+\fBgit-fetch-pack\fR(1)
+instead of
+\fBgit-fsck\fR(1)\&. See the
+\fBfsck\&.skipList\fR
+documentation for details\&.
 .RE
 .PP
 fetch\&.unpackLimit
@@ -3572,7 +3608,14 @@ for detail\&.
 .PP
 fetch\&.negotiationAlgorithm
 .RS 4
-Control how information about the commits in the local repository is sent when negotiating the contents of the packfile to be sent by the server\&. Set to "skipping" to use an algorithm that skips commits in an effort to converge faster, but may result in a larger\-than\-necessary packfile; any other value instructs Git to use the default algorithm that never skips commits (unless the server has acknowledged it or one of its descendants)\&.
+Control how information about the commits in the local repository is sent when negotiating the contents of the packfile to be sent by the server\&. Set to "skipping" to use an algorithm that skips commits in an effort to converge faster, but may result in a larger\-than\-necessary packfile; The default is "default" which instructs Git to use the default algorithm that never skips commits (unless the server has acknowledged it or one of its descendants)\&. Unknown values will cause
+\fIgit fetch\fR
+to error out\&.
+.sp
+See also the
+\fB\-\-negotiation\-tip\fR
+option for
+\fBgit-fetch\fR(1)\&.
 .RE
 .PP
 format\&.attach
@@ -3699,19 +3742,86 @@ for details\&.
 .PP
 fsck\&.<msg\-id>
 .RS 4
-Allows overriding the message type (error, warn or ignore) of a specific message ID such as
-\fBmissingEmail\fR\&.
+During fsck git may find issues with legacy data which wouldn\(cqt be generated by current versions of git, and which wouldn\(cqt be sent over the wire if
+\fBtransfer\&.fsckObjects\fR
+was set\&. This feature is intended to support working with legacy repositories containing such data\&.
 .sp
-For convenience, fsck prefixes the error/warning with the message ID, e\&.g\&. "missingEmail: invalid author/committer line \- missing email" means that setting
+Setting
+\fBfsck\&.<msg\-id>\fR
+will be picked up by
+\fBgit-fsck\fR(1), but to accept pushes of such data set
+\fBreceive\&.fsck\&.<msg\-id>\fR
+instead, or to clone or fetch it set
+\fBfetch\&.fsck\&.<msg\-id>\fR\&.
+.sp
+The rest of the documentation discusses
+\fBfsck\&.*\fR
+for brevity, but the same applies for the corresponding
+\fBreceive\&.fsck\&.*\fR
+and
+\fBfetch\&.<msg\-id>\&.*\fR\&. variables\&.
+.sp
+Unlike variables like
+\fBcolor\&.ui\fR
+and
+\fBcore\&.editor\fR
+the
+\fBreceive\&.fsck\&.<msg\-id>\fR
+and
+\fBfetch\&.fsck\&.<msg\-id>\fR
+variables will not fall back on the
+\fBfsck\&.<msg\-id>\fR
+configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances all three of them they must all set to the same values\&.
+.sp
+When
+\fBfsck\&.<msg\-id>\fR
+is set, errors can be switched to warnings and vice versa by configuring the
+\fBfsck\&.<msg\-id>\fR
+setting where the
+\fB<msg\-id>\fR
+is the fsck message ID and the value is one of
+\fBerror\fR,
+\fBwarn\fR
+or
+\fBignore\fR\&. For convenience, fsck prefixes the error/warning with the message ID, e\&.g\&. "missingEmail: invalid author/committer line \- missing email" means that setting
 \fBfsck\&.missingEmail = ignore\fR
 will hide that issue\&.
 .sp
-This feature is intended to support working with legacy repositories which cannot be repaired without disruptive changes\&.
+In general, it is better to enumerate existing objects with problems with
+\fBfsck\&.skipList\fR, instead of listing the kind of breakages these problematic objects share to be ignored, as doing the latter will allow new instances of the same breakages go unnoticed\&.
+.sp
+Setting an unknown
+\fBfsck\&.<msg\-id>\fR
+value will cause fsck to die, but doing the same for
+\fBreceive\&.fsck\&.<msg\-id>\fR
+and
+\fBfetch\&.fsck\&.<msg\-id>\fR
+will only cause git to warn\&.
 .RE
 .PP
 fsck\&.skipList
 .RS 4
 The path to a sorted list of object names (i\&.e\&. one SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
+.sp
+Like
+\fBfsck\&.<msg\-id>\fR
+this variable has corresponding
+\fBreceive\&.fsck\&.skipList\fR
+and
+\fBfetch\&.fsck\&.skipList\fR
+variants\&.
+.sp
+Unlike variables like
+\fBcolor\&.ui\fR
+and
+\fBcore\&.editor\fR
+the
+\fBreceive\&.fsck\&.skipList\fR
+and
+\fBfetch\&.fsck\&.skipList\fR
+variables will not fall back on the
+\fBfsck\&.skipList\fR
+configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances all three of them they must all set to the same values\&.
 .RE
 .PP
 gc\&.aggressiveDepth
@@ -3992,6 +4102,25 @@ gpg\&.program
 Use this custom program instead of "\fBgpg\fR" found on
 \fB$PATH\fR
 when making or verifying a PGP signature\&. The program must support the same command\-line interface as GPG, namely, to verify a detached signature, "\fBgpg \-\-verify $file \- <$signature\fR" is run, and the program is expected to signal a good signature by exiting with code 0, and to generate an ASCII\-armored detached signature, the standard input of "\fBgpg \-bsau $key\fR" is fed with the contents to be signed, and the program is expected to send the result to its standard output\&.
+.RE
+.PP
+gpg\&.format
+.RS 4
+Specifies which key format to use when signing with
+\fB\-\-gpg\-sign\fR\&. Default is "openpgp" and another possible value is "x509"\&.
+.RE
+.PP
+gpg\&.<format>\&.program
+.RS 4
+Use this to customize the program used for the signing format you chose\&. (see
+\fBgpg\&.program\fR
+and
+\fBgpg\&.format\fR)
+\fBgpg\&.program\fR
+can still be used as a legacy synonym for
+\fBgpg\&.openpgp\&.program\fR\&. The default value for
+\fBgpg\&.x509\&.program\fR
+is "gpgsm"\&.
 .RE
 .PP
 gui\&.commitMsgWidth
@@ -6106,34 +6235,33 @@ is
 .PP
 receive\&.fsckObjects
 .RS 4
-If it is set to true, git\-receive\-pack will check all received objects\&. It will abort in the case of a malformed object or a broken link\&. The result of an abort are only dangling objects\&. Defaults to false\&. If not set, the value of
+If it is set to true, git\-receive\-pack will check all received objects\&. See
+\fBtransfer\&.fsckObjects\fR
+for what\(cqs checked\&. Defaults to false\&. If not set, the value of
 \fBtransfer\&.fsckObjects\fR
 is used instead\&.
 .RE
 .PP
 receive\&.fsck\&.<msg\-id>
 .RS 4
-When
-\fBreceive\&.fsckObjects\fR
-is set to true, errors can be switched to warnings and vice versa by configuring the
-\fBreceive\&.fsck\&.<msg\-id>\fR
-setting where the
-\fB<msg\-id>\fR
-is the fsck message ID and the value is one of
-\fBerror\fR,
-\fBwarn\fR
-or
-\fBignore\fR\&. For convenience, fsck prefixes the error/warning with the message ID, e\&.g\&. "missingEmail: invalid author/committer line \- missing email" means that setting
-\fBreceive\&.fsck\&.missingEmail = ignore\fR
-will hide that issue\&.
-.sp
-This feature is intended to support working with legacy repositories which would not pass pushing when
-\fBreceive\&.fsckObjects = true\fR, allowing the host to accept repositories with certain known issues but still catch other issues\&.
+Acts like
+\fBfsck\&.<msg\-id>\fR, but is used by
+\fBgit-receive-pack\fR(1)
+instead of
+\fBgit-fsck\fR(1)\&. See the
+\fBfsck\&.<msg\-id>\fR
+documentation for details\&.
 .RE
 .PP
 receive\&.fsck\&.skipList
 .RS 4
-The path to a sorted list of object names (i\&.e\&. one SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
+Acts like
+\fBfsck\&.skipList\fR, but is used by
+\fBgit-receive-pack\fR(1)
+instead of
+\fBgit-fsck\fR(1)\&. See the
+\fBfsck\&.skipList\fR
+documentation for details\&.
 .RE
 .PP
 receive\&.keepAlive
@@ -6748,6 +6876,26 @@ When
 or
 \fBreceive\&.fsckObjects\fR
 are not set, the value of this variable is used instead\&. Defaults to false\&.
+.sp
+When set, the fetch or receive will abort in the case of a malformed object or a link to a nonexistent object\&. In addition, various other issues are checked for, including legacy issues (see
+\fBfsck\&.<msg\-id>\fR), and potential security issues like the existence of a
+\fB\&.GIT\fR
+directory or a malicious
+\fB\&.gitmodules\fR
+file (see the release notes for v2\&.2\&.1 and v2\&.17\&.1 for details)\&. Other sanity and security checks may be added in future releases\&.
+.sp
+On the receiving side, failing fsckObjects will make those objects unreachable, see "QUARANTINE ENVIRONMENT" in
+\fBgit-receive-pack\fR(1)\&. On the fetch side, malformed objects will instead be left unreferenced in the repository\&.
+.sp
+Due to the non\-quarantine nature of the
+\fBfetch\&.fsckObjects\fR
+implementation it can not be relied upon to leave the object store clean like
+\fBreceive\&.fsckObjects\fR
+can\&.
+.sp
+As objects are unpacked they\(cqre written to the object store, so there can be cases where malicious objects get introduced even though the "fetch" failed, only to have a subsequent "fetch" succeed because only new incoming objects are checked, not those that have already been written to the object store\&. That difference in behavior should not be relied upon\&. In the future, such objects may be quarantined for "fetch" as well\&.
+.sp
+For now, the paranoid need to find some way to emulate the quarantine environment if they\(cqd like the same protection as "push"\&. E\&.g\&. in the case of an internal mirror do the mirroring in two steps, one to fetch the untrusted objects, and then do a second "push" (which will use the quarantine) to another internal repo, and have internal clients consume this pushed\-to repository, or embargo internal fetches and only allow them once a full "fsck" has run (and no new fetches have happened in the meantime)\&.
 .RE
 .PP
 transfer\&.hideRefs
