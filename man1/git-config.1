@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/17/2018
+.\"      Date: 08/20/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.18.0.748.gfa03cdc39
+.\"    Source: Git 2.19.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "08/17/2018" "Git 2\&.18\&.0\&.748\&.gfa03cd" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/20/2018" "Git 2\&.19\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2476,7 +2476,6 @@ is a historical synonym),
 \fBoldMovedAlternativeDimmed\fR,
 \fBnewMovedDimmed\fR,
 \fBnewMovedAlternative\fR
-and
 \fBnewMovedAlternativeDimmed\fR
 (See the
 \fI<mode>\fR
@@ -2484,6 +2483,15 @@ setting of
 \fI\-\-color\-moved\fR
 in
 \fBgit-diff\fR(1)
+for details),
+\fBcontextDimmed\fR,
+\fBoldDimmed\fR,
+\fBnewDimmed\fR,
+\fBcontextBold\fR,
+\fBoldBold\fR, and
+\fBnewBold\fR
+(see
+\fBgit-range-diff\fR(1)
 for details)\&.
 .RE
 .PP
@@ -2641,6 +2649,34 @@ by default)\&.
 color\&.push\&.error
 .RS 4
 Use customized color for push errors\&.
+.RE
+.PP
+color\&.remote
+.RS 4
+If set, keywords at the start of the line are highlighted\&. The keywords are "error", "warning", "hint" and "success", and are matched case\-insensitively\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR)\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.remote\&.<slot>
+.RS 4
+Use customized color for each remote keyword\&.
+\fB<slot>\fR
+may be
+\fBhint\fR,
+\fBwarning\fR,
+\fBsuccess\fR
+or
+\fBerror\fR
+which match the corresponding keyword\&.
 .RE
 .PP
 color\&.showBranch
@@ -7164,6 +7200,36 @@ is set to true,
 \fBworktree add\fR
 tries to find a remote\-tracking branch whose name uniquely matches the new branch name\&. If such a branch exists, it is checked out and set as "upstream" for the new branch\&. If no such match can be found, it falls back to creating a new branch from the current HEAD\&.
 .RE
+.SH "BUGS"
+.sp
+When using the deprecated \fB[section\&.subsection]\fR syntax, changing a value will result in adding a multi\-line key instead of a change, if the subsection is given with at least one uppercase character\&. For example when the config looks like
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+  [section\&.subsection]
+    key = value1
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+and running \fBgit config section\&.Subsection\&.key value2\fR will result in
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+  [section\&.subsection]
+    key = value1
+    key = value2
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

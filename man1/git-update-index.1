@@ -2,12 +2,12 @@
 .\"     Title: git-update-index
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2018
+.\"      Date: 08/20/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.18.0
+.\"    Source: Git 2.19.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "06/21/2018" "Git 2\&.18\&.0" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "08/20/2018" "Git 2\&.19\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -284,13 +284,13 @@ For example, you\(cqd want to do this after doing a \fIgit read\-tree\fR, to lin
 .sp
 \fB\-\-cacheinfo\fR is used to register a file that is not in the current working directory\&. This is useful for minimum\-checkout merging\&.
 .sp
-To pretend you have a file with mode and sha1 at path, say:
+To pretend you have a file at path with mode and sha1, say:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-$ git update\-index \-\-cacheinfo <mode>,<sha1>,<path>
+$ git update\-index \-\-add \-\-cacheinfo <mode>,<sha1>,<path>
 .fi
 .if n \{\
 .RE
@@ -312,9 +312,11 @@ Both \fB\-\-cacheinfo\fR and \fB\-\-info\-only\fR behave similarly: the index is
 .sp -1
 .IP "  1." 4.2
 .\}
-mode SP sha1 TAB path
+mode SP type SP sha1 TAB path
 .sp
-The first format is what "git\-apply \-\-index\-info" reports, and used to reconstruct a partial tree that is used for phony merge base tree when falling back on 3\-way merge\&.
+This format is to stuff
+\fBgit ls\-tree\fR
+output into the index\&.
 .RE
 .sp
 .RS 4
@@ -325,11 +327,11 @@ The first format is what "git\-apply \-\-index\-info" reports, and used to recon
 .sp -1
 .IP "  2." 4.2
 .\}
-mode SP type SP sha1 TAB path
+mode SP sha1 SP stage TAB path
 .sp
-The second format is to stuff
-\fIgit ls\-tree\fR
-output into the index file\&.
+This format is to put higher order stages into the index file and matches
+\fIgit ls\-files \-\-stage\fR
+output\&.
 .RE
 .sp
 .RS 4
@@ -340,11 +342,10 @@ output into the index file\&.
 .sp -1
 .IP "  3." 4.2
 .\}
-mode SP sha1 SP stage TAB path
+mode SP sha1 TAB path
 .sp
-This format is to put higher order stages into the index file and matches
-\fIgit ls\-files \-\-stage\fR
-output\&.
+This format is no longer produced by any Git command, but is and will continue to be supported by
+\fBupdate\-index \-\-index\-info\fR\&.
 .RE
 .sp
 To place a higher stage entry to the index, the path should first be removed by feeding a mode=0 entry for the path, and then feeding necessary input lines in the third format\&.
