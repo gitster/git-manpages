@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/20/2018
+.\"      Date: 08/27/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.0.rc0
+.\"    Source: Git 2.19.0.rc0.48.gb9dfa238d5
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "08/20/2018" "Git 2\&.19\&.0\&.rc0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/27/2018" "Git 2\&.19\&.0\&.rc0\&.48\&.gb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1403,11 +1403,15 @@ by default\&.
 .PP
 core\&.checkStat
 .RS 4
-Determines which stat fields to match between the index and work tree\&. The user can set this to
-\fIdefault\fR
-or
-\fIminimal\fR\&. Default (or explicitly
-\fIdefault\fR), is to check all fields, including the sub\-second part of mtime and ctime\&.
+When missing or is set to
+\fBdefault\fR, many fields in the stat structure are checked to detect if a file has been modified since Git looked at it\&. When this configuration variable is set to
+\fBminimal\fR, sub\-second part of mtime and ctime, the uid and gid of the owner of the file, the inode number (and the device number, if Git was compiled to use it), are excluded from the check among these fields, leaving only the whole\-second part of mtime (and ctime, if
+\fBcore\&.trustCtime\fR
+is set) and the filesize to be checked\&.
+.sp
+There are implementations of Git that do not leave usable values in some fields (e\&.g\&. JGit); by excluding these fields from the comparison, the
+\fBminimal\fR
+mode may help interoperability when the same repository is used by these other systems at the same time\&.
 .RE
 .PP
 core\&.quotePath
@@ -2013,16 +2017,11 @@ environment variable\&. See
 \fBgit-notes\fR(1)\&.
 .RE
 .PP
-gc\&.commitGraph
+core\&.commitGraph
 .RS 4
-If true, then gc will rewrite the commit\-graph file when
-\fBgit-gc\fR(1)
-is run\&. When using
-\fBgit-gc\fR(1)
-\fI\-\-auto\fR
-the commit\-graph will be updated if housekeeping is required\&. Default is false\&. See
+If true, then git will read the commit\-graph file (if it exists) to parse the graph structure of commits\&. Defaults to false\&. See
 \fBgit-commit-graph\fR(1)
-for details\&.
+for more information\&.
 .RE
 .PP
 core\&.useReplaceRefs
@@ -2189,6 +2188,14 @@ that tracks another branch, this variable tells Git to set up pull to rebase ins
 \fBlocal\fR, rebase is set to true for tracked branches of other local branches\&. When
 \fBremote\fR, rebase is set to true for tracked branches of remote\-tracking branches\&. When
 \fBalways\fR, rebase will be set to true for all tracking branches\&. See "branch\&.autoSetupMerge" for details on how to set up a branch to track another branch\&. This option defaults to never\&.
+.RE
+.PP
+branch\&.sort
+.RS 4
+This variable controls the sort ordering of branches when displayed by
+\fBgit-branch\fR(1)\&. Without the "\-\-sort=<value>" option provided, the value of this variable will be used as the default\&. See
+\fBgit-for-each-ref\fR(1)
+field names for valid values\&.
 .RE
 .PP
 branch\&.<name>\&.remote
@@ -2420,28 +2427,6 @@ or the
 plumbing commands\&. Can be overridden on the command line with the
 \fB\-\-color[=<when>]\fR
 option\&.
-.RE
-.PP
-diff\&.colorMoved
-.RS 4
-If set to either a valid
-\fB<mode>\fR
-or a true value, moved lines in a diff are colored differently, for details of valid modes see
-\fI\-\-color\-moved\fR
-in
-\fBgit-diff\fR(1)\&. If simply set to true the default color mode will be used\&. When set to false, moved lines are not colored\&.
-.RE
-.PP
-diff\&.colorMovedWS
-.RS 4
-When moved lines are colored using e\&.g\&. the
-\fBdiff\&.colorMoved\fR
-setting, this option controls the
-\fB<mode>\fR
-how spaces are treated for details of valid modes see
-\fI\-\-color\-moved\-ws\fR
-in
-\fBgit-diff\fR(1)\&.
 .RE
 .PP
 color\&.diff\&.<slot>
@@ -3535,6 +3520,28 @@ is a shorthand for
 overrides this setting\&.
 .RE
 .PP
+diff\&.colorMoved
+.RS 4
+If set to either a valid
+\fB<mode>\fR
+or a true value, moved lines in a diff are colored differently, for details of valid modes see
+\fI\-\-color\-moved\fR
+in
+\fBgit-diff\fR(1)\&. If simply set to true the default color mode will be used\&. When set to false, moved lines are not colored\&.
+.RE
+.PP
+diff\&.colorMovedWS
+.RS 4
+When moved lines are colored using e\&.g\&. the
+\fBdiff\&.colorMoved\fR
+setting, this option controls the
+\fB<mode>\fR
+how spaces are treated for details of valid modes see
+\fI\-\-color\-moved\-ws\fR
+in
+\fBgit-diff\fR(1)\&.
+.RE
+.PP
 difftool\&.<tool>\&.path
 .RS 4
 Override the path for the given tool\&. This is useful in case your tool is not in the PATH\&.
@@ -3908,6 +3915,18 @@ except that all packs that meet the threshold are kept, not just the base pack\&
 are supported\&.
 .sp
 Note that if the number of kept packs is more than gc\&.autoPackLimit, this configuration variable is ignored, all packs except the base pack will be repacked\&. After this the number of packs should go below gc\&.autoPackLimit and gc\&.bigPackThreshold should be respected again\&.
+.RE
+.PP
+gc\&.writeCommitGraph
+.RS 4
+If true, then gc will rewrite the commit\-graph file when
+\fBgit-gc\fR(1)
+is run\&. When using
+\fBgit-gc\fR(1)
+\fI\-\-auto\fR
+the commit\-graph will be updated if housekeeping is required\&. Default is false\&. See
+\fBgit-commit-graph\fR(1)
+for details\&.
 .RE
 .PP
 gc\&.logExpiry
