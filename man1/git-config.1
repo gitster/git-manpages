@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/10/2018
+.\"      Date: 09/17/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.0
+.\"    Source: Git 2.19.0.216.g2d3b1c576c
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "09/10/2018" "Git 2\&.19\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "09/17/2018" "Git 2\&.19\&.0\&.216\&.g2d3b1c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2036,6 +2036,12 @@ and
 for more information\&.
 .RE
 .PP
+core\&.multiPackIndex
+.RS 4
+Use the multi\-pack\-index file to track multiple packfiles using a single index\&. See
+\m[blue]\fBthe multi\-pack\-index design document\fR\m[]\&\s-2\u[1]\d\s+2\&.
+.RE
+.PP
 core\&.sparseCheckout
 .RS 4
 Enable "sparse checkout" feature\&. See section "Sparse checkout" in
@@ -2327,6 +2333,8 @@ when
 \fIgit worktree add\fR
 refers to a remote branch\&. This setting might be used for other checkout\-like commands or functionality in the future\&.
 .RE
+.sp
+checkout\&.optimizeNewBranch Optimizes the performance of "git checkout \-b <new_branch>" when using sparse\-checkout\&. When set to true, git will not update the repo based on the current sparse\-checkout settings\&. This means it will not update the skip\-worktree bit in the index nor add/remove files in the working directory to reflect the current sparse checkout settings nor will it show the local changes\&.
 .PP
 clean\&.requireForce
 .RS 4
@@ -5710,6 +5718,19 @@ Note that changing the compression level will not automatically recompress all e
 \fBgit-repack\fR(1)\&.
 .RE
 .PP
+pack\&.island
+.RS 4
+An extended regular expression configuring a set of delta islands\&. See "DELTA ISLANDS" in
+\fBgit-pack-objects\fR(1)
+for details\&.
+.RE
+.PP
+pack\&.islandCore
+.RS 4
+Specify an island name which gets to have its objects be packed first\&. This creates a kind of pseudo\-pack at the front of one pack, so that the objects from the specified island are hopefully faster to copy into any pack that should be served to a user requesting these objects\&. In practice this means that the island specified should likely correspond to what is the most commonly cloned in the repo\&. See also "DELTA ISLANDS" in
+\fBgit-pack-objects\fR(1)\&.
+.RE
+.PP
 pack\&.deltaCacheSize
 .RS 4
 The maximum memory in bytes used for caching deltas in
@@ -6548,6 +6569,16 @@ or
 \fBrepack\&.writeBitmaps\fR)\&.
 .RE
 .PP
+repack\&.useDeltaIslands
+.RS 4
+If set to true, makes
+\fBgit repack\fR
+act as if
+\fB\-\-delta\-islands\fR
+was passed\&. Defaults to
+\fBfalse\fR\&.
+.RE
+.PP
 repack\&.writeBitmaps
 .RS 4
 When true, git will write a bitmap index when packing all objects to disk (e\&.g\&., when
@@ -7252,3 +7283,9 @@ and running \fBgit config section\&.Subsection\&.key value2\fR will result in
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+the multi-pack-index design document
+.RS 4
+\%git-htmldocs/technical/multi-pack-index.html
+.RE

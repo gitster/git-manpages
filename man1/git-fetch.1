@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/10/2018
+.\"      Date: 09/17/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.0
+.\"    Source: Git 2.19.0.216.g2d3b1c576c
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "09/10/2018" "Git 2\&.19\&.0" "Git Manual"
+.TH "GIT\-FETCH" "1" "09/17/2018" "Git 2\&.19\&.0\&.216\&.g2d3b1c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -129,13 +129,10 @@ Show what would be done, without making any changes\&.
 When
 \fIgit fetch\fR
 is used with
-\fB<rbranch>:<lbranch>\fR
-refspec, it refuses to update the local branch
-\fB<lbranch>\fR
-unless the remote branch
-\fB<rbranch>\fR
-it fetches is a descendant of
-\fB<lbranch>\fR\&. This option overrides that check\&.
+\fB<src>:<dst>\fR
+refspec it may refuse to update the local branch as discussed in the
+\fB<refspec>\fR
+part below\&. This option overrides that check\&.
 .RE
 .PP
 \-k, \-\-keep
@@ -306,9 +303,54 @@ The format of a <refspec> parameter is an optional plus
 means the same as
 \fBrefs/tags/<tag>:refs/tags/<tag>\fR; it requests fetching everything up to the given tag\&.
 .sp
-The remote ref that matches <src> is fetched, and if <dst> is not an empty string, the local ref that matches it is fast\-forwarded using <src>\&. If the optional plus
+The remote ref that matches <src> is fetched, and if <dst> is not an empty string, an attempt is made to update the local ref that matches it\&.
+.sp
+Whether that update is allowed without
+\fB\-\-force\fR
+depends on the ref namespace it\(cqs being fetched to, the type of object being fetched, and whether the update is considered to be a fast\-forward\&. Generally, the same rules apply for fetching as when pushing, see the
+\fB<refspec>\&.\&.\&.\fR
+section of
+\fBgit-push\fR(1)
+for what those are\&. Exceptions to those rules particular to
+\fIgit fetch\fR
+are noted below\&.
+.sp
+Until Git version 2\&.20, and unlike when pushing with
+\fBgit-push\fR(1), any updates to
+\fBrefs/tags/*\fR
+would be accepted without
 \fB+\fR
-is used, the local ref is updated even if it does not result in a fast\-forward update\&.
+in the refspec (or
+\fB\-\-force\fR)\&. The receiving promiscuously considered all tag updates from a remote to be forced fetches\&. Since Git version 2\&.20, fetching to update
+\fBrefs/tags/*\fR
+work the same way as when pushing\&. I\&.e\&. any updates will be rejected without
+\fB+\fR
+in the refspec (or
+\fB\-\-force\fR)\&.
+.sp
+Unlike when pushing with
+\fBgit-push\fR(1), any updates outside of
+\fBrefs/{tags,heads}/*\fR
+will be accepted without
+\fB+\fR
+in the refspec (or
+\fB\-\-force\fR), whether that\(cqs swapping e\&.g\&. a tree object for a blob, or a commit for another commit that\(cqs doesn\(cqt have the previous commit as an ancestor etc\&.
+.sp
+Unlike when pushing with
+\fBgit-push\fR(1), there is no configuration which\(cqll amend these rules, and nothing like a
+\fBpre\-fetch\fR
+hook analogous to the
+\fBpre\-receive\fR
+hook\&.
+.sp
+As with pushing with
+\fBgit-push\fR(1), all of the rules described above about what\(cqs not allowed as an update can be overridden by adding an the optional leading
+\fB+\fR
+to a refspec (or using
+\fB\-\-force\fR
+command line option)\&. The only exception to this is that no amount of forcing will make the
+\fBrefs/heads/*\fR
+namespace accept a non\-commit object\&.
 .if n \{\
 .sp
 .\}
