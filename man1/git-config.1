@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/24/2018
+.\"      Date: 10/10/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.0.271.gfe8321ec05
+.\"    Source: Git 2.19.1.328.g5a0cc8aca7
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "09/24/2018" "Git 2\&.19\&.0\&.271\&.gfe8321" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/10/2018" "Git 2\&.19\&.1\&.328\&.g5a0cc8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1797,15 +1797,6 @@ core\&.packedRefsTimeout
 The length of time, in milliseconds, to retry when trying to lock the
 \fBpacked\-refs\fR
 file\&. Value 0 means not to retry at all; \-1 means to try indefinitely\&. Default is 1000 (i\&.e\&., retry for 1 second)\&.
-.RE
-.PP
-sequence\&.editor
-.RS 4
-Text editor used by
-\fBgit rebase \-i\fR
-for editing the rebase instruction file\&. The value is meant to be interpreted by the shell when it is used\&. It can be overridden by the
-\fBGIT_SEQUENCE_EDITOR\fR
-environment variable\&. When not configured the default commit message editor is used instead\&.
 .RE
 .PP
 core\&.pager
@@ -3855,7 +3846,9 @@ will only cause git to warn\&.
 .PP
 fsck\&.skipList
 .RS 4
-The path to a sorted list of object names (i\&.e\&. one SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
+The path to a list of object names (i\&.e\&. one unabbreviated SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. On versions of Git 2\&.20 and later comments (\fI#\fR), empty lines, and any leading and trailing whitespace is ignored\&. Everything but a SHA\-1 per line will error out on older versions\&.
+.sp
+This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
 .sp
 Like
 \fBfsck\&.<msg\-id>\fR
@@ -3876,6 +3869,8 @@ and
 variables will not fall back on the
 \fBfsck\&.skipList\fR
 configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances all three of them they must all set to the same values\&.
+.sp
+Older versions of Git (before 2\&.20) documented that the object names list should be sorted\&. This was never a requirement, the object names could appear in any order, but when reading the list we tracked whether the list was sorted for the purposes of an internal binary search implementation, which could save itself some work with an already sorted list\&. Unless you had a humongous list there was no reason to go out of your way to pre\-sort the list\&. After Git version 2\&.20 a hash implementation is used instead, so there\(cqs now no reason to pre\-sort the list\&.
 .RE
 .PP
 gc\&.aggressiveDepth
@@ -6686,7 +6681,16 @@ option of
 \fBgit-send-email\fR(1)\&.
 .RE
 .PP
-showbranch\&.default
+sequence\&.editor
+.RS 4
+Text editor used by
+\fBgit rebase \-i\fR
+for editing the rebase instruction file\&. The value is meant to be interpreted by the shell when it is used\&. It can be overridden by the
+\fBGIT_SEQUENCE_EDITOR\fR
+environment variable\&. When not configured the default commit message editor is used instead\&.
+.RE
+.PP
+showBranch\&.default
 .RS 4
 The default set of branches for
 \fBgit-show-branch\fR(1)\&. See
