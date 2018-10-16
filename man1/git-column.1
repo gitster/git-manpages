@@ -2,12 +2,12 @@
 .\"     Title: git-column
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/10/2018
+.\"      Date: 10/16/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.0
+.\"    Source: Git 2.19.1.450.ga4b8ab5363
 .\"  Language: English
 .\"
-.TH "GIT\-COLUMN" "1" "09/10/2018" "Git 2\&.19\&.0" "Git Manual"
+.TH "GIT\-COLUMN" "1" "10/16/2018" "Git 2\&.19\&.1\&.450\&.ga4b8ab" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -38,7 +38,7 @@ git-column \- Display data in columns
 .sp
 .SH "DESCRIPTION"
 .sp
-This command formats its input into multiple columns\&.
+This command formats the lines of its standard input into a table with multiple columns\&. Each input line occupies one cell of the table\&. It is used internally by other git commands to format output into columns\&.
 .SH "OPTIONS"
 .PP
 \-\-command=<name>
@@ -48,7 +48,8 @@ Look up layout mode using configuration variable column\&.<name> and column\&.ui
 .PP
 \-\-mode=<mode>
 .RS 4
-Specify layout mode\&. See configuration variable column\&.ui for option syntax\&.
+Specify layout mode\&. See configuration variable column\&.ui for option syntax in
+\fBgit-config\fR(1)\&.
 .RE
 .PP
 \-\-raw\-mode=<n>
@@ -77,6 +78,56 @@ String to be printed at the end of each line, including newline character\&.
 .RS 4
 The number of spaces between columns\&. One space by default\&.
 .RE
+.SH "EXAMPLES"
+.sp
+Format data by columns:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ seq 1 24 | git column \-\-mode=column \-\-padding=5
+1      4      7      10     13     16     19     22
+2      5      8      11     14     17     20     23
+3      6      9      12     15     18     21     24
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Format data by rows:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ seq 1 21 | git column \-\-mode=row \-\-padding=5
+1      2      3      4      5      6      7
+8      9      10     11     12     13     14
+15     16     17     18     19     20     21
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+List some tags in a table with unequal column widths:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git tag \-\-list \(aqv2\&.4\&.*\(aq \-\-column=row,dense
+v2\&.4\&.0  v2\&.4\&.0\-rc0  v2\&.4\&.0\-rc1  v2\&.4\&.0\-rc2  v2\&.4\&.0\-rc3
+v2\&.4\&.1  v2\&.4\&.10     v2\&.4\&.11     v2\&.4\&.12     v2\&.4\&.2
+v2\&.4\&.3  v2\&.4\&.4      v2\&.4\&.5      v2\&.4\&.6      v2\&.4\&.7
+v2\&.4\&.8  v2\&.4\&.9
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 10/10/2018
+.\"      Date: 10/16/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.1.328.g5a0cc8aca7
+.\"    Source: Git 2.19.1.450.ga4b8ab5363
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "10/10/2018" "Git 2\&.19\&.1\&.328\&.g5a0cc8" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/16/2018" "Git 2\&.19\&.1\&.450\&.ga4b8ab" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -363,7 +363,8 @@ from the command line to let your shell do the expansion\&.)
 \-\-bool, \-\-int, \-\-bool\-or\-int, \-\-path, \-\-expiry\-date
 .RS 4
 Historical options for selecting a type specifier\&. Prefer instead
-\fB\-\-type\fR, (see: above)\&.
+\fB\-\-type\fR
+(see above)\&.
 .RE
 .PP
 \-\-no\-type
@@ -747,9 +748,9 @@ For URLs in \fBhttps://weak\&.example\&.com\fR, \fBhttp\&.sslVerify\fR is set to
 .RS 4
 .\}
 .nf
-% git config \-\-bool \-\-get\-urlmatch http\&.sslverify https://good\&.example\&.com
+% git config \-\-type=bool \-\-get\-urlmatch http\&.sslverify https://good\&.example\&.com
 true
-% git config \-\-bool \-\-get\-urlmatch http\&.sslverify https://weak\&.example\&.com
+% git config \-\-type=bool \-\-get\-urlmatch http\&.sslverify https://weak\&.example\&.com
 false
 % git config \-\-get\-urlmatch http https://weak\&.example\&.com
 http\&.cookieFile /tmp/cookie\&.txt
@@ -1087,8 +1088,8 @@ Boolean false literals are
 \fB0\fR
 and the empty string\&.
 .sp
-When converting value to the canonical form using
-\fB\-\-bool\fR
+When converting a value to its canonical form using the
+\fB\-\-type=bool\fR
 type specifier,
 \fIgit config\fR
 will ensure that the output is "true" or "false" (spelled in lowercase)\&.
@@ -3939,7 +3940,7 @@ gc\&.logExpiry
 .RS 4
 If the file gc\&.log exists, then
 \fBgit gc \-\-auto\fR
-won\(cqt run unless that file is more than
+will print its content and exit with status zero instead of running unless that file is more than
 \fIgc\&.logExpiry\fR
 old\&. Default is "1\&.day"\&. See
 \fBgc\&.pruneExpire\fR
@@ -7147,6 +7148,8 @@ itself was run\&. I\&.e\&.,
 will feed input intended for
 \fBpack\-objects\fR
 to the hook, and expects a completed packfile on stdout\&.
+.sp
+Note that this configuration variable is ignored if it is seen in the repository\-level config (this is a safety measure against fetching from untrusted repositories)\&.
 .RE
 .PP
 uploadpack\&.allowFilter
@@ -7154,8 +7157,6 @@ uploadpack\&.allowFilter
 If this option is set,
 \fBupload\-pack\fR
 will support partial clone and partial fetch object filtering\&.
-.sp
-Note that this configuration variable is ignored if it is seen in the repository\-level config (this is a safety measure against fetching from untrusted repositories)\&.
 .RE
 .PP
 uploadpack\&.allowRefInWant
