@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 10/16/2018
+.\"      Date: 10/19/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.1.450.ga4b8ab5363
+.\"    Source: Git 2.19.1.542.gc4df23f792
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "10/16/2018" "Git 2\&.19\&.1\&.450\&.ga4b8ab" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/19/2018" "Git 2\&.19\&.1\&.542\&.gc4df23" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1555,6 +1555,27 @@ False by default\&.
 core\&.preferSymlinkRefs
 .RS 4
 Instead of the default "symref" format for HEAD and other symbolic reference files, use symbolic links\&. This is sometimes needed to work with old scripts that expect HEAD to be a symbolic link\&.
+.RE
+.PP
+core\&.alternateRefsCommand
+.RS 4
+When advertising tips of available history from an alternate, use the shell to execute the specified command instead of
+\fBgit-for-each-ref\fR(1)\&. The first argument is the absolute path of the alternate\&. Output must contain one hex object id per line (i\&.e\&., the same as produce by
+\fBgit for\-each\-ref \-\-format=\(aq%(objectname)\(aq\fR)\&.
+.sp
+Note that you cannot generally put
+\fBgit for\-each\-ref\fR
+directly into the config value, as it does not take a repository path as an argument (but you can wrap the command above in a shell script)\&.
+.RE
+.PP
+core\&.alternateRefsPrefixes
+.RS 4
+When listing references from an alternate, list only references that begin with the given prefix\&. Prefixes match as if they were given as arguments to
+\fBgit-for-each-ref\fR(1)\&. To list multiple prefixes, separate them with whitespace\&. If
+\fBcore\&.alternateRefsCommand\fR
+is set, setting
+\fBcore\&.alternateRefsPrefixes\fR
+has no effect\&.
 .RE
 .PP
 core\&.bare
@@ -4951,6 +4972,16 @@ The configuration variables in the
 \fIimap\fR
 section are described in
 \fBgit-imap-send\fR(1)\&.
+.RE
+.PP
+index\&.threads
+.RS 4
+Specifies the number of threads to spawn when loading the index\&. This is meant to reduce index load time on multiprocessor machines\&. Specifying 0 or
+\fItrue\fR
+will cause Git to auto\-detect the number of CPU\(cqs and set the number of threads accordingly\&. Specifying 1 or
+\fIfalse\fR
+will disable multithreading\&. Defaults to
+\fItrue\fR\&.
 .RE
 .PP
 index\&.version
