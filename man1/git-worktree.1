@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 10/30/2018
+.\"      Date: 11/13/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.1.708.g4ede3d42df
+.\"    Source: Git 2.19.1.1052.gd166e6afe
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "10/30/2018" "Git 2\&.19\&.1\&.708\&.g4ede3d" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "11/13/2018" "Git 2\&.19\&.1\&.1052\&.gd166e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -293,19 +293,78 @@ Working trees can be identified by path, either relative or absolute\&.
 .sp
 If the last path components in the working tree\(cqs path is unique among working trees, it can be used to identify worktrees\&. For example if you only have two working trees, at "/abc/def/ghi" and "/abc/def/ggg", then "ghi" or "def/ghi" is enough to point to the former working tree\&.
 .RE
+.SH "REFS"
+.sp
+In multiple working trees, some refs may be shared between all working trees, some refs are local\&. One example is HEAD is different for all working trees\&. This section is about the sharing rules and how to access refs of one working tree from another\&.
+.sp
+In general, all pseudo refs are per working tree and all refs starting with "refs/" are shared\&. Pseudo refs are ones like HEAD which are directly under GIT_DIR instead of inside GIT_DIR/refs\&. There are one exception to this: refs inside refs/bisect and refs/worktree is not shared\&.
+.sp
+Refs that are per working tree can still be accessed from another working tree via two special paths, main\-worktree and worktrees\&. The former gives access to per\-worktree refs of the main working tree, while the latter to all linked working trees\&.
+.sp
+For example, main\-worktree/HEAD or main\-worktree/refs/bisect/good resolve to the same value as the main working tree\(cqs HEAD and refs/bisect/good respectively\&. Similarly, worktrees/foo/HEAD or worktrees/bar/refs/bisect/bad are the same as GIT_COMMON_DIR/worktrees/foo/HEAD and GIT_COMMON_DIR/worktrees/bar/refs/bisect/bad\&.
+.sp
+To access refs, it\(cqs best not to look inside GIT_DIR directly\&. Instead use commands such as \fBgit-rev-parse\fR(1) or \fBgit-update-ref\fR(1) which will handle refs correctly\&.
+.SH "CONFIGURATION FILE"
+.sp
+By default, the repository "config" file is shared across all working trees\&. If the config variables \fBcore\&.bare\fR or \fBcore\&.worktree\fR are already present in the config file, they will be applied to the main working trees only\&.
+.sp
+In order to have configuration specific to working trees, you can turn on "worktreeConfig" extension, e\&.g\&.:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git config extensions\&.worktreeConfig true
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+In this mode, specific configuration stays in the path pointed by \fBgit rev\-parse \-\-git\-path config\&.worktree\fR\&. You can add or update configuration in this file with \fBgit config \-\-worktree\fR\&. Older Git versions will refuse to access repositories with this extension\&.
+.sp
+Note that in this file, the exception for \fBcore\&.bare\fR and \fBcore\&.worktree\fR is gone\&. If you have them in $GIT_DIR/config before, you must move them to the \fBconfig\&.worktree\fR of the main working tree\&. You may also take this opportunity to review and move other configuration that you do not want to share to all working trees:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBcore\&.worktree\fR
+and
+\fBcore\&.bare\fR
+should never be shared
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBcore\&.sparseCheckout\fR
+is recommended per working tree, unless you are sure you always use sparse checkout for all working trees\&.
+.RE
 .SH "DETAILS"
 .sp
 Each linked working tree has a private sub\-directory in the repository\(cqs $GIT_DIR/worktrees directory\&. The private sub\-directory\(cqs name is usually the base name of the linked working tree\(cqs path, possibly appended with a number to make it unique\&. For example, when \fB$GIT_DIR=/path/main/\&.git\fR the command \fBgit worktree add /path/other/test\-next next\fR creates the linked working tree in \fB/path/other/test\-next\fR and also creates a \fB$GIT_DIR/worktrees/test\-next\fR directory (or \fB$GIT_DIR/worktrees/test\-next1\fR if \fBtest\-next\fR is already taken)\&.
 .sp
 Within a linked working tree, $GIT_DIR is set to point to this private directory (e\&.g\&. \fB/path/main/\&.git/worktrees/test\-next\fR in the example) and $GIT_COMMON_DIR is set to point back to the main working tree\(cqs $GIT_DIR (e\&.g\&. \fB/path/main/\&.git\fR)\&. These settings are made in a \fB\&.git\fR file located at the top directory of the linked working tree\&.
 .sp
-Path resolution via \fBgit rev\-parse \-\-git\-path\fR uses either $GIT_DIR or $GIT_COMMON_DIR depending on the path\&. For example, in the linked working tree \fBgit rev\-parse \-\-git\-path HEAD\fR returns \fB/path/main/\&.git/worktrees/test\-next/HEAD\fR (not \fB/path/other/test\-next/\&.git/HEAD\fR or \fB/path/main/\&.git/HEAD\fR) while \fBgit rev\-parse \-\-git\-path refs/heads/master\fR uses $GIT_COMMON_DIR and returns \fB/path/main/\&.git/refs/heads/master\fR, since refs are shared across all working trees\&.
+Path resolution via \fBgit rev\-parse \-\-git\-path\fR uses either $GIT_DIR or $GIT_COMMON_DIR depending on the path\&. For example, in the linked working tree \fBgit rev\-parse \-\-git\-path HEAD\fR returns \fB/path/main/\&.git/worktrees/test\-next/HEAD\fR (not \fB/path/other/test\-next/\&.git/HEAD\fR or \fB/path/main/\&.git/HEAD\fR) while \fBgit rev\-parse \-\-git\-path refs/heads/master\fR uses $GIT_COMMON_DIR and returns \fB/path/main/\&.git/refs/heads/master\fR, since refs are shared across all working trees, except refs/bisect and refs/worktree\&.
 .sp
 See \fBgitrepository-layout\fR(5) for more information\&. The rule of thumb is do not make any assumption about whether a path belongs to $GIT_DIR or $GIT_COMMON_DIR when you need to directly access something inside $GIT_DIR\&. Use \fBgit rev\-parse \-\-git\-path\fR to get the final path\&.
 .sp
 If you manually move a linked working tree, you need to update the \fIgitdir\fR file in the entry\(cqs directory\&. For example, if a linked working tree is moved to \fB/newpath/test\-next\fR and its \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR, then update \fB/path/main/\&.git/worktrees/test\-next/gitdir\fR to reference \fB/newpath/test\-next\fR instead\&.
 .sp
 To prevent a $GIT_DIR/worktrees entry from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), use the \fBgit worktree lock\fR command, which adds a file named \fIlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR then a file named \fB/path/main/\&.git/worktrees/test\-next/locked\fR will prevent the \fBtest\-next\fR entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
+.sp
+When extensions\&.worktreeConfig is enabled, the config file \fB\&.git/worktrees/<id>/config\&.worktree\fR is read after \fB\&.git/config\fR is\&.
 .SH "LIST OUTPUT FORMAT"
 .sp
 The worktree list command has two output formats\&. The default format shows the details on a single line with columns\&. For example:

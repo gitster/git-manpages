@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 11/03/2018
+.\"      Date: 11/13/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.1.816.gcd69ec8cd
+.\"    Source: Git 2.19.1.1052.gd166e6afe
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "11/03/2018" "Git 2\&.19\&.1\&.816\&.gcd69ec" "Git Manual"
+.TH "GIT\-CONFIG" "1" "11/13/2018" "Git 2\&.19\&.1\&.1052\&.gd166e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -57,9 +57,9 @@ Multiple lines can be added to an option by using the \fB\-\-add\fR option\&. If
 .sp
 The \fB\-\-type=<type>\fR option instructs \fIgit config\fR to ensure that incoming and outgoing values are canonicalize\-able under the given <type>\&. If no \fB\-\-type=<type>\fR is given, no canonicalization will be performed\&. Callers may unset an existing \fB\-\-type\fR specifier with \fB\-\-no\-type\fR\&.
 .sp
-When reading, the values are read from the system, global and repository local configuration files by default, and options \fB\-\-system\fR, \fB\-\-global\fR, \fB\-\-local\fR and \fB\-\-file <filename>\fR can be used to tell the command to read from only that location (see the section called \(lqFILES\(rq)\&.
+When reading, the values are read from the system, global and repository local configuration files by default, and options \fB\-\-system\fR, \fB\-\-global\fR, \fB\-\-local\fR, \fB\-\-worktree\fR and \fB\-\-file <filename>\fR can be used to tell the command to read from only that location (see the section called \(lqFILES\(rq)\&.
 .sp
-When writing, the new value is written to the repository local configuration file by default, and options \fB\-\-system\fR, \fB\-\-global\fR, \fB\-\-file <filename>\fR can be used to tell the command to write to that location (you can say \fB\-\-local\fR but that is the default)\&.
+When writing, the new value is written to the repository local configuration file by default, and options \fB\-\-system\fR, \fB\-\-global\fR, \fB\-\-worktree\fR, \fB\-\-file <filename>\fR can be used to tell the command to write to that location (you can say \fB\-\-local\fR but that is the default)\&.
 .sp
 This command will fail with non\-zero status upon error\&. Some exit codes are:
 .sp
@@ -224,6 +224,18 @@ rather than from all available files\&.
 .sp
 See also
 the section called \(lqFILES\(rq\&.
+.RE
+.PP
+\-\-worktree
+.RS 4
+Similar to
+\fB\-\-local\fR
+except that
+\fB\&.git/config\&.worktree\fR
+is read from or written to if
+\fBextensions\&.worktreeConfig\fR
+is present\&. If not it\(cqs the same as
+\fB\-\-local\fR\&.
 .RE
 .PP
 \-f config\-file, \-\-file config\-file
@@ -482,6 +494,13 @@ $GIT_DIR/config
 .RS 4
 Repository specific configuration file\&.
 .RE
+.PP
+$GIT_DIR/config\&.worktree
+.RS 4
+This is optional and is only searched when
+\fBextensions\&.worktreeConfig\fR
+is present in $GIT_DIR/config\&.
+.RE
 .sp
 If no further options are given, all reading options will read all of these files that are available\&. If the global or the system\-wide configuration file are not available they will be ignored\&. If the repository configuration file is not available or readable, \fIgit config\fR will exit with a non\-zero error code\&. However, in neither case will an error message be issued\&.
 .sp
@@ -491,7 +510,7 @@ You may override individual configuration parameters when running any git comman
 .sp
 All writing options will per default write to the repository specific configuration file\&. Note that this also affects options like \fB\-\-replace\-all\fR and \fB\-\-unset\fR\&. \fB\fIgit config\fR\fR\fB will only ever change one file at a time\fR\&.
 .sp
-You can override these rules either by command\-line options or by environment variables\&. The \fB\-\-global\fR and the \fB\-\-system\fR options will limit the file used to the global or system\-wide file respectively\&. The \fBGIT_CONFIG\fR environment variable has a similar effect, but you can specify any filename you want\&.
+You can override these rules either by command\-line options or by environment variables\&. The \fB\-\-global\fR, \fB\-\-system\fR and \fB\-\-worktree\fR options will limit the file used to the global, system\-wide or per\-worktree file respectively\&. The \fBGIT_CONFIG\fR environment variable has a similar effect, but you can specify any filename you want\&.
 .SH "ENVIRONMENT"
 .PP
 GIT_CONFIG
@@ -762,7 +781,7 @@ http\&.sslverify false
 .sp
 .SH "CONFIGURATION FILE"
 .sp
-The Git configuration file contains a number of variables that affect the Git commands\(aq behavior\&. The \fB\&.git/config\fR file in each repository is used to store the configuration for that repository, and \fB$HOME/\&.gitconfig\fR is used to store a per\-user configuration as fallback values for the \fB\&.git/config\fR file\&. The file \fB/etc/gitconfig\fR can be used to store a system\-wide default configuration\&.
+The Git configuration file contains a number of variables that affect the Git commands\(aq behavior\&. The files \fB\&.git/config\fR and optionally \fBconfig\&.worktree\fR (see \fBextensions\&.worktreeConfig\fR below) in each repository are used to store the configuration for that repository, and \fB$HOME/\&.gitconfig\fR is used to store a per\-user configuration as fallback values for the \fB\&.git/config\fR file\&. The file \fB/etc/gitconfig\fR can be used to store a system\-wide default configuration\&.
 .sp
 The configuration variables are used by both the Git plumbing and the porcelains\&. The variables are divided into sections, wherein the fully qualified variable name of the variable itself is the last dot\-separated segment and the section name is everything before the last dot\&. The variable names are case\-insensitive, allow only alphanumeric characters and \fB\-\fR, and must start with an alphabetic character\&. Some variables may appear multiple times; we say then that the variable is multivalued\&.
 .SS "Syntax"
@@ -1249,6 +1268,15 @@ commitBeforeMerge
 Advice shown when
 \fBgit-merge\fR(1)
 refuses to merge to avoid overwriting local changes\&.
+.RE
+.PP
+resetQuiet
+.RS 4
+Advice to consider using the
+\fB\-\-quiet\fR
+option to
+\fBgit-reset\fR(1)
+when the command takes more than 2 seconds to enumerate unstaged changes after reset\&.
 .RE
 .PP
 resolveConflict
@@ -2010,6 +2038,13 @@ and
 especially on filesystems like NFS that have weak caching semantics and thus relatively high IO latencies\&. When enabled, Git will do the index comparison to the filesystem data in parallel, allowing overlapping IO\(cqs\&. Defaults to true\&.
 .RE
 .PP
+core\&.unsetenvvars
+.RS 4
+Windows\-only: comma\-separated list of environment variables\(aq names that need to be unset before spawning any other process\&. Defaults to
+\fBPERL5LIB\fR
+to account for the fact that Git for Windows insists on using its own Perl interpreter\&.
+.RE
+.PP
 core\&.createObject
 .RS 4
 You can set this to
@@ -2065,6 +2100,11 @@ for more information\&.
 core\&.abbrev
 .RS 4
 Set the length object names are abbreviated to\&. If unspecified or set to "auto", an appropriate value is computed based on the approximate number of packed objects in your repository, which hopefully is enough for abbreviated object names to stay unique for some time\&. The minimum length is 4\&.
+.RE
+.PP
+extensions\&.worktreeConfig
+.RS 4
+If set, by default "git config" reads from both "config" and "config\&.worktree" file from GIT_DIR in that order\&. In multiple working directory mode, "config" file is shared while "config\&.worktree" is per\-working directory (i\&.e\&., it\(cqs in GIT_COMMON_DIR/worktrees/<id>/config\&.worktree)
 .RE
 .PP
 add\&.ignoreErrors, add\&.ignore\-errors (deprecated)
@@ -4901,88 +4941,6 @@ will be preferred over a config key match of
 All URLs are normalized before attempting any matching (the password part, if embedded in the URL, is always ignored for matching purposes) so that equivalent URLs that are simply spelled differently will match properly\&. Environment variable settings always override any matches\&. The URLs that are matched against are those given directly to Git commands\&. This means any URLs visited as a result of a redirection do not participate in matching\&.
 .RE
 .PP
-ssh\&.variant
-.RS 4
-By default, Git determines the command line arguments to use based on the basename of the configured SSH command (configured using the environment variable
-\fBGIT_SSH\fR
-or
-\fBGIT_SSH_COMMAND\fR
-or the config setting
-\fBcore\&.sshCommand\fR)\&. If the basename is unrecognized, Git will attempt to detect support of OpenSSH options by first invoking the configured SSH command with the
-\fB\-G\fR
-(print configuration) option and will subsequently use OpenSSH options (if that is successful) or no options besides the host and remote command (if it fails)\&.
-.sp
-The config variable
-\fBssh\&.variant\fR
-can be set to override this detection\&. Valid values are
-\fBssh\fR
-(to use OpenSSH options),
-\fBplink\fR,
-\fBputty\fR,
-\fBtortoiseplink\fR,
-\fBsimple\fR
-(no options except the host and remote command)\&. The default auto\-detection can be explicitly requested using the value
-\fBauto\fR\&. Any other value is treated as
-\fBssh\fR\&. This setting can also be overridden via the environment variable
-\fBGIT_SSH_VARIANT\fR\&.
-.sp
-The current command\-line parameters used for each variant are as follows:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBssh\fR
-\- [\-p port] [\-4] [\-6] [\-o option] [username@]host command
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBsimple\fR
-\- [username@]host command
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBplink\fR
-or
-\fBputty\fR
-\- [\-P port] [\-4] [\-6] [username@]host command
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBtortoiseplink\fR
-\- [\-P port] [\-4] [\-6] \-batch [username@]host command
-.RE
-.sp
-Except for the
-\fBsimple\fR
-variant, command\-line parameters are likely to change as git gains new features\&.
-.RE
-.PP
 i18n\&.commitEncoding
 .RS 4
 Character encoding the commit messages are stored in; Git itself does not care per se, but this information is necessary e\&.g\&. when importing commits from emails or in the gitk graphical history browser (and possibly at other places in the future or in other porcelains)\&. See e\&.g\&.
@@ -4997,12 +4955,60 @@ Character encoding the commit messages are converted to when running
 and friends\&.
 .RE
 .PP
-imap
+imap\&.folder
 .RS 4
-The configuration variables in the
-\fIimap\fR
-section are described in
-\fBgit-imap-send\fR(1)\&.
+The folder to drop the mails into, which is typically the Drafts folder\&. For example: "INBOX\&.Drafts", "INBOX/Drafts" or "[Gmail]/Drafts"\&. Required\&.
+.RE
+.PP
+imap\&.tunnel
+.RS 4
+Command used to setup a tunnel to the IMAP server through which commands will be piped instead of using a direct network connection to the server\&. Required when imap\&.host is not set\&.
+.RE
+.PP
+imap\&.host
+.RS 4
+A URL identifying the server\&. Use an
+\fBimap://\fR
+prefix for non\-secure connections and an
+\fBimaps://\fR
+prefix for secure connections\&. Ignored when imap\&.tunnel is set, but required otherwise\&.
+.RE
+.PP
+imap\&.user
+.RS 4
+The username to use when logging in to the server\&.
+.RE
+.PP
+imap\&.pass
+.RS 4
+The password to use when logging in to the server\&.
+.RE
+.PP
+imap\&.port
+.RS 4
+An integer port number to connect to on the server\&. Defaults to 143 for imap:// hosts and 993 for imaps:// hosts\&. Ignored when imap\&.tunnel is set\&.
+.RE
+.PP
+imap\&.sslverify
+.RS 4
+A boolean to enable/disable verification of the server certificate used by the SSL/TLS connection\&. Default is
+\fBtrue\fR\&. Ignored when imap\&.tunnel is set\&.
+.RE
+.PP
+imap\&.preformattedHTML
+.RS 4
+A boolean to enable/disable the use of html encoding when sending a patch\&. An html encoded patch will be bracketed with <pre> and have a content type of text/html\&. Ironically, enabling this option causes Thunderbird to send the patch as a plain/text, format=fixed email\&. Default is
+\fBfalse\fR\&.
+.RE
+.PP
+imap\&.authMethod
+.RS 4
+Specify authenticate method for authentication with IMAP server\&. If Git was built with the NO_CURL option, or if your curl version is older than 7\&.34\&.0, or if you\(cqre running git\-imap\-send with the
+\fB\-\-no\-curl\fR
+option, the only supported method is
+\fICRAM\-MD5\fR\&. If this is not set then
+\fIgit imap\-send\fR
+uses the basic IMAP plaintext LOGIN command\&.
 .RE
 .PP
 index\&.threads
@@ -6684,6 +6690,15 @@ directory under the
 \fB$GIT_DIR\fR, e\&.g\&. if "rerere" was previously used in the repository\&.
 .RE
 .PP
+reset\&.quiet
+.RS 4
+When set to true,
+\fIgit reset\fR
+will default to the
+\fI\-\-quiet\fR
+option\&.
+.RE
+.PP
 sendemail\&.identity
 .RS 4
 A configuration identity\&. When given, causes values in the
@@ -6777,6 +6792,88 @@ splitIndex\&.sharedIndexExpire
 .RS 4
 When the split index feature is used, shared index files that were not modified since the time this variable specifies will be removed when a new shared index file is created\&. The value "now" expires all entries immediately, and "never" suppresses expiration altogether\&. The default value is "2\&.weeks\&.ago"\&. Note that a shared index file is considered modified (for the purpose of expiration) each time a new split\-index file is either created based on it or read from it\&. See
 \fBgit-update-index\fR(1)\&.
+.RE
+.PP
+ssh\&.variant
+.RS 4
+By default, Git determines the command line arguments to use based on the basename of the configured SSH command (configured using the environment variable
+\fBGIT_SSH\fR
+or
+\fBGIT_SSH_COMMAND\fR
+or the config setting
+\fBcore\&.sshCommand\fR)\&. If the basename is unrecognized, Git will attempt to detect support of OpenSSH options by first invoking the configured SSH command with the
+\fB\-G\fR
+(print configuration) option and will subsequently use OpenSSH options (if that is successful) or no options besides the host and remote command (if it fails)\&.
+.sp
+The config variable
+\fBssh\&.variant\fR
+can be set to override this detection\&. Valid values are
+\fBssh\fR
+(to use OpenSSH options),
+\fBplink\fR,
+\fBputty\fR,
+\fBtortoiseplink\fR,
+\fBsimple\fR
+(no options except the host and remote command)\&. The default auto\-detection can be explicitly requested using the value
+\fBauto\fR\&. Any other value is treated as
+\fBssh\fR\&. This setting can also be overridden via the environment variable
+\fBGIT_SSH_VARIANT\fR\&.
+.sp
+The current command\-line parameters used for each variant are as follows:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBssh\fR
+\- [\-p port] [\-4] [\-6] [\-o option] [username@]host command
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBsimple\fR
+\- [username@]host command
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBplink\fR
+or
+\fBputty\fR
+\- [\-P port] [\-4] [\-6] [username@]host command
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBtortoiseplink\fR
+\- [\-P port] [\-4] [\-6] \-batch [username@]host command
+.RE
+.sp
+Except for the
+\fBsimple\fR
+variant, command\-line parameters are likely to change as git gains new features\&.
 .RE
 .PP
 status\&.relativePaths

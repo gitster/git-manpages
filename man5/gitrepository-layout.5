@@ -2,12 +2,12 @@
 .\"     Title: gitrepository-layout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/10/2018
+.\"      Date: 11/13/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.0
+.\"    Source: Git 2.19.1.1052.gd166e6afe
 .\"  Language: English
 .\"
-.TH "GITREPOSITORY\-LAYOU" "5" "09/10/2018" "Git 2\&.19\&.0" "Git Manual"
+.TH "GITREPOSITORY\-LAYOU" "5" "11/13/2018" "Git 2\&.19\&.1\&.1052\&.gd166e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -150,7 +150,7 @@ refs
 .RS 4
 References are stored in subdirectories of this directory\&. The
 \fIgit prune\fR
-command knows to preserve objects reachable from refs found in this directory and its subdirectories\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/refs" will be used instead\&.
+command knows to preserve objects reachable from refs found in this directory and its subdirectories\&. This directory is ignored (except refs/bisect and refs/worktree) if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/refs" will be used instead\&.
 .RE
 .PP
 refs/heads/\fBname\fR
@@ -207,6 +207,12 @@ config
 Repository specific configuration file\&. This file is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/config" will be used instead\&.
 .RE
 .PP
+config\&.worktree
+.RS 4
+Working directory specific configuration file for the main working directory in multiple working directory setup (see
+\fBgit-worktree\fR(1))\&.
+.RE
+.PP
 branches
 .RS 4
 A slightly deprecated way to store shorthands to be used to specify a URL to
@@ -233,6 +239,13 @@ is run, but all of them are disabled by default\&. To enable, the
 suffix has to be removed from the filename by renaming\&. Read
 \fBgithooks\fR(5)
 for more details about each hook\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/hooks" will be used instead\&.
+.RE
+.PP
+common
+.RS 4
+When multiple working trees are used, most of files in $GIT_DIR are per\-worktree with a few known exceptions\&. All files under
+\fIcommon\fR
+however will be shared between all working trees\&.
 .RE
 .PP
 index
@@ -370,6 +383,11 @@ If this file exists, the linked working tree may be on a portable device and not
 \fBworktrees/<id>\fR
 from being pruned either automatically or manually by
 \fBgit worktree prune\fR\&. The file may contain a string explaining why the repository is locked\&.
+.RE
+.PP
+worktrees/<id>/config\&.worktree
+.RS 4
+Working directory specific configuration file\&.
 .RE
 .SH "SEE ALSO"
 .sp
