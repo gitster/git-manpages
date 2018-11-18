@@ -2,12 +2,12 @@
 .\"     Title: gitrepository-layout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 11/13/2018
+.\"      Date: 11/18/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.19.1.1052.gd166e6afe
+.\"    Source: Git 2.20.0.rc0
 .\"  Language: English
 .\"
-.TH "GITREPOSITORY\-LAYOU" "5" "11/13/2018" "Git 2\&.19\&.1\&.1052\&.gd166e" "Git Manual"
+.TH "GITREPOSITORY\-LAYOU" "5" "11/18/2018" "Git 2\&.20\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -388,6 +388,127 @@ from being pruned either automatically or manually by
 worktrees/<id>/config\&.worktree
 .RS 4
 Working directory specific configuration file\&.
+.RE
+.SH "GIT REPOSITORY FORMAT VERSIONS"
+.sp
+Every git repository is marked with a numeric version in the \fBcore\&.repositoryformatversion\fR key of its \fBconfig\fR file\&. This version specifies the rules for operating on the on\-disk repository data\&. An implementation of git which does not understand a particular version advertised by an on\-disk repository MUST NOT operate on that repository; doing so risks not only producing wrong results, but actually losing data\&.
+.sp
+Because of this rule, version bumps should be kept to an absolute minimum\&. Instead, we generally prefer these strategies:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+bumping format version numbers of individual data files (e\&.g\&., index, packfiles, etc)\&. This restricts the incompatibilities only to those files\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+introducing new data that gracefully degrades when used by older clients (e\&.g\&., pack bitmap files are ignored by older clients, which simply do not take advantage of the optimization they provide)\&.
+.RE
+.sp
+A whole\-repository format version bump should only be part of a change that cannot be independently versioned\&. For instance, if one were to change the reachability rules for objects, or the rules for locking refs, that would require a bump of the repository format version\&.
+.sp
+Note that this applies only to accessing the repository\(cqs disk contents directly\&. An older client which understands only format \fB0\fR may still connect via \fBgit://\fR to a repository using format \fB1\fR, as long as the server process understands format \fB1\fR\&.
+.sp
+The preferred strategy for rolling out a version bump (whether whole repository or for a single file) is to teach git to read the new format, and allow writing the new format with a config switch or command line option (for experimentation or for those who do not care about backwards compatibility with older gits)\&. Then after a long period to allow the reading capability to become common, we may switch to writing the new format by default\&.
+.sp
+The currently defined format versions are:
+.SS "Version \fB0\fR"
+.sp
+This is the format defined by the initial version of git, including but not limited to the format of the repository directory, the repository configuration file, and the object and ref storage\&. Specifying the complete behavior of git is beyond the scope of this document\&.
+.SS "Version \fB1\fR"
+.sp
+This format is identical to version \fB0\fR, with the following exceptions:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+When reading the
+\fBcore\&.repositoryformatversion\fR
+variable, a git implementation which supports version 1 MUST also read any configuration keys found in the
+\fBextensions\fR
+section of the configuration file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+If a version\-1 repository specifies any
+\fBextensions\&.*\fR
+keys that the running git has not implemented, the operation MUST NOT proceed\&. Similarly, if the value of any known key is not understood by the implementation, the operation MUST NOT proceed\&.
+.RE
+.sp
+Note that if no extensions are specified in the config file, then \fBcore\&.repositoryformatversion\fR SHOULD be set to \fB0\fR (setting it to \fB1\fR provides no benefit, and makes the repository incompatible with older implementations of git)\&.
+.sp
+This document will serve as the master list for extensions\&. Any implementation wishing to define a new extension should make a note of it here, in order to claim the name\&.
+.sp
+The defined extensions are:
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBnoop\fR
+.RS 4
+.sp
+This extension does not change git\(cqs behavior at all\&. It is useful only for testing format\-1 compatibility\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBpreciousObjects\fR
+.RS 4
+.sp
+When the config key \fBextensions\&.preciousObjects\fR is set to \fBtrue\fR, objects in the repository MUST NOT be deleted (e\&.g\&., by \fBgit\-prune\fR or \fBgit repack \-d\fR)\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBpartialclone\fR
+.RS 4
+.sp
+When the config key \fBextensions\&.partialclone\fR is set, it indicates that the repo was created with a partial clone (or later performed a partial fetch) and that the remote may have omitted sending certain unwanted objects\&. Such a remote is called a "promisor remote" and it promises that all such omitted objects can be fetched from it in the future\&.
+.sp
+The value of this key is the name of the promisor remote\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBworktreeConfig\fR
+.RS 4
+.sp
+If set, by default "git config" reads from both "config" and "config\&.worktree" file from GIT_DIR in that order\&. In multiple working directory mode, "config" file is shared while "config\&.worktree" is per\-working directory (i\&.e\&., it\(cqs in GIT_COMMON_DIR/worktrees/<id>/config\&.worktree)
 .RE
 .SH "SEE ALSO"
 .sp
