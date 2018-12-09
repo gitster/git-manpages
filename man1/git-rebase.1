@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 12/01/2018
+.\"      Date: 12/09/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.20.0.rc2
+.\"    Source: Git 2.20.0
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "12/01/2018" "Git 2\&.20\&.0\&.rc2" "Git Manual"
+.TH "GIT\-REBASE" "1" "12/09/2018" "Git 2\&.20\&.0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1042,74 +1042,17 @@ Other incompatible flag pairs:
 .RE
 .SH "BEHAVIORAL DIFFERENCES"
 .sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-empty commits:
+There are some subtle differences how the backends behave\&.
+.SS "Empty commits"
 .sp
-.if n \{\
-.RS 4
-.\}
-.nf
-am\-based rebase will drop any "empty" commits, whether the
-commit started empty (had no changes relative to its parent to
-start with) or ended empty (all changes were already applied
-upstream in other commits)\&.
-.fi
-.if n \{\
-.RE
-.\}
+The am backend drops any "empty" commits, regardless of whether the commit started empty (had no changes relative to its parent to start with) or ended empty (all changes were already applied upstream in other commits)\&.
 .sp
-.if n \{\
-.RS 4
-.\}
-.nf
-merge\-based rebase does the same\&.
-.fi
-.if n \{\
-.RE
-.\}
+The merge backend does the same\&.
 .sp
-.if n \{\
-.RS 4
-.\}
-.nf
-interactive\-based rebase will by default drop commits that
-started empty and halt if it hits a commit that ended up empty\&.
-The `\-\-keep\-empty` option exists for interactive rebases to allow
-it to keep commits that started empty\&.
-.fi
-.if n \{\
-.RE
-.\}
-.RE
+The interactive backend drops commits by default that started empty and halts if it hits a commit that ended up empty\&. The \fB\-\-keep\-empty\fR option exists for the interactive backend to allow it to keep commits that started empty\&.
+.SS "Directory rename detection"
 .sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-directory rename detection:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-merge\-based and interactive\-based rebases work fine with
-directory rename detection\&.  am\-based rebases sometimes do not\&.
-.fi
-.if n \{\
-.RE
-.\}
-.RE
+The merge and interactive backends work fine with directory rename detection\&. The am backend sometimes does not\&.
 .SH "MERGE STRATEGIES"
 .sp
 The merge mechanism (\fBgit merge\fR and \fBgit pull\fR commands) allows the backend \fImerge strategies\fR to be chosen with \fB\-s\fR option\&. Some strategies can also take their own options, which can be passed by giving \fB\-X<option>\fR arguments to \fBgit merge\fR and/or \fBgit pull\fR\&.
