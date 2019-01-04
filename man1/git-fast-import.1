@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 12/09/2018
+.\"      Date: 01/04/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.20.0
+.\"    Source: Git 2.20.1.98.gecbdaf089
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "12/09/2018" "Git 2\&.20\&.0" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "01/04/2019" "Git 2\&.20\&.1\&.98\&.gecbdaf0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -51,7 +51,9 @@ Force updating modified existing branches, even if doing so would cause commits 
 .PP
 \-\-quiet
 .RS 4
-Disable all non\-fatal output, making fast\-import silent when it is successful\&. This option disables the output shown by \-\-stats\&.
+Disable the output shown by \-\-stats, making fast\-import usually be silent when it is successful\&. However, if the import stream has directives intended to show user output (e\&.g\&.
+\fBprogress\fR
+directives), the corresponding messages will still be shown\&.
 .RE
 .PP
 \-\-stats
@@ -341,6 +343,7 @@ Create or update a branch with a new commit, recording one logical change to the
 .nf
         \(aqcommit\(aq SP <ref> LF
         mark?
+        original\-oid?
         (\(aqauthor\(aq (SP <name>)? SP LT <email> GT SP <when> LF)?
         \(aqcommitter\(aq (SP <name>)? SP LT <email> GT SP <when> LF
         data
@@ -870,6 +873,21 @@ Arranges for fast\-import to save a reference to the current object, allowing th
 where \fB<idnum>\fR is the number assigned by the frontend to this mark\&. The value of \fB<idnum>\fR is expressed as an ASCII decimal integer\&. The value 0 is reserved and cannot be used as a mark\&. Only values greater than or equal to 1 may be used as marks\&.
 .sp
 New marks are created automatically\&. Existing marks can be moved to another object simply by reusing the same \fB<idnum>\fR in another \fBmark\fR command\&.
+.SS "\fBoriginal\-oid\fR"
+.sp
+Provides the name of the object in the original source control system\&. fast\-import will simply ignore this directive, but filter processes which operate on and modify the stream before feeding to fast\-import may have uses for this information
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        \(aqoriginal\-oid\(aq SP <object\-identifier> LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+where \fB<object\-identifer>\fR is any string not containing LF\&.
 .SS "\fBtag\fR"
 .sp
 Creates an annotated tag referring to a specific commit\&. To create lightweight (non\-annotated) tags see the \fBreset\fR command below\&.
@@ -880,6 +898,7 @@ Creates an annotated tag referring to a specific commit\&. To create lightweight
 .nf
         \(aqtag\(aq SP <name> LF
         \(aqfrom\(aq SP <commit\-ish> LF
+        original\-oid?
         \(aqtagger\(aq (SP <name>)? SP LT <email> GT SP <when> LF
         data
 .fi
@@ -944,6 +963,7 @@ Requests writing one file revision to the packfile\&. The revision is not connec
 .nf
         \(aqblob\(aq LF
         mark?
+        original\-oid?
         data
 .fi
 .if n \{\

@@ -2,12 +2,12 @@
 .\"     Title: git-push
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 12/09/2018
+.\"      Date: 01/04/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.20.0
+.\"    Source: Git 2.20.1.98.gecbdaf089
 .\"  Language: English
 .\"
-.TH "GIT\-PUSH" "1" "12/09/2018" "Git 2\&.20\&.0" "Git Manual"
+.TH "GIT\-PUSH" "1" "01/04/2019" "Git 2\&.20\&.1\&.98\&.gecbdaf0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -93,6 +93,49 @@ on the command line\&. Otherwise, missing
 \fB:<dst>\fR
 means to update the same ref as the
 \fB<src>\fR\&.
+.sp
+If <dst> doesn\(cqt start with
+\fBrefs/\fR
+(e\&.g\&.
+\fBrefs/heads/master\fR) we will try to infer where in
+\fBrefs/*\fR
+on the destination <repository> it belongs based on the the type of <src> being pushed and whether <dst> is ambiguous\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If <dst> unambiguously refers to a ref on the <repository> remote, then push to that ref\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If <src> resolves to a ref starting with refs/heads/ or refs/tags/, then prepend that to <dst>\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Other ambiguity resolutions might be added in the future, but for now any other cases will error out with an error indicating what we tried, and depending on the
+\fBadvice\&.pushUnqualifiedRefname\fR
+configuration (see
+\fBgit-config\fR(1)) suggest what refs/ namespace you may have wanted to push to\&.
+.RE
 .sp
 The object referenced by <src> is used to update the <dst> reference on the remote side\&. Whether this is allowed depends on where in
 \fBrefs/*\fR
@@ -1045,6 +1088,10 @@ repository; do the same for
 \fBdev\fR
 and
 \fBsatellite/dev\fR\&.
+.sp
+See the section describing
+\fB<refspec>\&.\&.\&.\fR
+above for a discussion of the matching semantics\&.
 .sp
 This is to emulate
 \fBgit fetch\fR
