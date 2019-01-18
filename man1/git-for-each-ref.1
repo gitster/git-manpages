@@ -2,12 +2,12 @@
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 12/09/2018
+.\"      Date: 01/18/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.20.0
+.\"    Source: Git 2.20.1.309.g16a465bc0
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "12/09/2018" "Git 2\&.20\&.0" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "01/18/2019" "Git 2\&.20\&.1\&.309\&.g16a465" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -209,7 +209,11 @@ objectsize
 .RS 4
 The size of the object (the same as
 \fIgit cat\-file \-s\fR
-reports)\&.
+reports)\&. Append
+\fB:disk\fR
+to get the size, in bytes, that the object takes up on disk\&. See the note about on\-disk sizes in the
+\fBCAVEATS\fR
+section below\&.
 .RE
 .PP
 objectname
@@ -217,6 +221,11 @@ objectname
 The object name (aka SHA\-1)\&. For a non\-ambiguous abbreviation of the object name append
 \fB:short\fR\&. For an abbreviation of the object name with desired length append
 \fB:short=<length>\fR, where the minimum length is MINIMUM_ABBREV\&. The length may be exceeded to ensure unique object names\&.
+.RE
+.PP
+deltabase
+.RS 4
+This expands to the object name of the delta base for the given object, if it is stored as a delta\&. Otherwise it expands to the null object name (all zeroes)\&.
 .RE
 .PP
 upstream
@@ -470,6 +479,11 @@ git for\-each\-ref \-\-format="%(refname)%(if)%(authorname)%(then) Authored by: 
 .RE
 .\}
 .sp
+.SH "CAVEATS"
+.sp
+Note that the sizes of objects on disk are reported accurately, but care should be taken in drawing conclusions about which refs or objects are responsible for disk usage\&. The size of a packed non\-delta object may be much larger than the size of objects which delta against it, but the choice of which object is the base and which is the delta is arbitrary and is subject to change during a repack\&.
+.sp
+Note also that multiple copies of an object may be present in the object database; in this case, it is undefined which copy\(cqs size or delta base will be reported\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-show-ref\fR(1)
