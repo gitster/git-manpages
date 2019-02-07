@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/29/2019
+.\"      Date: 02/06/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.20.1.390.gb5101f929
+.\"    Source: Git 2.21.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "01/29/2019" "Git 2\&.20\&.1\&.390\&.gb5101f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/06/2019" "Git 2\&.21\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1469,16 +1469,23 @@ option\&. The default value is true\&.
 .PP
 core\&.eol
 .RS 4
-Sets the line ending type to use in the working directory for files that have the
+Sets the line ending type to use in the working directory for files that are marked as text (either by having the
 \fBtext\fR
-property set when core\&.autocrlf is false\&. Alternatives are
+attribute set, or by having
+\fBtext=auto\fR
+and Git auto\-detecting the contents as text)\&. Alternatives are
 \fIlf\fR,
 \fIcrlf\fR
 and
 \fInative\fR, which uses the platform\(cqs native line ending\&. The default value is
 \fBnative\fR\&. See
 \fBgitattributes\fR(5)
-for more information on end\-of\-line conversion\&.
+for more information on end\-of\-line conversion\&. Note that this value is ignored if
+\fBcore\&.autocrlf\fR
+is set to
+\fBtrue\fR
+or
+\fBinput\fR\&.
 .RE
 .PP
 core\&.safecrlf
@@ -5906,6 +5913,17 @@ are supported\&.
 pack\&.useBitmaps
 .RS 4
 When true, git will use pack bitmaps (if available) when packing to stdout (e\&.g\&., during the server side of a fetch)\&. Defaults to true\&. You should not generally need to turn this off unless you are debugging pack bitmaps\&.
+.RE
+.PP
+pack\&.useSparse
+.RS 4
+When true, git will default to using the
+\fI\-\-sparse\fR
+option in
+\fIgit pack\-objects\fR
+when the
+\fI\-\-revs\fR
+option is present\&. This algorithm only walks trees that appear in paths that introduce new objects\&. This can have significant performance benefits when computing a pack to send a small change\&. However, it is possible that extra objects are added to the pack\-file if the included commits contain certain types of direct renames\&.
 .RE
 .PP
 pack\&.writeBitmaps (deprecated)

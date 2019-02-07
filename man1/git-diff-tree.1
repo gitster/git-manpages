@@ -2,12 +2,12 @@
 .\"     Title: git-diff-tree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/29/2019
+.\"      Date: 02/06/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.20.1.390.gb5101f929
+.\"    Source: Git 2.21.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-DIFF\-TREE" "1" "01/29/2019" "Git 2\&.20\&.1\&.390\&.gb5101f" "Git Manual"
+.TH "GIT\-DIFF\-TREE" "1" "02/06/2019" "Git 2\&.21\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -883,9 +883,7 @@ The id of a tree object\&.
 .PP
 <path>\&...
 .RS 4
-If provided, the results are limited to a subset of files matching one of these prefix strings\&. i\&.e\&., file matches
-\fB/^<pattern1>|<pattern2>|\&.\&.\&./\fR
-Note that this parameter does not provide any wildcard or regexp features\&.
+If provided, the results are limited to a subset of files matching one of the provided pathspecs\&.
 .RE
 .PP
 \-r
@@ -2235,74 +2233,6 @@ $ git log \-2 \-\-pretty=%h 4da45bef
 .\}
 .sp
 .RE
-.SH "LIMITING OUTPUT"
-.sp
-If you\(cqre only interested in differences in a subset of files, for example some architecture\-specific files, you might do:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git diff\-tree \-r <tree\-ish> <tree\-ish> arch/ia64 include/asm\-ia64
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-and it will only show you what changed in those two directories\&.
-.sp
-Or if you are searching for what changed in just \fBkernel/sched\&.c\fR, just do
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git diff\-tree \-r <tree\-ish> <tree\-ish> kernel/sched\&.c
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-and it will ignore all differences to other files\&.
-.sp
-The pattern is always the prefix, and is matched exactly\&. There are no wildcards\&. Even stricter, it has to match a complete path component\&. I\&.e\&. "foo" does not pick up \fBfoobar\&.h\fR\&. "foo" does match \fBfoo/bar\&.h\fR so it can be used to name subdirectories\&.
-.sp
-An example of normal usage is:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-torvalds@ppc970:~/git> git diff\-tree \-\-abbrev 5319e4
-:100664 100664 ac348b\&.\&.\&. a01513\&.\&.\&.    git\-fsck\-objects\&.c
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-which tells you that the last commit changed just one file (it\(cqs from this one:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-commit 3c6f7ca19ad4043e9e72fa94106f352897e651a8
-tree 5319e4d609cdd282069cc4dce33c1db559539b03
-parent b4e628ea30d5ab3606119d2ea5caeab141d38df7
-author Linus Torvalds <torvalds@ppc970\&.osdl\&.org> Sat Apr 9 12:02:30 2005
-committer Linus Torvalds <torvalds@ppc970\&.osdl\&.org> Sat Apr 9 12:02:30 2005
-
-Make "git\-fsck\-objects" print out all the root commits it finds\&.
-
-Once I do the reference tracking, I\(aqll also make it print out all the
-HEAD commits it finds, which is even more interesting\&.
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.sp
-in case you care)\&.
 .SH "RAW OUTPUT FORMAT"
 .sp
 The raw output format from "git\-diff\-index", "git\-diff\-tree", "git\-diff\-files" and "git diff \-\-raw" are very similar\&.
