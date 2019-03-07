@@ -2,12 +2,12 @@
 .\"     Title: git-diff-files
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 02/24/2019
+.\"      Date: 03/07/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.21.0
+.\"    Source: Git 2.21.0.135.g6e0cc67761
 .\"  Language: English
 .\"
-.TH "GIT\-DIFF\-FILES" "1" "02/24/2019" "Git 2\&.21\&.0" "Git Manual"
+.TH "GIT\-DIFF\-FILES" "1" "03/07/2019" "Git 2\&.21\&.0\&.135\&.g6e0cc6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -56,7 +56,21 @@ that show the patch by default, or to cancel the effect of
 \-U<n>, \-\-unified=<n>
 .RS 4
 Generate diffs with <n> lines of context instead of the usual three\&. Implies
+\fB\-\-patch\fR\&. Implies
 \fB\-p\fR\&.
+.RE
+.PP
+\-\-output=<file>
+.RS 4
+Output to a specific file instead of stdout\&.
+.RE
+.PP
+\-\-output\-indicator\-new=<char>, \-\-output\-indicator\-old=<char>, \-\-output\-indicator\-context=<char>
+.RS 4
+Specify the character used to indicate new, old or context lines in the generated patch\&. Normally they are
+\fI+\fR,
+\fI\-\fR
+and \(aq \(aq respectively\&.
 .RE
 .PP
 \-\-raw
@@ -181,7 +195,7 @@ Output only the last line of the
 format containing total number of modified files, as well as number of added and deleted lines\&.
 .RE
 .PP
-\-\-dirstat[=<param1,param2,\&...>]
+\-X[<param1,param2,\&...>], \-\-dirstat[=<param1,param2,\&...>]
 .RS 4
 Output the distribution of relative amount of changes for each sub\-directory\&. The behavior of
 \fB\-\-dirstat\fR
@@ -228,6 +242,16 @@ An integer parameter specifies a cut\-off percent (3% by default)\&. Directories
 .sp
 Example: The following will count changed files, while ignoring directories with less than 10% of the total amount of changed files, and accumulating child directory counts in the parent directories:
 \fB\-\-dirstat=files,10,cumulative\fR\&.
+.RE
+.PP
+\-\-cumulative
+.RS 4
+Synonym for \-\-dirstat=cumulative
+.RE
+.PP
+\-\-dirstat\-by\-file[=<param1,param2>\&...]
+.RS 4
+Synonym for \-\-dirstat=files,param1,param2\&...
 .RE
 .PP
 \-\-summary
@@ -479,6 +503,11 @@ plus (if a regex was specified)
 \-\-no\-renames
 .RS 4
 Turn off rename detection, even when the configuration file gives the default to do so\&.
+.RE
+.PP
+\-\-[no\-]rename\-empty
+.RS 4
+Whether to use empty blobs as rename source\&.
 .RE
 .PP
 \-\-check
@@ -1271,16 +1300,35 @@ no optional "score" number
 .sp -1
 .IP "  5." 4.2
 .\}
-single path, only for "dst"
+tab\-separated pathname(s) of the file
 .RE
 .sp
-Example:
+For \fB\-c\fR and \fB\-\-cc\fR, only the destination or final path is shown even if the file was renamed on any side of history\&. With \fB\-\-combined\-all\-paths\fR, the name of the path in each parent is shown followed by the name of the path in the merge commit\&.
+.sp
+Examples for \fB\-c\fR and \fB\-\-cc\fR without \fB\-\-combined\-all\-paths\fR:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-::100644 100644 100644 fabadb8 cc95eb0 4866510 MM       describe\&.c
+::100644 100644 100644 fabadb8 cc95eb0 4866510 MM       desc\&.c
+::100755 100755 100755 52b7a2d 6d1ac04 d2ac7d7 RM       bar\&.sh
+::100644 100644 100644 e07d6c5 9042e82 ee91881 RR       phooey\&.c
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Examples when \fB\-\-combined\-all\-paths\fR added to either \fB\-c\fR or \fB\-\-cc\fR:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+::100644 100644 100644 fabadb8 cc95eb0 4866510 MM       desc\&.c  desc\&.c  desc\&.c
+::100755 100755 100755 52b7a2d 6d1ac04 d2ac7d7 RM       foo\&.sh  bar\&.sh  bar\&.sh
+::100644 100644 100644 e07d6c5 9042e82 ee91881 RR       fooey\&.c fuey\&.c  phooey\&.c
 .fi
 .if n \{\
 .RE
@@ -1556,6 +1604,23 @@ Similar to two\-line header for traditional
 diff format,
 \fB/dev/null\fR
 is used to signal created or deleted files\&.
+.sp
+However, if the \-\-combined\-all\-paths option is provided, instead of a two\-line from\-file/to\-file you get a N+1 line from\-file/to\-file header, where N is the number of parents in the merge commit
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\- a/file
+\-\-\- a/file
+\-\-\- a/file
++++ b/file
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This extended format can be useful if rename or copy detection is active, to allow you to see the original name of the file in different parents\&.
 .RE
 .sp
 .RS 4
