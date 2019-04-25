@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/22/2019
+.\"      Date: 04/25/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.21.0.498.g14c0f8d3ab
+.\"    Source: Git 2.21.0.777.g83232e3864
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "04/22/2019" "Git 2\&.21\&.0\&.498\&.g14c0f8" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "04/25/2019" "Git 2\&.21\&.0\&.777\&.g83232e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -364,7 +364,7 @@ The \fBdata\fR command following \fBcommitter\fR must supply the commit message 
 .sp
 Zero or more \fBfilemodify\fR, \fBfiledelete\fR, \fBfilecopy\fR, \fBfilerename\fR, \fBfiledeleteall\fR and \fBnotemodify\fR commands may be included to update the contents of the branch prior to creating the commit\&. These commands may be supplied in any order\&. However it is recommended that a \fBfiledeleteall\fR command precede all \fBfilemodify\fR, \fBfilecopy\fR, \fBfilerename\fR and \fBnotemodify\fR commands in the same commit, as \fBfiledeleteall\fR wipes the branch clean (see below)\&.
 .sp
-The \fBLF\fR after the command is optional (it used to be required)\&.
+The \fBLF\fR after the command is optional (it used to be required)\&. Note that for reasons of backward compatibility, if the commit ends with a \fBdata\fR command (i\&.e\&. it has has no \fBfrom\fR, \fBmerge\fR, \fBfilemodify\fR, \fBfiledelete\fR, \fBfilecopy\fR, \fBfilerename\fR, \fBfiledeleteall\fR or \fBnotemodify\fR commands) then two \fBLF\fR commands may appear at the end of the command instead of just one\&.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
@@ -1114,8 +1114,6 @@ Causes fast\-import to print the SHA\-1 corresponding to a mark to stdout or to 
 .RE
 .\}
 .sp
-This command can be used anywhere in the stream that comments are accepted\&. In particular, the \fBget\-mark\fR command can be used in the middle of a commit but not in the middle of a \fBdata\fR command\&.
-.sp
 See \(lqResponses To Commands\(rq below for details about how to read this output safely\&.
 .SS "\fBcat\-blob\fR"
 .sp
@@ -1146,14 +1144,14 @@ Output uses the same format as \fBgit cat\-file \-\-batch\fR:
 .RE
 .\}
 .sp
-This command can be used anywhere in the stream that comments are accepted\&. In particular, the \fBcat\-blob\fR command can be used in the middle of a commit but not in the middle of a \fBdata\fR command\&.
+This command can be used where a \fBfilemodify\fR directive can appear, allowing it to be used in the middle of a commit\&. For a \fBfilemodify\fR using an inline directive, it can also appear right before the \fBdata\fR directive\&.
 .sp
 See \(lqResponses To Commands\(rq below for details about how to read this output safely\&.
 .SS "\fBls\fR"
 .sp
 Prints information about the object at a path to a file descriptor previously arranged with the \fB\-\-cat\-blob\-fd\fR argument\&. This allows printing a blob from the active commit (with \fBcat\-blob\fR) or copying a blob or tree from a previous commit for use in the current one (with \fBfilemodify\fR)\&.
 .sp
-The \fBls\fR command can be used anywhere in the stream that comments are accepted, including the middle of a commit\&.
+The \fBls\fR command can also be used where a \fBfilemodify\fR directive can appear, allowing it to be used in the middle of a commit\&.
 .PP
 Reading from the active commit
 .RS 4
@@ -1559,6 +1557,8 @@ Frontends which have efficient access to all revisions of a single file (for exa
 The packfile(s) created by fast\-import do not encourage good disk access patterns\&. This is caused by fast\-import writing the data in the order it is received on standard input, while Git typically organizes data within packfiles to make the most recent (current tip) data appear before historical data\&. Git also clusters commits together, speeding up revision traversal through better cache locality\&.
 .sp
 For this reason it is strongly recommended that users repack the repository with \fBgit repack \-a \-d\fR after fast\-import completes, allowing Git to reorganize the packfiles for faster data access\&. If blob deltas are suboptimal (see above) then also adding the \fB\-f\fR option to force recomputation of all deltas can significantly reduce the final packfile size (30\-50% smaller can be quite typical)\&.
+.sp
+Instead of running \fBgit repack\fR you can also run \fBgit gc \-\-aggressive\fR, which will also optimize other things after an import (e\&.g\&. pack loose refs)\&. As noted in the "AGGRESSIVE" section in \fBgit-gc\fR(1) the \fB\-\-aggressive\fR option will find new deltas with the \fB\-f\fR option to \fBgit-repack\fR(1)\&. For the reasons elaborated on above using \fB\-\-aggressive\fR after a fast\-import is one of the few cases where it\(cqs known to be worthwhile\&.
 .SH "MEMORY UTILIZATION"
 .sp
 There are a number of factors which affect how much memory fast\-import requires to perform an import\&. Like critical sections of core Git, fast\-import uses its own memory allocators to amortize any overheads associated with malloc\&. In practice fast\-import tends to amortize any malloc overheads to 0, due to its use of large block allocations\&.
