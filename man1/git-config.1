@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 05/09/2019
+.\"      Date: 05/14/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.21.0.896.g6a6c0f10a7
+.\"    Source: Git 2.22.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "05/09/2019" "Git 2\&.21\&.0\&.896\&.g6a6c0f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/14/2019" "Git 2\&.22\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -6018,7 +6018,7 @@ This is a deprecated synonym for
 .PP
 pack\&.writeBitmapHashCache
 .RS 4
-When true, git will include a "hash cache" section in the bitmap index (if one is written)\&. This cache can be used to feed git\(cqs delta heuristics, potentially leading to better deltas between bitmapped and non\-bitmapped objects (e\&.g\&., when serving a fetch between an older, bitmapped pack and objects that have been pushed since the last gc)\&. The downside is that it consumes 4 bytes per object of disk space, and that JGit\(cqs bitmap implementation does not understand it, causing it to complain if Git and JGit are used on the same repository\&. Defaults to false\&.
+When true, git will include a "hash cache" section in the bitmap index (if one is written)\&. This cache can be used to feed git\(cqs delta heuristics, potentially leading to better deltas between bitmapped and non\-bitmapped objects (e\&.g\&., when serving a fetch between an older, bitmapped pack and objects that have been pushed since the last gc)\&. The downside is that it consumes 4 bytes per object of disk space\&. Defaults to true\&.
 .RE
 .PP
 pager\&.<cmd>
@@ -6838,7 +6838,7 @@ repack\&.writeBitmaps
 .RS 4
 When true, git will write a bitmap index when packing all objects to disk (e\&.g\&., when
 \fBgit repack \-a\fR
-is run)\&. This index can speed up the "counting objects" phase of subsequent packs created for clones and fetches, at the cost of some disk space and extra time spent on the initial repack\&. This has no effect if multiple packfiles are created\&. Defaults to false\&.
+is run)\&. This index can speed up the "counting objects" phase of subsequent packs created for clones and fetches, at the cost of some disk space and extra time spent on the initial repack\&. This has no effect if multiple packfiles are created\&. Defaults to true on bare repos, false otherwise\&.
 .RE
 .PP
 rerere\&.autoUpdate
@@ -7308,6 +7308,153 @@ tar\&.umask
 .RS 4
 This variable can be used to restrict the permission bits of tar archive entries\&. The default is 0002, which turns off the world write bit\&. The special value "user" indicates that the archiving user\(cqs umask will be used instead\&. See umask(2) and
 \fBgit-archive\fR(1)\&.
+.RE
+.sp
+Trace2 config settings are only read from the system and global config files; repository local and worktree config files and \fB\-c\fR command line arguments are not respected\&.
+.PP
+trace2\&.normalTarget
+.RS 4
+This variable controls the normal target destination\&. It may be overridden by the
+\fBGIT_TR2\fR
+environment variable\&. The following table shows possible values\&.
+.RE
+.PP
+trace2\&.perfTarget
+.RS 4
+This variable controls the performance target destination\&. It may be overridden by the
+\fBGIT_TR2_PERF\fR
+environment variable\&. The following table shows possible values\&.
+.RE
+.PP
+trace2\&.eventTarget
+.RS 4
+This variable controls the event target destination\&. It may be overridden by the
+\fBGIT_TR2_EVENT\fR
+environment variable\&. The following table shows possible values\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB0\fR
+or
+\fBfalse\fR
+\- Disables the target\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB1\fR
+or
+\fBtrue\fR
+\- Writes to
+\fBSTDERR\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB[2\-9]\fR
+\- Writes to the already opened file descriptor\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB<absolute\-pathname>\fR
+\- Writes to the file in append mode\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBaf_unix:[<socket_type>:]<absolute\-pathname>\fR
+\- Write to a Unix DomainSocket (on platforms that support them)\&. Socket type can be either
+\fBstream\fR
+or
+\fBdgram\fR; if omitted Git will try both\&.
+.RE
+.RE
+.PP
+trace2\&.normalBrief
+.RS 4
+Boolean\&. When true
+\fBtime\fR,
+\fBfilename\fR, and
+\fBline\fR
+fields are omitted from normal output\&. May be overridden by the
+\fBGIT_TR2_BRIEF\fR
+environment variable\&. Defaults to false\&.
+.RE
+.PP
+trace2\&.perfBrief
+.RS 4
+Boolean\&. When true
+\fBtime\fR,
+\fBfilename\fR, and
+\fBline\fR
+fields are omitted from PERF output\&. May be overridden by the
+\fBGIT_TR2_PERF_BRIEF\fR
+environment variable\&. Defaults to false\&.
+.RE
+.PP
+trace2\&.eventBrief
+.RS 4
+Boolean\&. When true
+\fBtime\fR,
+\fBfilename\fR, and
+\fBline\fR
+fields are omitted from event output\&. May be overridden by the
+\fBGIT_TR2_EVENT_BRIEF\fR
+environment variable\&. Defaults to false\&.
+.RE
+.PP
+trace2\&.eventNesting
+.RS 4
+Integer\&. Specifies desired depth of nested regions in the event output\&. Regions deeper than this value will be omitted\&. May be overridden by the
+\fBGIT_TR2_EVENT_NESTING\fR
+environment variable\&. Defaults to 2\&.
+.RE
+.PP
+trace2\&.configParams
+.RS 4
+A comma\-separated list of patterns of "important" config settings that should be recorded in the trace2 output\&. For example,
+\fBcore\&.*,remote\&.*\&.url\fR
+would cause the trace2 output to contain events listing each configured remote\&. May be overridden by the
+\fBGIT_TR2_CONFIG_PARAMS\fR
+environment variable\&. Unset by default\&.
+.RE
+.PP
+trace2\&.destinationDebug
+.RS 4
+Boolean\&. When true Git will print error messages when a trace target destination cannot be opened for writing\&. By default, these errors are suppressed and tracing is silently disabled\&. May be overridden by the
+\fBGIT_TR2_DST_DEBUG\fR
+environment variable\&.
 .RE
 .PP
 transfer\&.fsckObjects
