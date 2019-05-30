@@ -2,12 +2,12 @@
 .\"     Title: git
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 05/19/2019
+.\"      Date: 05/30/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.rc1
+.\"    Source: Git 2.22.0.rc2
 .\"  Language: English
 .\"
-.TH "GIT" "1" "05/19/2019" "Git 2\&.22\&.0\&.rc1" "Git Manual"
+.TH "GIT" "1" "05/30/2019" "Git 2\&.22\&.0\&.rc2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1473,35 +1473,48 @@ When a curl trace is enabled (see
 above), do not dump data (that is, only dump info lines and headers)\&.
 .RE
 .PP
-\fBGIT_TR2\fR
+\fBGIT_TRACE2\fR
 .RS 4
 Enables more detailed trace messages from the "trace2" library\&. Output from
-\fBGIT_TR2\fR
+\fBGIT_TRACE2\fR
 is a simple text\-based format for human readability\&.
 .sp
-The
-\fBGIT_TR2\fR
-variables can take many values\&. Any value available to the
-\fBGIT_TRACE\fR
-variables is also available to
-\fBGIT_TR2\fR\&. The
-\fBGIT_TR2\fR
-variables can also specify a Unix Domain Socket\&. See
+If this variable is set to "1", "2" or "true" (comparison is case insensitive), trace messages will be printed to stderr\&.
+.sp
+If the variable is set to an integer value greater than 2 and lower than 10 (strictly) then Git will interpret this value as an open file descriptor and will try to write the trace messages into this file descriptor\&.
+.sp
+Alternatively, if the variable is set to an absolute path (starting with a
+\fI/\fR
+character), Git will interpret this as a file path and will try to append the trace messages to it\&. If the path already exists and is a directory, the trace messages will be written to files (one per process) in that directory, named according to the last component of the SID and an optional counter (to avoid filename collisions)\&.
+.sp
+In addition, if the variable is set to
+\fBaf_unix:[<socket_type>:]<absolute\-pathname>\fR, Git will try to open the path as a Unix Domain Socket\&. The socket type can be either
+\fBstream\fR
+or
+\fBdgram\fR\&.
+.sp
+Unsetting the variable, or setting it to empty, "0" or "false" (case insensitive) disables trace messages\&.
+.sp
+See
 \m[blue]\fBTrace2 documentation\fR\m[]\&\s-2\u[2]\d\s+2
 for full details\&.
 .RE
 .PP
-\fBGIT_TR2_EVENT\fR
+\fBGIT_TRACE2_EVENT\fR
 .RS 4
 This setting writes a JSON\-based format that is suited for machine interpretation\&. See
+\fBGIT_TRACE2\fR
+for available trace output options and
 \m[blue]\fBTrace2 documentation\fR\m[]\&\s-2\u[2]\d\s+2
 for full details\&.
 .RE
 .PP
-\fBGIT_TR2_PERF\fR
+\fBGIT_TRACE2_PERF\fR
 .RS 4
 In addition to the text\-based messages available in
-\fBGIT_TR2\fR, this setting writes a column\-based format for understanding nesting regions\&. See
+\fBGIT_TRACE2\fR, this setting writes a column\-based format for understanding nesting regions\&. See
+\fBGIT_TRACE2\fR
+for available trace output options and
 \m[blue]\fBTrace2 documentation\fR\m[]\&\s-2\u[2]\d\s+2
 for full details\&.
 .RE
