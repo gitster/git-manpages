@@ -2,12 +2,12 @@
 .\"     Title: gitignore
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/17/2019
+.\"      Date: 06/21/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.190.ga6a95cd1b4
+.\"    Source: Git 2.22.0.214.g8dca754b1e
 .\"  Language: English
 .\"
-.TH "GITIGNORE" "5" "06/17/2019" "Git 2\&.22\&.0\&.190\&.ga6a95c" "Git Manual"
+.TH "GITIGNORE" "5" "06/21/2019" "Git 2\&.22\&.0\&.214\&.g8dca75" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -187,13 +187,11 @@ An optional prefix "\fB!\fR" which negates the pattern; any matching file exclud
 .sp -1
 .IP \(bu 2.3
 .\}
-If the pattern ends with a slash, it is removed for the purpose of the following description, but it would only find a match with a directory\&. In other words,
-\fBfoo/\fR
-will match a directory
-\fBfoo\fR
-and paths underneath it, but will not match a regular file or a symbolic link
-\fBfoo\fR
-(this is consistent with the way how pathspec works in general in Git)\&.
+The slash
+\fI/\fR
+is used as the directory separator\&. Separators may occur at the beginning, middle or end of the
+\fB\&.gitignore\fR
+search pattern\&.
 .RE
 .sp
 .RS 4
@@ -204,10 +202,45 @@ and paths underneath it, but will not match a regular file or a symbolic link
 .sp -1
 .IP \(bu 2.3
 .\}
-If the pattern does not contain a slash
-\fI/\fR, Git treats it as a shell glob pattern and checks for a match against the pathname relative to the location of the
+If there is a separator at the beginning or middle (or both) of the pattern, then the pattern is relative to the directory level of the particular
 \fB\&.gitignore\fR
-file (relative to the toplevel of the work tree if not from a
+file itself\&. Otherwise the pattern may also match at any level below the
+\fB\&.gitignore\fR
+level\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If there is a separator at the end of the pattern then the pattern will only match directories, otherwise the pattern can match both files and directories\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For example, a pattern
+\fBdoc/frotz/\fR
+matches
+\fBdoc/frotz\fR
+directory, but not
+\fBa/doc/frotz\fR
+directory; however
+\fBfrotz/\fR
+matches
+\fBfrotz\fR
+and
+\fBa/frotz\fR
+that is a directory (all paths are relative from the
 \fB\&.gitignore\fR
 file)\&.
 .RE
@@ -220,18 +253,8 @@ file)\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-Otherwise, Git treats the pattern as a shell glob: "\fB*\fR" matches anything except "\fB/\fR", "\fB?\fR" matches any one character except "\fB/\fR" and "\fB[]\fR" matches one character in a selected range\&. See fnmatch(3) and the FNM_PATHNAME flag for a more detailed description\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-A leading slash matches the beginning of the pathname\&. For example, "/*\&.c" matches "cat\-file\&.c" but not "mozilla\-sha1/sha1\&.c"\&.
+An asterisk "\fB*\fR" matches anything except a slash\&. The character "\fB?\fR" matches any one character except "\fB/\fR"\&. The range notation, e\&.g\&.
+\fB[a\-zA\-Z]\fR, can be used to match one of the characters in a range\&. See fnmatch(3) and the FNM_PATHNAME flag for a more detailed description\&.
 .RE
 .sp
 Two consecutive asterisks ("\fB**\fR") in patterns matched against full pathname may have special meaning:
@@ -290,6 +313,70 @@ The purpose of gitignore files is to ensure that certain files not tracked by Gi
 .sp
 To stop tracking a file that is currently tracked, use \fIgit rm \-\-cached\fR\&.
 .SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The pattern
+\fBhello\&.*\fR
+matches any file or folder whose name begins with
+\fBhello\fR\&. If one wants to restrict this only to the directory and not in its subdirectories, one can prepend the pattern with a slash, i\&.e\&.
+\fB/hello\&.*\fR; the pattern now matches
+\fBhello\&.txt\fR,
+\fBhello\&.c\fR
+but not
+\fBa/hello\&.java\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The pattern
+\fBfoo/\fR
+will match a directory
+\fBfoo\fR
+and paths underneath it, but will not match a regular file or a symbolic link
+\fBfoo\fR
+(this is consistent with the way how pathspec works in general in Git)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The pattern
+\fBdoc/frotz\fR
+and
+\fB/doc/frotz\fR
+have the same effect in any
+\fB\&.gitignore\fR
+file\&. In other words, a leading slash is not relevant if there is already a middle slash in the pattern\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The pattern "foo/*", matches "foo/test\&.json" (a regular file), "foo/bar" (a directory), but it does not match "foo/bar/hello\&.c" (a regular file), as the asterisk in the pattern does not match "bar/hello\&.c" which has a slash in it\&.
+.RE
 .sp
 .if n \{\
 .RS 4
