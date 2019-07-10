@@ -2,12 +2,12 @@
 .\"     Title: giteveryday
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2019
+.\"      Date: 07/09/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.214.g8dca754b1e
+.\"    Source: Git 2.22.0.428.g6d5b264208
 .\"  Language: English
 .\"
-.TH "GITEVERYDAY" "7" "06/21/2019" "Git 2\&.22\&.0\&.214\&.g8dca75" "Git Manual"
+.TH "GITEVERYDAY" "7" "07/09/2019" "Git 2\&.22\&.0\&.428\&.g6d5b26" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -121,7 +121,7 @@ to see what happened\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBgit-checkout\fR(1)
+\fBgit-switch\fR(1)
 and
 \fBgit-branch\fR(1)
 to switch branches\&.
@@ -173,10 +173,8 @@ to advance the current branch\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBgit-reset\fR(1)
-and
-\fBgit-checkout\fR(1)
-(with pathname parameters) to undo changes\&.
+\fBgit-restore\fR(1)
+to undo changes\&.
 .RE
 .sp
 .RS 4
@@ -247,9 +245,9 @@ Create a topic branch and develop\&.
 .RS 4
 .\}
 .nf
-$ git checkout \-b alsa\-audio \fB(1)\fR
+$ git switch \-c alsa\-audio \fB(1)\fR
 $ edit/compile/test
-$ git checkout \-\- curses/ux_audio_oss\&.c \fB(2)\fR
+$ git restore curses/ux_audio_oss\&.c \fB(2)\fR
 $ git add curses/ux_audio_alsa\&.c \fB(3)\fR
 $ edit/compile/test
 $ git diff HEAD \fB(4)\fR
@@ -257,7 +255,7 @@ $ git commit \-a \-s \fB(5)\fR
 $ edit/compile/test
 $ git diff HEAD^ \fB(6)\fR
 $ git commit \-a \-\-amend \fB(7)\fR
-$ git checkout master \fB(8)\fR
+$ git switch master \fB(8)\fR
 $ git merge alsa\-audio \fB(9)\fR
 $ git log \-\-since=\(aq3 days ago\(aq \fB(10)\fR
 $ git log v2\&.43\&.\&. curses/ \fB(11)\fR
@@ -387,11 +385,11 @@ Clone the upstream and work on it\&. Feed changes to upstream\&.
 .nf
 $ git clone git://git\&.kernel\&.org/pub/scm/\&.\&.\&./torvalds/linux\-2\&.6 my2\&.6
 $ cd my2\&.6
-$ git checkout \-b mine master \fB(1)\fR
+$ git switch \-c mine master \fB(1)\fR
 $ edit/compile/test; git commit \-a \-s \fB(2)\fR
 $ git format\-patch master \fB(3)\fR
 $ git send\-email \-\-to="person <email@example\&.com>" 00*\&.patch \fB(4)\fR
-$ git checkout master \fB(5)\fR
+$ git switch master \fB(5)\fR
 $ git pull \fB(6)\fR
 $ git log \-p ORIG_HEAD\&.\&. arch/i386 include/asm\-i386 \fB(7)\fR
 $ git ls\-remote \-\-heads http://git\&.kernel\&.org/\&.\&.\&./jgarzik/libata\-dev\&.git \fB(8)\fR
@@ -455,7 +453,7 @@ satellite$ edit/compile/test/commit
 satellite$ git push origin \fB(4)\fR
 
 mothership$ cd frotz
-mothership$ git checkout master
+mothership$ git switch master
 mothership$ git merge satellite/master \fB(5)\fR
 .fi
 .if n \{\
@@ -489,7 +487,7 @@ Branch off of a specific tag\&.
 .RS 4
 .\}
 .nf
-$ git checkout \-b private2\&.6\&.14 v2\&.6\&.14 \fB(1)\fR
+$ git switch \-c private2\&.6\&.14 v2\&.6\&.14 \fB(1)\fR
 $ edit/compile/test; git commit \-a
 $ git checkout master
 $ git cherry\-pick v2\&.6\&.14\&.\&.private2\&.6\&.14 \fB(2)\fR
@@ -591,14 +589,14 @@ $ mailx \fB(3)\fR
 & s 2 3 4 5 \&./+to\-apply
 & s 7 8 \&./+hold\-linus
 & q
-$ git checkout \-b topic/one master
+$ git switch \-c topic/one master
 $ git am \-3 \-i \-s \&./+to\-apply \fB(4)\fR
 $ compile/test
-$ git checkout \-b hold/linus && git am \-3 \-i \-s \&./+hold\-linus \fB(5)\fR
-$ git checkout topic/one && git rebase master \fB(6)\fR
-$ git checkout pu && git reset \-\-hard next \fB(7)\fR
+$ git switch \-c hold/linus && git am \-3 \-i \-s \&./+hold\-linus \fB(5)\fR
+$ git switch topic/one && git rebase master \fB(6)\fR
+$ git switch \-C pu next \fB(7)\fR
 $ git merge topic/one topic/two && git merge hold/linus \fB(8)\fR
-$ git checkout maint
+$ git switch maint
 $ git cherry\-pick master~4 \fB(9)\fR
 $ compile/test
 $ git tag \-s \-m "GIT 0\&.99\&.9x" v0\&.99\&.9x \fB(10)\fR

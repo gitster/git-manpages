@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2019
+.\"      Date: 07/09/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.214.g8dca754b1e
+.\"    Source: Git 2.22.0.428.g6d5b264208
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "06/21/2019" "Git 2\&.22\&.0\&.214\&.g8dca75" "Git Manual"
+.TH "GITHOOKS" "5" "07/09/2019" "Git 2\&.22\&.0\&.428\&.g6d5b26" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -104,7 +104,7 @@ This hook is meant primarily for notification, and cannot affect the outcome of 
 This hook is called by \fBgit-rebase\fR(1) and can be used to prevent a branch from getting rebased\&. The hook may be called with one or two parameters\&. The first parameter is the upstream from which the series was forked\&. The second parameter is the branch being rebased, and is not set when rebasing the current branch\&.
 .SS "post\-checkout"
 .sp
-This hook is invoked when a \fBgit-checkout\fR(1) is run after having updated the worktree\&. The hook is given three parameters: the ref of the previous HEAD, the ref of the new HEAD (which may or may not have changed), and a flag indicating whether the checkout was a branch checkout (changing branches, flag=1) or a file checkout (retrieving a file from the index, flag=0)\&. This hook cannot affect the outcome of \fBgit checkout\fR\&.
+This hook is invoked when a \fBgit-checkout\fR(1) or \fBgit-switch\fR(1) is run after having updated the worktree\&. The hook is given three parameters: the ref of the previous HEAD, the ref of the new HEAD (which may or may not have changed), and a flag indicating whether the checkout was a branch checkout (changing branches, flag=1) or a file checkout (retrieving a file from the index, flag=0)\&. This hook cannot affect the outcome of \fBgit switch\fR or \fBgit checkout\fR\&.
 .sp
 It is also run after \fBgit-clone\fR(1), unless the \fB\-\-no\-checkout\fR (\fB\-n\fR) option is used\&. The first parameter given to the hook is the null\-ref, the second the ref of the new HEAD and the flag is always 1\&. Likewise for \fBgit worktree add\fR unless \fB\-\-no\-checkout\fR is used\&.
 .sp
@@ -254,7 +254,7 @@ This hook is invoked by \fBgit-receive-pack\fR(1) when it reacts to \fBgit push\
 .sp
 The hook receives the commit with which the tip of the current branch is going to be updated\&. It can exit with a non\-zero status to refuse the push (when it does so, it must not modify the index or the working tree)\&. Or it can make any necessary changes to the working tree and to the index to bring them to the desired state when the tip of the current branch is updated to the new commit, and exit with a zero status\&.
 .sp
-For example, the hook can simply run \fBgit read\-tree \-u \-m HEAD "$1"\fR in order to emulate \fBgit fetch\fR that is run in the reverse direction with \fBgit push\fR, as the two\-tree form of \fBgit read\-tree \-u \-m\fR is essentially the same as \fBgit checkout\fR that switches branches while keeping the local changes in the working tree that do not interfere with the difference between the branches\&.
+For example, the hook can simply run \fBgit read\-tree \-u \-m HEAD "$1"\fR in order to emulate \fBgit fetch\fR that is run in the reverse direction with \fBgit push\fR, as the two\-tree form of \fBgit read\-tree \-u \-m\fR is essentially the same as \fBgit switch\fR or \fBgit checkout\fR that switches branches while keeping the local changes in the working tree that do not interfere with the difference between the branches\&.
 .SS "pre\-auto\-gc"
 .sp
 This hook is invoked by \fBgit gc \-\-auto\fR (see \fBgit-gc\fR(1))\&. It takes no parameter, and exiting with non\-zero status from this script causes the \fBgit gc \-\-auto\fR to abort\&.

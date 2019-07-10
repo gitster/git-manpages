@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2019
+.\"      Date: 07/09/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.214.g8dca754b1e
+.\"    Source: Git 2.22.0.428.g6d5b264208
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "06/21/2019" "Git 2\&.22\&.0\&.214\&.g8dca75" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/09/2019" "Git 2\&.22\&.0\&.428\&.g6d5b26" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -921,6 +921,25 @@ This is the same as
 \fBgitdir\fR
 except that matching is done case\-insensitively (e\&.g\&. on case\-insensitive file sytems)
 .RE
+.PP
+\fBonbranch\fR
+.RS 4
+The data that follows the keyword
+\fBonbranch:\fR
+is taken to be a pattern with standard globbing wildcards and two additional ones,
+\fB**/\fR
+and
+\fB/**\fR, that can match multiple path components\&. If we are in a worktree where the name of the branch that is currently checked out matches the pattern, the include condition is met\&.
+.sp
+If the pattern ends with
+\fB/\fR,
+\fB**\fR
+will be automatically added\&. For example, the pattern
+\fBfoo/\fR
+becomes
+\fBfoo/**\fR\&. In other words, it matches all branches that begin with
+\fBfoo/\fR\&. This is useful if your branches are organized hierarchically and you would like to apply a configuration to all the branches in that hierarchy\&.
+.RE
 .sp
 A few more notes on matching via \fBgitdir\fR and \fBgitdir/i\fR:
 .sp
@@ -1080,6 +1099,19 @@ Note that "\&.\&./" is not special and will match literally, which is unlikely w
 .if n \{\
 .RE
 .\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+; include only if we are in a worktree where foo\-branch is
+; currently checked out
+[includeIf "onbranch:foo\-branch"]
+        path = foo\&.inc
+.fi
+.if n \{\
+.RE
+.\}
 .SS "Values"
 .sp
 Values of many variables are treated as a simple string, but there are variables that take values of specific types and there are rules as to how to spell them\&.
@@ -1198,6 +1230,13 @@ variables default to
 \fItrue\fR, and you can tell Git that you do not need help by setting these to
 \fIfalse\fR:
 .PP
+fetchShowForcedUpdates
+.RS 4
+Advice shown when
+\fBgit-fetch\fR(1)
+takes a long time to calculate forced updates after ref updates, or to warn that the check is disabled\&.
+.RE
+.PP
 pushUpdateRejected
 .RS 4
 Set this variable to
@@ -1256,11 +1295,24 @@ Shown when
 gives up trying to guess based on the source and destination refs what remote ref namespace the source belongs in, but where we can still suggest that the user push to either refs/heads/* or refs/tags/* based on the type of the source object\&.
 .RE
 .PP
+statusAheadBehind
+.RS 4
+Shown when
+\fBgit-status\fR(1)
+computes the ahead/behind counts for a local ref compared to its remote tracking ref, and that calculation takes longer than expected\&. Will not appear if
+\fBstatus\&.aheadBehind\fR
+is false or the option
+\fB\-\-no\-ahead\-behind\fR
+is given\&.
+.RE
+.PP
 statusHints
 .RS 4
 Show directions on how to proceed from the current state in the output of
 \fBgit-status\fR(1), in the template shown when writing commit messages in
 \fBgit-commit\fR(1), and in the help message shown by
+\fBgit-switch\fR(1)
+or
 \fBgit-checkout\fR(1)
 when switching branch\&.
 .RE
@@ -1303,6 +1355,8 @@ Advice on how to set your identity configuration when your information is guesse
 detachedHead
 .RS 4
 Advice shown when you used
+\fBgit-switch\fR(1)
+or
 \fBgit-checkout\fR(1)
 to move to the detach HEAD state, to instruct how to create a local branch after the fact\&.
 .RE
@@ -1311,6 +1365,8 @@ checkoutAmbiguousRemoteBranchName
 .RS 4
 Advice shown when the argument to
 \fBgit-checkout\fR(1)
+and
+\fBgit-switch\fR(1)
 ambiguously resolves to a remote tracking branch on more than one remote in situations where an unambiguous argument would have otherwise caused a remote\-tracking branch to be checked out\&. See the
 \fBcheckout\&.defaultRemote\fR
 configuration variable for how to set a given remote to used by default in some situations where this advice would be printed\&.
@@ -2141,12 +2197,38 @@ alias\&.*
 .RS 4
 Command aliases for the
 \fBgit\fR(1)
-command wrapper \- e\&.g\&. after defining "alias\&.last = cat\-file commit HEAD", the invocation "git last" is equivalent to "git cat\-file commit HEAD"\&. To avoid confusion and troubles with script usage, aliases that hide existing Git commands are ignored\&. Arguments are split by spaces, the usual shell quoting and escaping is supported\&. A quote pair or a backslash can be used to quote them\&.
+command wrapper \- e\&.g\&. after defining
+\fBalias\&.last = cat\-file commit HEAD\fR, the invocation
+\fBgit last\fR
+is equivalent to
+\fBgit cat\-file commit HEAD\fR\&. To avoid confusion and troubles with script usage, aliases that hide existing Git commands are ignored\&. Arguments are split by spaces, the usual shell quoting and escaping is supported\&. A quote pair or a backslash can be used to quote them\&.
 .sp
-If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command\&. For example, defining "alias\&.new = !gitk \-\-all \-\-not ORIG_HEAD", the invocation "git new" is equivalent to running the shell command "gitk \-\-all \-\-not ORIG_HEAD"\&. Note that shell commands will be executed from the top\-level directory of a repository, which may not necessarily be the current directory\&.
+Note that the first word of an alias does not necessarily have to be a command\&. It can be a command\-line option that will be passed into the invocation of
+\fBgit\fR\&. In particular, this is useful when used with
+\fB\-c\fR
+to pass in one\-time configurations or
+\fB\-p\fR
+to force pagination\&. For example,
+\fBloud\-rebase = \-c commit\&.verbose=true rebase\fR
+can be defined such that running
+\fBgit loud\-rebase\fR
+would be equivalent to
+\fBgit \-c commit\&.verbose=true rebase\fR\&. Also,
+\fBps = \-p status\fR
+would be a helpful alias since
+\fBgit ps\fR
+would paginate the output of
+\fBgit status\fR
+where the original command does not\&.
+.sp
+If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command\&. For example, defining
+\fBalias\&.new = !gitk \-\-all \-\-not ORIG_HEAD\fR, the invocation
+\fBgit new\fR
+is equivalent to running the shell command
+\fBgitk \-\-all \-\-not ORIG_HEAD\fR\&. Note that shell commands will be executed from the top\-level directory of a repository, which may not necessarily be the current directory\&.
 \fBGIT_PREFIX\fR
 is set as returned by running
-\fIgit rev\-parse \-\-show\-prefix\fR
+\fBgit rev\-parse \-\-show\-prefix\fR
 from the original current directory\&. See
 \fBgit-rev-parse\fR(1)\&.
 .RE
@@ -2239,7 +2321,8 @@ Do not treat root commits as boundaries in
 branch\&.autoSetupMerge
 .RS 4
 Tells
-\fIgit branch\fR
+\fIgit branch\fR,
+\fIgit switch\fR
 and
 \fIgit checkout\fR
 to set up new branches so that
@@ -2257,7 +2340,8 @@ options\&. The valid settings are:
 branch\&.autoSetupRebase
 .RS 4
 When a new branch is created with
-\fIgit branch\fR
+\fIgit branch\fR,
+\fIgit switch\fR
 or
 \fIgit checkout\fR
 that tracks another branch, this variable tells Git to set up pull to rebase instead of merge (see "branch\&.<name>\&.rebase")\&. When
@@ -2389,6 +2473,8 @@ checkout\&.defaultRemote
 .RS 4
 When you run
 \fIgit checkout <something>\fR
+or
+\fIgit switch <something>\fR
 and only have one remote, it may implicitly fall back on checking out and tracking e\&.g\&.
 \fIorigin/<something>\fR\&. This stops working as soon as you have more than one remote with a
 \fI<something>\fR
@@ -2396,9 +2482,13 @@ reference\&. This setting allows for setting the name of a preferred remote that
 \fBorigin\fR\&.
 .sp
 Currently this is used by
+\fBgit-switch\fR(1)
+and
 \fBgit-checkout\fR(1)
 when
 \fIgit checkout <something>\fR
+or
+\fIgit switch <something>\fR
 will checkout the
 \fI<something>\fR
 branch on another remote, and by
@@ -2406,11 +2496,6 @@ branch on another remote, and by
 when
 \fIgit worktree add\fR
 refers to a remote branch\&. This setting might be used for other checkout\-like commands or functionality in the future\&.
-.RE
-.PP
-checkout\&.optimizeNewBranch
-.RS 4
-Optimizes the performance of "git checkout \-b <new_branch>" when using sparse\-checkout\&. When set to true, git will not update the repo based on the current sparse\-checkout settings\&. This means it will not update the skip\-worktree bit in the index nor add/remove files in the working directory to reflect the current sparse checkout settings nor will it show the local changes\&.
 .RE
 .PP
 clean\&.requireForce
@@ -3126,7 +3211,9 @@ Porcelain, and not lower level
 commands such as
 \fIgit diff\-files\fR\&.
 \fIgit checkout\fR
-also honors this setting when reporting uncommitted changes\&. Setting it to
+and
+\fIgit switch\fR
+also honor this setting when reporting uncommitted changes\&. Setting it to
 \fIall\fR
 disables the submodule summary normally shown by
 \fIgit commit\fR
@@ -3764,6 +3851,17 @@ See also the
 \fB\-\-negotiation\-tip\fR
 option for
 \fBgit-fetch\fR(1)\&.
+.RE
+.PP
+fetch\&.showForcedUpdates
+.RS 4
+Set to false to enable
+\fB\-\-no\-show\-forced\-updates\fR
+in
+\fBgit-fetch\fR(1)
+and
+\fBgit-pull\fR(1)
+commands\&. Defaults to true\&.
 .RE
 .PP
 format\&.attach
@@ -5210,6 +5308,7 @@ In interactive commands, allow the user to provide one\-letter input with a sing
 mode of
 \fBgit-add\fR(1),
 \fBgit-checkout\fR(1),
+\fBgit-restore\fR(1),
 \fBgit-commit\fR(1),
 \fBgit-reset\fR(1), and
 \fBgit-stash\fR(1)\&. Note that this setting is silently ignored if portable keystroke input is not available; requires the Perl module Term::ReadKey\&.
@@ -7082,6 +7181,17 @@ Set to true to enable \-\-branch by default in
 \fBgit-status\fR(1)\&. The option \-\-no\-branch takes precedence over this variable\&.
 .RE
 .PP
+status\&.aheadBehind
+.RS 4
+Set to true to enable
+\fB\-\-ahead\-behind\fR
+and false to enable
+\fB\-\-no\-ahead\-behind\fR
+by default in
+\fBgit-status\fR(1)
+for non\-porcelain status formats\&. Defaults to true\&.
+.RE
+.PP
 status\&.displayCommentPrefix
 .RS 4
 If set to true,
@@ -7338,6 +7448,11 @@ tag\&.sort
 .RS 4
 This variable controls the sort ordering of tags when displayed by
 \fBgit-tag\fR(1)\&. Without the "\-\-sort=<value>" option provided, the value of this variable will be used as the default\&.
+.RE
+.PP
+tag\&.gpgSign
+.RS 4
+A boolean to specify whether all tags should be GPG signed\&. Use of this option when running in an automated script can result in a large number of tags being signed\&. It is therefore convenient to use an agent to avoid typing your gpg passphrase several times\&. Note that this option doesn\(cqt affects tag signing behavior enabled by "\-u <keyid>" or "\-\-local\-user=<keyid>" options\&.
 .RE
 .PP
 tar\&.umask

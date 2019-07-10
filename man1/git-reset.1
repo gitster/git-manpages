@@ -2,12 +2,12 @@
 .\"     Title: git-reset
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/21/2019
+.\"      Date: 07/09/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.214.g8dca754b1e
+.\"    Source: Git 2.22.0.428.g6d5b264208
 .\"  Language: English
 .\"
-.TH "GIT\-RESET" "1" "06/21/2019" "Git 2\&.22\&.0\&.214\&.g8dca75" "Git Manual"
+.TH "GIT\-RESET" "1" "07/09/2019" "Git 2\&.22\&.0\&.428\&.g6d5b26" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -51,15 +51,17 @@ to their state at
 This means that
 \fBgit reset <paths>\fR
 is the opposite of
-\fBgit add <paths>\fR\&.
+\fBgit add <paths>\fR\&. This command is equivalent to
+\fBgit restore [\-\-source=<tree\-ish>] \-\-staged <paths>\&.\&.\&.\fR\&.
 .sp
 After running
 \fBgit reset <paths>\fR
 to update the index entry, you can use
-\fBgit-checkout\fR(1)
+\fBgit-restore\fR(1)
 to check the contents out of the index to the working tree\&. Alternatively, using
-\fBgit-checkout\fR(1)
-and specifying a commit, you can copy the contents of a path out of a commit to the index and to the working tree in one go\&.
+\fBgit-restore\fR(1)
+and specifying a commit with
+\fB\-\-source\fR, you can copy the contents of a path out of a commit to the index and to the working tree in one go\&.
 .RE
 .PP
 \fIgit reset\fR (\-\-patch | \-p) [<tree\-ish>] [\-\-] [<paths>\&...]
@@ -145,7 +147,7 @@ has local changes, reset is aborted\&.
 .RE
 .RE
 .sp
-If you want to undo a commit other than the latest on a branch, \fBgit-revert\fR(1) is your friend\&.
+See "Reset, restore and revert" in \fBgit\fR(1) for the differences between the three commands\&.
 .SH "OPTIONS"
 .PP
 \-q, \-\-quiet, \-\-no\-quiet
@@ -236,9 +238,9 @@ Undo a commit, making it a topic branch
 .RS 4
 .\}
 .nf
-$ git branch topic/wip     \fB(1)\fR
-$ git reset \-\-hard HEAD~3  \fB(2)\fR
-$ git checkout topic/wip   \fB(3)\fR
+$ git branch topic/wip          \fB(1)\fR
+$ git reset \-\-hard HEAD~3       \fB(2)\fR
+$ git switch topic/wip          \fB(3)\fR
 .fi
 .if n \{\
 .RE
@@ -357,13 +359,13 @@ Suppose you are interrupted by an urgent fix request while you are in the middle
 .RS 4
 .\}
 .nf
-$ git checkout feature ;# you were working in "feature" branch and
-$ work work work       ;# got interrupted
+$ git switch feature  ;# you were working in "feature" branch and
+$ work work work      ;# got interrupted
 $ git commit \-a \-m "snapshot WIP"                 \fB(1)\fR
-$ git checkout master
+$ git switch master
 $ fix fix fix
 $ git commit ;# commit with real log
-$ git checkout feature
+$ git switch feature
 $ git reset \-\-soft HEAD^ ;# go back to WIP state  \fB(2)\fR
 $ git reset                                       \fB(3)\fR
 .fi
@@ -418,11 +420,11 @@ Suppose you are working on something and you commit it, and then you continue wo
 .\}
 .nf
 $ git tag start
-$ git checkout \-b branch1
+$ git switch \-c branch1
 $ edit
 $ git commit \&.\&.\&.                            \fB(1)\fR
 $ edit
-$ git checkout \-b branch2                   \fB(2)\fR
+$ git switch \-c branch2                     \fB(2)\fR
 $ git reset \-\-keep start                    \fB(3)\fR
 .fi
 .if n \{\
@@ -435,7 +437,7 @@ $ git reset \-\-keep start                    \fB(3)\fR
 \fB2. \fRIn the ideal world, you could have realized that the earlier commit did not belong to the new topic when you created and switched to
 \fBbranch2\fR
 (i\&.e\&.
-\fBgit checkout \-b branch2 start\fR), but nobody is perfect\&.
+\fBgit switch \-c branch2 start\fR), but nobody is perfect\&.
 .br
 \fB3. \fRBut you can use
 \fBreset \-\-keep\fR
