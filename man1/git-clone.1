@@ -2,12 +2,12 @@
 .\"     Title: git-clone
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 07/09/2019
+.\"      Date: 07/12/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.428.g6d5b264208
+.\"    Source: Git 2.22.0.454.g9d418600f4
 .\"  Language: English
 .\"
-.TH "GIT\-CLONE" "1" "07/09/2019" "Git 2\&.22\&.0\&.428\&.g6d5b26" "Git Manual"
+.TH "GIT\-CLONE" "1" "07/12/2019" "Git 2\&.22\&.0\&.454\&.g9d4186" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -44,14 +44,14 @@ git-clone \- Clone a repository into a new directory
 .sp
 .SH "DESCRIPTION"
 .sp
-Clones a repository into a newly created directory, creates remote\-tracking branches for each branch in the cloned repository (visible using \fBgit branch \-r\fR), and creates and checks out an initial branch that is forked from the cloned repository\(cqs currently active branch\&.
+Clones a repository into a newly created directory, creates remote\-tracking branches for each branch in the cloned repository (visible using \fBgit branch \-\-remotes\fR), and creates and checks out an initial branch that is forked from the cloned repository\(cqs currently active branch\&.
 .sp
 After the clone, a plain \fBgit fetch\fR without arguments will update all the remote\-tracking branches, and a \fBgit pull\fR without arguments will in addition merge the remote master branch into the current master branch, if any (this is untrue when "\-\-single\-branch" is given; see below)\&.
 .sp
 This default configuration is achieved by creating references to the remote branch heads under \fBrefs/remotes/origin\fR and by initializing \fBremote\&.origin\&.url\fR and \fBremote\&.origin\&.fetch\fR configuration variables\&.
 .SH "OPTIONS"
 .PP
-\-\-local, \-l
+\-l, \-\-local
 .RS 4
 When the repository to clone from is on a local machine, this flag bypasses the normal "Git aware" transport mechanism and clones the repository by making a copy of HEAD and everything under objects and refs directories\&. The files under
 \fB\&.git/objects/\fR
@@ -72,7 +72,7 @@ Force the cloning process from a repository on a local filesystem to copy the fi
 directory instead of using hardlinks\&. This may be desirable if you are trying to make a back\-up of your repository\&.
 .RE
 .PP
-\-\-shared, \-s
+\-s, \-\-shared
 .RS 4
 When the repository to clone is on the local machine, instead of using hard links, automatically setup
 \fB\&.git/objects/info/alternates\fR
@@ -88,17 +88,17 @@ use it unless you understand what it does\&. If you clone your repository using 
 Note that running
 \fBgit repack\fR
 without the
-\fB\-l\fR
+\fB\-\-local\fR
 option in a repository cloned with
-\fB\-s\fR
+\fB\-\-shared\fR
 will copy objects from the source repository into a pack in the cloned repository, removing the disk space savings of
-\fBclone \-s\fR\&. It is safe, however, to run
+\fBclone \-\-shared\fR\&. It is safe, however, to run
 \fBgit gc\fR, which uses the
-\fB\-l\fR
+\fB\-\-local\fR
 option by default\&.
 .sp
 If you want to break the dependency of a repository cloned with
-\fB\-s\fR
+\fB\-\-shared\fR
 on its source repository, you can simply run
 \fBgit repack \-a\fR
 to copy all objects from the source repository into a pack in the cloned repository\&.
@@ -125,19 +125,21 @@ Borrow the objects from reference repositories specified with the
 options only to reduce network transfer, and stop borrowing from them after a clone is made by making necessary local copies of borrowed objects\&. This option can also be used when cloning locally from a repository that already borrows objects from another repository\(emthe new repository will borrow objects from the same repository, and this option can be used to stop the borrowing\&.
 .RE
 .PP
-\-\-quiet, \-q
+\-q, \-\-quiet
 .RS 4
 Operate quietly\&. Progress is not reported to the standard error stream\&.
 .RE
 .PP
-\-\-verbose, \-v
+\-v, \-\-verbose
 .RS 4
 Run verbosely\&. Does not affect the reporting of progress status to the standard error stream\&.
 .RE
 .PP
 \-\-progress
 .RS 4
-Progress status is reported on the standard error stream by default when it is attached to a terminal, unless \-q is specified\&. This flag forces progress status even if the standard error stream is not directed to a terminal\&.
+Progress status is reported on the standard error stream by default when it is attached to a terminal, unless
+\fB\-\-quiet\fR
+is specified\&. This flag forces progress status even if the standard error stream is not directed to a terminal\&.
 .RE
 .PP
 \-\-server\-option=<option>
@@ -147,7 +149,7 @@ Transmit the given string to the server when communicating using protocol versio
 are given, they are all sent to the other side in the order listed on the command line\&.
 .RE
 .PP
-\-\-no\-checkout, \-n
+\-n, \-\-no\-checkout
 .RS 4
 No checkout of HEAD is performed after the clone is complete\&.
 .RE
@@ -163,7 +165,7 @@ and placing the administrative files in
 \fB<directory>\fR
 itself the
 \fB$GIT_DIR\fR\&. This obviously implies the
-\fB\-n\fR
+\fB\-\-no\-checkout\fR
 because there is nowhere to check out the working tree\&. Also the branch heads at the remote are copied directly to corresponding local branch heads, without mapping them to
 \fBrefs/remotes/origin/\fR\&. When this option is used, neither remote\-tracking branches nor the related configuration variables are created\&.
 .RE
@@ -179,7 +181,7 @@ not only maps local branches of the source to local branches of the target, it m
 in the target repository\&.
 .RE
 .PP
-\-\-origin <name>, \-o <name>
+\-o <name>, \-\-origin <name>
 .RS 4
 Instead of using the remote name
 \fBorigin\fR
@@ -187,7 +189,7 @@ to keep track of the upstream repository, use
 \fB<name>\fR\&.
 .RE
 .PP
-\-\-branch <name>, \-b <name>
+\-b <name>, \-\-branch <name>
 .RS 4
 Instead of pointing the newly created HEAD to the branch pointed to by the cloned repository\(cqs HEAD, point to
 \fB<name>\fR
@@ -196,7 +198,7 @@ branch instead\&. In a non\-bare repository, this is the branch that will be che
 can also take tags and detaches the HEAD at that commit in the resulting repository\&.
 .RE
 .PP
-\-\-upload\-pack <upload\-pack>, \-u <upload\-pack>
+\-u <upload\-pack>, \-\-upload\-pack <upload\-pack>
 .RS 4
 When given, and the repository to clone from is accessed via ssh, this specifies a non\-default path for the command run on the other end\&.
 .RE
@@ -207,7 +209,7 @@ Specify the directory from which templates will be used; (See the "TEMPLATE DIRE
 \fBgit-init\fR(1)\&.)
 .RE
 .PP
-\-\-config <key>=<value>, \-c <key>=<value>
+\-c <key>=<value>, \-\-config <key>=<value>
 .RS 4
 Set a configuration variable in the newly\-created repository; this takes effect immediately after the repository is initialized, but before the remote history is fetched or any files checked out\&. The key is in the same format as expected by
 \fBgit-config\fR(1)
