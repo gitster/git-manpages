@@ -2,12 +2,12 @@
 .\"     Title: git-commit-graph
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 07/12/2019
+.\"      Date: 07/19/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.454.g9d418600f4
+.\"    Source: Git 2.22.0.545.g9c9b961d7e
 .\"  Language: English
 .\"
-.TH "GIT\-COMMIT\-GRAPH" "1" "07/12/2019" "Git 2\&.22\&.0\&.454\&.g9d4186" "Git Manual"
+.TH "GIT\-COMMIT\-GRAPH" "1" "07/19/2019" "Git 2\&.22\&.0\&.545\&.g9c9b96" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-commit-graph \- Write and verify Git commit\-graph files
 .sp
 .nf
 \fIgit commit\-graph read\fR [\-\-object\-dir <dir>]
-\fIgit commit\-graph verify\fR [\-\-object\-dir <dir>]
+\fIgit commit\-graph verify\fR [\-\-object\-dir <dir>] [\-\-shallow]
 \fIgit commit\-graph write\fR <options> [\-\-object\-dir <dir>]
 .fi
 .sp
@@ -46,9 +46,9 @@ Manage the serialized commit\-graph file\&.
 .RS 4
 Use given directory for the location of packfiles and commit\-graph file\&. This parameter exists to specify the location of an alternate that only has the objects directory, not a full
 \fB\&.git\fR
-directory\&. The commit\-graph file is expected to be at
-\fB<dir>/info/commit\-graph\fR
-and the packfiles are expected to be in
+directory\&. The commit\-graph file is expected to be in the
+\fB<dir>/info\fR
+directory and the packfiles are expected to be in
 \fB<dir>/pack\fR\&.
 .RE
 .SH "COMMANDS"
@@ -81,6 +81,59 @@ or
 With the
 \fB\-\-append\fR
 option, include all commits that are present in the existing commit\-graph file\&.
+.sp
+With the
+\fB\-\-split\fR
+option, write the commit\-graph as a chain of multiple commit\-graph files stored in
+\fB<dir>/info/commit\-graphs\fR\&. The new commits not already in the commit\-graph are added in a new "tip" file\&. This file is merged with the existing file if the following merge conditions are met:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If
+\fB\-\-size\-multiple=<X>\fR
+is not specified, let
+\fBX\fR
+equal 2\&. If the new tip file would have
+\fBN\fR
+commits and the previous tip has
+\fBM\fR
+commits and
+\fBX\fR
+times
+\fBN\fR
+is greater than
+\fBM\fR, instead merge the two files into a single file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If
+\fB\-\-max\-commits=<M>\fR
+is specified with
+\fBM\fR
+a positive integer, and the new tip file would have more than
+\fBM\fR
+commits, then instead merge the new tip with the previous tip\&.
+.sp
+Finally, if
+\fB\-\-expire\-time=<datetime>\fR
+is not specified, let
+\fBdatetime\fR
+be the current time\&. After writing the split commit\-graph, delete all unused commit\-graph whose modified times are older than
+\fBdatetime\fR\&.
+.RE
 .RE
 .PP
 \fIread\fR
@@ -91,6 +144,10 @@ Read the commit\-graph file and output basic details about it\&. Used for debugg
 \fIverify\fR
 .RS 4
 Read the commit\-graph file and verify its contents against the object database\&. Used to check for corrupted data\&.
+.sp
+With the
+\fB\-\-shallow\fR
+option, only check the tip commit\-graph file in a chain of split commit\-graphs\&.
 .RE
 .SH "EXAMPLES"
 .sp

@@ -2,12 +2,12 @@
 .\"     Title: git-blame
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 07/12/2019
+.\"      Date: 07/19/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.22.0.454.g9d418600f4
+.\"    Source: Git 2.22.0.545.g9c9b961d7e
 .\"  Language: English
 .\"
-.TH "GIT\-BLAME" "1" "07/12/2019" "Git 2\&.22\&.0\&.454\&.g9d4186" "Git Manual"
+.TH "GIT\-BLAME" "1" "07/19/2019" "Git 2\&.22\&.0\&.545\&.g9c9b96" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,6 +34,7 @@ git-blame \- Show what revision and author last modified each line of a file
 .nf
 \fIgit blame\fR [\-c] [\-b] [\-l] [\-\-root] [\-t] [\-f] [\-n] [\-s] [\-e] [\-p] [\-w] [\-\-incremental]
             [\-L <range>] [\-S <revs\-file>] [\-M] [\-C] [\-C] [\-C] [\-\-since=<date>]
+            [\-\-ignore\-rev <rev>] [\-\-ignore\-revs\-file <file>]
             [\-\-progress] [\-\-abbrev=<n>] [<rev> | \-\-contents <file> | \-\-reverse <rev>\&.\&.<rev>]
             [\-\-] <file>
 .fi
@@ -228,6 +229,28 @@ In addition to
 options given, the <num> argument of the last
 \fB\-C\fR
 will take effect\&.
+.RE
+.PP
+\-\-ignore\-rev <rev>
+.RS 4
+Ignore changes made by the revision when assigning blame, as if the change never happened\&. Lines that were changed or added by an ignored commit will be blamed on the previous commit that changed that line or nearby lines\&. This option may be specified multiple times to ignore more than one revision\&. If the
+\fBblame\&.markIgnoredLines\fR
+config option is set, then lines that were changed by an ignored commit and attributed to another commit will be marked with a
+\fB?\fR
+in the blame output\&. If the
+\fBblame\&.markUnblamableLines\fR
+config option is set, then those lines touched by an ignored commit that we could not attribute to another revision are marked with a
+\fI*\fR\&.
+.RE
+.PP
+\-\-ignore\-revs\-file <file>
+.RS 4
+Ignore revisions listed in
+\fBfile\fR, which must be in the same format as an
+\fBfsck\&.skipList\fR\&. This option may be repeated, and these files will be processed after any files specified with the
+\fBblame\&.ignoreRevsFile\fR
+config option\&. An empty file name,
+\fB""\fR, will clear the list of revs from previously processed files\&.
 .RE
 .PP
 \-h
