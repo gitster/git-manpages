@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/22/2019
+.\"      Date: 09/18/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.23.0.37.g745f681289
+.\"    Source: Git 2.23.0.256.g4c86140027
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "08/22/2019" "Git 2\&.23\&.0\&.37\&.g745f681" "Git Manual"
+.TH "GITHOOKS" "5" "09/18/2019" "Git 2\&.23\&.0\&.256\&.g4c8614" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -76,6 +76,15 @@ The default \fIpre\-commit\fR hook, when enabled, catches introduction of lines 
 All the \fBgit commit\fR hooks are invoked with the environment variable \fBGIT_EDITOR=:\fR if the command will not bring up an editor to modify the commit message\&.
 .sp
 The default \fIpre\-commit\fR hook, when enabled\(emand with the \fBhooks\&.allownonascii\fR config option unset or set to false\(emprevents the use of non\-ASCII filenames\&.
+.SS "pre\-merge\-commit"
+.sp
+This hook is invoked by \fBgit-merge\fR(1), and can be bypassed with the \fB\-\-no\-verify\fR option\&. It takes no parameters, and is invoked after the merge has been carried out successfully and before obtaining the proposed commit log message to make a commit\&. Exiting with a non\-zero status from this script causes the \fBgit merge\fR command to abort before creating a commit\&.
+.sp
+The default \fIpre\-merge\-commit\fR hook, when enabled, runs the \fIpre\-commit\fR hook, if the latter is enabled\&.
+.sp
+This hook is invoked with the environment variable \fBGIT_EDITOR=:\fR if the command will not bring up an editor to modify the commit message\&.
+.sp
+If the merge cannot be carried out automatically, the conflicts need to be resolved and the result committed separately (see \fBgit-merge\fR(1))\&. At that point, this hook will not be executed, but the \fIpre\-commit\fR hook will, if it is enabled\&.
 .SS "prepare\-commit\-msg"
 .sp
 This hook is invoked by \fBgit-commit\fR(1) right after preparing the default log message, and before the editor is started\&.
