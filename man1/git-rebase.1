@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/18/2019
+.\"      Date: 09/30/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.23.0.256.g4c86140027
+.\"    Source: Git 2.23.0.385.gbc12974a89
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "09/18/2019" "Git 2\&.23\&.0\&.256\&.g4c8614" "Git Manual"
+.TH "GIT\-REBASE" "1" "09/30/2019" "Git 2\&.23\&.0\&.385\&.gbc1297" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,8 +32,8 @@ git-rebase \- Reapply commits on top of another base tip
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit rebase\fR [\-i | \-\-interactive] [<options>] [\-\-exec <cmd>] [\-\-onto <newbase>]
-        [<upstream> [<branch>]]
+\fIgit rebase\fR [\-i | \-\-interactive] [<options>] [\-\-exec <cmd>]
+        [\-\-onto <newbase> | \-\-keep\-base] [<upstream> [<branch>]]
 \fIgit rebase\fR [\-i | \-\-interactive] [<options>] [\-\-exec <cmd>] [\-\-onto <newbase>]
         \-\-root [<branch>]
 \fIgit rebase\fR (\-\-continue | \-\-skip | \-\-abort | \-\-quit | \-\-edit\-todo | \-\-show\-current\-patch)
@@ -397,6 +397,24 @@ Starting point at which to create the new commits\&. If the \-\-onto option is n
 As a special case, you may use "A\&.\&.\&.B" as a shortcut for the merge base of A and B if there is exactly one merge base\&. You can leave out at most one of A and B, in which case it defaults to HEAD\&.
 .RE
 .PP
+\-\-keep\-base
+.RS 4
+Set the starting point at which to create the new commits to the merge base of <upstream> <branch>\&. Running
+\fIgit rebase \-\-keep\-base <upstream> <branch>\fR
+is equivalent to running
+\fIgit rebase \-\-onto <upstream>\&... <upstream>\fR\&.
+.sp
+This option is useful in the case where one is developing a feature on top of an upstream branch\&. While the feature is being worked on, the upstream branch may advance and it may not be the best idea to keep rebasing on top of the upstream but to keep the base commit as\-is\&.
+.sp
+Although both this option and \-\-fork\-point find the merge base between <upstream> and <branch>, this option uses the merge base as the
+\fIstarting point\fR
+on which new commits will be created, whereas \-\-fork\-point uses the merge base to determine the
+\fIset of commits\fR
+which will be rebased\&.
+.sp
+See also INCOMPATIBLE OPTIONS below\&.
+.RE
+.PP
 <upstream>
 .RS 4
 Upstream branch to compare against\&. May be any valid commit, not just an existing branch name\&. Defaults to the configured upstream for the current branch\&.
@@ -576,6 +594,10 @@ ends up being empty, the <upstream> will be used as a fallback\&.
 If either <upstream> or \-\-root is given on the command line, then the default is
 \fB\-\-no\-fork\-point\fR, otherwise the default is
 \fB\-\-fork\-point\fR\&.
+.sp
+If your branch was based on <upstream> but <upstream> was rewound and your branch contains commits which were dropped, this option can be used with
+\fB\-\-keep\-base\fR
+in order to drop those commits from your branch\&.
 .RE
 .PP
 \-\-ignore\-whitespace, \-\-whitespace=<option>
@@ -980,6 +1002,28 @@ In addition, the following pairs of options are incompatible:
 .IP \(bu 2.3
 .\}
 \-\-preserve\-merges and \-\-rebase\-merges
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\-\-keep\-base and \-\-onto
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\-\-keep\-base and \-\-root
 .RE
 .SH "BEHAVIORAL DIFFERENCES"
 .sp
@@ -1590,8 +1634,8 @@ rebase had conflicts, or used
 \fB\-\-interactive\fR
 to omit, edit, squash, or fixup commits; or if the upstream used one of
 \fBcommit \-\-amend\fR,
-\fBreset\fR, or
-\fBfilter\-branch\fR\&.
+\fBreset\fR, or a full history rewriting command like
+\m[blue]\fB\fBfilter\-repo\fR\fR\m[]\&\s-2\u[2]\d\s+2\&.
 .RE
 .SS "The easy case"
 .sp
@@ -1646,7 +1690,7 @@ While an "easy case recovery" sometimes appears to be successful even in the har
 .sp .5v
 .RE
 .sp
-The idea is to manually tell \fIgit rebase\fR "where the old \fIsubsystem\fR ended and your \fItopic\fR began", that is, what the old merge\-base between them was\&. You will have to find a way to name the last commit of the old \fIsubsystem\fR, for example:
+The idea is to manually tell \fIgit rebase\fR "where the old \fIsubsystem\fR ended and your \fItopic\fR began", that is, what the old merge base between them was\&. You will have to find a way to name the last commit of the old \fIsubsystem\fR, for example:
 .sp
 .RS 4
 .ie n \{\
@@ -1862,4 +1906,9 @@ Part of the \fBgit\fR(1) suite
 revert-a-faulty-merge How-To
 .RS 4
 \%git-htmldocs/howto/revert-a-faulty-merge.html
+.RE
+.IP " 2." 4
+\fBfilter-repo\fR
+.RS 4
+\%https://github.com/newren/git-filter-repo
 .RE

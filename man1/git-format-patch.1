@@ -2,12 +2,12 @@
 .\"     Title: git-format-patch
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/18/2019
+.\"      Date: 09/30/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.23.0.256.g4c86140027
+.\"    Source: Git 2.23.0.385.gbc12974a89
 .\"  Language: English
 .\"
-.TH "GIT\-FORMAT\-PATCH" "1" "09/18/2019" "Git 2\&.23\&.0\&.256\&.g4c8614" "Git Manual"
+.TH "GIT\-FORMAT\-PATCH" "1" "09/30/2019" "Git 2\&.23\&.0\&.385\&.gbc1297" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,9 +40,9 @@ git-format-patch \- Prepare patches for e\-mail submission
                    [\-\-signature\-file=<file>]
                    [\-n | \-\-numbered | \-N | \-\-no\-numbered]
                    [\-\-start\-number <n>] [\-\-numbered\-files]
-                   [\-\-in\-reply\-to=Message\-Id] [\-\-suffix=\&.<sfx>]
+                   [\-\-in\-reply\-to=<message id>] [\-\-suffix=\&.<sfx>]
                    [\-\-ignore\-if\-in\-upstream]
-                   [\-\-rfc] [\-\-subject\-prefix=Subject\-Prefix]
+                   [\-\-rfc] [\-\-subject\-prefix=<subject prefix>]
                    [(\-\-reroll\-count|\-v) <n>]
                    [\-\-to=<email>] [\-\-cc=<email>]
                    [\-\-[no\-]cover\-letter] [\-\-quiet]
@@ -664,10 +664,10 @@ to take care of threading, you will want to ensure that threading is disabled fo
 \fBgit send\-email\fR\&.
 .RE
 .PP
-\-\-in\-reply\-to=Message\-Id
+\-\-in\-reply\-to=<message id>
 .RS 4
 Make the first mail (or all the mails with
-\fB\-\-no\-thread\fR) appear as a reply to the given Message\-Id, which avoids breaking threads to provide a new patch series\&.
+\fB\-\-no\-thread\fR) appear as a reply to the given <message id>, which avoids breaking threads to provide a new patch series\&.
 .RE
 .PP
 \-\-ignore\-if\-in\-upstream
@@ -675,12 +675,12 @@ Make the first mail (or all the mails with
 Do not include a patch that matches a commit in <until>\&.\&.<since>\&. This will examine all patches reachable from <since> but not from <until> and compare them with the patches being generated, and any patch that matches is ignored\&.
 .RE
 .PP
-\-\-subject\-prefix=<Subject\-Prefix>
+\-\-subject\-prefix=<subject prefix>
 .RS 4
 Instead of the standard
 \fI[PATCH]\fR
 prefix in the subject line, instead use
-\fI[<Subject\-Prefix>]\fR\&. This allows for useful naming of a patch series, and can be combined with the
+\fI[<subject prefix>]\fR\&. This allows for useful naming of a patch series, and can be combined with the
 \fB\-\-numbered\fR
 option\&.
 .RE
@@ -855,7 +855,7 @@ Output an all\-zero hash in each patch\(cqs From header instead of the hash of t
 .PP
 \-\-base=<commit>
 .RS 4
-Record the base tree information to identify the state the patch series applies to\&. See the BASE TREE INFORMATION section below for details\&.
+Record the base tree information to identify the state the patch series applies to\&. See the BASE TREE INFORMATION section below for details\&. If <commit> is "auto", a base commit is automatically chosen\&.
 .RE
 .PP
 \-\-root
@@ -869,7 +869,7 @@ Show progress reports on stderr as patches are generated\&.
 .RE
 .SH "CONFIGURATION"
 .sp
-You can specify extra mail header lines to be added to each message, defaults for the subject prefix and file suffix, number patches when outputting more than one patch, add "To" or "Cc:" headers, configure attachments, and sign off patches with configuration variables\&.
+You can specify extra mail header lines to be added to each message, defaults for the subject prefix and file suffix, number patches when outputting more than one patch, add "To:" or "Cc:" headers, configure attachments, change the patch output directory, and sign off patches with configuration variables\&.
 .sp
 .if n \{\
 .RS 4
@@ -884,7 +884,8 @@ You can specify extra mail header lines to be added to each message, defaults fo
         cc = <email>
         attach [ = mime\-boundary\-string ]
         signOff = true
-        coverletter = auto
+        outputDirectory = <directory>
+        coverLetter = auto
 .fi
 .if n \{\
 .RE
