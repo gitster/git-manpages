@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 10/11/2019
+.\"      Date: 10/15/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.23.0.606.g08da6496b6
+.\"    Source: Git 2.23.0.715.g108b97dc37
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "10/11/2019" "Git 2\&.23\&.0\&.606\&.g08da64" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/15/2019" "Git 2\&.23\&.0\&.715\&.g108b97" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3897,6 +3897,21 @@ and
 commands\&. Defaults to true\&.
 .RE
 .PP
+fetch\&.parallel
+.RS 4
+Specifies the maximal number of fetch operations to be run in parallel at a time (submodules, or remotes when the
+\fB\-\-multiple\fR
+option of
+\fBgit-fetch\fR(1)
+is in effect)\&.
+.sp
+A value of 0 will give some reasonable default\&. If unset, it defaults to 1\&.
+.sp
+For submodules, this setting can be overridden using the
+\fBsubmodule\&.fetchJobs\fR
+config setting\&.
+.RE
+.PP
 fetch\&.writeCommitGraph
 .RS 4
 Set to true to write a commit\-graph after every
@@ -7597,7 +7612,7 @@ or
 .IP \(bu 2.3
 .\}
 \fB<absolute\-pathname>\fR
-\- Writes to the file in append mode\&.
+\- Writes to the file in append mode\&. If the target already exists and is a directory, the traces will be written to files (one per process) underneath the given directory\&.
 .RE
 .sp
 .RS 4
@@ -7670,6 +7685,11 @@ trace2\&.destinationDebug
 Boolean\&. When true Git will print error messages when a trace target destination cannot be opened for writing\&. By default, these errors are suppressed and tracing is silently disabled\&. May be overridden by the
 \fBGIT_TRACE2_DST_DEBUG\fR
 environment variable\&.
+.RE
+.PP
+trace2\&.maxFiles
+.RS 4
+Integer\&. When writing trace files to a target directory, do not write additional traces if we would exceed this many files\&. Instead, write a sentinel file that will block further tracing to this directory\&. Defaults to 0, which disables this check\&.
 .RE
 .PP
 transfer\&.fsckObjects

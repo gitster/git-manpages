@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 10/11/2019
+.\"      Date: 10/15/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.23.0.606.g08da6496b6
+.\"    Source: Git 2.23.0.715.g108b97dc37
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "10/11/2019" "Git 2\&.23\&.0\&.606\&.g08da64" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "10/15/2019" "Git 2\&.23\&.0\&.715\&.g108b97" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -271,6 +271,11 @@ Reset an existing branch (or a new branch) to a specific revision\&. This comman
 Convert raw file data into a blob, for future use in a
 \fBcommit\fR
 command\&. This command is optional and is not needed to perform an import\&.
+.RE
+.PP
+\fBalias\fR
+.RS 4
+Record that a mark refers to a given object without first creating any new object\&. Using \-\-import\-marks and referring to missing marks will cause fast\-import to fail, so aliases can provide a way to set otherwise pruned commits to a valid value (e\&.g\&. the nearest non\-pruned ancestor)\&.
 .RE
 .PP
 \fBcheckpoint\fR
@@ -909,6 +914,7 @@ Creates an annotated tag referring to a specific commit\&. To create lightweight
 .\}
 .nf
         \(aqtag\(aq SP <name> LF
+        mark?
         \(aqfrom\(aq SP <commit\-ish> LF
         original\-oid?
         \(aqtagger\(aq (SP <name>)? SP LT <email> GT SP <when> LF
@@ -1062,6 +1068,24 @@ after
 \fB<delim> LF\fR
 is optional (it used to be required)\&.
 .RE
+.SS "\fBalias\fR"
+.sp
+Record that a mark refers to a given object without first creating any new object\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+        \(aqalias\(aq LF
+        mark
+        \(aqto\(aq SP <commit\-ish> LF
+        LF?
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+For a detailed description of \fB<commit\-ish>\fR see above under \fBfrom\fR\&.
 .SS "\fBcheckpoint\fR"
 .sp
 Forces fast\-import to close the current packfile, start a new one, and to save out all current branch refs, tags and marks\&.
