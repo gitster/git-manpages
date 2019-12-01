@@ -2,12 +2,12 @@
 .\"     Title: git-bundle
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 11/11/2019
+.\"      Date: 12/01/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.24.0.155.gd9f6f3b619
+.\"    Source: Git 2.24.0.308.g228f53135a
 .\"  Language: English
 .\"
-.TH "GIT\-BUNDLE" "1" "11/11/2019" "Git 2\&.24\&.0\&.155\&.gd9f6f3" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "12/01/2019" "Git 2\&.24\&.0\&.308\&.g228f53" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,8 +32,8 @@ git-bundle \- Move objects and refs by archive
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit bundle\fR create <file> <git\-rev\-list\-args>
-\fIgit bundle\fR verify <file>
+\fIgit bundle\fR create [\-q | \-\-quiet | \-\-progress | \-\-all\-progress] [\-\-all\-progress\-implied] <file> <git\-rev\-list\-args>
+\fIgit bundle\fR verify [\-q | \-\-quiet] <file>
 \fIgit bundle\fR list\-heads <file> [<refname>\&...]
 \fIgit bundle\fR unbundle <file> [<refname>\&...]
 .fi
@@ -43,12 +43,16 @@ git-bundle \- Move objects and refs by archive
 Some workflows require that one or more branches of development on one machine be replicated on another machine, but the two machines cannot be directly connected, and therefore the interactive Git protocols (git, ssh, http) cannot be used\&. This command provides support for \fIgit fetch\fR and \fIgit pull\fR to operate by packaging objects and references in an archive at the originating machine, then importing those into another repository using \fIgit fetch\fR and \fIgit pull\fR after moving the archive by some means (e\&.g\&., by sneakernet)\&. As no direct connection between the repositories exists, the user must specify a basis for the bundle that is held by the destination repository: the bundle assumes that all objects in the basis are already in the destination repository\&.
 .SH "OPTIONS"
 .PP
-create <file>
+create [options] <file> <git\-rev\-list\-args>
 .RS 4
 Used to create a bundle named
 \fIfile\fR\&. This requires the
 \fIgit\-rev\-list\-args\fR
 arguments to define the bundle contents\&.
+\fIoptions\fR
+contains the options specific to the
+\fIgit bundle create\fR
+subcommand\&.
 .RE
 .PP
 verify <file>
@@ -89,6 +93,26 @@ A list of references used to limit the references reported as available\&. This 
 \fIgit bundle\fR
 acts like
 \fIgit fetch\-pack\fR)\&.
+.RE
+.PP
+\-\-progress
+.RS 4
+Progress status is reported on the standard error stream by default when it is attached to a terminal, unless \-q is specified\&. This flag forces progress status even if the standard error stream is not directed to a terminal\&.
+.RE
+.PP
+\-\-all\-progress
+.RS 4
+When \-\-stdout is specified then progress report is displayed during the object count and compression phases but inhibited during the write\-out phase\&. The reason is that in some cases the output stream is directly linked to another command which may wish to display progress status of its own as it processes incoming pack data\&. This flag is like \-\-progress except that it forces progress report for the write\-out phase as well even if \-\-stdout is used\&.
+.RE
+.PP
+\-\-all\-progress\-implied
+.RS 4
+This is used to imply \-\-all\-progress whenever progress display is activated\&. Unlike \-\-all\-progress this flag doesn\(cqt actually force any progress display by itself\&.
+.RE
+.PP
+\-q, \-\-quiet
+.RS 4
+This flag makes the command not to report its progress on the standard error stream\&.
 .RE
 .SH "SPECIFYING REFERENCES"
 .sp
