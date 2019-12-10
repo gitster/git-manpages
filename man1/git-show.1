@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 12/10/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.24.1.425.g7034cd094b
+.\"    Source: Git 2.24.1.485.gad05a3d8e5
 .\"  Language: English
 .\"
-.TH "GIT\-SHOW" "1" "12/10/2019" "Git 2\&.24\&.1\&.425\&.g7034cd" "Git Manual"
+.TH "GIT\-SHOW" "1" "12/10/2019" "Git 2\&.24\&.1\&.485\&.gad05a3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -69,6 +69,7 @@ can be one of
 \fImedium\fR,
 \fIfull\fR,
 \fIfuller\fR,
+\fIreference\fR,
 \fIemail\fR,
 \fIraw\fR,
 \fIformat:<string>\fR
@@ -191,7 +192,7 @@ and show the output\&.
 .RE
 .SH "PRETTY FORMATS"
 .sp
-If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line\&. This line begins with "Merge: " and the sha1s of ancestral commits are printed, separated by spaces\&. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file\&.
+If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line\&. This line begins with "Merge: " and the hashes of ancestral commits are printed, separated by spaces\&. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file\&.
 .sp
 There are several built\-in formats, and you can define additional formats by setting a pretty\&.<name> config option to either another format name, or a \fIformat:\fR string, as described below (see \fBgit-config\fR(1))\&. Here are the details of the built\-in formats:
 .sp
@@ -209,7 +210,7 @@ There are several built\-in formats, and you can define additional formats by se
 .RS 4
 .\}
 .nf
-<sha1> <title line>
+<hash> <title line>
 .fi
 .if n \{\
 .RE
@@ -232,7 +233,7 @@ This is designed to be as compact as possible\&.
 .RS 4
 .\}
 .nf
-commit <sha1>
+commit <hash>
 Author: <author>
 .fi
 .if n \{\
@@ -264,7 +265,7 @@ Author: <author>
 .RS 4
 .\}
 .nf
-commit <sha1>
+commit <hash>
 Author: <author>
 Date:   <author date>
 .fi
@@ -307,7 +308,7 @@ Date:   <author date>
 .RS 4
 .\}
 .nf
-commit <sha1>
+commit <hash>
 Author: <author>
 Commit: <committer>
 .fi
@@ -350,7 +351,7 @@ Commit: <committer>
 .RS 4
 .\}
 .nf
-commit <sha1>
+commit <hash>
 Author:     <author>
 AuthorDate: <author date>
 Commit:     <committer>
@@ -389,13 +390,46 @@ CommitDate: <committer date>
 .sp -1
 .IP \(bu 2.3
 .\}
+\fIreference\fR
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<abbrev hash> (<title line>, <short author date>)
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This format is used to refer to another commit in a commit message and is the same as
+\fB\-\-pretty=\(aqformat:%C(auto)%h (%s, %ad)\(aq\fR\&. By default, the date is formatted with
+\fB\-\-date=short\fR
+unless another
+\fB\-\-date\fR
+option is explicitly specified\&. As with any
+\fBformat:\fR
+with format placeholders, its output is not affected by other options like
+\fB\-\-decorate\fR
+and
+\fB\-\-walk\-reflogs\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 \fIemail\fR
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-From <sha1> <date>
+From <hash> <date>
 From: <author>
 Date: <author date>
 Subject: [PATCH] <title line>
@@ -427,7 +461,7 @@ Subject: [PATCH] <title line>
 .sp
 The
 \fIraw\fR
-format shows the entire commit exactly as stored in the commit object\&. Notably, the SHA\-1s are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and
+format shows the entire commit exactly as stored in the commit object\&. Notably, the hashes are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and
 \fIparents\fR
 information show the true parent commits, without taking grafts or history simplification into account\&. Note that this format affects the way commits are displayed, but not the way the diff is shown e\&.g\&. with
 \fBgit log \-\-raw\fR\&. To get full object names in a raw diff format, use
@@ -704,6 +738,11 @@ author date, ISO 8601\-like format
 author date, strict ISO 8601 format
 .RE
 .PP
+\fI%as\fR
+.RS 4
+author date, short format (\fBYYYY\-MM\-DD\fR)
+.RE
+.PP
 \fI%cn\fR
 .RS 4
 committer name
@@ -774,6 +813,11 @@ committer date, ISO 8601\-like format
 \fI%cI\fR
 .RS 4
 committer date, strict ISO 8601 format
+.RE
+.PP
+\fI%cs\fR
+.RS 4
+committer date, short format (\fBYYYY\-MM\-DD\fR)
 .RE
 .PP
 \fI%d\fR

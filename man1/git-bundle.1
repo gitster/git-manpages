@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 12/10/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.24.1.425.g7034cd094b
+.\"    Source: Git 2.24.1.485.gad05a3d8e5
 .\"  Language: English
 .\"
-.TH "GIT\-BUNDLE" "1" "12/10/2019" "Git 2\&.24\&.1\&.425\&.g7034cd" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "12/10/2019" "Git 2\&.24\&.1\&.485\&.gad05a3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,14 +40,18 @@ git-bundle \- Move objects and refs by archive
 .sp
 .SH "DESCRIPTION"
 .sp
-Some workflows require that one or more branches of development on one machine be replicated on another machine, but the two machines cannot be directly connected, and therefore the interactive Git protocols (git, ssh, http) cannot be used\&. This command provides support for \fIgit fetch\fR and \fIgit pull\fR to operate by packaging objects and references in an archive at the originating machine, then importing those into another repository using \fIgit fetch\fR and \fIgit pull\fR after moving the archive by some means (e\&.g\&., by sneakernet)\&. As no direct connection between the repositories exists, the user must specify a basis for the bundle that is held by the destination repository: the bundle assumes that all objects in the basis are already in the destination repository\&.
+Some workflows require that one or more branches of development on one machine be replicated on another machine, but the two machines cannot be directly connected, and therefore the interactive Git protocols (git, ssh, http) cannot be used\&.
+.sp
+The \fIgit bundle\fR command packages objects and references in an archive at the originating machine, which can then be imported into another repository using \fIgit fetch\fR, \fIgit pull\fR, or \fIgit clone\fR, after moving the archive by some means (e\&.g\&., by sneakernet)\&.
+.sp
+As no direct connection between the repositories exists, the user must specify a basis for the bundle that is held by the destination repository: the bundle assumes that all objects in the basis are already in the destination repository\&.
 .SH "OPTIONS"
 .PP
 create [options] <file> <git\-rev\-list\-args>
 .RS 4
 Used to create a bundle named
 \fIfile\fR\&. This requires the
-\fIgit\-rev\-list\-args\fR
+\fI<git\-rev\-list\-args>\fR
 arguments to define the bundle contents\&.
 \fIoptions\fR
 contains the options specific to the
@@ -119,6 +123,8 @@ This flag makes the command not to report its progress on the standard error str
 \fIgit bundle\fR will only package references that are shown by \fIgit show\-ref\fR: this includes heads, tags, and remote heads\&. References such as \fBmaster~1\fR cannot be packaged, but are perfectly suitable for defining the basis\&. More than one reference may be packaged, and more than one basis can be specified\&. The objects packaged are those not contained in the union of the given bases\&. Each basis can be specified explicitly (e\&.g\&. \fB^master~10\fR), or implicitly (e\&.g\&. \fBmaster~10\&.\&.master\fR, \fB\-\-since=10\&.days\&.ago master\fR)\&.
 .sp
 It is very important that the basis used be held by the destination\&. It is okay to err on the side of caution, causing the bundle file to contain objects already in the destination, as these are ignored when unpacking at the destination\&.
+.sp
+\fBgit clone\fR can use any bundle created without negative refspecs (e\&.g\&., \fBnew\fR, but not \fBold\&.\&.new\fR)\&. If you want to match \fBgit clone \-\-mirror\fR, which would include your refs such as \fBrefs/remotes/*\fR, use \fB\-\-all\fR\&. If you want to provide the same set of refs that a clone directly from the source repository would get, use \fB\-\-branches \-\-tags\fR for the \fB<git\-rev\-list\-args>\fR\&.
 .SH "EXAMPLES"
 .sp
 Assume you want to transfer the history from a repository R1 on machine A to another repository R2 on machine B\&. For whatever reason, direct connection between A and B is not allowed, but we can move data from A to B via some mechanism (CD, email, etc\&.)\&. We want to update R2 with development made on the branch master in R1\&.

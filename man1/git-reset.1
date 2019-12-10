@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 12/10/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.24.1.425.g7034cd094b
+.\"    Source: Git 2.24.1.485.gad05a3d8e5
 .\"  Language: English
 .\"
-.TH "GIT\-RESET" "1" "12/10/2019" "Git 2\&.24\&.1\&.425\&.g7034cd" "Git Manual"
+.TH "GIT\-RESET" "1" "12/10/2019" "Git 2\&.24\&.1\&.485\&.gad05a3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,30 +32,31 @@ git-reset \- Reset current HEAD to the specified state
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit reset\fR [\-q] [<tree\-ish>] [\-\-] <paths>\&...
-\fIgit reset\fR (\-\-patch | \-p) [<tree\-ish>] [\-\-] [<paths>\&...]
+\fIgit reset\fR [\-q] [<tree\-ish>] [\-\-] <pathspec>\&...
+\fIgit reset\fR [\-q] [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]] [<tree\-ish>]
+\fIgit reset\fR (\-\-patch | \-p) [<tree\-ish>] [\-\-] [<pathspec>\&...]
 \fIgit reset\fR [\-\-soft | \-\-mixed [\-N] | \-\-hard | \-\-merge | \-\-keep] [\-q] [<commit>]
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-In the first and second form, copy entries from \fB<tree\-ish>\fR to the index\&. In the third form, set the current branch head (\fBHEAD\fR) to \fB<commit>\fR, optionally modifying index and working tree to match\&. The \fB<tree\-ish>\fR/\fB<commit>\fR defaults to \fBHEAD\fR in all forms\&.
+In the first three forms, copy entries from \fB<tree\-ish>\fR to the index\&. In the last form, set the current branch head (\fBHEAD\fR) to \fB<commit>\fR, optionally modifying index and working tree to match\&. The \fB<tree\-ish>\fR/\fB<commit>\fR defaults to \fBHEAD\fR in all forms\&.
 .PP
-\fIgit reset\fR [\-q] [<tree\-ish>] [\-\-] <paths>\&...
+\fIgit reset\fR [\-q] [<tree\-ish>] [\-\-] <pathspec>\&..., \fIgit reset\fR [\-q] [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]] [<tree\-ish>]
 .RS 4
-This form resets the index entries for all
-\fB<paths>\fR
+These forms reset the index entries for all paths that match the
+\fB<pathspec>\fR
 to their state at
 \fB<tree\-ish>\fR\&. (It does not affect the working tree or the current branch\&.)
 .sp
 This means that
-\fBgit reset <paths>\fR
+\fBgit reset <pathspec>\fR
 is the opposite of
-\fBgit add <paths>\fR\&. This command is equivalent to
-\fBgit restore [\-\-source=<tree\-ish>] \-\-staged <paths>\&.\&.\&.\fR\&.
+\fBgit add <pathspec>\fR\&. This command is equivalent to
+\fBgit restore [\-\-source=<tree\-ish>] \-\-staged <pathspec>\&.\&.\&.\fR\&.
 .sp
 After running
-\fBgit reset <paths>\fR
+\fBgit reset <pathspec>\fR
 to update the index entry, you can use
 \fBgit-restore\fR(1)
 to check the contents out of the index to the working tree\&. Alternatively, using
@@ -64,7 +65,7 @@ and specifying a commit with
 \fB\-\-source\fR, you can copy the contents of a path out of a commit to the index and to the working tree in one go\&.
 .RE
 .PP
-\fIgit reset\fR (\-\-patch | \-p) [<tree\-ish>] [\-\-] [<paths>\&...]
+\fIgit reset\fR (\-\-patch | \-p) [<tree\-ish>] [\-\-] [<pathspec>\&...]
 .RS 4
 Interactively select hunks in the difference between the index and
 \fB<tree\-ish>\fR
@@ -159,6 +160,44 @@ config option\&.
 and
 \fB\-\-no\-quiet\fR
 will override the default behavior\&.
+.RE
+.PP
+\-\-pathspec\-from\-file=<file>
+.RS 4
+Pathspec is passed in
+\fB<file>\fR
+instead of commandline args\&. If
+\fB<file>\fR
+is exactly
+\fB\-\fR
+then standard input is used\&. Pathspec elements are separated by LF or CR/LF\&. Pathspec elements can be quoted as explained for the configuration variable
+\fBcore\&.quotePath\fR
+(see
+\fBgit-config\fR(1))\&. See also
+\fB\-\-pathspec\-file\-nul\fR
+and global
+\fB\-\-literal\-pathspecs\fR\&.
+.RE
+.PP
+\-\-pathspec\-file\-nul
+.RS 4
+Only meaningful with
+\fB\-\-pathspec\-from\-file\fR\&. Pathspec elements are separated with NUL character and all other characters are taken literally (including newlines and quotes)\&.
+.RE
+.PP
+\-\-
+.RS 4
+Do not interpret any more arguments as options\&.
+.RE
+.PP
+<pathspec>\&...
+.RS 4
+Limits the paths affected by the operation\&.
+.sp
+For more details, see the
+\fIpathspec\fR
+entry in
+\fBgitglossary\fR(7)\&.
 .RE
 .SH "EXAMPLES"
 .PP
