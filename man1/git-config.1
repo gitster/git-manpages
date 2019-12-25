@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 12/18/2019
+.\"      Date: 12/25/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.24.1.591.g12029dc57d
+.\"    Source: Git 2.25.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/18/2019" "Git 2\&.24\&.1\&.591\&.g12029d" "Git Manual"
+.TH "GIT\-CONFIG" "1" "12/25/2019" "Git 2\&.25\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2104,8 +2104,15 @@ Use the multi\-pack\-index file to track multiple packfiles using a single index
 .PP
 core\&.sparseCheckout
 .RS 4
-Enable "sparse checkout" feature\&. See section "Sparse checkout" in
-\fBgit-read-tree\fR(1)
+Enable "sparse checkout" feature\&. See
+\fBgit-sparse-checkout\fR(1)
+for more information\&.
+.RE
+.PP
+core\&.sparseCheckoutCone
+.RS 4
+Enables the "cone mode" of the sparse checkout feature\&. When the sparse\-checkout file contains a limited set of patterns, then this mode provides significant performance advantages\&. See
+\fBgit-sparse-checkout\fR(1)
 for more information\&.
 .RE
 .PP
@@ -4084,7 +4091,34 @@ is the non\-boolean value\&. Defaults to false\&.
 If one wishes to use the ref
 \fBref/notes/true\fR, please use that literal instead\&.
 .sp
-This configuration can be specified multiple times in order to allow multiple notes refs to be included\&.
+This configuration can be specified multiple times in order to allow multiple notes refs to be included\&. In that case, it will behave similarly to multiple
+\fB\-\-[no\-]notes[=]\fR
+options passed in\&. That is, a value of
+\fBtrue\fR
+will show the default notes, a value of
+\fB<ref>\fR
+will also show notes from that notes ref and a value of
+\fBfalse\fR
+will negate previous configurations and not show notes\&.
+.sp
+For example,
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[format]
+        notes = true
+        notes = foo
+        notes = false
+        notes = bar
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+will only show notes from
+\fBrefs/notes/bar\fR\&.
 .RE
 .PP
 filter\&.<driver>\&.clean

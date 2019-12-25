@@ -2,12 +2,12 @@
 .\"     Title: git-checkout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 12/18/2019
+.\"      Date: 12/25/2019
 .\"    Manual: Git Manual
-.\"    Source: Git 2.24.1.591.g12029dc57d
+.\"    Source: Git 2.25.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-CHECKOUT" "1" "12/18/2019" "Git 2\&.24\&.1\&.591\&.g12029d" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "12/25/2019" "Git 2\&.25\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,14 +36,14 @@ git-checkout \- Switch branches or restore working tree files
 \fIgit checkout\fR [\-q] [\-f] [\-m] \-\-detach [<branch>]
 \fIgit checkout\fR [\-q] [\-f] [\-m] [\-\-detach] <commit>
 \fIgit checkout\fR [\-q] [\-f] [\-m] [[\-b|\-B|\-\-orphan] <new_branch>] [<start_point>]
-\fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <paths>\&...
-\fIgit checkout\fR [<tree\-ish>] [\-\-] <pathspec>\&...
-\fIgit checkout\fR (\-p|\-\-patch) [<tree\-ish>] [\-\-] [<paths>\&...]
+\fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <pathspec>\&...
+\fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] \-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]
+\fIgit checkout\fR (\-p|\-\-patch) [<tree\-ish>] [\-\-] [<pathspec>\&...]
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
-Updates files in the working tree to match the version in the index or the specified tree\&. If no paths are given, \fIgit checkout\fR will also update \fBHEAD\fR to set the specified branch as the current branch\&.
+Updates files in the working tree to match the version in the index or the specified tree\&. If no pathspec was given, \fIgit checkout\fR will also update \fBHEAD\fR to set the specified branch as the current branch\&.
 .PP
 \fIgit checkout\fR [<branch>]
 .RS 4
@@ -137,15 +137,14 @@ detaches
 at the tip of the current branch\&.
 .RE
 .PP
-\fIgit checkout\fR [<tree\-ish>] [\-\-] <pathspec>\&...
+\fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] [\-\-] <pathspec>\&..., \fIgit checkout\fR [\-f|\-\-ours|\-\-theirs|\-m|\-\-conflict=<style>] [<tree\-ish>] \-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]
 .RS 4
-Overwrite paths in the working tree by replacing with the contents in the index or in the
+Overwrite the contents of the files that match the pathspec\&. When the
 \fB<tree\-ish>\fR
-(most often a commit)\&. When a
+(most often a commit) is not given, overwrite working tree with the contents in the index\&. When the
 \fB<tree\-ish>\fR
-is given, the paths that match the
-\fB<pathspec>\fR
-are updated both in the index and in the working tree\&.
+is given, overwrite both the index and the working tree with the contents at the
+\fB<tree\-ish>\fR\&.
 .sp
 The index may contain unmerged entries because of a previous failed merge\&. By default, if you try to check out such an entry from the index, the checkout operation will fail and nothing will be checked out\&. Using
 \fB\-f\fR
@@ -158,7 +157,7 @@ or
 .PP
 \fIgit checkout\fR (\-p|\-\-patch) [<tree\-ish>] [\-\-] [<pathspec>\&...]
 .RS 4
-This is similar to the "check out paths to the working tree from either the index or from a tree\-ish" mode described above, but lets you use the interactive interface to show the "diff" output and choose which hunks to use in the result\&. See below for the description of
+This is similar to the previous mode, but lets you use the interactive interface to show the "diff" output and choose which hunks to use in the result\&. See below for the description of
 \fB\-\-patch\fR
 option\&.
 .RE
@@ -429,6 +428,29 @@ are removed, to make them match
 exactly\&.
 .RE
 .PP
+\-\-pathspec\-from\-file=<file>
+.RS 4
+Pathspec is passed in
+\fB<file>\fR
+instead of commandline args\&. If
+\fB<file>\fR
+is exactly
+\fB\-\fR
+then standard input is used\&. Pathspec elements are separated by LF or CR/LF\&. Pathspec elements can be quoted as explained for the configuration variable
+\fBcore\&.quotePath\fR
+(see
+\fBgit-config\fR(1))\&. See also
+\fB\-\-pathspec\-file\-nul\fR
+and global
+\fB\-\-literal\-pathspecs\fR\&.
+.RE
+.PP
+\-\-pathspec\-file\-nul
+.RS 4
+Only meaningful with
+\fB\-\-pathspec\-from\-file\fR\&. Pathspec elements are separated with NUL character and all other characters are taken literally (including newlines and quotes)\&.
+.RE
+.PP
 <branch>
 .RS 4
 Branch to checkout; if it refers to a branch (i\&.e\&., a name that, when prepended with "refs/heads/", is a valid ref), then that branch is checked out\&. Otherwise, if it refers to a valid commit, your
@@ -483,6 +505,21 @@ and
 <tree\-ish>
 .RS 4
 Tree to checkout from (when paths are given)\&. If not specified, the index will be used\&.
+.RE
+.PP
+\-\-
+.RS 4
+Do not interpret any more arguments as options\&.
+.RE
+.PP
+<pathspec>\&...
+.RS 4
+Limits the paths affected by the operation\&.
+.sp
+For more details, see the
+\fIpathspec\fR
+entry in
+\fBgitglossary\fR(7)\&.
 .RE
 .SH "DETACHED HEAD"
 .sp
