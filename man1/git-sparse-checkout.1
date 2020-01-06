@@ -2,12 +2,12 @@
 .\"     Title: git-sparse-checkout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/02/2020
+.\"      Date: 01/06/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.25.0.rc1
+.\"    Source: Git 2.25.0.rc1.19.g042ed3e048
 .\"  Language: English
 .\"
-.TH "GIT\-SPARSE\-CHECKOU" "1" "01/02/2020" "Git 2\&.25\&.0\&.rc1" "Git Manual"
+.TH "GIT\-SPARSE\-CHECKOU" "1" "01/06/2020" "Git 2\&.25\&.0\&.rc1\&.19\&.g0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,7 +28,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-sparse-checkout \- Initialize and modify the sparse\-checkout configuration, which reduces the checkout to a set of paths given by a list of atterns\&.
+git-sparse-checkout \- Initialize and modify the sparse\-checkout configuration, which reduces the checkout to a set of paths given by a list of patterns\&.
 .SH "SYNOPSIS"
 .sp
 .nf
@@ -44,7 +44,7 @@ THIS COMMAND IS EXPERIMENTAL\&. ITS BEHAVIOR, AND THE BEHAVIOR OF OTHER COMMANDS
 .PP
 \fIlist\fR
 .RS 4
-Provide a list of the contents in the sparse\-checkout file\&.
+Describe the patterns in the sparse\-checkout file\&.
 .RE
 .PP
 \fIinit\fR
@@ -174,7 +174,24 @@ Here, order matters, so the negative patterns are overridden by the positive pat
 .sp
 If \fBcore\&.sparseCheckoutCone=true\fR, then Git will parse the sparse\-checkout file expecting patterns of these types\&. Git will warn if the patterns do not match\&. If the patterns do match the expected format, then Git will use faster hash\- based algorithms to compute inclusion in the sparse\-checkout\&.
 .sp
+In the cone mode case, the \fBgit sparse\-checkout list\fR subcommand will list the directories that define the recursive patterns\&. For the example sparse\-checkout file above, the output is as follows:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git sparse\-checkout list
+A/B/C
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
 If \fBcore\&.ignoreCase=true\fR, then the pattern\-matching algorithm will use a case\-insensitive check\&. This corrects for case mismatched filenames in the \fIgit sparse\-checkout set\fR command to reflect the expected cone in the working directory\&.
+.SH "SUBMODULES"
+.sp
+If your repository contains one or more submodules, then those submodules will appear based on which you initialized with the \fBgit submodule\fR command\&. If your sparse\-checkout patterns exclude an initialized submodule, then that submodule will still appear in your working directory\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-read-tree\fR(1) \fBgitignore\fR(5)
