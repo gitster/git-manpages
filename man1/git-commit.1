@@ -2,12 +2,12 @@
 .\"     Title: git-commit
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/23/2020
+.\"      Date: 01/30/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.25.0.24.gbc7a3d4dc0
+.\"    Source: Git 2.25.0.114.g5b0ca878e0
 .\"  Language: English
 .\"
-.TH "GIT\-COMMIT" "1" "01/23/2020" "Git 2\&.25\&.0\&.24\&.gbc7a3d4" "Git Manual"
+.TH "GIT\-COMMIT" "1" "01/30/2020" "Git 2\&.25\&.0\&.114\&.g5b0ca8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -545,53 +545,6 @@ For more details, see the
 entry in
 \fBgitglossary\fR(7)\&.
 .RE
-.SH "DATE FORMATS"
-.sp
-The \fBGIT_AUTHOR_DATE\fR, \fBGIT_COMMITTER_DATE\fR environment variables and the \fB\-\-date\fR option support the following date formats:
-.PP
-Git internal format
-.RS 4
-It is
-\fB<unix timestamp> <time zone offset>\fR, where
-\fB<unix timestamp>\fR
-is the number of seconds since the UNIX epoch\&.
-\fB<time zone offset>\fR
-is a positive or negative offset from UTC\&. For example CET (which is 1 hour ahead of UTC) is
-\fB+0100\fR\&.
-.RE
-.PP
-RFC 2822
-.RS 4
-The standard email format as described by RFC 2822, for example
-\fBThu, 07 Apr 2005 22:13:13 +0200\fR\&.
-.RE
-.PP
-ISO 8601
-.RS 4
-Time and date specified by the ISO 8601 standard, for example
-\fB2005\-04\-07T22:13:13\fR\&. The parser accepts a space instead of the
-\fBT\fR
-character as well\&.
-.if n \{\
-.sp
-.\}
-.RS 4
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.br
-.ps +1
-\fBNote\fR
-.ps -1
-.br
-In addition, the date part is accepted in the following formats:
-\fBYYYY\&.MM\&.DD\fR,
-\fBMM/DD/YYYY\fR
-and
-\fBDD\&.MM\&.YYYY\fR\&.
-.sp .5v
-.RE
-.RE
 .SH "EXAMPLES"
 .sp
 When recording your own work, the contents of modified files in your working tree are temporarily stored to a staging area called the "index" with \fIgit add\fR\&. A file can be reverted back, only in the index but not in the working tree, to that of the last commit with \fBgit restore \-\-staged <file>\fR, which effectively reverts \fIgit add\fR and prevents the changes to this file from participating in the next commit\&. After building the state to be committed incrementally with these commands, \fBgit commit\fR (without any pathname parameter) is used to record what has been staged so far\&. This is the most basic form of the command\&. An example:
@@ -688,6 +641,81 @@ $ git commit
 .sp
 .sp
 As with the case to record your own changes, you can use \fB\-a\fR option to save typing\&. One difference is that during a merge resolution, you cannot use \fBgit commit\fR with pathnames to alter the order the changes are committed, because the merge should be recorded as a single commit\&. In fact, the command refuses to run when given pathnames (but see \fB\-i\fR option)\&.
+.SH "COMMIT INFORMATION"
+.sp
+Author and committer information is taken from the following environment variables, if set:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+GIT_AUTHOR_NAME
+GIT_AUTHOR_EMAIL
+GIT_AUTHOR_DATE
+GIT_COMMITTER_NAME
+GIT_COMMITTER_EMAIL
+GIT_COMMITTER_DATE
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+(nb "<", ">" and "\en"s are stripped)
+.sp
+The author and committer names are by convention some form of a personal name (that is, the name by which other humans refer to you), although Git does not enforce or require any particular form\&. Arbitrary Unicode may be used, subject to the constraints listed above\&. This name has no effect on authentication; for that, see the \fBcredential\&.username\fR variable in \fBgit-config\fR(1)\&.
+.sp
+In case (some of) these environment variables are not set, the information is taken from the configuration items \fBuser\&.name\fR and \fBuser\&.email\fR, or, if not present, the environment variable EMAIL, or, if that is not set, system user name and the hostname used for outgoing mail (taken from \fB/etc/mailname\fR and falling back to the fully qualified hostname when that file does not exist)\&.
+.sp
+The \fBauthor\&.name\fR and \fBcommitter\&.name\fR and their corresponding email options override \fBuser\&.name\fR and \fBuser\&.email\fR if set and are overridden themselves by the environment variables\&.
+.sp
+The typical usage is to set just the \fBuser\&.name\fR and \fBuser\&.email\fR variables; the other options are provided for more complex use cases\&.
+.SH "DATE FORMATS"
+.sp
+The \fBGIT_AUTHOR_DATE\fR, \fBGIT_COMMITTER_DATE\fR environment variables and the \fB\-\-date\fR option support the following date formats:
+.PP
+Git internal format
+.RS 4
+It is
+\fB<unix timestamp> <time zone offset>\fR, where
+\fB<unix timestamp>\fR
+is the number of seconds since the UNIX epoch\&.
+\fB<time zone offset>\fR
+is a positive or negative offset from UTC\&. For example CET (which is 1 hour ahead of UTC) is
+\fB+0100\fR\&.
+.RE
+.PP
+RFC 2822
+.RS 4
+The standard email format as described by RFC 2822, for example
+\fBThu, 07 Apr 2005 22:13:13 +0200\fR\&.
+.RE
+.PP
+ISO 8601
+.RS 4
+Time and date specified by the ISO 8601 standard, for example
+\fB2005\-04\-07T22:13:13\fR\&. The parser accepts a space instead of the
+\fBT\fR
+character as well\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+In addition, the date part is accepted in the following formats:
+\fBYYYY\&.MM\&.DD\fR,
+\fBMM/DD/YYYY\fR
+and
+\fBDD\&.MM\&.YYYY\fR\&.
+.sp .5v
+.RE
+.RE
 .SH "DISCUSSION"
 .sp
 Though not required, it\(cqs a good idea to begin the commit message with a single short (less than 50 character) line summarizing the change, followed by a blank line and then a more thorough description\&. The text up to the first blank line in a commit message is treated as the commit title, and that title is used throughout Git\&. For example, \fBgit-format-patch\fR(1) turns a commit into email, and it uses the title on the Subject line and the rest of the commit in the body\&.

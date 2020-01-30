@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 01/23/2020
+.\"      Date: 01/30/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.25.0.24.gbc7a3d4dc0
+.\"    Source: Git 2.25.0.114.g5b0ca878e0
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "01/23/2020" "Git 2\&.25\&.0\&.24\&.gbc7a3d4" "Git Manual"
+.TH "GIT\-CONFIG" "1" "01/30/2020" "Git 2\&.25\&.0\&.114\&.g5b0ca8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -4583,6 +4583,70 @@ can still be used as a legacy synonym for
 is "gpgsm"\&.
 .RE
 .PP
+gpg\&.minTrustLevel
+.RS 4
+Specifies a minimum trust level for signature verification\&. If this option is unset, then signature verification for merge operations require a key with at least
+\fBmarginal\fR
+trust\&. Other operations that perform signature verification require a key with at least
+\fBundefined\fR
+trust\&. Setting this option overrides the required trust\-level for all operations\&. Supported values, in increasing order of significance:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBundefined\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBnever\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBmarginal\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBfully\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBultimate\fR
+.RE
+.RE
+.PP
 gui\&.commitMsgWidth
 .RS 4
 Defines how wide the commit message window is in the
@@ -4940,7 +5004,7 @@ If set, store cookies received during requests to the file specified by http\&.c
 .PP
 http\&.version
 .RS 4
-Use the specified HTTP protocol version when communicating with a server\&. If you want to force the default\&. The available and default version depend on libcurl\&. Actually the possible values of this option are:
+Use the specified HTTP protocol version when communicating with a server\&. If you want to force the default\&. The available and default version depend on libcurl\&. Currently the possible values of this option are:
 .sp
 .RS 4
 .ie n \{\
@@ -4969,7 +5033,7 @@ http\&.sslVersion
 .RS 4
 The SSL version to use when negotiating an SSL connection, if you want to force the default\&. The available and default version depend on whether libcurl was built against NSS or OpenSSL and the particular configuration of the crypto library in use\&. Internally this sets the
 \fICURLOPT_SSL_VERSION\fR
-option; see the libcurl documentation for more details on the format of this option and for the ssl version supported\&. Actually the possible values of this option are:
+option; see the libcurl documentation for more details on the format of this option and for the ssl version supported\&. Currently the possible values of this option are:
 .sp
 .RS 4
 .ie n \{\
@@ -5161,6 +5225,8 @@ The number of curl sessions (counted across slots) to be kept across requests\&.
 http\&.postBuffer
 .RS 4
 Maximum size in bytes of the buffer used by smart HTTP transports when POSTing data to the remote system\&. For requests larger than this buffer size, HTTP/1\&.1 and Transfer\-Encoding: chunked is used to avoid creating a massive pack file locally\&. Default is 1 MiB, which is sufficient for most requests\&.
+.sp
+Note that raising this limit is only effective for disabling chunked transfer encoding and therefore should be used only where the remote server or a proxy only supports HTTP/1\&.0 or is noncompliant with the HTTP standard\&. Raising this is not, in general, an effective solution for most push problems, but can increase memory consumption significantly since the entire buffer is allocated even for small pushes\&.
 .RE
 .PP
 http\&.lowSpeedLimit, http\&.lowSpeedTime
@@ -8010,9 +8076,17 @@ variables can be set\&. Also, all of these can be overridden by the
 \fBGIT_COMMITTER_EMAIL\fR
 and
 \fBEMAIL\fR
-environment variables\&. See
-\fBgit-commit-tree\fR(1)
-for more information\&.
+environment variables\&.
+.sp
+Note that the
+\fBname\fR
+forms of these variables conventionally refer to some form of a personal name\&. See
+\fBgit-commit\fR(1)
+and the environment variables section of
+\fBgit\fR(1)
+for more information on these settings and the
+\fBcredential\&.username\fR
+option if you\(cqre looking for authentication credentials instead\&.
 .RE
 .PP
 user\&.useConfigOnly
