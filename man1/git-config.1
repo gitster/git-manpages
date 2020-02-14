@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 02/12/2020
+.\"      Date: 02/14/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.25.0.232.gd8437c57fa
+.\"    Source: Git 2.25.0.389.gbfdd66e72f
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/12/2020" "Git 2\&.25\&.0\&.232\&.gd8437c" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/14/2020" "Git 2\&.25\&.0\&.389\&.gbfdd66" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1321,6 +1321,16 @@ submoduleAlternateErrorStrategyDie
 .RS 4
 Advice shown when a submodule\&.alternateErrorStrategy option configured to "die" causes a fatal error\&.
 .RE
+.PP
+addIgnoredFile
+.RS 4
+Advice shown if a user attempts to add an ignored file to the index\&.
+.RE
+.PP
+addEmptyPathspec
+.RS 4
+Advice shown if a user runs the add command without providing the pathspec parameter\&.
+.RE
 .RE
 .PP
 core\&.fileMode
@@ -1393,6 +1403,11 @@ core\&.fsmonitor
 .RS 4
 If set, the value of this variable is used as a command which will identify all files that may have changed since the requested date/time\&. This information is used to speed up git by avoiding unnecessary processing of files that have not changed\&. See the "fsmonitor\-watchman" section of
 \fBgithooks\fR(5)\&.
+.RE
+.PP
+core\&.fsmonitorHookVersion
+.RS 4
+Sets the version of hook that is to be used when calling fsmonitor\&. There are currently versions 1 and 2\&. When this is not set, version 2 will be tried first and if it fails then version 1 will be tried\&. Version 1 uses a timestamp as input to determine which files have changes since that time but some monitors like watchman have race conditions when used with a timestamp\&. Version 2 uses an opaque string so that the monitor can return something that can be used to determine what files have changed without race conditions\&.
 .RE
 .PP
 core\&.trustctime
@@ -6252,6 +6267,11 @@ Note that changing the compression level will not automatically recompress all e
 \fBgit-repack\fR(1)\&.
 .RE
 .PP
+pack\&.allowPackReuse
+.RS 4
+When true, and when reachability bitmaps are enabled, pack\-objects will try to send parts of the bitmapped packfile verbatim\&. This can reduce memory and CPU usage to serve fetches, but might result in sending a slightly larger pack\&. Defaults to true\&.
+.RE
+.PP
 pack\&.island
 .RS 4
 An extended regular expression configuring a set of delta islands\&. See "DELTA ISLANDS" in
@@ -6499,7 +6519,8 @@ helper)
 .PP
 protocol\&.version
 .RS 4
-Experimental\&. If set, clients will attempt to communicate with a server using the specified protocol version\&. If unset, no attempt will be made by the client to communicate using a particular protocol version, this results in protocol version 0 being used\&. Supported versions:
+If set, clients will attempt to communicate with a server using the specified protocol version\&. If the server does not support it, communication falls back to version 0\&. If unset, the default is
+\fB2\fR\&. Supported versions:
 .sp
 .RS 4
 .ie n \{\

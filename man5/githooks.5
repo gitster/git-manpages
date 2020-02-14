@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 02/12/2020
+.\"      Date: 02/14/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.25.0.232.gd8437c57fa
+.\"    Source: Git 2.25.0.389.gbfdd66e72f
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "02/12/2020" "Git 2\&.25\&.0\&.232\&.gd8437c" "Git Manual"
+.TH "GITHOOKS" "5" "02/14/2020" "Git 2\&.25\&.0\&.389\&.gbfdd66" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -305,7 +305,11 @@ The commits are guaranteed to be listed in the order that they were processed by
 This hook is invoked by \fBgit-send-email\fR(1)\&. It takes a single parameter, the name of the file that holds the e\-mail to be sent\&. Exiting with a non\-zero status causes \fBgit send\-email\fR to abort before sending any e\-mails\&.
 .SS "fsmonitor\-watchman"
 .sp
-This hook is invoked when the configuration option \fBcore\&.fsmonitor\fR is set to \fB\&.git/hooks/fsmonitor\-watchman\fR\&. It takes two arguments, a version (currently 1) and the time in elapsed nanoseconds since midnight, January 1, 1970\&.
+This hook is invoked when the configuration option \fBcore\&.fsmonitor\fR is set to \fB\&.git/hooks/fsmonitor\-watchman\fR or \fB\&.git/hooks/fsmonitor\-watchmanv2\fR depending on the version of the hook to use\&.
+.sp
+Version 1 takes two arguments, a version (1) and the time in elapsed nanoseconds since midnight, January 1, 1970\&.
+.sp
+Version 2 takes two arguments, a version (2) and a token that is used for identifying changes since the token\&. For watchman this would be a clock id\&. This version must output to stdout the new token followed by a NUL before the list of files\&.
 .sp
 The hook should output to stdout the list of all files in the working directory that may have changed since the requested time\&. The logic should be inclusive so that it does not miss any potential changes\&. The paths should be relative to the root of the working directory and be separated by a single NUL\&.
 .sp

@@ -2,12 +2,12 @@
 .\"     Title: git-sparse-checkout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 02/12/2020
+.\"      Date: 02/14/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.25.0.232.gd8437c57fa
+.\"    Source: Git 2.25.0.389.gbfdd66e72f
 .\"  Language: English
 .\"
-.TH "GIT\-SPARSE\-CHECKOU" "1" "02/12/2020" "Git 2\&.25\&.0\&.232\&.gd8437c" "Git Manual"
+.TH "GIT\-SPARSE\-CHECKOU" "1" "02/14/2020" "Git 2\&.25\&.0\&.389\&.gbfdd66" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -77,6 +77,11 @@ subcommand\&. Update the working directory to match the new patterns\&. Enable t
 When the
 \fB\-\-stdin\fR
 option is provided, the patterns are read from standard in as a newline\-delimited list instead of from the arguments\&.
+.sp
+When
+\fBcore\&.sparseCheckoutCone\fR
+is enabled, the input list is considered a list of directories instead of sparse\-checkout patterns\&. The command writes patterns to the sparse\-checkout file to include all files contained in those directories (recursively) as well as files that are siblings of ancestor directories\&. The input format matches the output of
+\fBgit ls\-tree \-\-name\-only\fR\&. This includes interpreting pathnames that begin with a double quote (") as C\-style quoted strings\&.
 .RE
 .PP
 \fIdisable\fR
@@ -115,7 +120,7 @@ While \fB$GIT_DIR/info/sparse\-checkout\fR is usually used to specify what files
 .sp
 .SH "CONE PATTERN SET"
 .sp
-The full pattern set allows for arbitrary pattern matches and complicated inclusion/exclusion rules\&. These can result in O(N*M) pattern matches when updating the index, where N is the number of patterns and M is the number of paths in the index\&. To combat this performance issue, a more restricted pattern set is allowed when \fBcore\&.spareCheckoutCone\fR is enabled\&.
+The full pattern set allows for arbitrary pattern matches and complicated inclusion/exclusion rules\&. These can result in O(N*M) pattern matches when updating the index, where N is the number of patterns and M is the number of paths in the index\&. To combat this performance issue, a more restricted pattern set is allowed when \fBcore\&.sparseCheckoutCone\fR is enabled\&.
 .sp
 The accepted patterns in the cone pattern set are:
 .sp
@@ -159,7 +164,9 @@ By default, when running \fBgit sparse\-checkout init\fR, the root directory is 
 .\}
 .sp
 .sp
-This says "include everything in root, but nothing two levels below root\&." If we then add the folder \fBA/B/C\fR as a recursive pattern, the folders \fBA\fR and \fBA/B\fR are added as parent patterns\&. The resulting sparse\-checkout file is now
+This says "include everything in root, but nothing two levels below root\&."
+.sp
+When in cone mode, the \fBgit sparse\-checkout set\fR subcommand takes a list of directories instead of a list of sparse\-checkout patterns\&. In this mode, the command \fBgit sparse\-checkout set A/B/C\fR sets the directory \fBA/B/C\fR as a recursive pattern, the directories \fBA\fR and \fBA/B\fR are added as parent patterns\&. The resulting sparse\-checkout file is now
 .sp
 .if n \{\
 .RS 4
