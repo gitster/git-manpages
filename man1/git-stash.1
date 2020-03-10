@@ -2,12 +2,12 @@
 .\"     Title: git-stash
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/05/2020
+.\"      Date: 03/09/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.0.rc0
+.\"    Source: Git 2.26.0.rc1
 .\"  Language: English
 .\"
-.TH "GIT\-STASH" "1" "03/05/2020" "Git 2\&.26\&.0\&.rc0" "Git Manual"
+.TH "GIT\-STASH" "1" "03/09/2020" "Git 2\&.26\&.0\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,6 +39,7 @@ git-stash \- Stash the changes in a dirty working directory away
 \fIgit stash\fR branch <branchname> [<stash>]
 \fIgit stash\fR [push [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-q|\-\-quiet]
              [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-m|\-\-message <message>]
+             [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]]
              [\-\-] [<pathspec>\&...]]
 \fIgit stash\fR clear
 \fIgit stash\fR create [<message>]
@@ -52,9 +53,9 @@ Use \fBgit stash\fR when you want to record the current state of the working dir
 The modifications stashed away by this command can be listed with \fBgit stash list\fR, inspected with \fBgit stash show\fR, and restored (potentially on top of a different commit) with \fBgit stash apply\fR\&. Calling \fBgit stash\fR without any arguments is equivalent to \fBgit stash push\fR\&. A stash is by default listed as "WIP on \fIbranchname\fR \&...", but you can give a more descriptive message on the command line when you create one\&.
 .sp
 The latest stash you created is stored in \fBrefs/stash\fR; older stashes are found in the reflog of this reference and can be named using the usual reflog syntax (e\&.g\&. \fBstash@{0}\fR is the most recently created stash, \fBstash@{1}\fR is the one before it, \fBstash@{2\&.hours\&.ago}\fR is also possible)\&. Stashes may also be referenced by specifying just the stash index (e\&.g\&. the integer \fBn\fR is equivalent to \fBstash@{n}\fR)\&.
-.SH "OPTIONS"
+.SH "COMMANDS"
 .PP
-push [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [\-m|\-\-message <message>] [\-\-] [<pathspec>\&...]
+push [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [\-m|\-\-message <message>] [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]] [\-\-] [<pathspec>\&...]
 .RS 4
 Save your local modifications to a new
 \fIstash entry\fR
@@ -64,43 +65,15 @@ For quickly making a snapshot, you can omit "push"\&. In this mode, non\-option 
 \fBstash \-p\fR
 which acts as alias for
 \fBstash push \-p\fR
-and pathspecs, which are allowed after a double hyphen
+and pathspec elements, which are allowed after a double hyphen
 \fB\-\-\fR
 for disambiguation\&.
-.sp
-When pathspec is given to
-\fIgit stash push\fR, the new stash entry records the modified states only for the files that match the pathspec\&. The index entries and working tree files are then rolled back to the state in HEAD only for these files, too, leaving files that do not match the pathspec intact\&.
-.sp
-If the
-\fB\-\-keep\-index\fR
-option is used, all changes already added to the index are left intact\&.
-.sp
-If the
-\fB\-\-include\-untracked\fR
-option is used, all untracked files are also stashed and then cleaned up with
-\fBgit clean\fR, leaving the working directory in a very clean state\&. If the
-\fB\-\-all\fR
-option is used instead then the ignored files are stashed and cleaned in addition to the untracked files\&.
-.sp
-With
-\fB\-\-patch\fR, you can interactively select hunks from the diff between HEAD and the working tree to be stashed\&. The stash entry is constructed such that its index state is the same as the index state of your repository, and its worktree contains only the changes you selected interactively\&. The selected changes are then rolled back from your worktree\&. See the \(lqInteractive Mode\(rq section of
-\fBgit-add\fR(1)
-to learn how to operate the
-\fB\-\-patch\fR
-mode\&.
-.sp
-The
-\fB\-\-patch\fR
-option implies
-\fB\-\-keep\-index\fR\&. You can use
-\fB\-\-no\-keep\-index\fR
-to override this\&.
 .RE
 .PP
 save [\-p|\-\-patch] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [<message>]
 .RS 4
 This option is deprecated in favour of
-\fIgit stash push\fR\&. It differs from "stash push" in that it cannot take pathspecs\&. Instead, all non\-option arguments are concatenated to form the stash message\&.
+\fIgit stash push\fR\&. It differs from "stash push" in that it cannot take pathspec\&. Instead, all non\-option arguments are concatenated to form the stash message\&.
 .RE
 .PP
 list [<options>]
@@ -132,9 +105,7 @@ command to control what is shown and how\&. See
 .PP
 show [<options>] [<stash>]
 .RS 4
-Show the changes recorded in the stash entry as a diff between the stashed contents and the commit back when the stash entry was first created\&. When no
-\fB<stash>\fR
-is given, it shows the latest one\&. By default, the command shows the diffstat, but it will accept any format known to
+Show the changes recorded in the stash entry as a diff between the stashed contents and the commit back when the stash entry was first created\&. By default, the command shows the diffstat, but it will accept any format known to
 \fIgit diff\fR
 (e\&.g\&.,
 \fBgit stash show \-p stash@{1}\fR
@@ -149,19 +120,6 @@ Remove a single stashed state from the stash list and apply it on top of the cur
 Applying the state can fail with conflicts; in this case, it is not removed from the stash list\&. You need to resolve the conflicts by hand and call
 \fBgit stash drop\fR
 manually afterwards\&.
-.sp
-If the
-\fB\-\-index\fR
-option is used, then tries to reinstate not only the working tree\(cqs changes, but also the index\(cqs ones\&. However, this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally)\&.
-.sp
-When no
-\fB<stash>\fR
-is given,
-\fBstash@{0}\fR
-is assumed, otherwise
-\fB<stash>\fR
-must be a reference of the form
-\fBstash@{<revision>}\fR\&.
 .RE
 .PP
 apply [\-\-index] [\-q|\-\-quiet] [<stash>]
@@ -188,9 +146,7 @@ to the new working tree and index\&. If that succeeds, and
 \fB<stash>\fR
 is a reference of the form
 \fBstash@{<revision>}\fR, it then drops the
-\fB<stash>\fR\&. When no
-\fB<stash>\fR
-is given, applies the latest one\&.
+\fB<stash>\fR\&.
 .sp
 This is useful if the branch on which you ran
 \fBgit stash push\fR
@@ -210,13 +166,7 @@ below for a possible strategy)\&.
 .PP
 drop [\-q|\-\-quiet] [<stash>]
 .RS 4
-Remove a single stash entry from the list of stash entries\&. When no
-\fB<stash>\fR
-is given, it removes the latest one\&. i\&.e\&.
-\fBstash@{0}\fR, otherwise
-\fB<stash>\fR
-must be a valid stash log reference of the form
-\fBstash@{<revision>}\fR\&.
+Remove a single stash entry from the list of stash entries\&.
 .RE
 .PP
 create
@@ -229,6 +179,160 @@ store
 Store a given stash created via
 \fIgit stash create\fR
 (which is a dangling merge commit) in the stash ref, updating the stash reflog\&. This is intended to be useful for scripts\&. It is probably not the command you want to use; see "push" above\&.
+.RE
+.SH "OPTIONS"
+.PP
+\-a, \-\-all
+.RS 4
+This option is only valid for
+\fBpush\fR
+and
+\fBsave\fR
+commands\&.
+.sp
+All ignored and untracked files are also stashed and then cleaned up with
+\fBgit clean\fR\&.
+.RE
+.PP
+\-u, \-\-include\-untracked
+.RS 4
+This option is only valid for
+\fBpush\fR
+and
+\fBsave\fR
+commands\&.
+.sp
+All untracked files are also stashed and then cleaned up with
+\fBgit clean\fR\&.
+.RE
+.PP
+\-\-index
+.RS 4
+This option is only valid for
+\fBpop\fR
+and
+\fBapply\fR
+commands\&.
+.sp
+Tries to reinstate not only the working tree\(cqs changes, but also the index\(cqs ones\&. However, this can fail, when you have conflicts (which are stored in the index, where you therefore can no longer apply the changes as they were originally)\&.
+.RE
+.PP
+\-k, \-\-keep\-index, \-\-no\-keep\-index
+.RS 4
+This option is only valid for
+\fBpush\fR
+and
+\fBsave\fR
+commands\&.
+.sp
+All changes already added to the index are left intact\&.
+.RE
+.PP
+\-p, \-\-patch
+.RS 4
+This option is only valid for
+\fBpush\fR
+and
+\fBsave\fR
+commands\&.
+.sp
+Interactively select hunks from the diff between HEAD and the working tree to be stashed\&. The stash entry is constructed such that its index state is the same as the index state of your repository, and its worktree contains only the changes you selected interactively\&. The selected changes are then rolled back from your worktree\&. See the \(lqInteractive Mode\(rq section of
+\fBgit-add\fR(1)
+to learn how to operate the
+\fB\-\-patch\fR
+mode\&.
+.sp
+The
+\fB\-\-patch\fR
+option implies
+\fB\-\-keep\-index\fR\&. You can use
+\fB\-\-no\-keep\-index\fR
+to override this\&.
+.RE
+.PP
+\-\-pathspec\-from\-file=<file>
+.RS 4
+This option is only valid for
+\fBpush\fR
+command\&.
+.sp
+Pathspec is passed in
+\fB<file>\fR
+instead of commandline args\&. If
+\fB<file>\fR
+is exactly
+\fB\-\fR
+then standard input is used\&. Pathspec elements are separated by LF or CR/LF\&. Pathspec elements can be quoted as explained for the configuration variable
+\fBcore\&.quotePath\fR
+(see
+\fBgit-config\fR(1))\&. See also
+\fB\-\-pathspec\-file\-nul\fR
+and global
+\fB\-\-literal\-pathspecs\fR\&.
+.RE
+.PP
+\-\-pathspec\-file\-nul
+.RS 4
+This option is only valid for
+\fBpush\fR
+command\&.
+.sp
+Only meaningful with
+\fB\-\-pathspec\-from\-file\fR\&. Pathspec elements are separated with NUL character and all other characters are taken literally (including newlines and quotes)\&.
+.RE
+.PP
+\-q, \-\-quiet
+.RS 4
+This option is only valid for
+\fBapply\fR,
+\fBdrop\fR,
+\fBpop\fR,
+\fBpush\fR,
+\fBsave\fR,
+\fBstore\fR
+commands\&.
+.sp
+Quiet, suppress feedback messages\&.
+.RE
+.PP
+\-\-
+.RS 4
+This option is only valid for
+\fBpush\fR
+command\&.
+.sp
+Separates pathspec from options for disambiguation purposes\&.
+.RE
+.PP
+<pathspec>\&...
+.RS 4
+This option is only valid for
+\fBpush\fR
+command\&.
+.sp
+The new stash entry records the modified states only for the files that match the pathspec\&. The index entries and working tree files are then rolled back to the state in HEAD only for these files, too, leaving files that do not match the pathspec intact\&.
+.sp
+For more details, see the
+\fIpathspec\fR
+entry in
+\fBgitglossary\fR(7)\&.
+.RE
+.PP
+<stash>
+.RS 4
+This option is only valid for
+\fBapply\fR,
+\fBbranch\fR,
+\fBdrop\fR,
+\fBpop\fR,
+\fBshow\fR
+commands\&.
+.sp
+A reference of the form
+\fBstash@{<revision>}\fR\&. When no
+\fB<stash>\fR
+is given, the latest stash is assumed (that is,
+\fBstash@{0}\fR)\&.
 .RE
 .SH "DISCUSSION"
 .sp
