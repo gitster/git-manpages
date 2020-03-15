@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gitremote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
-.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/15/2020
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 01/17/2018
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.0.rc1.11.g30e9940356
+.\"    Source: Git 2.16.0
 .\"  Language: English
 .\"
-.TH "GITREMOTE\-HELPERS" "7" "03/15/2020" "Git 2\&.26\&.0\&.rc1\&.11\&.g3" "Git Manual"
+.TH "GITREMOTE\-HELPERS" "1" "01/17/2018" "Git 2\&.16\&.0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -81,14 +81,6 @@ Supported commands:
 \fIconnect\fR\&.
 .RE
 .PP
-\fIstateless\-connect\fR
-.RS 4
-Experimental; for internal use only\&. Can attempt to connect to a remote server for communication using git\(cqs wire\-protocol version 2\&. See the documentation for the stateless\-connect command for more information\&.
-.sp
-Supported commands:
-\fIstateless\-connect\fR\&.
-.RE
-.PP
 \fIpush\fR
 .RS 4
 Can discover remote refs and push local commits and the history leading up to them to new or existing remote refs\&.
@@ -135,14 +127,6 @@ Can try to connect to
 .sp
 Supported commands:
 \fIconnect\fR\&.
-.RE
-.PP
-\fIstateless\-connect\fR
-.RS 4
-Experimental; for internal use only\&. Can attempt to connect to a remote server for communication using git\(cqs wire\-protocol version 2\&. See the documentation for the stateless\-connect command for more information\&.
-.sp
-Supported commands:
-\fIstateless\-connect\fR\&.
 .RE
 .PP
 \fIfetch\fR
@@ -313,12 +297,7 @@ with a sha1 may be fetched this way\&.
 .sp
 Optionally may output a
 \fIlock <file>\fR
-line indicating the full path of a file under
-\fB$GIT_DIR/objects/pack\fR
-which is keeping a pack until refs can be suitably updated\&. The path must end with
-\fB\&.keep\fR\&. This is a mechanism to name a <pack,idx,keep> tuple by giving only the keep component\&. The kept pack will not be deleted by a concurrent repack, even though its objects may not be referenced until the fetch completes\&. The
-\fB\&.keep\fR
-file will be deleted at the conclusion of the fetch\&.
+line indicating a file under GIT_DIR/objects/pack which is keeping a pack until refs can be suitably updated\&.
 .sp
 If option
 \fIcheck\-connectivity\fR
@@ -425,15 +404,6 @@ as service) on remote side\&. Valid replies to this command are empty line (conn
 .sp
 Supported if the helper has the "connect" capability\&.
 .RE
-.PP
-\fIstateless\-connect\fR <service>
-.RS 4
-Experimental; for internal use only\&. Connects to the given remote service for communication using git\(cqs wire\-protocol version 2\&. Valid replies to this command are empty line (connection established),
-\fIfallback\fR
-(no smart transport support, fall back to dumb transports) and just exiting with error message printed (can\(cqt connect, don\(cqt bother trying to fall back)\&. After line feed terminating the positive (empty) response, the output of the service starts\&. Messages (both request and response) must consist of zero or more PKT\-LINEs, terminating in a flush packet\&. The client must not expect the server to store any state in between request\-response pairs\&. After the connection ends, the remote helper exits\&.
-.sp
-Supported if the helper has the "stateless\-connect" capability\&.
-.RE
 .sp
 If a fatal error occurs, the program writes the error message to stderr and exits\&. The caller should expect that a suitable error message has been printed if the child closes the connection without completing a valid response for the current command\&.
 .sp
@@ -522,21 +492,6 @@ GPG sign pushes\&.
 .RS 4
 Transmit <string> as a push option\&. As the push option must not contain LF or NUL characters, the string is not encoded\&.
 .RE
-.PP
-\fIoption from\-promisor\fR {\fItrue\fR|\fIfalse\fR}
-.RS 4
-Indicate that these objects are being fetched from a promisor\&.
-.RE
-.PP
-\fIoption no\-dependents\fR {\fItrue\fR|\fIfalse\fR}
-.RS 4
-Indicate that only the objects wanted need to be fetched, not their dependents\&.
-.RE
-.PP
-\fIoption atomic\fR {\fItrue\fR|\fIfalse\fR}
-.RS 4
-When pushing, request the remote server to update refs in a single atomic transaction\&. If successful, all refs will be updated, or none will\&. If the remote side does not support this capability, the push will fail\&.
-.RE
 .SH "SEE ALSO"
 .sp
 \fBgit-remote\fR(1)
@@ -544,6 +499,8 @@ When pushing, request the remote server to update refs in a single atomic transa
 \fBgit-remote-ext\fR(1)
 .sp
 \fBgit-remote-fd\fR(1)
+.sp
+\fBgit-remote-testgit\fR(1)
 .sp
 \fBgit-fast-import\fR(1)
 .SH "GIT"
