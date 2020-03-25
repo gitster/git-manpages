@@ -2,12 +2,12 @@
 .\"     Title: git-pull
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 03/22/2020
+.\"      Date: 03/25/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.0
+.\"    Source: Git 2.26.0.51.ga7d14a4428
 .\"  Language: English
 .\"
-.TH "GIT\-PULL" "1" "03/22/2020" "Git 2\&.26\&.0" "Git Manual"
+.TH "GIT\-PULL" "1" "03/25/2020" "Git 2\&.26\&.0\&.51\&.ga7d14a4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -392,6 +392,11 @@ configuration variable documented in
 \fBgit-config\fR(1)\&.
 .RE
 .PP
+\-\-dry\-run
+.RS 4
+Show what would be done, without making any changes\&.
+.RE
+.PP
 \-f, \-\-force
 .RS 4
 When
@@ -410,9 +415,63 @@ documentation\&. This option overrides that check\&.
 Keep downloaded pack\&.
 .RE
 .PP
+\-p, \-\-prune
+.RS 4
+Before fetching, remove any remote\-tracking references that no longer exist on the remote\&. Tags are not subject to pruning if they are fetched only because of the default tag auto\-following or due to a \-\-tags option\&. However, if tags are fetched due to an explicit refspec (either on the command line or in the remote configuration, for example if the remote was cloned with the \-\-mirror option), then they are also subject to pruning\&. Supplying
+\fB\-\-prune\-tags\fR
+is a shorthand for providing the tag refspec\&.
+.RE
+.PP
 \-\-no\-tags
 .RS 4
 By default, tags that point at objects that are downloaded from the remote repository are fetched and stored locally\&. This option disables this automatic tag following\&. The default behavior for a remote may be specified with the remote\&.<name>\&.tagOpt setting\&. See
+\fBgit-config\fR(1)\&.
+.RE
+.PP
+\-\-refmap=<refspec>
+.RS 4
+When fetching refs listed on the command line, use the specified refspec (can be given more than once) to map the refs to remote\-tracking branches, instead of the values of
+\fBremote\&.*\&.fetch\fR
+configuration variables for the remote repository\&. Providing an empty
+\fB<refspec>\fR
+to the
+\fB\-\-refmap\fR
+option causes Git to ignore the configured refspecs and rely entirely on the refspecs supplied as command\-line arguments\&. See section on "Configured Remote\-tracking Branches" for details\&.
+.RE
+.PP
+\-t, \-\-tags
+.RS 4
+Fetch all tags from the remote (i\&.e\&., fetch remote tags
+\fBrefs/tags/*\fR
+into local tags with the same name), in addition to whatever else would otherwise be fetched\&. Using this option alone does not subject tags to pruning, even if \-\-prune is used (though tags may be pruned anyway if they are also the destination of an explicit refspec; see
+\fB\-\-prune\fR)\&.
+.RE
+.PP
+\-j, \-\-jobs=<n>
+.RS 4
+Number of parallel children to be used for all forms of fetching\&.
+.sp
+If the
+\fB\-\-multiple\fR
+option was specified, the different remotes will be fetched in parallel\&. If multiple submodules are fetched, they will be fetched in parallel\&. To control them independently, use the config settings
+\fBfetch\&.parallel\fR
+and
+\fBsubmodule\&.fetchJobs\fR
+(see
+\fBgit-config\fR(1))\&.
+.sp
+Typically, parallel recursive and multi\-remote fetches will be faster\&. By default fetches are performed sequentially, not in parallel\&.
+.RE
+.PP
+\-\-set\-upstream
+.RS 4
+If the remote is fetched successfully, pull and add upstream (tracking) reference, used by argument\-less
+\fBgit-pull\fR(1)
+and other commands\&. For more information, see
+\fBbranch\&.<name>\&.merge\fR
+and
+\fBbranch\&.<name>\&.remote\fR
+in
 \fBgit-config\fR(1)\&.
 .RE
 .PP
