@@ -2,12 +2,12 @@
 .\"     Title: git-pull
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/20/2020
+.\"      Date: 04/22/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.2.108.g048abe1751
+.\"    Source: Git 2.26.2.266.ge870325ee8
 .\"  Language: English
 .\"
-.TH "GIT\-PULL" "1" "04/20/2020" "Git 2\&.26\&.2\&.108\&.g048abe" "Git Manual"
+.TH "GIT\-PULL" "1" "04/22/2020" "Git 2\&.26\&.2\&.266\&.ge87032" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -162,11 +162,16 @@ With
 \fB\-\-ff\-only\fR, resolve the merge as a fast\-forward when possible\&. When not possible, refuse to merge and exit with a non\-zero status\&.
 .RE
 .PP
-\-S[<keyid>], \-\-gpg\-sign[=<keyid>]
+\-S[<keyid>], \-\-gpg\-sign[=<keyid>], \-\-no\-gpg\-sign
 .RS 4
 GPG\-sign the resulting merge commit\&. The
 \fBkeyid\fR
 argument is optional and defaults to the committer identity; if specified, it must be stuck to the option without a space\&.
+\fB\-\-no\-gpg\-sign\fR
+is useful to countermand both
+\fBcommit\&.gpgSign\fR
+configuration variable, and earlier
+\fB\-\-gpg\-sign\fR\&.
 .RE
 .PP
 \-\-log[=<n>], \-\-no\-log
@@ -475,16 +480,6 @@ in
 \fBgit-config\fR(1)\&.
 .RE
 .PP
-\-u, \-\-update\-head\-ok
-.RS 4
-By default
-\fIgit fetch\fR
-refuses to update the head which corresponds to the current branch\&. This flag disables the check\&. This is purely for the internal use for
-\fIgit pull\fR
-to communicate with
-\fIgit fetch\fR, and unless you are implementing your own Porcelain you are not supposed to use it\&.
-.RE
-.PP
 \-\-upload\-pack <upload\-pack>
 .RS 4
 When given, and the repository to fetch from is handled by
@@ -542,7 +537,7 @@ below)\&.
 .RS 4
 Specifies which refs to fetch and which local refs to update\&. When no <refspec>s appear on the command line, the refs to fetch are read from
 \fBremote\&.<repository>\&.fetch\fR
-variables instead (see
+variables instead (see the section "CONFIGURED REMOTE\-TRACKING BRANCHES" in
 \fBgit-fetch\fR(1))\&.
 .sp
 The format of a <refspec> parameter is an optional plus
@@ -1268,7 +1263,8 @@ $ git pull origin next
 .sp
 This leaves a copy of
 \fBnext\fR
-temporarily in FETCH_HEAD, but does not update any remote\-tracking branches\&. Using remote\-tracking branches, the same can be done by invoking fetch and merge:
+temporarily in FETCH_HEAD, and updates the remote\-tracking branch
+\fBorigin/next\fR\&. The same can be done by invoking fetch and merge:
 .sp
 .if n \{\
 .RS 4

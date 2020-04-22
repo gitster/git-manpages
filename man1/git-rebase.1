@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/20/2020
+.\"      Date: 04/22/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.2.108.g048abe1751
+.\"    Source: Git 2.26.2.266.ge870325ee8
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "04/20/2020" "Git 2\&.26\&.2\&.108\&.g048abe" "Git Manual"
+.TH "GIT\-REBASE" "1" "04/22/2020" "Git 2\&.26\&.2\&.266\&.ge87032" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -456,17 +456,38 @@ Abort the rebase operation but HEAD is not reset back to the original branch\&. 
 .RS 4
 How to handle commits that are not empty to start and are not clean cherry\-picks of any upstream commit, but which become empty after rebasing (because they contain a subset of already upstream changes)\&. With drop (the default), commits that become empty are dropped\&. With keep, such commits are kept\&. With ask (implied by \-\-interactive), the rebase will halt when an empty commit is applied allowing you to choose whether to drop it, edit files more, or just commit the empty changes\&. Other options, like \-\-exec, will use the default of drop unless \-i/\-\-interactive is explicitly specified\&.
 .sp
-Note that commits which start empty are kept, and commits which are clean cherry\-picks (as determined by
-\fBgit log \-\-cherry\-mark \&.\&.\&.\fR) are always dropped\&.
+Note that commits which start empty are kept (unless \-\-no\-keep\-empty is specified), and commits which are clean cherry\-picks (as determined by
+\fBgit log \-\-cherry\-mark \&.\&.\&.\fR) are detected and dropped as a preliminary step (unless \-\-reapply\-cherry\-picks is passed)\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
 .PP
-\-\-keep\-empty
+\-\-no\-keep\-empty, \-\-keep\-empty
 .RS 4
-No\-op\&. Rebasing commits that started empty (had no change relative to their parent) used to fail and this option would override that behavior, allowing commits with empty changes to be rebased\&. Now commits with no changes do not cause rebasing to halt\&.
+Do not keep commits that start empty before the rebase (i\&.e\&. that do not change anything from its parent) in the result\&. The default is to keep commits which start empty, since creating such commits requires passing the \-\-allow\-empty override flag to
+\fBgit commit\fR, signifying that a user is very intentionally creating such a commit and thus wants to keep it\&.
 .sp
-See also BEHAVIORAL DIFFERENCES and INCOMPATIBLE OPTIONS below\&.
+Usage of this flag will probably be rare, since you can get rid of commits that start empty by just firing up an interactive rebase and removing the lines corresponding to the commits you don\(cqt want\&. This flag exists as a convenient shortcut, such as for cases where external tools generate many empty commits and you want them all removed\&.
+.sp
+For commits which do not start empty but become empty after rebasing, see the \-\-empty flag\&.
+.sp
+See also INCOMPATIBLE OPTIONS below\&.
+.RE
+.PP
+\-\-reapply\-cherry\-picks, \-\-no\-reapply\-cherry\-picks
+.RS 4
+Reapply all clean cherry\-picks of any upstream commit instead of preemptively dropping them\&. (If these commits then become empty after rebasing, because they contain a subset of already upstream changes, the behavior towards them is controlled by the
+\fB\-\-empty\fR
+flag\&.)
+.sp
+By default (or if
+\fB\-\-no\-reapply\-cherry\-picks\fR
+is given), these commits will be automatically dropped\&. Because this necessitates reading all upstream commits, this can be expensive in repos with a large number of upstream commits that need to be read\&.
+.sp
+\fB\-\-reapply\-cherry\-picks\fR
+allows rebase to forgo reading all upstream commits, potentially improving performance\&.
+.sp
+See also INCOMPATIBLE OPTIONS below\&.
 .RE
 .PP
 \-\-allow\-empty\-message
@@ -543,11 +564,16 @@ See also INCOMPATIBLE OPTIONS below\&.
 Allow the rerere mechanism to update the index with the result of auto\-conflict resolution if possible\&.
 .RE
 .PP
-\-S[<keyid>], \-\-gpg\-sign[=<keyid>]
+\-S[<keyid>], \-\-gpg\-sign[=<keyid>], \-\-no\-gpg\-sign
 .RS 4
 GPG\-sign commits\&. The
 \fBkeyid\fR
 argument is optional and defaults to the committer identity; if specified, it must be stuck to the option without a space\&.
+\fB\-\-no\-gpg\-sign\fR
+is useful to countermand both
+\fBcommit\&.gpgSign\fR
+configuration variable, and earlier
+\fB\-\-gpg\-sign\fR\&.
 .RE
 .PP
 \-q, \-\-quiet
@@ -978,7 +1004,7 @@ are incompatible with the following options:
 .sp -1
 .IP \(bu 2.3
 .\}
-\-\-keep\-empty
+\-\-no\-keep\-empty
 .RE
 .sp
 .RS 4
@@ -990,6 +1016,17 @@ are incompatible with the following options:
 .IP \(bu 2.3
 .\}
 \-\-empty=
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\-\-reapply\-cherry\-picks
 .RE
 .sp
 .RS 4
@@ -1083,12 +1120,14 @@ In addition, the following pairs of options are incompatible:
 .RE
 .SH "BEHAVIORAL DIFFERENCES"
 .sp
-git rebase has two primary backends: apply and merge\&. (The apply backend used to known as the \fIam\fR backend, but the name led to confusion as it looks like a verb instead of a noun\&. Also, the merge backend used to be known as the interactive backend, but it is now used for non\-interactive cases as well\&. Both were renamed based on lower\-level functionality that underpinned each\&.) There are some subtle differences in how these two backends behave:
+git rebase has two primary backends: apply and merge\&. (The apply backend used to be known as the \fIam\fR backend, but the name led to confusion as it looks like a verb instead of a noun\&. Also, the merge backend used to be known as the interactive backend, but it is now used for non\-interactive cases as well\&. Both were renamed based on lower\-level functionality that underpinned each\&.) There are some subtle differences in how these two backends behave:
 .SS "Empty commits"
 .sp
 The apply backend unfortunately drops intentionally empty commits, i\&.e\&. commits that started empty, though these are rare in practice\&. It also drops commits that become empty and has no option for controlling this behavior\&.
 .sp
-The merge backend keeps intentionally empty commits\&. Similar to the apply backend, by default the merge backend drops commits that become empty unless \-i/\-\-interactive is specified (in which case it stops and asks the user what to do)\&. The merge backend also has an \-\-empty={drop,keep,ask} option for changing the behavior of handling commits that become empty\&.
+The merge backend keeps intentionally empty commits by default (though with \-i they are marked as empty in the todo list editor, or they can be dropped automatically with \-\-no\-keep\-empty)\&.
+.sp
+Similar to the apply backend, by default the merge backend drops commits that become empty unless \-i/\-\-interactive is specified (in which case it stops and asks the user what to do)\&. The merge backend also has an \-\-empty={drop,keep,ask} option for changing the behavior of handling commits that become empty\&.
 .SS "Directory rename detection"
 .sp
 Due to the lack of accurate tree information (arising from constructing fake ancestors with the limited information available in patches), directory rename detection is disabled in the apply backend\&. Disabled directory rename detection means that if one side of history renames a directory and the other adds new files to the old directory, then the new files will be left behind in the old directory without any warning at the time of rebasing that you may want to move these files into the new directory\&.
@@ -1754,7 +1793,7 @@ to omit, edit, squash, or fixup commits; or if the upstream used one of
 .sp
 Only works if the changes (patch IDs based on the diff contents) on \fIsubsystem\fR are literally the same before and after the rebase \fIsubsystem\fR did\&.
 .sp
-In that case, the fix is easy because \fIgit rebase\fR knows to skip changes that are already present in the new upstream\&. So if you say (assuming you\(cqre on \fItopic\fR)
+In that case, the fix is easy because \fIgit rebase\fR knows to skip changes that are already present in the new upstream (unless \fB\-\-reapply\-cherry\-picks\fR is given)\&. So if you say (assuming you\(cqre on \fItopic\fR)
 .sp
 .if n \{\
 .RS 4
