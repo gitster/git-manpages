@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/22/2020
+.\"      Date: 04/29/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.2.266.ge870325ee8
+.\"    Source: Git 2.26.2.357.g86ab15cb15
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "04/22/2020" "Git 2\&.26\&.2\&.266\&.ge87032" "Git Manual"
+.TH "GIT\-CONFIG" "1" "04/29/2020" "Git 2\&.26\&.2\&.357\&.g86ab15" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3843,10 +3843,15 @@ enables the untracked cache\&. This setting assumes that mtime is working on you
 .PP
 fetch\&.recurseSubmodules
 .RS 4
-This option can be either set to a boolean value or to
-\fIon\-demand\fR\&. Setting it to a boolean changes the behavior of fetch and pull to unconditionally recurse into submodules when set to true or to not recurse at all when set to false\&. When set to
-\fIon\-demand\fR
-(the default value), fetch and pull will only recurse into a populated submodule when its superproject retrieves a commit that updates the submodule\(cqs reference\&.
+This option controls whether
+\fBgit fetch\fR
+(and the underlying fetch in
+\fBgit pull\fR) will recursively fetch into populated submodules\&. This option can be set either to a boolean value or to
+\fIon\-demand\fR\&. Setting it to a boolean changes the behavior of fetch and pull to recurse unconditionally into submodules when set to true or to not recurse at all when set to false\&. When set to
+\fIon\-demand\fR, fetch and pull will only recurse into a populated submodule when its superproject retrieves a commit that updates the submodule\(cqs reference\&. Defaults to
+\fIon\-demand\fR, or to the value of
+\fIsubmodule\&.recurse\fR
+if set\&.
 .RE
 .PP
 fetch\&.fsckObjects
@@ -5610,6 +5615,15 @@ option of the
 \fBgit log\fR\&.
 .RE
 .PP
+log\&.excludeDecoration
+.RS 4
+Exclude the specified patterns from the log decorations\&. This is similar to the
+\fB\-\-decorate\-refs\-exclude\fR
+command\-line option, but the config option can be overridden by the
+\fB\-\-decorate\-refs\fR
+option\&.
+.RE
+.PP
 log\&.follow
 .RS 4
 If
@@ -6543,7 +6557,7 @@ helper)
 protocol\&.version
 .RS 4
 If set, clients will attempt to communicate with a server using the specified protocol version\&. If the server does not support it, communication falls back to version 0\&. If unset, the default is
-\fB2\fR\&. Supported versions:
+\fB0\fR\&. Supported versions:
 .sp
 .RS 4
 .ie n \{\
@@ -6820,7 +6834,14 @@ then Git will verify that all submodule commits that changed in the revisions to
 then all submodules that changed in the revisions to be pushed will be pushed\&. If on\-demand was not able to push all necessary revisions it will also be aborted and exit with non\-zero status\&. If the value is
 \fIno\fR
 then default behavior of ignoring submodules when pushing is retained\&. You may override this configuration at time of push by specifying
-\fI\-\-recurse\-submodules=check|on\-demand|no\fR\&.
+\fI\-\-recurse\-submodules=check|on\-demand|no\fR\&. If not set,
+\fIno\fR
+is used by default, unless
+\fIsubmodule\&.recurse\fR
+is set (in which case a
+\fItrue\fR
+value means
+\fIon\-demand\fR)\&.
 .RE
 .PP
 rebase\&.useBuiltin
@@ -7684,8 +7705,29 @@ submodule\&.recurse
 .RS 4
 Specifies if commands recurse into submodules by default\&. This applies to all commands that have a
 \fB\-\-recurse\-submodules\fR
-option, except
-\fBclone\fR\&. Defaults to false\&.
+option (\fBcheckout\fR,
+\fBfetch\fR,
+\fBgrep\fR,
+\fBpull\fR,
+\fBpush\fR,
+\fBread\-tree\fR,
+\fBreset\fR,
+\fBrestore\fR
+and
+\fBswitch\fR) except
+\fBclone\fR
+and
+\fBls\-files\fR\&. Defaults to false\&. When set to true, it can be deactivated via the
+\fB\-\-no\-recurse\-submodules\fR
+option\&. Note that some Git commands lacking this option may call some of the above commands affected by
+\fBsubmodule\&.recurse\fR; for instance
+\fBgit remote update\fR
+will call
+\fBgit fetch\fR
+but does not have a
+\fB\-\-no\-recurse\-submodules\fR
+option\&. For these commands a workaround is to temporarily change the configuration value by using
+\fBgit \-c submodule\&.recurse=0\fR\&.
 .RE
 .PP
 submodule\&.fetchJobs

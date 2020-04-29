@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 04/22/2020
+.\"      Date: 04/29/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.2.266.ge870325ee8
+.\"    Source: Git 2.26.2.357.g86ab15cb15
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "04/22/2020" "Git 2\&.26\&.2\&.266\&.ge87032" "Git Manual"
+.TH "GIT\-REBASE" "1" "04/29/2020" "Git 2\&.26\&.2\&.357\&.g86ab15" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1145,7 +1145,7 @@ When there are content conflicts, the merge machinery tries to annotate each sid
 The merge backend works with the full commits on both sides of history and thus has no such limitations\&.
 .SS "Hooks"
 .sp
-The apply backend has not traditionally called the post\-commit hook, while the merge backend has\&. However, this was by accident of implementation rather than by design\&. Both backends should have the same behavior, though it is not clear which one is correct\&.
+The apply backend has not traditionally called the post\-commit hook, while the merge backend has\&. Both have called the post\-checkout hook, though the merge backend has squelched its output\&. Further, both backends only call the post\-checkout hook with the starting point commit of the rebase, not the intermediate commits nor the final commit\&. In each case, the calling of these hooks was by accident of implementation rather than by design (both backends were originally implemented as shell scripts and happened to invoke other commands like \fIgit checkout\fR or \fIgit commit\fR that would call the hooks)\&. Both backends should have the same behavior, though it is not entirely clear which, if any, is correct\&. We will likely make rebase stop calling either of these hooks in the future\&.
 .SS "Interruptability"
 .sp
 The apply backend has safety problems with an ill\-timed interrupt; if the user presses Ctrl\-C at the wrong time to try to abort the rebase, the rebase can enter a state where it cannot be aborted with a subsequent \fBgit rebase \-\-abort\fR\&. The merge backend does not appear to suffer from the same shortcoming\&. (See \m[blue]\fBhttps://lore\&.kernel\&.org/git/20200207132152\&.GC2868@szeder\&.dev/\fR\m[] for details\&.)
