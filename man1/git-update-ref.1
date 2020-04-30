@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 04/29/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.26.2.357.g86ab15cb15
+.\"    Source: Git 2.26.2.447.gd61d20c9b4
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-REF" "1" "04/29/2020" "Git 2\&.26\&.2\&.357\&.g86ab15" "Git Manual"
+.TH "GIT\-UPDATE\-REF" "1" "04/29/2020" "Git 2\&.26\&.2\&.447\&.gd61d20" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -86,6 +86,10 @@ create SP <ref> SP <newvalue> LF
 delete SP <ref> [SP <oldvalue>] LF
 verify SP <ref> [SP <oldvalue>] LF
 option SP <opt> LF
+start LF
+prepare LF
+commit LF
+abort LF
 .fi
 .if n \{\
 .RE
@@ -106,6 +110,10 @@ create SP <ref> NUL <newvalue> NUL
 delete SP <ref> NUL [<oldvalue>] NUL
 verify SP <ref> NUL [<oldvalue>] NUL
 option SP <opt> NUL
+start NUL
+prepare NUL
+commit NUL
+abort NUL
 .fi
 .if n \{\
 .RE
@@ -132,7 +140,7 @@ Delete <ref> after verifying it exists with <oldvalue>, if given\&. If given, <o
 .PP
 verify
 .RS 4
-Verify <ref> against <oldvalue> but do not change it\&. If <oldvalue> zero or missing, the ref must not exist\&.
+Verify <ref> against <oldvalue> but do not change it\&. If <oldvalue> is zero or missing, the ref must not exist\&.
 .RE
 .PP
 option
@@ -140,6 +148,26 @@ option
 Modify behavior of the next command naming a <ref>\&. The only valid option is
 \fBno\-deref\fR
 to avoid dereferencing a symbolic ref\&.
+.RE
+.PP
+start
+.RS 4
+Start a transaction\&. In contrast to a non\-transactional session, a transaction will automatically abort if the session ends without an explicit commit\&.
+.RE
+.PP
+prepare
+.RS 4
+Prepare to commit the transaction\&. This will create lock files for all queued reference updates\&. If one reference could not be locked, the transaction will be aborted\&.
+.RE
+.PP
+commit
+.RS 4
+Commit all reference updates queued for the transaction, ending the transaction\&.
+.RE
+.PP
+abort
+.RS 4
+Abort the transaction, releasing all locks if the transaction is in prepared state\&.
 .RE
 .sp
 If all <ref>s can be locked with matching <oldvalue>s simultaneously, all modifications are performed\&. Otherwise, no modifications are performed\&. Note that while each individual <ref> is updated or deleted atomically, a concurrent reader may still see a subset of the modifications\&.
