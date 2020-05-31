@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 05/26/2020
+.\"      Date: 05/31/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.27.0.rc2
+.\"    Source: Git 2.27.0.rc2.128.g56219baf1e
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "05/26/2020" "Git 2\&.27\&.0\&.rc2" "Git Manual"
+.TH "GIT\-LOG" "1" "05/31/2020" "Git 2\&.27\&.0\&.rc2\&.128\&.g" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1177,9 +1177,7 @@ range, it results in:
 .sp
 Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new example history\&.
 .sp
-+ A common problem users face when looking at simplified history is that a commit they know changed a file somehow does not appear in the file\(cqs simplified history\&. Let\(cqs demonstrate a new example and show how options such as \fB\-\-full\-history\fR and \fB\-\-simplify\-merges\fR works in that case:
-.sp
-+
+A common problem users face when looking at simplified history is that a commit they know changed a file somehow does not appear in the file\(cqs simplified history\&. Let\(cqs demonstrate a new example and show how options such as \fB\-\-full\-history\fR and \fB\-\-simplify\-merges\fR works in that case:
 .sp
 .if n \{\
 .RS 4
@@ -1197,11 +1195,9 @@ Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new
 .\}
 .sp
 .sp
-+ For this example, suppose \fBI\fR created \fBfile\&.txt\fR which was modified by \fBA\fR, \fBB\fR, and \fBX\fR in different ways\&. The single\-parent commits \fBC\fR, \fBZ\fR, and \fBY\fR do not change \fBfile\&.txt\fR\&. The merge commit \fBM\fR was created by resolving the merge conflict to include both changes from \fBA\fR and \fBB\fR and hence is not TREESAME to either\&. The merge commit \fBR\fR, however, was created by ignoring the contents of \fBfile\&.txt\fR at \fBM\fR and taking only the contents of \fBfile\&.txt\fR at \fBX\fR\&. Hence, \fBR\fR is TREESAME to \fBX\fR but not \fBM\fR\&. Finally, the natural merge resolution to create \fBN\fR is to take the contents of \fBfile\&.txt\fR at \fBR\fR, so \fBN\fR is TREESAME to \fBR\fR but not \fBC\fR\&. The merge commits \fBO\fR and \fBP\fR are TREESAME to their first parents, but not to their second parents, \fBZ\fR and \fBY\fR respectively\&.
+For this example, suppose \fBI\fR created \fBfile\&.txt\fR which was modified by \fBA\fR, \fBB\fR, and \fBX\fR in different ways\&. The single\-parent commits \fBC\fR, \fBZ\fR, and \fBY\fR do not change \fBfile\&.txt\fR\&. The merge commit \fBM\fR was created by resolving the merge conflict to include both changes from \fBA\fR and \fBB\fR and hence is not TREESAME to either\&. The merge commit \fBR\fR, however, was created by ignoring the contents of \fBfile\&.txt\fR at \fBM\fR and taking only the contents of \fBfile\&.txt\fR at \fBX\fR\&. Hence, \fBR\fR is TREESAME to \fBX\fR but not \fBM\fR\&. Finally, the natural merge resolution to create \fBN\fR is to take the contents of \fBfile\&.txt\fR at \fBR\fR, so \fBN\fR is TREESAME to \fBR\fR but not \fBC\fR\&. The merge commits \fBO\fR and \fBP\fR are TREESAME to their first parents, but not to their second parents, \fBZ\fR and \fBY\fR respectively\&.
 .sp
-+ When using the default mode, \fBN\fR and \fBR\fR both have a TREESAME parent, so those edges are walked and the others are ignored\&. The resulting history graph is:
-.sp
-+
+When using the default mode, \fBN\fR and \fBR\fR both have a TREESAME parent, so those edges are walked and the others are ignored\&. The resulting history graph is:
 .sp
 .if n \{\
 .RS 4
@@ -1214,9 +1210,7 @@ Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new
 .\}
 .sp
 .sp
-+ When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover the commits \fBA\fR and \fBB\fR and the merge \fBM\fR, but also will reveal the merge commits \fBO\fR and \fBP\fR\&. With parent rewriting, the resulting graph is:
-.sp
-+
+When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover the commits \fBA\fR and \fBB\fR and the merge \fBM\fR, but also will reveal the merge commits \fBO\fR and \fBP\fR\&. With parent rewriting, the resulting graph is:
 .sp
 .if n \{\
 .RS 4
@@ -1234,11 +1228,9 @@ Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new
 .\}
 .sp
 .sp
-+ Here, the merge commits \fBO\fR and \fBP\fR contribute extra noise, as they did not actually contribute a change to \fBfile\&.txt\fR\&. They only merged a topic that was based on an older version of \fBfile\&.txt\fR\&. This is a common issue in repositories using a workflow where many contributors work in parallel and merge their topic branches along a single trunk: manu unrelated merges appear in the \fB\-\-full\-history\fR results\&.
+Here, the merge commits \fBO\fR and \fBP\fR contribute extra noise, as they did not actually contribute a change to \fBfile\&.txt\fR\&. They only merged a topic that was based on an older version of \fBfile\&.txt\fR\&. This is a common issue in repositories using a workflow where many contributors work in parallel and merge their topic branches along a single trunk: manu unrelated merges appear in the \fB\-\-full\-history\fR results\&.
 .sp
-+ When using the \fB\-\-simplify\-merges\fR option, the commits \fBO\fR and \fBP\fR disappear from the results\&. This is because the rewritten second parents of \fBO\fR and \fBP\fR are reachable from their first parents\&. Those edges are removed and then the commits look like single\-parent commits that are TREESAME to their parent\&. This also happens to the commit \fBN\fR, resulting in a history view as follows:
-.sp
-+
+When using the \fB\-\-simplify\-merges\fR option, the commits \fBO\fR and \fBP\fR disappear from the results\&. This is because the rewritten second parents of \fBO\fR and \fBP\fR are reachable from their first parents\&. Those edges are removed and then the commits look like single\-parent commits that are TREESAME to their parent\&. This also happens to the commit \fBN\fR, resulting in a history view as follows:
 .sp
 .if n \{\
 .RS 4
@@ -1256,15 +1248,20 @@ Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new
 .\}
 .sp
 .sp
-+ In this view, we see all of the important single\-parent changes from \fBA\fR, \fBB\fR, and \fBX\fR\&. We also see the carefully\-resolved merge \fBM\fR and the not\-so\-carefully\-resolved merge \fBR\fR\&. This is usually enough information to determine why the commits \fBA\fR and \fBB\fR "disappeared" from history in the default view\&. However, there are a few issues with this approach\&.
+In this view, we see all of the important single\-parent changes from \fBA\fR, \fBB\fR, and \fBX\fR\&. We also see the carefully\-resolved merge \fBM\fR and the not\-so\-carefully\-resolved merge \fBR\fR\&. This is usually enough information to determine why the commits \fBA\fR and \fBB\fR "disappeared" from history in the default view\&. However, there are a few issues with this approach\&.
 .sp
-+ The first issue is performance\&. Unlike any previous option, the \fB\-\-simplify\-merges\fR option requires walking the entire commit history before returning a single result\&. This can make the option difficult to use for very large repositories\&.
+The first issue is performance\&. Unlike any previous option, the \fB\-\-simplify\-merges\fR option requires walking the entire commit history before returning a single result\&. This can make the option difficult to use for very large repositories\&.
 .sp
-+ The second issue is one of auditing\&. When many contributors are working on the same repository, it is important which merge commits introduced a change into an important branch\&. The problematic merge \fBR\fR above is not likely to be the merge commit that was used to merge into an important branch\&. Instead, the merge \fBN\fR was used to merge \fBR\fR and \fBX\fR into the important branch\&. This commit may have information about why the change \fBX\fR came to override the changes from \fBA\fR and \fBB\fR in its commit message\&.
+The second issue is one of auditing\&. When many contributors are working on the same repository, it is important which merge commits introduced a change into an important branch\&. The problematic merge \fBR\fR above is not likely to be the merge commit that was used to merge into an important branch\&. Instead, the merge \fBN\fR was used to merge \fBR\fR and \fBX\fR into the important branch\&. This commit may have information about why the change \fBX\fR came to override the changes from \fBA\fR and \fBB\fR in its commit message\&.
+.PP
+\-\-show\-pulls
+.RS 4
+In addition to the commits shown in the default history, show each merge commit that is not TREESAME to its first parent but is TREESAME to a later parent\&.
 .sp
-+ The \fB\-\-show\-pulls\fR option helps with both of these issues by adding more merge commits to the history results\&. If a merge is not TREESAME to its first parent but is TREESAME to a later parent, then that merge is treated as if it "pulled" the change from another branch\&. When using \fB\-\-show\-pulls\fR on this example (and no other options) the resulting graph is:
-.sp
-+
+When a merge commit is included by
+\fB\-\-show\-pulls\fR, the merge is treated as if it "pulled" the change from another branch\&. When using
+\fB\-\-show\-pulls\fR
+on this example (and no other options) the resulting graph is:
 .sp
 .if n \{\
 .RS 4
@@ -1276,12 +1273,24 @@ Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new
 .RE
 .\}
 .sp
+Here, the merge commits
+\fBR\fR
+and
+\fBN\fR
+are included because they pulled the commits
+\fBX\fR
+and
+\fBR\fR
+into the base branch, respectively\&. These merges are the reason the commits
+\fBA\fR
+and
+\fBB\fR
+do not appear in the default history\&.
 .sp
-+ Here, the merge commits \fBR\fR and \fBN\fR are included because they pulled the commits \fBX\fR and \fBR\fR into the base branch, respectively\&. These merges are the reason the commits \fBA\fR and \fBB\fR do not appear in the default history\&.
-.sp
-+ When \fB\-\-show\-pulls\fR is paired with \fB\-\-simplify\-merges\fR, the graph includes all of the necessary information:
-.sp
-+
+When
+\fB\-\-show\-pulls\fR
+is paired with
+\fB\-\-simplify\-merges\fR, the graph includes all of the necessary information:
 .sp
 .if n \{\
 .RS 4
@@ -1298,8 +1307,19 @@ Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new
 .RE
 .\}
 .sp
-.sp
-+ Notice that since \fBM\fR is reachable from \fBR\fR, the edge from \fBN\fR to \fBM\fR was simplified away\&. However, \fBN\fR still appears in the history as an important commit because it "pulled" the change \fBR\fR into the main branch\&.
+Notice that since
+\fBM\fR
+is reachable from
+\fBR\fR, the edge from
+\fBN\fR
+to
+\fBM\fR
+was simplified away\&. However,
+\fBN\fR
+still appears in the history as an important commit because it "pulled" the change
+\fBR\fR
+into the main branch\&.
+.RE
 .sp
 The \fB\-\-simplify\-by\-decoration\fR option allows you to view only the big picture of the topology of the history, by omitting commits that are not referenced by tags\&. Commits are marked as !TREESAME (in other words, kept after history simplification rules described above) if (1) they are referenced by tags, or (2) they change the contents of the paths given on the command line\&. All other commits are marked as TREESAME (subject to be simplified away)\&.
 .SS "Commit Ordering"
