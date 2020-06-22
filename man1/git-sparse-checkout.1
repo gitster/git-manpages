@@ -2,12 +2,12 @@
 .\"     Title: git-sparse-checkout
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/17/2020
+.\"      Date: 06/22/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.27.0.112.g101b3204f3
+.\"    Source: Git 2.27.0.139.gc9c318d6bf
 .\"  Language: English
 .\"
-.TH "GIT\-SPARSE\-CHECKOU" "1" "06/17/2020" "Git 2\&.27\&.0\&.112\&.g101b32" "Git Manual"
+.TH "GIT\-SPARSE\-CHECKOU" "1" "06/22/2020" "Git 2\&.27\&.0\&.139\&.gc9c318" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -224,7 +224,11 @@ A/B/C
 If \fBcore\&.ignoreCase=true\fR, then the pattern\-matching algorithm will use a case\-insensitive check\&. This corrects for case mismatched filenames in the \fIgit sparse\-checkout set\fR command to reflect the expected cone in the working directory\&.
 .SH "SUBMODULES"
 .sp
-If your repository contains one or more submodules, then those submodules will appear based on which you initialized with the \fBgit submodule\fR command\&. If your sparse\-checkout patterns exclude an initialized submodule, then that submodule will still appear in your working directory\&.
+If your repository contains one or more submodules, then submodules are populated based on interactions with the \fBgit submodule\fR command\&. Specifically, \fBgit submodule init \-\- <path>\fR will ensure the submodule at \fB<path>\fR is present, while \fBgit submodule deinit [\-f] \-\- <path>\fR will remove the files for the submodule at \fB<path>\fR (including any untracked files, uncommitted changes, and unpushed history)\&. Similar to how sparse\-checkout removes files from the working tree but still leaves entries in the index, deinitialized submodules are removed from the working directory but still have an entry in the index\&.
+.sp
+Since submodules may have unpushed changes or untracked files, removing them could result in data loss\&. Thus, changing sparse inclusion/exclusion rules will not cause an already checked out submodule to be removed from the working copy\&. Said another way, just as \fBcheckout\fR will not cause submodules to be automatically removed or initialized even when switching between branches that remove or add submodules, using \fBsparse\-checkout\fR to reduce or expand the scope of "interesting" files will not cause submodules to be automatically deinitialized or initialized either\&.
+.sp
+Further, the above facts mean that there are multiple reasons that "tracked" files might not be present in the working copy: sparsity pattern application from sparse\-checkout, and submodule initialization state\&. Thus, commands like \fBgit grep\fR that work on tracked files in the working copy may return results that are limited by either or both of these restrictions\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-read-tree\fR(1) \fBgitignore\fR(5)
