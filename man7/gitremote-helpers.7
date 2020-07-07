@@ -2,12 +2,12 @@
 .\"     Title: gitremote-helpers
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/29/2020
+.\"      Date: 07/06/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.27.0.221.ga08a83db2b
+.\"    Source: Git 2.27.0.343.g4a0fcf9f76
 .\"  Language: English
 .\"
-.TH "GITREMOTE\-HELPERS" "7" "06/29/2020" "Git 2\&.27\&.0\&.221\&.ga08a83" "Git Manual"
+.TH "GITREMOTE\-HELPERS" "7" "07/06/2020" "Git 2\&.27\&.0\&.343\&.g4a0fcf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -258,6 +258,11 @@ to
 \fBgit-fast-export\fR(1)\&. In the absence of this capability, Git will use
 \fB\-\-signed\-tags=warn\-strip\fR\&.
 .RE
+.PP
+\fIobject\-format\fR
+.RS 4
+This indicates that the helper is able to interact with the remote side using an explicit hash algorithm extension\&.
+.RE
 .RE
 .SH "COMMANDS"
 .sp
@@ -273,9 +278,9 @@ Support for this command is mandatory\&.
 .PP
 \fIlist\fR
 .RS 4
-Lists the refs, one per line, in the format "<value> <name> [<attr> \&...]"\&. The value may be a hex sha1 hash, "@<dest>" for a symref, or "?" to indicate that the helper could not get the value of the ref\&. A space\-separated list of attributes follows the name; unrecognized attributes are ignored\&. The list ends with a blank line\&.
+Lists the refs, one per line, in the format "<value> <name> [<attr> \&...]"\&. The value may be a hex sha1 hash, "@<dest>" for a symref, ":<keyword> <value>" for a key\-value pair, or "?" to indicate that the helper could not get the value of the ref\&. A space\-separated list of attributes follows the name; unrecognized attributes are ignored\&. The list ends with a blank line\&.
 .sp
-See REF LIST ATTRIBUTES for a list of currently defined attributes\&.
+See REF LIST ATTRIBUTES for a list of currently defined attributes\&. See REF LIST KEYWORDS for a list of currently defined keywords\&.
 .sp
 Supported if the helper has the "fetch" or "import" capability\&.
 .RE
@@ -446,6 +451,14 @@ The \fIlist\fR command produces a list of refs in which each ref may be followed
 .RS 4
 This ref is unchanged since the last import or fetch, although the helper cannot necessarily determine what value that produced\&.
 .RE
+.SH "REF LIST KEYWORDS"
+.sp
+The \fIlist\fR command may produce a list of key\-value pairs\&. The following keys are defined\&.
+.PP
+\fIobject\-format\fR
+.RS 4
+The refs are using the given hash algorithm\&. This keyword is only used if the server and client both support the object\-format extension\&.
+.RE
 .SH "OPTIONS"
 .sp
 The following options are defined and (under suitable circumstances) set by Git if the remote helper has the \fIoption\fR capability\&.
@@ -536,6 +549,14 @@ Indicate that only the objects wanted need to be fetched, not their dependents\&
 \fIoption atomic\fR {\fItrue\fR|\fIfalse\fR}
 .RS 4
 When pushing, request the remote server to update refs in a single atomic transaction\&. If successful, all refs will be updated, or none will\&. If the remote side does not support this capability, the push will fail\&.
+.RE
+.PP
+\fIoption object\-format\fR {\fItrue\fR|algorithm}
+.RS 4
+If
+\fItrue\fR, indicate that the caller wants hash algorithm information to be passed back from the remote\&. This mode is used when fetching refs\&.
+.sp
+If set to an algorithm, indicate that the caller wants to interact with the remote side using that algorithm\&.
 .RE
 .SH "SEE ALSO"
 .sp

@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/29/2020
+.\"      Date: 07/06/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.27.0.221.ga08a83db2b
+.\"    Source: Git 2.27.0.343.g4a0fcf9f76
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "06/29/2020" "Git 2\&.27\&.0\&.221\&.ga08a83" "Git Manual"
+.TH "GITHOOKS" "5" "07/06/2020" "Git 2\&.27\&.0\&.343\&.g4a0fcf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -257,6 +257,58 @@ The \fIpost\-update\fR hook can tell what are the heads that were pushed, but it
 When enabled, the default \fIpost\-update\fR hook runs \fBgit update\-server\-info\fR to keep the information used by dumb transports (e\&.g\&., HTTP) up to date\&. If you are publishing a Git repository that is accessible via HTTP, you should probably enable this hook\&.
 .sp
 Both standard output and standard error output are forwarded to \fBgit send\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
+.SS "ref\-transaction"
+.sp
+This hook is invoked by any Git command that performs reference updates\&. It executes whenever a reference transaction is prepared, committed or aborted and may thus get called multiple times\&.
+.sp
+The hook takes exactly one argument, which is the current state the given reference transaction is in:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"prepared": All reference updates have been queued to the transaction and references were locked on disk\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"committed": The reference transaction was committed and all references now have their respective new value\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"aborted": The reference transaction was aborted, no changes were performed and the locks have been released\&.
+.RE
+.sp
+For each reference update that was added to the transaction, the hook receives on standard input a line of the format:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<old\-value> SP <new\-value> SP <ref\-name> LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The exit status of the hook is ignored for any state except for the "prepared" state\&. In the "prepared" state, a non\-zero exit status will cause the transaction to be aborted\&. The hook will not be called with "aborted" state in that case\&.
 .SS "push\-to\-checkout"
 .sp
 This hook is invoked by \fBgit-receive-pack\fR(1) when it reacts to \fBgit push\fR and updates reference(s) in its repository, and when the push tries to update the branch that is currently checked out and the \fBreceive\&.denyCurrentBranch\fR configuration variable is set to \fBupdateInstead\fR\&. Such a push by default is refused if the working tree and the index of the remote repository has any difference from the currently checked out commit; when both the working tree and the index match the current commit, they are updated to match the newly pushed tip of the branch\&. This hook is to be used to override the default behaviour\&.

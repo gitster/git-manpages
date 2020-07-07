@@ -2,12 +2,12 @@
 .\"     Title: git-fast-export
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 06/29/2020
+.\"      Date: 07/06/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.27.0.221.ga08a83db2b
+.\"    Source: Git 2.27.0.343.g4a0fcf9f76
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-EXPORT" "1" "06/29/2020" "Git 2\&.27\&.0\&.221\&.ga08a83" "Git Manual"
+.TH "GIT\-FAST\-EXPORT" "1" "07/06/2020" "Git 2\&.27\&.0\&.343\&.g4a0fcf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -139,6 +139,21 @@ Anonymize the contents of the repository while still retaining the shape of the 
 below\&.
 .RE
 .PP
+\-\-anonymize\-map=<from>[:<to>]
+.RS 4
+Convert token
+\fB<from>\fR
+to
+\fB<to>\fR
+in the anonymized output\&. If
+\fB<to>\fR
+is omitted, map
+\fB<from>\fR
+to itself (i\&.e\&., do not anonymize it)\&. See the section on
+\fBANONYMIZING\fR
+below\&.
+.RE
+.PP
 \-\-reference\-excluded\-parents
 .RS 4
 By default, running a command such as
@@ -257,6 +272,28 @@ $ perl \-pe \(aqs/\ed+/X/g\(aq <anon\-stream | sort \-u | less
 .sp
 .sp
 which shows all of the unique lines (with numbers converted to "X", to collapse "User 0", "User 1", etc into "User X")\&. This produces a much smaller output, and it is usually easy to quickly confirm that there is no private data in the stream\&.
+.sp
+Reproducing some bugs may require referencing particular commits or paths, which becomes challenging after refnames and paths have been anonymized\&. You can ask for a particular token to be left as\-is or mapped to a new value\&. For example, if you have a bug which reproduces with \fBgit rev\-list sensitive \-\- secret\&.c\fR, you can run:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git fast\-export \-\-anonymize \-\-all \e
+      \-\-anonymize\-map=sensitive:foo \e
+      \-\-anonymize\-map=secret\&.c:bar\&.c \e
+      >stream
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+After importing the stream, you can then run \fBgit rev\-list foo \-\- bar\&.c\fR in the anonymized repository\&.
+.sp
+Note that paths and refnames are split into tokens at slash boundaries\&. The command above would anonymize \fBsubdir/secret\&.c\fR as something like \fBpath123/bar\&.c\fR; you could then search for \fBbar\&.c\fR in the anonymized repository to determine the final pathname\&.
+.sp
+To make referencing the final pathname simpler, you can map each path component; so if you also anonymize \fBsubdir\fR to \fBpublicdir\fR, then the final pathname would be \fBpublicdir/bar\&.c\fR\&.
 .SH "LIMITATIONS"
 .sp
 Since \fIgit fast\-import\fR cannot tag trees, you will not be able to export the linux\&.git repository completely, as it contains a tag referencing a tree instead of a commit\&.
