@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/10/2020
+.\"      Date: 08/11/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.141.g4f0a8be784
+.\"    Source: Git 2.28.0.202.g7814e8a05a
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "08/10/2020" "Git 2\&.28\&.0\&.141\&.g4f0a8b" "Git Manual"
+.TH "GIT\-CONFIG" "1" "08/11/2020" "Git 2\&.28\&.0\&.202\&.g7814e8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3765,6 +3765,23 @@ is set to the name of the temporary file containing the contents of the diff pos
 difftool\&.prompt
 .RS 4
 Prompt before each invocation of the diff tool\&.
+.RE
+.PP
+extensions\&.objectFormat
+.RS 4
+Specify the hash algorithm to use\&. The acceptable values are
+\fBsha1\fR
+and
+\fBsha256\fR\&. If not specified,
+\fBsha1\fR
+is assumed\&. It is an error to specify this key unless
+\fBcore\&.repositoryFormatVersion\fR
+is 1\&.
+.sp
+Note that this setting should only be set by
+\fBgit-init\fR(1)
+or
+\fBgit-clone\fR(1)\&. Trying to change it after initialization will not work and will produce hard\-to\-diagnose issues\&.
 .RE
 .PP
 fastimport\&.unpackLimit
@@ -8156,6 +8173,39 @@ uploadpack\&.allowFilter
 If this option is set,
 \fBupload\-pack\fR
 will support partial clone and partial fetch object filtering\&.
+.RE
+.PP
+uploadpackfilter\&.allow
+.RS 4
+Provides a default value for unspecified object filters (see: the below configuration variable)\&. Defaults to
+\fBtrue\fR\&.
+.RE
+.PP
+uploadpackfilter\&.<filter>\&.allow
+.RS 4
+Explicitly allow or ban the object filter corresponding to
+\fB<filter>\fR, where
+\fB<filter>\fR
+may be one of:
+\fBblob:none\fR,
+\fBblob:limit\fR,
+\fBtree\fR,
+\fBsparse:oid\fR, or
+\fBcombine\fR\&. If using combined filters, both
+\fBcombine\fR
+and all of the nested filter kinds must be allowed\&. Defaults to
+\fBuploadpackfilter\&.allow\fR\&.
+.RE
+.PP
+uploadpackfilter\&.tree\&.maxDepth
+.RS 4
+Only allow
+\fB\-\-filter=tree=<n>\fR
+when
+\fBn\fR
+is no more than the value of
+\fBuploadpackfilter\&.tree\&.maxDepth\fR\&. If set, this also implies
+\fBuploadpackfilter\&.tree\&.allow=true\fR, unless this configuration variable had already been set\&. Has no effect if unset\&.
 .RE
 .PP
 uploadpack\&.allowRefInWant
