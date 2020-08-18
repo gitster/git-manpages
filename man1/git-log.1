@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/13/2020
+.\"      Date: 08/17/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.215.g878e727637
+.\"    Source: Git 2.28.0.258.g2befe97201
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "08/13/2020" "Git 2\&.28\&.0\&.215\&.g878e72" "Git Manual"
+.TH "GIT\-LOG" "1" "08/17/2020" "Git 2\&.28\&.0\&.258\&.g2befe9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -380,7 +380,7 @@ reset these limits (to no limit) again\&. Equivalent forms are
 .PP
 \-\-first\-parent
 .RS 4
-Follow only the first parent commit upon seeing a merge commit\&. This option can give a better overview when viewing the evolution of a particular topic branch, because merges into a topic branch tend to be only about adjusting to updated upstream from time to time, and this option allows you to ignore the individual commits brought in to your history by such a merge\&. Cannot be combined with \-\-bisect\&.
+Follow only the first parent commit upon seeing a merge commit\&. This option can give a better overview when viewing the evolution of a particular topic branch, because merges into a topic branch tend to be only about adjusting to updated upstream from time to time, and this option allows you to ignore the individual commits brought in to your history by such a merge\&.
 .RE
 .PP
 \-\-not
@@ -530,7 +530,7 @@ was listed and as if it was followed by
 \fB\-\-not\fR
 and the good bisection refs
 \fBrefs/bisect/good\-*\fR
-on the command line\&. Cannot be combined with \-\-first\-parent\&.
+on the command line\&.
 .RE
 .PP
 \-\-stdin
@@ -1789,46 +1789,6 @@ When \-\-graph is not used, all history branches are flattened which can make it
 \fB<barrier>\fR
 is specified, it is the string that will be shown instead of the default one\&.
 .RE
-.SS "Diff Formatting"
-.sp
-Listed below are options that control the formatting of diff output\&. Some of them are specific to \fBgit-rev-list\fR(1), however other diff options may be given\&. See \fBgit-diff-files\fR(1) for more options\&.
-.PP
-\-c
-.RS 4
-With this option, diff output for a merge commit shows the differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time\&. Furthermore, it lists only files which were modified from all parents\&.
-.RE
-.PP
-\-\-cc
-.RS 4
-This flag implies the
-\fB\-c\fR
-option and further compresses the patch output by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
-.RE
-.PP
-\-\-combined\-all\-paths
-.RS 4
-This flag causes combined diffs (used for merge commits) to list the name of the file from all parents\&. It thus only has effect when \-c or \-\-cc are specified, and is likely only useful if filename changes are detected (i\&.e\&. when either rename or copy detection have been requested)\&.
-.RE
-.PP
-\-m
-.RS 4
-This flag makes the merge commits show the full diff like regular commits; for each merge parent, a separate log entry and diff is generated\&. An exception is that only diff against the first parent is shown when
-\fB\-\-first\-parent\fR
-option is given; in that case, the output represents the changes the merge brought
-\fIinto\fR
-the then\-current branch\&.
-.RE
-.PP
-\-r
-.RS 4
-Show recursive diffs\&.
-.RE
-.PP
-\-t
-.RS 4
-Show the tree objects in the diff output\&. This implies
-\fB\-r\fR\&.
-.RE
 .SH "PRETTY FORMATS"
 .sp
 If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line\&. This line begins with "Merge: " and the hashes of ancestral commits are printed, separated by spaces\&. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file\&.
@@ -2775,7 +2735,45 @@ $ git log \-2 \-\-pretty=%h 4da45bef
 .\}
 .sp
 .RE
-.SH "COMMON DIFF OPTIONS"
+.SH "DIFF FORMATTING"
+.sp
+By default, \fBgit log\fR does not generate any diff output\&. The options below can be used to show the changes made by each commit\&.
+.sp
+Note that unless one of \fB\-c\fR, \fB\-\-cc\fR, or \fB\-m\fR is given, merge commits will never show a diff, even if a diff format like \fB\-\-patch\fR is selected, nor will they match search options like \fB\-S\fR\&. The exception is when \fB\-\-first\-parent\fR is in use, in which merges are treated like normal single\-parent commits (this can be overridden by providing a combined\-diff option or with \fB\-\-no\-diff\-merges\fR)\&.
+.PP
+\-c
+.RS 4
+With this option, diff output for a merge commit shows the differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time\&. Furthermore, it lists only files which were modified from all parents\&.
+.RE
+.PP
+\-\-cc
+.RS 4
+This flag implies the
+\fB\-c\fR
+option and further compresses the patch output by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
+.RE
+.PP
+\-\-combined\-all\-paths
+.RS 4
+This flag causes combined diffs (used for merge commits) to list the name of the file from all parents\&. It thus only has effect when \-c or \-\-cc are specified, and is likely only useful if filename changes are detected (i\&.e\&. when either rename or copy detection have been requested)\&.
+.RE
+.PP
+\-m
+.RS 4
+This flag makes the merge commits show the full diff like regular commits; for each merge parent, a separate log entry and diff is generated\&. An exception is that only diff against the first parent is shown when
+\fB\-\-first\-parent\fR
+option is given; in that case, the output represents the changes the merge brought
+\fIinto\fR
+the then\-current branch\&.
+.RE
+.PP
+\-\-diff\-merges=off, \-\-no\-diff\-merges
+.RS 4
+Disable output of diffs for merge commits (default)\&. Useful to override
+\fB\-m\fR,
+\fB\-c\fR, or
+\fB\-\-cc\fR\&.
+.RE
 .PP
 \-p, \-u, \-\-patch
 .RS 4
@@ -2821,6 +2819,11 @@ For each commit, show a summary of changes using the raw diff format\&. See the 
 .RS 4
 Synonym for
 \fB\-p \-\-raw\fR\&.
+.RE
+.PP
+\-t
+.RS 4
+Show the tree objects in the diff output\&.
 .RE
 .PP
 \-\-indent\-heuristic
