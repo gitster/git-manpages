@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/31/2020
+.\"      Date: 09/03/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.394.ge197136389
+.\"    Source: Git 2.28.0.450.g3a238e539b
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "08/31/2020" "Git 2\&.28\&.0\&.394\&.ge19713" "Git Manual"
+.TH "GIT\-REBASE" "1" "09/03/2020" "Git 2\&.28\&.0\&.450\&.g3a238e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -396,6 +396,15 @@ option was provided)\&. This is the same as specifying the
 \fB\-\-reschedule\-failed\-exec\fR
 option\&.
 .RE
+.PP
+sequence\&.editor
+.RS 4
+Text editor used by
+\fBgit rebase \-i\fR
+for editing the rebase instruction file\&. The value is meant to be interpreted by the shell when it is used\&. It can be overridden by the
+\fBGIT_SEQUENCE_EDITOR\fR
+environment variable\&. When not configured the default commit message editor is used instead\&.
+.RE
 .SH "OPTIONS"
 .PP
 \-\-onto <newbase>
@@ -655,9 +664,18 @@ in order to drop those commits from your branch\&.
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
 .PP
-\-\-ignore\-whitespace, \-\-whitespace=<option>
+\-\-ignore\-whitespace
 .RS 4
-These flags are passed to the
+Ignore whitespace differences when trying to reconcile differences\&. Currently, each backend implements an approximation of this behavior:
+.sp
+apply backend: When applying a patch, ignore changes in whitespace in context lines\&. Unfortunately, this means that if the "old" lines being replaced by the patch differ only in whitespace from the existing file, you will get a merge conflict instead of a successful patch application\&.
+.sp
+merge backend: Treat lines with only whitespace changes as unchanged when merging\&. Unfortunately, this means that any patch hunks that were intended to modify whitespace and nothing else will be dropped, even if the other side had no changes that conflicted\&.
+.RE
+.PP
+\-\-whitespace=<option>
+.RS 4
+This flag is passed to the
 \fIgit apply\fR
 program (see
 \fBgit-apply\fR(1)) that applies the patch\&. Implies \-\-apply\&.
@@ -665,12 +683,16 @@ program (see
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
 .PP
-\-\-committer\-date\-is\-author\-date, \-\-ignore\-date
+\-\-committer\-date\-is\-author\-date
 .RS 4
-These flags are passed to
-\fIgit am\fR
-to easily change the dates of the rebased commits (see
-\fBgit-am\fR(1))\&.
+Instead of using the current time as the committer date, use the author date of the commit being rebased as the committer date\&. This option implies
+\fB\-\-force\-rebase\fR\&.
+.RE
+.PP
+\-\-ignore\-date, \-\-reset\-author\-date
+.RS 4
+Instead of using the author date of the original commit, use the current time as the author date of the rebased commit\&. This option implies
+\fB\-\-force\-rebase\fR\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
@@ -845,39 +867,6 @@ The following options:
 .IP \(bu 2.3
 .\}
 \-\-apply
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-committer\-date\-is\-author\-date
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-ignore\-date
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-ignore\-whitespace
 .RE
 .sp
 .RS 4
@@ -1102,6 +1091,39 @@ In addition, the following pairs of options are incompatible:
 .IP \(bu 2.3
 .\}
 \-\-preserve\-merges and \-\-empty=
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\-\-preserve\-merges and \-\-ignore\-whitespace
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\-\-preserve\-merges and \-\-committer\-date\-is\-author\-date
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\-\-preserve\-merges and \-\-ignore\-date
 .RE
 .sp
 .RS 4
