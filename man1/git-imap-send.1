@@ -2,12 +2,12 @@
 .\"     Title: git-imap-send
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/03/2020
+.\"      Date: 09/09/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.450.g3a238e539b
+.\"    Source: Git 2.28.0.497.g54e85e7af1
 .\"  Language: English
 .\"
-.TH "GIT\-IMAP\-SEND" "1" "09/03/2020" "Git 2\&.28\&.0\&.450\&.g3a238e" "Git Manual"
+.TH "GIT\-IMAP\-SEND" "1" "09/09/2020" "Git 2\&.28\&.0\&.497\&.g54e85e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -65,8 +65,7 @@ Talk to the IMAP server using git\(cqs own IMAP routines instead of using libcur
 .RE
 .SH "CONFIGURATION"
 .sp
-To use the tool, imap\&.folder and either imap\&.tunnel or imap\&.host must be set to appropriate values\&.
-.SS "Variables"
+To use the tool, \fBimap\&.folder\fR and either \fBimap\&.tunnel\fR or \fBimap\&.host\fR must be set to appropriate values\&.
 .PP
 imap\&.folder
 .RS 4
@@ -123,7 +122,7 @@ option, the only supported method is
 \fIgit imap\-send\fR
 uses the basic IMAP plaintext LOGIN command\&.
 .RE
-.SS "Examples"
+.SH "EXAMPLES"
 .sp
 Using tunnel mode:
 .sp
@@ -167,14 +166,30 @@ Using direct mode with SSL:
     user = bob
     pass = p4ssw0rd
     port = 123
-    sslverify = false
+    ; sslVerify = false
 .fi
 .if n \{\
 .RE
 .\}
-.SH "EXAMPLES"
 .sp
-To submit patches using GMail\(cqs IMAP interface, first, edit your ~/\&.gitconfig to specify your account settings:
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+You may want to use \fBsslVerify=false\fR while troubleshooting, if you suspect that the reason you are having trouble connecting is because the certificate you use at the private server \fBexample\&.com\fR you are trying to set up (or have set up) may not be verified correctly\&.
+.sp .5v
+.RE
+.sp
+Using Gmail\(cqs IMAP interface:
 .sp
 .if n \{\
 .RS 4
@@ -185,14 +200,43 @@ To submit patches using GMail\(cqs IMAP interface, first, edit your ~/\&.gitconf
         host = imaps://imap\&.gmail\&.com
         user = user@gmail\&.com
         port = 993
-        sslverify = false
 .fi
 .if n \{\
 .RE
 .\}
 .sp
+.if n \{\
 .sp
-You might need to instead use: folder = "[Google Mail]/Drafts" if you get an error that the "Folder doesn\(cqt exist"\&.
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+You might need to instead use: \fBfolder = "[Google Mail]/Drafts"\fR if you get an error that the "Folder doesn\(cqt exist"\&.
+.sp .5v
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+If your Gmail account is set to another language than English, the name of the "Drafts" folder will be localized\&.
+.sp .5v
+.RE
 .sp
 Once the commits are ready to be sent, run the following command:
 .sp
@@ -206,7 +250,7 @@ $ git format\-patch \-\-cover\-letter \-M \-\-stdout origin/master | git imap\-s
 .RE
 .\}
 .sp
-Just make sure to disable line wrapping in the email client (GMail\(cqs web interface will wrap lines no matter what, so you need to use a real IMAP client)\&.
+Just make sure to disable line wrapping in the email client (Gmail\(cqs web interface will wrap lines no matter what, so you need to use a real IMAP client)\&.
 .SH "CAUTION"
 .sp
 It is still your responsibility to make sure that the email message sent by your email program meets the standards of your project\&. Many projects do not like patches to be attached\&. Some mail agents will transform patches (e\&.g\&. wrap lines, send them as format=flowed) in ways that make them fail\&. You will get angry flames ridiculing you if you don\(cqt check this\&.

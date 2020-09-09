@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 09/03/2020
+.\"      Date: 09/09/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.450.g3a238e539b
+.\"    Source: Git 2.28.0.497.g54e85e7af1
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "09/03/2020" "Git 2\&.28\&.0\&.450\&.g3a238e" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "09/09/2020" "Git 2\&.28\&.0\&.497\&.g54e85e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -38,6 +38,7 @@ git-worktree \- Manage multiple working trees
 \fIgit worktree move\fR <worktree> <new\-path>
 \fIgit worktree prune\fR [\-n] [\-v] [\-\-expire <expire>]
 \fIgit worktree remove\fR [\-f] <worktree>
+\fIgit worktree repair\fR [<path>\&...]
 \fIgit worktree unlock\fR <worktree>
 .fi
 .sp
@@ -138,7 +139,9 @@ If a working tree is on a portable device or network share which is not always m
 .PP
 move
 .RS 4
-Move a working tree to a new location\&. Note that the main working tree or linked working trees containing submodules cannot be moved\&.
+Move a working tree to a new location\&. Note that the main working tree or linked working trees containing submodules cannot be moved with this command\&. (The
+\fBgit worktree repair\fR
+command, however, can reestablish the connection with linked working trees if you move the main working tree manually\&.)
 .RE
 .PP
 prune
@@ -151,6 +154,24 @@ remove
 .RS 4
 Remove a working tree\&. Only clean working trees (no untracked files and no modification in tracked files) can be removed\&. Unclean working trees or ones with submodules can be removed with
 \fB\-\-force\fR\&. The main working tree cannot be removed\&.
+.RE
+.PP
+repair [<path>\&...]
+.RS 4
+Repair working tree administrative files, if possible, if they have become corrupted or outdated due to external factors\&.
+.sp
+For instance, if the main working tree (or bare repository) is moved, linked working trees will be unable to locate it\&. Running
+\fBrepair\fR
+in the main working tree will reestablish the connection from linked working trees back to the main working tree\&.
+.sp
+Similarly, if a linked working tree is moved without using
+\fBgit worktree move\fR, the main working tree (or bare repository) will be unable to locate it\&. Running
+\fBrepair\fR
+within the recently\-moved working tree will reestablish the connection\&. If multiple linked working trees are moved, running
+\fBrepair\fR
+from any working tree with each tree\(cqs new
+\fB<path>\fR
+as an argument, will reestablish the connection to all the specified paths\&.
 .RE
 .PP
 unlock
@@ -384,7 +405,7 @@ Path resolution via \fBgit rev\-parse \-\-git\-path\fR uses either \fB$GIT_DIR\f
 .sp
 See \fBgitrepository-layout\fR(5) for more information\&. The rule of thumb is do not make any assumption about whether a path belongs to \fB$GIT_DIR\fR or \fB$GIT_COMMON_DIR\fR when you need to directly access something inside \fB$GIT_DIR\fR\&. Use \fBgit rev\-parse \-\-git\-path\fR to get the final path\&.
 .sp
-If you manually move a linked working tree, you need to update the \fBgitdir\fR file in the entry\(cqs directory\&. For example, if a linked working tree is moved to \fB/newpath/test\-next\fR and its \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR, then update \fB/path/main/\&.git/worktrees/test\-next/gitdir\fR to reference \fB/newpath/test\-next\fR instead\&.
+If you manually move a linked working tree, you need to update the \fBgitdir\fR file in the entry\(cqs directory\&. For example, if a linked working tree is moved to \fB/newpath/test\-next\fR and its \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR, then update \fB/path/main/\&.git/worktrees/test\-next/gitdir\fR to reference \fB/newpath/test\-next\fR instead\&. Better yet, run \fBgit worktree repair\fR to reestablish the connection automatically\&.
 .sp
 To prevent a \fB$GIT_DIR/worktrees\fR entry from being pruned (which can be useful in some situations, such as when the entry\(cqs working tree is stored on a portable device), use the \fBgit worktree lock\fR command, which adds a file named \fBlocked\fR to the entry\(cqs directory\&. The file contains the reason in plain text\&. For example, if a linked working tree\(cqs \fB\&.git\fR file points to \fB/path/main/\&.git/worktrees/test\-next\fR then a file named \fB/path/main/\&.git/worktrees/test\-next/locked\fR will prevent the \fBtest\-next\fR entry from being pruned\&. See \fBgitrepository-layout\fR(5) for details\&.
 .sp
