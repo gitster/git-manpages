@@ -2,12 +2,12 @@
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/18/2020
+.\"      Date: 09/22/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.546.g385c171a01
+.\"    Source: Git 2.28.0.585.ge1cfff6765
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "09/18/2020" "Git 2\&.28\&.0\&.546\&.g385c17" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "09/22/2020" "Git 2\&.28\&.0\&.585\&.ge1cfff" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,7 +35,7 @@ git-for-each-ref \- Output information on each ref
 \fIgit for\-each\-ref\fR [\-\-count=<count>] [\-\-shell|\-\-perl|\-\-python|\-\-tcl]
                    [(\-\-sort=<key>)\&...] [\-\-format=<format>] [<pattern>\&...]
                    [\-\-points\-at=<object>]
-                   (\-\-merged[=<object>] | \-\-no\-merged[=<object>])
+                   [\-\-merged[=<object>]] [\-\-no\-merged[=<object>]]
                    [\-\-contains[=<object>]] [\-\-no\-contains[=<object>]]
 .fi
 .sp
@@ -127,14 +127,12 @@ Only list refs which points at the given object\&.
 .PP
 \-\-merged[=<object>]
 .RS 4
-Only list refs whose tips are reachable from the specified commit (HEAD if not specified), incompatible with
-\fB\-\-no\-merged\fR\&.
+Only list refs whose tips are reachable from the specified commit (HEAD if not specified)\&.
 .RE
 .PP
 \-\-no\-merged[=<object>]
 .RS 4
-Only list refs whose tips are not reachable from the specified commit (HEAD if not specified), incompatible with
-\fB\-\-merged\fR\&.
+Only list refs whose tips are not reachable from the specified commit (HEAD if not specified)\&.
 .RE
 .PP
 \-\-contains[=<object>]
@@ -525,6 +523,11 @@ git for\-each\-ref \-\-format="%(refname)%(if)%(authorname)%(then) Authored by: 
 Note that the sizes of objects on disk are reported accurately, but care should be taken in drawing conclusions about which refs or objects are responsible for disk usage\&. The size of a packed non\-delta object may be much larger than the size of objects which delta against it, but the choice of which object is the base and which is the delta is arbitrary and is subject to change during a repack\&.
 .sp
 Note also that multiple copies of an object may be present in the object database; in this case, it is undefined which copy\(cqs size or delta base will be reported\&.
+.SH "NOTES"
+.sp
+When combining multiple \fB\-\-contains\fR and \fB\-\-no\-contains\fR filters, only references that contain at least one of the \fB\-\-contains\fR commits and contain none of the \fB\-\-no\-contains\fR commits are shown\&.
+.sp
+When combining multiple \fB\-\-merged\fR and \fB\-\-no\-merged\fR filters, only references that are reachable from at least one of the \fB\-\-merged\fR commits and from none of the \fB\-\-no\-merged\fR commits are shown\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-show-ref\fR(1)
