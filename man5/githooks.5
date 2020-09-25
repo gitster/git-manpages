@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/22/2020
+.\"      Date: 09/25/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.585.ge1cfff6765
+.\"    Source: Git 2.28.0.618.g9bc233ae1c
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "09/22/2020" "Git 2\&.28\&.0\&.585\&.ge1cfff" "Git Manual"
+.TH "GITHOOKS" "5" "09/25/2020" "Git 2\&.28\&.0\&.618\&.g9bc233" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -229,6 +229,72 @@ In an environment that restricts the users\(aq access only to git commands over 
 Both standard output and standard error output are forwarded to \fBgit send\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
 .sp
 The default \fIupdate\fR hook, when enabled\(emand with \fBhooks\&.allowunannotated\fR config option unset or set to false\(emprevents unannotated tags to be pushed\&.
+.SS "proc\-receive"
+.sp
+This hook is invoked by \fBgit-receive-pack\fR(1)\&. If the server has set the multi\-valued config variable \fBreceive\&.procReceiveRefs\fR, and the commands sent to \fIreceive\-pack\fR have matching reference names, these commands will be executed by this hook, instead of by the internal \fBexecute_commands()\fR function\&. This hook is responsible for updating the relevant references and reporting the results back to \fIreceive\-pack\fR\&.
+.sp
+This hook executes once for the receive operation\&. It takes no arguments, but uses a pkt\-line format protocol to communicate with \fIreceive\-pack\fR to read commands, push\-options and send results\&. In the following example for the protocol, the letter \fIS\fR stands for \fIreceive\-pack\fR and the letter \fIH\fR stands for this hook\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# Version and features negotiation\&.
+S: PKT\-LINE(version=1\e0push\-options atomic\&.\&.\&.)
+S: flush\-pkt
+H: PKT\-LINE(version=1\e0push\-options\&.\&.\&.)
+H: flush\-pkt
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# Send commands from server to the hook\&.
+S: PKT\-LINE(<old\-oid> <new\-oid> <ref>)
+S: \&.\&.\&. \&.\&.\&.
+S: flush\-pkt
+# Send push\-options only if the \(aqpush\-options\(aq feature is enabled\&.
+S: PKT\-LINE(push\-option)
+S: \&.\&.\&. \&.\&.\&.
+S: flush\-pkt
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# Receive result from the hook\&.
+# OK, run this command successfully\&.
+H: PKT\-LINE(ok <ref>)
+# NO, I reject it\&.
+H: PKT\-LINE(ng <ref> <reason>)
+# Fall through, let \(aqreceive\-pack\(aq to execute it\&.
+H: PKT\-LINE(ok <ref>)
+H: PKT\-LINE(option fall\-through)
+# OK, but has an alternate reference\&.  The alternate reference name
+# and other status can be given in option directives\&.
+H: PKT\-LINE(ok <ref>)
+H: PKT\-LINE(option refname <refname>)
+H: PKT\-LINE(option old\-oid <old\-oid>)
+H: PKT\-LINE(option new\-oid <new\-oid>)
+H: PKT\-LINE(option forced\-update)
+H: \&.\&.\&. \&.\&.\&.
+H: flush\-pkt
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Each command for the \fIproc\-receive\fR hook may point to a pseudo\-reference and always has a zero\-old as its old\-oid, while the \fIproc\-receive\fR hook may update an alternate reference and the alternate reference may exist already with a non\-zero old\-oid\&. For this case, this hook will use "option" directives to report extended attributes for the reference given by the leading "ok" directive\&.
+.sp
+The report of the commands of this hook should have the same order as the input\&. The exit status of the \fIproc\-receive\fR hook only determines the success or failure of the group of commands sent to it, unless atomic push is in use\&.
 .SS "post\-receive"
 .sp
 This hook is invoked by \fBgit-receive-pack\fR(1) when it reacts to \fBgit push\fR and updates reference(s) in its repository\&. It executes on the remote repository once after all the refs have been updated\&.

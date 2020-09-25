@@ -1,0 +1,115 @@
+'\" t
+.\"     Title: git-maintenance
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 09/25/2020
+.\"    Manual: Git Manual
+.\"    Source: Git 2.28.0.618.g9bc233ae1c
+.\"  Language: English
+.\"
+.TH "GIT\-MAINTENANCE" "1" "09/25/2020" "Git 2\&.28\&.0\&.618\&.g9bc233" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-maintenance \- Run tasks to optimize Git repository data
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIgit maintenance\fR run [<options>]
+.fi
+.sp
+.SH "DESCRIPTION"
+.sp
+Run tasks to optimize Git repository data, speeding up other Git commands and reducing storage requirements for the repository\&.
+.sp
+Git commands that add repository data, such as \fBgit add\fR or \fBgit fetch\fR, are optimized for a responsive user experience\&. These commands do not take time to optimize the Git data, since such optimizations scale with the full size of the repository while these user commands each perform a relatively small action\&.
+.sp
+The \fBgit maintenance\fR command provides flexibility for how to optimize the Git repository\&.
+.SH "SUBCOMMANDS"
+.PP
+run
+.RS 4
+Run one or more maintenance tasks\&. If one or more
+\fB\-\-task\fR
+options are specified, then those tasks are run in that order\&. Otherwise, the tasks are determined by which
+\fBmaintenance\&.<task>\&.enabled\fR
+config options are true\&. By default, only
+\fBmaintenance\&.gc\&.enabled\fR
+is true\&.
+.RE
+.SH "TASKS"
+.PP
+commit\-graph
+.RS 4
+The
+\fBcommit\-graph\fR
+job updates the
+\fBcommit\-graph\fR
+files incrementally, then verifies that the written data is correct\&. The incremental write is safe to run alongside concurrent Git processes since it will not expire
+\fB\&.graph\fR
+files that were in the previous
+\fBcommit\-graph\-chain\fR
+file\&. They will be deleted by a later run based on the expiration delay\&.
+.RE
+.PP
+gc
+.RS 4
+Clean up unnecessary files and optimize the local repository\&. "GC" stands for "garbage collection," but this task performs many smaller tasks\&. This task can be expensive for large repositories, as it repacks all Git objects into a single pack\-file\&. It can also be disruptive in some situations, as it deletes stale data\&. See
+\fBgit-gc\fR(1)
+for more details on garbage collection in Git\&.
+.RE
+.SH "OPTIONS"
+.PP
+\-\-auto
+.RS 4
+When combined with the
+\fBrun\fR
+subcommand, run maintenance tasks only if certain thresholds are met\&. For example, the
+\fBgc\fR
+task runs when the number of loose objects exceeds the number stored in the
+\fBgc\&.auto\fR
+config setting, or when the number of pack\-files exceeds the
+\fBgc\&.autoPackLimit\fR
+config setting\&.
+.RE
+.PP
+\-\-quiet
+.RS 4
+Do not report progress or other information over
+\fBstderr\fR\&.
+.RE
+.PP
+\-\-task=<task>
+.RS 4
+If this option is specified one or more times, then only run the specified tasks in the specified order\&. If no
+\fB\-\-task=<task>\fR
+arguments are specified, then only the tasks with
+\fBmaintenance\&.<task>\&.enabled\fR
+configured as
+\fBtrue\fR
+are considered\&. See the
+\fITASKS\fR
+section for the list of accepted
+\fB<task>\fR
+values\&.
+.RE
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite

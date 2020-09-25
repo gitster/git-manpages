@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/22/2020
+.\"      Date: 09/25/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.585.ge1cfff6765
+.\"    Source: Git 2.28.0.618.g9bc233ae1c
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "09/22/2020" "Git 2\&.28\&.0\&.585\&.ge1cfff" "Git Manual"
+.TH "GIT\-CONFIG" "1" "09/25/2020" "Git 2\&.28\&.0\&.618\&.g9bc233" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -5514,6 +5514,33 @@ taking precedence\&. In a bare repository, this defaults to
 \fBHEAD:\&.mailmap\fR\&. In a non\-bare repository, it defaults to empty\&.
 .RE
 .PP
+maintenance\&.<task>\&.enabled
+.RS 4
+This boolean config option controls whether the maintenance task with name
+\fB<task>\fR
+is run when no
+\fB\-\-task\fR
+option is specified to
+\fBgit maintenance run\fR\&. These config values are ignored if a
+\fB\-\-task\fR
+option exists\&. By default, only
+\fBmaintenance\&.gc\&.enabled\fR
+is true\&.
+.RE
+.PP
+maintenance\&.commit\-graph\&.auto
+.RS 4
+This integer config option controls how often the
+\fBcommit\-graph\fR
+task should be run as part of
+\fBgit maintenance run \-\-auto\fR\&. If zero, then the
+\fBcommit\-graph\fR
+task will not run with the
+\fB\-\-auto\fR
+option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run when the number of reachable commits that are not in the commit\-graph file is at least the value of
+\fBmaintenance\&.commit\-graph\&.auto\fR\&. The default value is 100\&.
+.RE
+.PP
 man\&.viewer
 .RS 4
 Specify the programs that may be used to display help in the
@@ -6727,6 +6754,33 @@ This variable is the same as
 (and so affects pushes, but not fetches)\&. An attempt to update or delete a hidden ref by
 \fBgit push\fR
 is rejected\&.
+.RE
+.PP
+receive\&.procReceiveRefs
+.RS 4
+This is a multi\-valued variable that defines reference prefixes to match the commands in
+\fBreceive\-pack\fR\&. Commands matching the prefixes will be executed by an external hook "proc\-receive", instead of the internal
+\fBexecute_commands\fR
+function\&. If this variable is not defined, the "proc\-receive" hook will never be used, and all commands will be executed by the internal
+\fBexecute_commands\fR
+function\&.
+.sp
+For example, if this variable is set to "refs/for", pushing to reference such as "refs/for/master" will not create or update a reference named "refs/for/master", but may create or update a pull request directly by running the hook "proc\-receive"\&.
+.sp
+Optional modifiers can be provided in the beginning of the value to filter commands for specific actions: create (a), modify (m), delete (d)\&. A
+\fB!\fR
+can be included in the modifiers to negate the reference prefix entry\&. E\&.g\&.:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git config \-\-system \-\-add receive\&.procReceiveRefs ad:refs/heads
+git config \-\-system \-\-add receive\&.procReceiveRefs !:refs/heads
+.fi
+.if n \{\
+.RE
+.\}
 .RE
 .PP
 receive\&.updateServerInfo
