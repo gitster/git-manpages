@@ -2,12 +2,12 @@
 .\"     Title: gitfaq
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/25/2020
+.\"      Date: 09/29/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.618.g9bc233ae1c
+.\"    Source: Git 2.28.0.651.g306ee63a70
 .\"  Language: English
 .\"
-.TH "GITFAQ" "7" "09/25/2020" "Git 2\&.28\&.0\&.618\&.g9bc233" "Git Manual"
+.TH "GITFAQ" "7" "09/29/2020" "Git 2\&.28\&.0\&.651\&.g306ee6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -273,6 +273,39 @@ How do I know if I want to do a fetch or a pull?
 A fetch stores a copy of the latest changes from the remote repository, without modifying the working tree or current branch\&. You can then at your leisure inspect, merge, rebase on top of, or ignore the upstream changes\&. A pull consists of a fetch followed immediately by either a merge or rebase\&. See
 \fBgit-pull\fR(1)\&.
 .RE
+.SH "MERGING AND REBASING"
+.PP
+What kinds of problems can occur when merging long\-lived branches with squash merges?
+.RS 4
+In general, there are a variety of problems that can occur when using squash merges to merge two branches multiple times\&. These can include seeing extra commits in
+\fBgit log\fR
+output, with a GUI, or when using the
+\fB\&.\&.\&.\fR
+notation to express a range, as well as the possibility of needing to re\-resolve conflicts again and again\&.
+.sp
+When Git does a normal merge between two branches, it considers exactly three points: the two branches and a third commit, called the
+\fImerge base\fR, which is usually the common ancestor of the commits\&. The result of the merge is the sum of the changes between the merge base and each head\&. When you merge two branches with a regular merge commit, this results in a new commit which will end up as a merge base when they\(cqre merged again, because there is now a new common ancestor\&. Git doesn\(cqt have to consider changes that occurred before the merge base, so you don\(cqt have to re\-resolve any conflicts you resolved before\&.
+.sp
+When you perform a squash merge, a merge commit isn\(cqt created; instead, the changes from one side are applied as a regular commit to the other side\&. This means that the merge base for these branches won\(cqt have changed, and so when Git goes to perform its next merge, it considers all of the changes that it considered the last time plus the new changes\&. That means any conflicts may need to be re\-resolved\&. Similarly, anything using the
+\fB\&.\&.\&.\fR
+notation in
+\fBgit diff\fR,
+\fBgit log\fR, or a GUI will result in showing all of the changes since the original merge base\&.
+.sp
+As a consequence, if you want to merge two long\-lived branches repeatedly, it\(cqs best to always use a regular merge commit\&.
+.RE
+.PP
+If I make a change on two branches but revert it on one, why does the merge of those branches include the change?
+.RS 4
+By default, when Git does a merge, it uses a strategy called the recursive strategy, which does a fancy three\-way merge\&. In such a case, when Git performs the merge, it considers exactly three points: the two heads and a third point, called the
+\fImerge base\fR, which is usually the common ancestor of those commits\&. Git does not consider the history or the individual commits that have happened on those branches at all\&.
+.sp
+As a result, if both sides have a change and one side has reverted that change, the result is to include the change\&. This is because the code has changed on one side and there is no net change on the other, and in this scenario, Git adopts the change\&.
+.sp
+If this is a problem for you, you can do a rebase instead, rebasing the branch with the revert onto the other branch\&. A rebase in this scenario will revert the change, because a rebase applies each individual commit, including the revert\&. Note that rebases rewrite history, so you should avoid rebasing published branches unless you\(cqre sure you\(cqre comfortable with that\&. See the NOTES section in
+\fBgit-rebase\fR(1)
+for more details\&.
+.RE
 .SH "HOOKS"
 .PP
 How do I use hooks to prevent users from making certain changes?
@@ -342,6 +375,45 @@ and see the following entry for information about how to configure files as text
 You can also control this behavior with the
 \fBcore\&.whitespace\fR
 setting if you don\(cqt wish to remove the carriage returns from your line endings\&.
+.RE
+.PP
+Why do I have a file that\(cqs always modified?
+.RS 4
+Internally, Git always stores file names as sequences of bytes and doesn\(cqt perform any encoding or case folding\&. However, Windows and macOS by default both perform case folding on file names\&. As a result, it\(cqs possible to end up with multiple files or directories whose names differ only in case\&. Git can handle this just fine, but the file system can store only one of these files, so when Git reads the other file to see its contents, it looks modified\&.
+.sp
+It\(cqs best to remove one of the files such that you only have one file\&. You can do this with commands like the following (assuming two files
+\fBAFile\&.txt\fR
+and
+\fBafile\&.txt\fR) on an otherwise clean working tree:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git rm \-\-cached AFile\&.txt
+$ git commit \-m \(aqRemove files conflicting in case\(aq
+$ git checkout \&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This avoids touching the disk, but removes the additional file\&. Your project may prefer to adopt a naming convention, such as all\-lowercase names, to avoid this problem from occurring again; such a convention can be checked using a
+\fBpre\-receive\fR
+hook or as part of a continuous integration (CI) system\&.
+.sp
+It is also possible for perpetually modified files to occur on any platform if a smudge or clean filter is in use on your system but a file was previously committed without running the smudge or clean filter\&. To fix this, run the following on an otherwise clean working tree:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git add \-\-renormalize \&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .RE
 .PP
 What\(cqs the recommended way to store files in Git?
