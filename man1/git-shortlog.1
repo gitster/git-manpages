@@ -2,12 +2,12 @@
 .\"     Title: git-shortlog
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/29/2020
+.\"      Date: 10/04/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.28.0.651.g306ee63a70
+.\"    Source: Git 2.28.0.715.gab4691b67b
 .\"  Language: English
 .\"
-.TH "GIT\-SHORTLOG" "1" "09/29/2020" "Git 2\&.28\&.0\&.651\&.g306ee6" "Git Manual"
+.TH "GIT\-SHORTLOG" "1" "10/04/2020" "Git 2\&.28\&.0\&.715\&.gab4691" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -82,9 +82,75 @@ Each pretty\-printed commit will be rewrapped before it is shown\&.
 .\}
 .RE
 .PP
+\-\-group=<type>
+.RS 4
+Group commits based on
+\fB<type>\fR\&. If no
+\fB\-\-group\fR
+option is specified, the default is
+\fBauthor\fR\&.
+\fB<type>\fR
+is one of:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBauthor\fR, commits are grouped by author
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBcommitter\fR, commits are grouped by committer (the same as
+\fB\-c\fR)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBtrailer:<field>\fR, the
+\fB<field>\fR
+is interpreted as a case\-insensitive commit message trailer (see
+\fBgit-interpret-trailers\fR(1))\&. For example, if your project uses
+\fBReviewed\-by\fR
+trailers, you might want to see who has been reviewing with
+\fBgit shortlog \-ns \-\-group=trailer:reviewed\-by\fR\&.
+.sp
+Note that commits that do not include the trailer will not be counted\&. Likewise, commits with multiple trailers (e\&.g\&., multiple signoffs) may be counted more than once (but only once per unique trailer value in that commit)\&.
+.sp
+Shortlog will attempt to parse each trailer value as a
+\fBname <email>\fR
+identity\&. If successful, the mailmap is applied and the email is omitted unless the
+\fB\-\-email\fR
+option is specified\&. If the value cannot be parsed as an identity, it will be taken literally and completely\&.
+.RE
+.sp
+If
+\fB\-\-group\fR
+is specified multiple times, commits are counted under each value (but again, only once per unique value in that commit)\&. For example,
+\fBgit shortlog \-\-group=author \-\-group=trailer:co\-authored\-by\fR
+counts both authors and co\-authors\&.
+.RE
+.PP
 \-c, \-\-committer
 .RS 4
-Collect and show committer identities instead of authors\&.
+This is an alias for
+\fB\-\-group=committer\fR\&.
 .RE
 .PP
 \-w[<width>[,<indent1>[,<indent2>]]]
