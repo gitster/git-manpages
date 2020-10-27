@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/26/2020
+.\"      Date: 10/27/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.29.1.8.g1d1c4a8759
+.\"    Source: Git 2.29.1.59.gf9b6481aed
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "10/26/2020" "Git 2\&.29\&.1\&.8\&.g1d1c4a87" "Git Manual"
+.TH "GIT\-CONFIG" "1" "10/27/2020" "Git 2\&.29\&.1\&.59\&.gf9b6481" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1154,8 +1154,9 @@ if you want to disable
 \fIpushNonFFCurrent\fR,
 \fIpushNonFFMatching\fR,
 \fIpushAlreadyExists\fR,
-\fIpushFetchFirst\fR, and
-\fIpushNeedsForce\fR
+\fIpushFetchFirst\fR,
+\fIpushNeedsForce\fR, and
+\fIpushRefNeedsUpdate\fR
 simultaneously\&.
 .RE
 .PP
@@ -1202,6 +1203,13 @@ pushUnqualifiedRefname
 Shown when
 \fBgit-push\fR(1)
 gives up trying to guess based on the source and destination refs what remote ref namespace the source belongs in, but where we can still suggest that the user push to either refs/heads/* or refs/tags/* based on the type of the source object\&.
+.RE
+.PP
+pushRefNeedsUpdate
+.RS 4
+Shown when
+\fBgit-push\fR(1)
+rejects a forced update of a branch when its remote\-tracking ref has updates that we do not have locally\&.
 .RE
 .PP
 statusAheadBehind
@@ -2121,7 +2129,8 @@ for more information\&.
 core\&.multiPackIndex
 .RS 4
 Use the multi\-pack\-index file to track multiple packfiles using a single index\&. See
-\m[blue]\fBthe multi\-pack\-index design document\fR\m[]\&\s-2\u[1]\d\s+2\&.
+\fBgit-multi-pack-index\fR(1)
+for more information\&. Defaults to true\&.
 .RE
 .PP
 core\&.sparseCheckout
@@ -2475,12 +2484,12 @@ option in
 checkout\&.defaultRemote
 .RS 4
 When you run
-\fIgit checkout <something>\fR
+\fBgit checkout <something>\fR
 or
-\fIgit switch <something>\fR
+\fBgit switch <something>\fR
 and only have one remote, it may implicitly fall back on checking out and tracking e\&.g\&.
-\fIorigin/<something>\fR\&. This stops working as soon as you have more than one remote with a
-\fI<something>\fR
+\fBorigin/<something>\fR\&. This stops working as soon as you have more than one remote with a
+\fB<something>\fR
 reference\&. This setting allows for setting the name of a preferred remote that should always win when it comes to disambiguation\&. The typical use\-case is to set this to
 \fBorigin\fR\&.
 .sp
@@ -2489,21 +2498,45 @@ Currently this is used by
 and
 \fBgit-checkout\fR(1)
 when
-\fIgit checkout <something>\fR
+\fBgit checkout <something>\fR
 or
-\fIgit switch <something>\fR
+\fBgit switch <something>\fR
 will checkout the
-\fI<something>\fR
+\fB<something>\fR
 branch on another remote, and by
 \fBgit-worktree\fR(1)
 when
-\fIgit worktree add\fR
+\fBgit worktree add\fR
 refers to a remote branch\&. This setting might be used for other checkout\-like commands or functionality in the future\&.
+.RE
+.PP
+checkout\&.guess
+.RS 4
+Provides the default value for the
+\fB\-\-guess\fR
+or
+\fB\-\-no\-guess\fR
+option in
+\fBgit checkout\fR
+and
+\fBgit switch\fR\&. See
+\fBgit-switch\fR(1)
+and
+\fBgit-checkout\fR(1)\&.
 .RE
 .PP
 clean\&.requireForce
 .RS 4
 A boolean to make git\-clean do nothing unless given \-f, \-i or \-n\&. Defaults to true\&.
+.RE
+.PP
+clone\&.defaultRemoteName
+.RS 4
+The name of the remote to create when cloning a repository\&. Defaults to
+\fBorigin\fR, and can be overridden by passing the
+\fB\-\-origin\fR
+command\-line option to
+\fBgit-clone\fR(1)\&.
 .RE
 .PP
 color\&.advice
@@ -5548,6 +5581,32 @@ option\&. A negative value will force the task to run every time\&. Otherwise, a
 \fBmaintenance\&.commit\-graph\&.auto\fR\&. The default value is 100\&.
 .RE
 .PP
+maintenance\&.loose\-objects\&.auto
+.RS 4
+This integer config option controls how often the
+\fBloose\-objects\fR
+task should be run as part of
+\fBgit maintenance run \-\-auto\fR\&. If zero, then the
+\fBloose\-objects\fR
+task will not run with the
+\fB\-\-auto\fR
+option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run when the number of loose objects is at least the value of
+\fBmaintenance\&.loose\-objects\&.auto\fR\&. The default value is 100\&.
+.RE
+.PP
+maintenance\&.incremental\-repack\&.auto
+.RS 4
+This integer config option controls how often the
+\fBincremental\-repack\fR
+task should be run as part of
+\fBgit maintenance run \-\-auto\fR\&. If zero, then the
+\fBincremental\-repack\fR
+task will not run with the
+\fB\-\-auto\fR
+option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run when the number of pack\-files not in the multi\-pack\-index is at least the value of
+\fBmaintenance\&.incremental\-repack\&.auto\fR\&. The default value is 10\&.
+.RE
+.PP
 man\&.viewer
 .RS 4
 Specify the programs that may be used to display help in the
@@ -6278,7 +6337,7 @@ If set, clients will attempt to communicate with a server using the specified pr
 .\}
 \fB2\fR
 \-
-\m[blue]\fBwire protocol version 2\fR\m[]\&\s-2\u[2]\d\s+2\&.
+\m[blue]\fBwire protocol version 2\fR\m[]\&\s-2\u[1]\d\s+2\&.
 .RE
 .RE
 .PP
@@ -6527,6 +6586,17 @@ is set (in which case a
 \fItrue\fR
 value means
 \fIon\-demand\fR)\&.
+.RE
+.PP
+push\&.useForceIfIncludes
+.RS 4
+If set to "true", it is equivalent to specifying
+\fB\-\-force\-if\-includes\fR
+as an option to
+\fBgit-push\fR(1)
+in the command line\&. Adding
+\fB\-\-no\-force\-if\-includes\fR
+at the time of push overrides this configuration setting\&.
 .RE
 .PP
 rebase\&.useBuiltin
@@ -8047,11 +8117,6 @@ and running \fBgit config section\&.Subsection\&.key value2\fR will result in
 Part of the \fBgit\fR(1) suite
 .SH "NOTES"
 .IP " 1." 4
-the multi-pack-index design document
-.RS 4
-\%git-htmldocs/technical/multi-pack-index.html
-.RE
-.IP " 2." 4
 wire protocol version 2
 .RS 4
 \%git-htmldocs/technical/protocol-v2.html

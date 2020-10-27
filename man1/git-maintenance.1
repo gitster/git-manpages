@@ -2,12 +2,12 @@
 .\"     Title: git-maintenance
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/26/2020
+.\"      Date: 10/27/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.29.1.8.g1d1c4a8759
+.\"    Source: Git 2.29.1.59.gf9b6481aed
 .\"  Language: English
 .\"
-.TH "GIT\-MAINTENANCE" "1" "10/26/2020" "Git 2\&.29\&.1\&.8\&.g1d1c4a87" "Git Manual"
+.TH "GIT\-MAINTENANCE" "1" "10/27/2020" "Git 2\&.29\&.1\&.59\&.gf9b6481" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -69,11 +69,62 @@ files that were in the previous
 file\&. They will be deleted by a later run based on the expiration delay\&.
 .RE
 .PP
+prefetch
+.RS 4
+The
+\fBprefetch\fR
+task updates the object directory with the latest objects from all registered remotes\&. For each remote, a
+\fBgit fetch\fR
+command is run\&. The refmap is custom to avoid updating local or remote branches (those in
+\fBrefs/heads\fR
+or
+\fBrefs/remotes\fR)\&. Instead, the remote refs are stored in
+\fBrefs/prefetch/<remote>/\fR\&. Also, tags are not updated\&.
+.sp
+This is done to avoid disrupting the remote\-tracking branches\&. The end users expect these refs to stay unmoved unless they initiate a fetch\&. With prefetch task, however, the objects necessary to complete a later real fetch would already be obtained, so the real fetch would go faster\&. In the ideal case, it will just become an update to bunch of remote\-tracking branches without any object transfer\&.
+.RE
+.PP
 gc
 .RS 4
 Clean up unnecessary files and optimize the local repository\&. "GC" stands for "garbage collection," but this task performs many smaller tasks\&. This task can be expensive for large repositories, as it repacks all Git objects into a single pack\-file\&. It can also be disruptive in some situations, as it deletes stale data\&. See
 \fBgit-gc\fR(1)
 for more details on garbage collection in Git\&.
+.RE
+.PP
+loose\-objects
+.RS 4
+The
+\fBloose\-objects\fR
+job cleans up loose objects and places them into pack\-files\&. In order to prevent race conditions with concurrent Git commands, it follows a two\-step process\&. First, it deletes any loose objects that already exist in a pack\-file; concurrent Git processes will examine the pack\-file for the object data instead of the loose object\&. Second, it creates a new pack\-file (starting with "loose\-") containing a batch of loose objects\&. The batch size is limited to 50 thousand objects to prevent the job from taking too long on a repository with many loose objects\&. The
+\fBgc\fR
+task writes unreachable objects as loose objects to be cleaned up by a later step only if they are not re\-added to a pack\-file; for this reason it is not advisable to enable both the
+\fBloose\-objects\fR
+and
+\fBgc\fR
+tasks at the same time\&.
+.RE
+.PP
+incremental\-repack
+.RS 4
+The
+\fBincremental\-repack\fR
+job repacks the object directory using the
+\fBmulti\-pack\-index\fR
+feature\&. In order to prevent race conditions with concurrent Git commands, it follows a two\-step process\&. First, it calls
+\fBgit multi\-pack\-index expire\fR
+to delete pack\-files unreferenced by the
+\fBmulti\-pack\-index\fR
+file\&. Second, it calls
+\fBgit multi\-pack\-index repack\fR
+to select several small pack\-files and repack them into a bigger one, and then update the
+\fBmulti\-pack\-index\fR
+entries that refer to the small pack\-files to refer to the new pack\-file\&. This prepares those small pack\-files for deletion upon the next run of
+\fBgit multi\-pack\-index expire\fR\&. The selection of the small pack\-files is such that the expected size of the big pack\-file is at least the batch size; see the
+\fB\-\-batch\-size\fR
+option for the
+\fBrepack\fR
+subcommand in
+\fBgit-multi-pack-index\fR(1)\&. The default batch\-size is zero, which is a special case that attempts to repack all pack\-files into a single pack\-file\&.
 .RE
 .SH "OPTIONS"
 .PP
