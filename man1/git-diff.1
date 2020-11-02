@@ -2,12 +2,12 @@
 .\"     Title: git-diff
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/29/2020
+.\"      Date: 11/02/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.29.2.56.gad27df6a5c
+.\"    Source: Git 2.29.2.154.g7f7ebe054a
 .\"  Language: English
 .\"
-.TH "GIT\-DIFF" "1" "10/29/2020" "Git 2\&.29\&.2\&.56\&.gad27df6" "Git Manual"
+.TH "GIT\-DIFF" "1" "11/02/2020" "Git 2\&.29\&.2\&.154\&.g7f7ebe" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,8 +33,8 @@ git-diff \- Show changes between commits, commit and working tree, etc
 .sp
 .nf
 \fIgit diff\fR [<options>] [<commit>] [\-\-] [<path>\&...]
-\fIgit diff\fR [<options>] \-\-cached [<commit>] [\-\-] [<path>\&...]
-\fIgit diff\fR [<options>] <commit> [<commit>\&...] <commit> [\-\-] [<path>\&...]
+\fIgit diff\fR [<options>] \-\-cached [\-\-merge\-base] [<commit>] [\-\-] [<path>\&...]
+\fIgit diff\fR [<options>] [\-\-merge\-base] <commit> [<commit>\&...] <commit> [\-\-] [<path>\&...]
 \fIgit diff\fR [<options>] <commit>\&...<commit> [\-\-] [<path>\&...]
 \fIgit diff\fR [<options>] <blob> <blob>
 \fIgit diff\fR [<options>] \-\-no\-index [\-\-] <path> <path>
@@ -60,9 +60,14 @@ option when running the command in a working tree controlled by Git and at least
 \fB\-\-exit\-code\fR\&.
 .RE
 .PP
-\fIgit diff\fR [<options>] \-\-cached [<commit>] [\-\-] [<path>\&...]
+\fIgit diff\fR [<options>] \-\-cached [\-\-merge\-base] [<commit>] [\-\-] [<path>\&...]
 .RS 4
 This form is to view the changes you staged for the next commit relative to the named <commit>\&. Typically you would want comparison with the latest commit, so if you do not give <commit>, it defaults to HEAD\&. If HEAD does not exist (e\&.g\&. unborn branches) and <commit> is not given, it shows all staged changes\&. \-\-staged is a synonym of \-\-cached\&.
+.sp
+If \-\-merge\-base is given, instead of using <commit>, use the merge base of <commit> and HEAD\&.
+\fBgit diff \-\-merge\-base A\fR
+is equivalent to
+\fBgit diff $(git merge\-base A HEAD)\fR\&.
 .RE
 .PP
 \fIgit diff\fR [<options>] <commit> [\-\-] [<path>\&...]
@@ -70,14 +75,21 @@ This form is to view the changes you staged for the next commit relative to the 
 This form is to view the changes you have in your working tree relative to the named <commit>\&. You can use HEAD to compare it with the latest commit, or a branch name to compare with the tip of a different branch\&.
 .RE
 .PP
-\fIgit diff\fR [<options>] <commit> <commit> [\-\-] [<path>\&...]
+\fIgit diff\fR [<options>] [\-\-merge\-base] <commit> <commit> [\-\-] [<path>\&...]
 .RS 4
 This is to view the changes between two arbitrary <commit>\&.
+.sp
+If \-\-merge\-base is given, use the merge base of the two commits for the "before" side\&.
+\fBgit diff \-\-merge\-base A B\fR
+is equivalent to
+\fBgit diff $(git merge\-base A B) B\fR\&.
 .RE
 .PP
 \fIgit diff\fR [<options>] <commit> <commit>\&... <commit> [\-\-] [<path>\&...]
 .RS 4
-This form is to view the results of a merge commit\&. The first listed <commit> must be the merge itself; the remaining two or more commits should be its parents\&. A convenient way to produce the desired set of revisions is to use the ^@ suffix\&. For instance, if
+This form is to view the results of a merge commit\&. The first listed <commit> must be the merge itself; the remaining two or more commits should be its parents\&. A convenient way to produce the desired set of revisions is to use the
+\fB^@\fR
+suffix\&. For instance, if
 \fBmaster\fR
 names a merge commit,
 \fBgit diff master master^@\fR
@@ -87,17 +99,21 @@ gives the same combined diff as
 .PP
 \fIgit diff\fR [<options>] <commit>\&.\&.<commit> [\-\-] [<path>\&...]
 .RS 4
-This is synonymous to the earlier form (without the "\&.\&.") for viewing the changes between two arbitrary <commit>\&. If <commit> on one side is omitted, it will have the same effect as using HEAD instead\&.
+This is synonymous to the earlier form (without the
+\fB\&.\&.\fR) for viewing the changes between two arbitrary <commit>\&. If <commit> on one side is omitted, it will have the same effect as using HEAD instead\&.
 .RE
 .PP
 \fIgit diff\fR [<options>] <commit>\&.\&.\&.<commit> [\-\-] [<path>\&...]
 .RS 4
-This form is to view the changes on the branch containing and up to the second <commit>, starting at a common ancestor of both <commit>\&. "git diff A\&.\&.\&.B" is equivalent to "git diff $(git merge\-base A B) B"\&. You can omit any one of <commit>, which has the same effect as using HEAD instead\&.
+This form is to view the changes on the branch containing and up to the second <commit>, starting at a common ancestor of both <commit>\&.
+\fBgit diff A\&.\&.\&.B\fR
+is equivalent to
+\fBgit diff $(git merge\-base A B) B\fR\&. You can omit any one of <commit>, which has the same effect as using HEAD instead\&.
 .RE
 .sp
-Just in case you are doing something exotic, it should be noted that all of the <commit> in the above description, except in the last two forms that use "\&.\&." notations, can be any <tree>\&.
+Just in case you are doing something exotic, it should be noted that all of the <commit> in the above description, except in the \fB\-\-merge\-base\fR case and in the last two forms that use \fB\&.\&.\fR notations, can be any <tree>\&.
 .sp
-For a more complete list of ways to spell <commit>, see "SPECIFYING REVISIONS" section in \fBgitrevisions\fR(7)\&. However, "diff" is about comparing two \fIendpoints\fR, not ranges, and the range notations ("<commit>\&.\&.<commit>" and "<commit>\&.\&.\&.<commit>") do not mean a range as defined in the "SPECIFYING RANGES" section in \fBgitrevisions\fR(7)\&.
+For a more complete list of ways to spell <commit>, see "SPECIFYING REVISIONS" section in \fBgitrevisions\fR(7)\&. However, "diff" is about comparing two \fIendpoints\fR, not ranges, and the range notations (\fB<commit>\&.\&.<commit>\fR and \fB<commit>\&.\&.\&.<commit>\fR) do not mean a range as defined in the "SPECIFYING RANGES" section in \fBgitrevisions\fR(7)\&.
 .PP
 \fIgit diff\fR [<options>] <blob> <blob>
 .RS 4
@@ -893,6 +909,11 @@ Ignore whitespace when comparing lines\&. This ignores differences even if one l
 \-\-ignore\-blank\-lines
 .RS 4
 Ignore changes whose lines are all blank\&.
+.RE
+.PP
+\-I<regex>, \-\-ignore\-matching\-lines=<regex>
+.RS 4
+Ignore changes whose all lines match <regex>\&. This option may be specified more than once\&.
 .RE
 .PP
 \-\-inter\-hunk\-context=<lines>
@@ -1972,9 +1993,14 @@ $ git diff HEAD       \fB(3)\fR
 .sp
 \fB1. \fRChanges in the working tree not yet staged for the next commit\&.
 .br
-\fB2. \fRChanges between the index and your last commit; what you would be committing if you run "git commit" without "\-a" option\&.
+\fB2. \fRChanges between the index and your last commit; what you would be committing if you run
+\fBgit commit\fR
+without
+\fB\-a\fR
+option\&.
 .br
-\fB3. \fRChanges in the working tree since your last commit; what you would be committing if you run "git commit \-a"
+\fB3. \fRChanges in the working tree since your last commit; what you would be committing if you run
+\fBgit commit \-a\fR
 .br
 .RE
 .PP
