@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 11/11/2020
+.\"      Date: 11/18/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.29.2.260.ge31aba42fb
+.\"    Source: Git 2.29.2.334.gfaefdd61ec
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "11/11/2020" "Git 2\&.29\&.2\&.260\&.ge31aba" "Git Manual"
+.TH "GIT\-LOG" "1" "11/18/2020" "Git 2\&.29\&.2\&.334\&.gfaefdd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -156,9 +156,17 @@ Include a line \(lqlog size <number>\(rq in the output for each commit, where <n
 output by allowing them to allocate space in advance\&.
 .RE
 .PP
-\-L <start>,<end>:<file>, \-L :<funcname>:<file>
+\-L<start>,<end>:<file>, \-L:<funcname>:<file>
 .RS 4
-Trace the evolution of the line range given by "<start>,<end>" (or the function name regex <funcname>) within the <file>\&. You may not give any pathspec limiters\&. This is currently limited to a walk starting from a single revision, i\&.e\&., you may only give zero or one positive revision arguments, and <start> and <end> (or <funcname>) must exist in the starting revision\&. You can specify this option more than once\&. Implies
+Trace the evolution of the line range given by
+\fI<start>,<end>\fR, or by the function name regex
+\fI<funcname>\fR, within the
+\fI<file>\fR\&. You may not give any pathspec limiters\&. This is currently limited to a walk starting from a single revision, i\&.e\&., you may only give zero or one positive revision arguments, and
+\fI<start>\fR
+and
+\fI<end>\fR
+(or
+\fI<funcname>\fR) must exist in the starting revision\&. You can specify this option more than once\&. Implies
 \fB\-\-patch\fR\&. Patch output can be suppressed using
 \fB\-\-no\-patch\fR, but other diff formats (namely
 \fB\-\-raw\fR,
@@ -170,7 +178,10 @@ Trace the evolution of the line range given by "<start>,<end>" (or the function 
 \fB\-\-name\-status\fR,
 \fB\-\-check\fR) are not currently implemented\&.
 .sp
-<start> and <end> can take one of these forms:
+\fI<start>\fR
+and
+\fI<end>\fR
+can take one of these forms:
 .sp
 .RS 4
 .ie n \{\
@@ -182,7 +193,11 @@ Trace the evolution of the line range given by "<start>,<end>" (or the function 
 .\}
 number
 .sp
-If <start> or <end> is a number, it specifies an absolute line number (lines count from 1)\&.
+If
+\fI<start>\fR
+or
+\fI<end>\fR
+is a number, it specifies an absolute line number (lines count from 1)\&.
 .RE
 .sp
 .RS 4
@@ -193,11 +208,19 @@ If <start> or <end> is a number, it specifies an absolute line number (lines cou
 .sp -1
 .IP \(bu 2.3
 .\}
-/regex/
+\fB/regex/\fR
 .sp
-This form will use the first line matching the given POSIX regex\&. If <start> is a regex, it will search from the end of the previous
+This form will use the first line matching the given POSIX regex\&. If
+\fI<start>\fR
+is a regex, it will search from the end of the previous
 \fB\-L\fR
-range, if any, otherwise from the start of file\&. If <start> is \(lq^/regex/\(rq, it will search from the start of file\&. If <end> is a regex, it will search starting at the line given by <start>\&.
+range, if any, otherwise from the start of file\&. If
+\fI<start>\fR
+is
+\fB^/regex/\fR, it will search from the start of file\&. If
+\fI<end>\fR
+is a regex, it will search starting at the line given by
+\fI<start>\fR\&.
 .RE
 .sp
 .RS 4
@@ -210,12 +233,30 @@ range, if any, otherwise from the start of file\&. If <start> is \(lq^/regex/\(r
 .\}
 +offset or \-offset
 .sp
-This is only valid for <end> and will specify a number of lines before or after the line given by <start>\&.
+This is only valid for
+\fI<end>\fR
+and will specify a number of lines before or after the line given by
+\fI<start>\fR\&.
 .RE
 .sp
-If \(lq:<funcname>\(rq is given in place of <start> and <end>, it is a regular expression that denotes the range from the first funcname line that matches <funcname>, up to the next funcname line\&. \(lq:<funcname>\(rq searches from the end of the previous
+If
+\fB:<funcname>\fR
+is given in place of
+\fI<start>\fR
+and
+\fI<end>\fR, it is a regular expression that denotes the range from the first funcname line that matches
+\fI<funcname>\fR, up to the next funcname line\&.
+\fB:<funcname>\fR
+searches from the end of the previous
 \fB\-L\fR
-range, if any, otherwise from the start of file\&. \(lq^:<funcname>\(rq searches from the start of file\&.
+range, if any, otherwise from the start of file\&.
+\fB^:<funcname>\fR
+searches from the start of file\&. The function names are determined in the same way as
+\fBgit diff\fR
+works out patch hunk headers (see
+\fIDefining a custom hunk\-header\fR
+in
+\fBgitattributes\fR(5))\&.
 .RE
 .PP
 <revision range>
@@ -3579,7 +3620,12 @@ or 0 if the config option is unset\&.
 .PP
 \-W, \-\-function\-context
 .RS 4
-Show whole surrounding functions of changes\&.
+Show whole function as context lines for each change\&. The function names are determined in the same way as
+\fBgit diff\fR
+works out patch hunk headers (see
+\fIDefining a custom hunk\-header\fR
+in
+\fBgitattributes\fR(5))\&.
 .RE
 .PP
 \-\-ext\-diff

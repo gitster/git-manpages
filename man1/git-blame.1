@@ -2,12 +2,12 @@
 .\"     Title: git-blame
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 11/11/2020
+.\"      Date: 11/18/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.29.2.260.ge31aba42fb
+.\"    Source: Git 2.29.2.334.gfaefdd61ec
 .\"  Language: English
 .\"
-.TH "GIT\-BLAME" "1" "11/11/2020" "Git 2\&.29\&.2\&.260\&.ge31aba" "Git Manual"
+.TH "GIT\-BLAME" "1" "11/18/2020" "Git 2\&.29\&.2\&.334\&.gfaefdd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -86,11 +86,28 @@ Include additional statistics at the end of blame output\&.
 .PP
 \-L <start>,<end>, \-L :<funcname>
 .RS 4
-Annotate only the given line range\&. May be specified multiple times\&. Overlapping ranges are allowed\&.
+Annotate only the line range given by
+\fI<start>,<end>\fR, or by the function name regex
+\fI<funcname>\fR\&. May be specified multiple times\&. Overlapping ranges are allowed\&.
 .sp
-<start> and <end> are optional\&. \(lq\-L <start>\(rq or \(lq\-L <start>,\(rq spans from <start> to end of file\&. \(lq\-L ,<end>\(rq spans from start of file to <end>\&.
+\fI<start>\fR
+and
+\fI<end>\fR
+are optional\&.
+\fB\-L <start>\fR
+or
+\fB\-L <start>,\fR
+spans from
+\fI<start>\fR
+to end of file\&.
+\fB\-L ,<end>\fR
+spans from start of file to
+\fI<end>\fR\&.
 .sp
-<start> and <end> can take one of these forms:
+\fI<start>\fR
+and
+\fI<end>\fR
+can take one of these forms:
 .sp
 .RS 4
 .ie n \{\
@@ -102,7 +119,11 @@ Annotate only the given line range\&. May be specified multiple times\&. Overlap
 .\}
 number
 .sp
-If <start> or <end> is a number, it specifies an absolute line number (lines count from 1)\&.
+If
+\fI<start>\fR
+or
+\fI<end>\fR
+is a number, it specifies an absolute line number (lines count from 1)\&.
 .RE
 .sp
 .RS 4
@@ -113,11 +134,19 @@ If <start> or <end> is a number, it specifies an absolute line number (lines cou
 .sp -1
 .IP \(bu 2.3
 .\}
-/regex/
+\fB/regex/\fR
 .sp
-This form will use the first line matching the given POSIX regex\&. If <start> is a regex, it will search from the end of the previous
+This form will use the first line matching the given POSIX regex\&. If
+\fI<start>\fR
+is a regex, it will search from the end of the previous
 \fB\-L\fR
-range, if any, otherwise from the start of file\&. If <start> is \(lq^/regex/\(rq, it will search from the start of file\&. If <end> is a regex, it will search starting at the line given by <start>\&.
+range, if any, otherwise from the start of file\&. If
+\fI<start>\fR
+is
+\fB^/regex/\fR, it will search from the start of file\&. If
+\fI<end>\fR
+is a regex, it will search starting at the line given by
+\fI<start>\fR\&.
 .RE
 .sp
 .RS 4
@@ -130,12 +159,30 @@ range, if any, otherwise from the start of file\&. If <start> is \(lq^/regex/\(r
 .\}
 +offset or \-offset
 .sp
-This is only valid for <end> and will specify a number of lines before or after the line given by <start>\&.
+This is only valid for
+\fI<end>\fR
+and will specify a number of lines before or after the line given by
+\fI<start>\fR\&.
 .RE
 .sp
-If \(lq:<funcname>\(rq is given in place of <start> and <end>, it is a regular expression that denotes the range from the first funcname line that matches <funcname>, up to the next funcname line\&. \(lq:<funcname>\(rq searches from the end of the previous
+If
+\fB:<funcname>\fR
+is given in place of
+\fI<start>\fR
+and
+\fI<end>\fR, it is a regular expression that denotes the range from the first funcname line that matches
+\fI<funcname>\fR, up to the next funcname line\&.
+\fB:<funcname>\fR
+searches from the end of the previous
 \fB\-L\fR
-range, if any, otherwise from the start of file\&. \(lq^:<funcname>\(rq searches from the start of file\&.
+range, if any, otherwise from the start of file\&.
+\fB^:<funcname>\fR
+searches from the start of file\&. The function names are determined in the same way as
+\fBgit diff\fR
+works out patch hunk headers (see
+\fIDefining a custom hunk\-header\fR
+in
+\fBgitattributes\fR(5))\&.
 .RE
 .PP
 \-l

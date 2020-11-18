@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 11/11/2020
+.\"      Date: 11/18/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.29.2.260.ge31aba42fb
+.\"    Source: Git 2.29.2.334.gfaefdd61ec
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "11/11/2020" "Git 2\&.29\&.2\&.260\&.ge31aba" "Git Manual"
+.TH "GIT\-CONFIG" "1" "11/18/2020" "Git 2\&.29\&.2\&.334\&.gfaefdd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -5556,6 +5556,57 @@ taking precedence\&. In a bare repository, this defaults to
 \fBHEAD:\&.mailmap\fR\&. In a non\-bare repository, it defaults to empty\&.
 .RE
 .PP
+maintenance\&.auto
+.RS 4
+This boolean config option controls whether some commands run
+\fBgit maintenance run \-\-auto\fR
+after doing their normal work\&. Defaults to true\&.
+.RE
+.PP
+maintenance\&.strategy
+.RS 4
+This string config option provides a way to specify one of a few recommended schedules for background maintenance\&. This only affects which tasks are run during
+\fBgit maintenance run \-\-schedule=X\fR
+commands, provided no
+\fB\-\-task=<task>\fR
+arguments are provided\&. Further, if a
+\fBmaintenance\&.<task>\&.schedule\fR
+config value is set, then that value is used instead of the one provided by
+\fBmaintenance\&.strategy\fR\&. The possible strategy strings are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBnone\fR: This default setting implies no task are run at any schedule\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBincremental\fR: This setting optimizes for performing small maintenance activities that do not delete any data\&. This does not schedule the
+\fBgc\fR
+task, but runs the
+\fBprefetch\fR
+and
+\fBcommit\-graph\fR
+tasks hourly and the
+\fBloose\-objects\fR
+and
+\fBincremental\-repack\fR
+tasks daily\&.
+.RE
+.RE
+.PP
 maintenance\&.<task>\&.enabled
 .RS 4
 This boolean config option controls whether the maintenance task with name
@@ -5568,6 +5619,15 @@ option is specified to
 option exists\&. By default, only
 \fBmaintenance\&.gc\&.enabled\fR
 is true\&.
+.RE
+.PP
+maintenance\&.<task>\&.schedule
+.RS 4
+This config option controls whether or not the given
+\fB<task>\fR
+runs during a
+\fBgit maintenance run \-\-schedule=<frequency>\fR
+command\&. The value must be one of "hourly", "daily", or "weekly"\&.
 .RE
 .PP
 maintenance\&.commit\-graph\&.auto
