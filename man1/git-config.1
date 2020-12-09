@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 12/03/2020
+.\"      Date: 12/08/2020
 .\"    Manual: Git Manual
-.\"    Source: Git 2.29.2.456.g3a0b884cab
+.\"    Source: Git 2.29.2.540.g3cf59784d4
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/03/2020" "Git 2\&.29\&.2\&.456\&.g3a0b88" "Git Manual"
+.TH "GIT\-CONFIG" "1" "12/08/2020" "Git 2\&.29\&.2\&.540\&.g3cf597" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,15 +32,15 @@ git-config \- Get and set repository or global options
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] name [value [value_regex]]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-fixed\-value] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] name [value [value\-pattern]]
 \fIgit config\fR [<file\-option>] [\-\-type=<type>] \-\-add name value
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] \-\-replace\-all name value [value_regex]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] \-\-get name [value_regex]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] \-\-get\-all name [value_regex]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-name\-only] \-\-get\-regexp name_regex [value_regex]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-fixed\-value] \-\-replace\-all name value [value\-pattern]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] \-\-get name [value\-pattern]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] \-\-get\-all name [value\-pattern]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] [\-\-name\-only] \-\-get\-regexp name_regex [value\-pattern]
 \fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-z|\-\-null] \-\-get\-urlmatch name URL
-\fIgit config\fR [<file\-option>] \-\-unset name [value_regex]
-\fIgit config\fR [<file\-option>] \-\-unset\-all name [value_regex]
+\fIgit config\fR [<file\-option>] [\-\-fixed\-value] \-\-unset name [value\-pattern]
+\fIgit config\fR [<file\-option>] [\-\-fixed\-value] \-\-unset\-all name [value\-pattern]
 \fIgit config\fR [<file\-option>] \-\-rename\-section old_name new_name
 \fIgit config\fR [<file\-option>] \-\-remove\-section name
 \fIgit config\fR [<file\-option>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-name\-only] \-l | \-\-list
@@ -53,7 +53,7 @@ git-config \- Get and set repository or global options
 .sp
 You can query/set/replace/unset options with this command\&. The name is actually the section and the key separated by a dot, and the value will be escaped\&.
 .sp
-Multiple lines can be added to an option by using the \fB\-\-add\fR option\&. If you want to update or unset an option which can occur on multiple lines, a POSIX regexp \fBvalue_regex\fR needs to be given\&. Only the existing values that match the regexp are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the regex, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq)\&.
+Multiple lines can be added to an option by using the \fB\-\-add\fR option\&. If you want to update or unset an option which can occur on multiple lines, a \fBvalue\-pattern\fR (which is an extended regular expression, unless the \fB\-\-fixed\-value\fR option is given) needs to be given\&. Only the existing values that match the pattern are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the pattern, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq), but note that this only works when the \fB\-\-fixed\-value\fR option is not in use\&.
 .sp
 The \fB\-\-type=<type>\fR option instructs \fIgit config\fR to ensure that incoming and outgoing values are canonicalize\-able under the given <type>\&. If no \fB\-\-type=<type>\fR is given, no canonicalization will be performed\&. Callers may unset an existing \fB\-\-type\fR specifier with \fB\-\-no\-type\fR\&.
 .sp
@@ -145,14 +145,17 @@ On success, the command returns the exit code 0\&.
 .PP
 \-\-replace\-all
 .RS 4
-Default behavior is to replace at most one line\&. This replaces all lines matching the key (and optionally the value_regex)\&.
+Default behavior is to replace at most one line\&. This replaces all lines matching the key (and optionally the
+\fBvalue\-pattern\fR)\&.
 .RE
 .PP
 \-\-add
 .RS 4
 Adds a new line to the option without altering any existing values\&. This is the same as providing
 \fI^$\fR
-as the value_regex in
+as the
+\fBvalue\-pattern\fR
+in
 \fB\-\-replace\-all\fR\&.
 .RE
 .PP
@@ -279,6 +282,16 @@ Remove all lines matching the key from config file\&.
 \-l, \-\-list
 .RS 4
 List all variables set in config file, along with their values\&.
+.RE
+.PP
+\-\-fixed\-value
+.RS 4
+When used with the
+\fBvalue\-pattern\fR
+argument, treat
+\fBvalue\-pattern\fR
+as an exact string instead of a regular expression\&. This will restrict the name/value pairs that are matched to only those where the value is exactly equal to the
+\fBvalue\-pattern\fR\&.
 .RE
 .PP
 \-\-type <type>
@@ -789,7 +802,7 @@ There is also a deprecated \fB[section\&.subsection]\fR syntax\&. With this synt
 .sp
 All the other lines (and the remainder of the line after the section header) are recognized as setting variables, in the form \fIname = value\fR (or just \fIname\fR, which is a short\-hand to say that the variable is the boolean "true")\&. The variable names are case\-insensitive, allow only alphanumeric characters and \fB\-\fR, and must start with an alphabetic character\&.
 .sp
-A line that defines a value can be continued to the next line by ending it with a \fB\e\fR; the backquote and the end\-of\-line are stripped\&. Leading whitespaces after \fIname =\fR, the remainder of the line after the first comment character \fI#\fR or \fI;\fR, and trailing whitespaces of the line are discarded unless they are enclosed in double quotes\&. Internal whitespaces within the value are retained verbatim\&.
+A line that defines a value can be continued to the next line by ending it with a \fB\e\fR; the backslash and the end\-of\-line are stripped\&. Leading whitespaces after \fIname =\fR, the remainder of the line after the first comment character \fI#\fR or \fI;\fR, and trailing whitespaces of the line are discarded unless they are enclosed in double quotes\&. Internal whitespaces within the value are retained verbatim\&.
 .sp
 Inside double quotes, double quote \fB"\fR and backslash \fB\e\fR characters must be escaped: use \fB\e"\fR for \fB"\fR and \fB\e\e\fR for \fB\e\fR\&.
 .sp
@@ -7913,6 +7926,11 @@ When
 or
 \fBreceive\&.unpackLimit\fR
 are not set, the value of this variable is used instead\&. The default value is 100\&.
+.RE
+.PP
+transfer\&.advertiseSID
+.RS 4
+Boolean\&. When true, client and server processes will advertise their unique session IDs to their remote counterpart\&. Defaults to false\&.
 .RE
 .PP
 uploadarchive\&.allowUnreachable
