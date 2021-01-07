@@ -2,12 +2,12 @@
 .\"     Title: git-show
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 12/27/2020
+.\"      Date: 01/07/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.0
+.\"    Source: Git 2.30.0.81.g72c4083ddf
 .\"  Language: English
 .\"
-.TH "GIT\-SHOW" "1" "12/27/2020" "Git 2\&.30\&.0" "Git Manual"
+.TH "GIT\-SHOW" "1" "01/07/2021" "Git 2\&.30\&.0\&.81\&.g72c4083" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -976,7 +976,16 @@ reflog subject
 display the trailers of the body as interpreted by
 \fBgit-interpret-trailers\fR(1)\&. The
 \fBtrailers\fR
-string may be followed by a colon and zero or more comma\-separated options:
+string may be followed by a colon and zero or more comma\-separated options\&. If any option is provided multiple times the last occurance wins\&.
+.sp
+The boolean options accept an optional value
+\fB[=<BOOL>]\fR\&. The values
+\fBtrue\fR,
+\fBfalse\fR,
+\fBon\fR,
+\fBoff\fR
+etc\&. are all accepted\&. See the "boolean" sub\-section in "EXAMPLES" in
+\fBgit-config\fR(1)\&. If a boolean option is given with no value, it\(cqs enabled\&.
 .sp
 .RS 4
 .ie n \{\
@@ -1003,17 +1012,7 @@ shows trailer lines with key
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIonly[=val]\fR: select whether non\-trailer lines from the trailer block should be included\&. The
-\fBonly\fR
-keyword may optionally be followed by an equal sign and one of
-\fBtrue\fR,
-\fBon\fR,
-\fByes\fR
-to omit or
-\fBfalse\fR,
-\fBoff\fR,
-\fBno\fR
-to show the non\-trailer lines\&. If option is given without value it is enabled\&. If given multiple times the last value is used\&.
+\fIonly[=<BOOL>]\fR: select whether non\-trailer lines from the trailer block should be included\&.
 .RE
 .sp
 .RS 4
@@ -1026,7 +1025,7 @@ to show the non\-trailer lines\&. If option is given without value it is enabled
 .\}
 \fIseparator=<SEP>\fR: specify a separator inserted between trailer lines\&. When this option is not given each trailer line is terminated with a line feed character\&. The string SEP may contain the literal formatting codes described above\&. To use comma as separator one must use
 \fB%x2C\fR
-as it would otherwise be parsed as next option\&. If separator option is given multiple times only the last one is used\&. E\&.g\&.,
+as it would otherwise be parsed as next option\&. E\&.g\&.,
 \fB%(trailers:key=Ticket,separator=%x2C )\fR
 shows all trailer lines whose key is "Ticket" separated by a comma and a space\&.
 .RE
@@ -1039,11 +1038,9 @@ shows all trailer lines whose key is "Ticket" separated by a comma and a space\&
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIunfold[=val]\fR: make it behave as if interpret\-trailer\(cqs
+\fIunfold[=<BOOL>]\fR: make it behave as if interpret\-trailer\(cqs
 \fB\-\-unfold\fR
-option was given\&. In same way as to for
-\fBonly\fR
-it can be followed by an equal sign and explicit value\&. E\&.g\&.,
+option was given\&. E\&.g\&.,
 \fB%(trailers:only,unfold=true)\fR
 unfolds and shows all trailer lines\&.
 .RE
@@ -1056,7 +1053,31 @@ unfolds and shows all trailer lines\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIvalueonly[=val]\fR: skip over the key part of the trailer line and only show the value part\&. Also this optionally allows explicit value\&.
+\fIkeyonly[=<BOOL>]\fR: only show the key part of the trailer\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIvalueonly[=<BOOL>]\fR: only show the value part of the trailer\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIkey_value_separator=<SEP>\fR: specify a separator inserted between trailer lines\&. When this option is not given each trailer key\-value pair is separated by ": "\&. Otherwise it shares the same semantics as
+\fIseparator=<SEP>\fR
+above\&.
 .RE
 .RE
 .RE
