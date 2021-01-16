@@ -2,12 +2,12 @@
 .\"     Title: git-rev-parse
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/07/2021
+.\"      Date: 01/15/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.0.81.g72c4083ddf
+.\"    Source: Git 2.30.0.122.g4151fdb1c7
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-PARSE" "1" "01/07/2021" "Git 2\&.30\&.0\&.81\&.g72c4083" "Git Manual"
+.TH "GIT\-REV\-PARSE" "1" "01/15/2021" "Git 2\&.30\&.0\&.122\&.g4151fd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -297,6 +297,15 @@ Show every object whose name begins with the given prefix\&. The <prefix> must b
 List the GIT_* environment variables that are local to the repository (e\&.g\&. GIT_DIR or GIT_WORK_TREE, but not GIT_EDITOR)\&. Only the names of the variables are listed, not their value, even if they are set\&.
 .RE
 .PP
+\-\-path\-format=(absolute|relative)
+.RS 4
+Controls the behavior of certain other options\&. If specified as absolute, the paths printed by those options will be absolute and canonical\&. If specified as relative, the paths will be relative to the current working directory if that is possible\&. The default is option specific\&.
+.sp
+This option may be specified multiple times and affects only the arguments that follow it on the command line, either to the end of the command line or the next instance of this option\&.
+.RE
+.sp
+The following options are modified by \fB\-\-path\-format\fR:
+.PP
 \-\-git\-dir
 .RS 4
 Show
@@ -308,18 +317,45 @@ If
 is not defined and the current directory is not detected to lie in a Git repository or work tree print a message to stderr and exit with nonzero status\&.
 .RE
 .PP
-\-\-absolute\-git\-dir
-.RS 4
-Like
-\fB\-\-git\-dir\fR, but its output is always the canonicalized absolute path\&.
-.RE
-.PP
 \-\-git\-common\-dir
 .RS 4
 Show
 \fB$GIT_COMMON_DIR\fR
 if defined, else
 \fB$GIT_DIR\fR\&.
+.RE
+.PP
+\-\-resolve\-git\-dir <path>
+.RS 4
+Check if <path> is a valid repository or a gitfile that points at a valid repository, and print the location of the repository\&. If <path> is a gitfile then the resolved path to the real repository is printed\&.
+.RE
+.PP
+\-\-git\-path <path>
+.RS 4
+Resolve "$GIT_DIR/<path>" and takes other path relocation variables such as $GIT_OBJECT_DIRECTORY, $GIT_INDEX_FILE\&... into account\&. For example, if $GIT_OBJECT_DIRECTORY is set to /foo/bar then "git rev\-parse \-\-git\-path objects/abc" returns /foo/bar/abc\&.
+.RE
+.PP
+\-\-show\-toplevel
+.RS 4
+Show the (by default, absolute) path of the top\-level directory of the working tree\&. If there is no working tree, report an error\&.
+.RE
+.PP
+\-\-show\-superproject\-working\-tree
+.RS 4
+Show the absolute path of the root of the superproject\(cqs working tree (if exists) that uses the current repository as its submodule\&. Outputs nothing if the current repository is not used as a submodule by any project\&.
+.RE
+.PP
+\-\-shared\-index\-path
+.RS 4
+Show the path to the shared index file in split index mode, or empty if not in split\-index mode\&.
+.RE
+.sp
+The following options are unaffected by \fB\-\-path\-format\fR:
+.PP
+\-\-absolute\-git\-dir
+.RS 4
+Like
+\fB\-\-git\-dir\fR, but its output is always the canonicalized absolute path\&.
 .RE
 .PP
 \-\-is\-inside\-git\-dir
@@ -342,16 +378,6 @@ When the repository is bare print "true", otherwise "false"\&.
 When the repository is shallow print "true", otherwise "false"\&.
 .RE
 .PP
-\-\-resolve\-git\-dir <path>
-.RS 4
-Check if <path> is a valid repository or a gitfile that points at a valid repository, and print the location of the repository\&. If <path> is a gitfile then the resolved path to the real repository is printed\&.
-.RE
-.PP
-\-\-git\-path <path>
-.RS 4
-Resolve "$GIT_DIR/<path>" and takes other path relocation variables such as $GIT_OBJECT_DIRECTORY, $GIT_INDEX_FILE\&... into account\&. For example, if $GIT_OBJECT_DIRECTORY is set to /foo/bar then "git rev\-parse \-\-git\-path objects/abc" returns /foo/bar/abc\&.
-.RE
-.PP
 \-\-show\-cdup
 .RS 4
 When the command is invoked from a subdirectory, show the path of the top\-level directory relative to the current directory (typically a sequence of "\&.\&./", or an empty string)\&.
@@ -360,21 +386,6 @@ When the command is invoked from a subdirectory, show the path of the top\-level
 \-\-show\-prefix
 .RS 4
 When the command is invoked from a subdirectory, show the path of the current directory relative to the top\-level directory\&.
-.RE
-.PP
-\-\-show\-toplevel
-.RS 4
-Show the absolute path of the top\-level directory of the working tree\&. If there is no working tree, report an error\&.
-.RE
-.PP
-\-\-show\-superproject\-working\-tree
-.RS 4
-Show the absolute path of the root of the superproject\(cqs working tree (if exists) that uses the current repository as its submodule\&. Outputs nothing if the current repository is not used as a submodule by any project\&.
-.RE
-.PP
-\-\-shared\-index\-path
-.RS 4
-Show the path to the shared index file in split index mode, or empty if not in split\-index mode\&.
 .RE
 .PP
 \-\-show\-object\-format[=(storage|input|output)]
