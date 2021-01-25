@@ -2,12 +2,12 @@
 .\"     Title: git
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/15/2021
+.\"      Date: 01/25/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.0.122.g4151fdb1c7
+.\"    Source: Git 2.30.0.335.ge6362826a0
 .\"  Language: English
 .\"
-.TH "GIT" "1" "01/15/2021" "Git 2\&.30\&.0\&.122\&.g4151fd" "Git Manual"
+.TH "GIT" "1" "01/25/2021" "Git 2\&.30\&.0\&.335\&.ge63628" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,7 +36,7 @@ git \- the stupid content tracker
     [\-\-exec\-path[=<path>]] [\-\-html\-path] [\-\-man\-path] [\-\-info\-path]
     [\-p|\-\-paginate|\-P|\-\-no\-pager] [\-\-no\-replace\-objects] [\-\-bare]
     [\-\-git\-dir=<path>] [\-\-work\-tree=<path>] [\-\-namespace=<name>]
-    [\-\-super\-prefix=<path>]
+    [\-\-super\-prefix=<path>] [\-\-config\-env <name>=<envvar>]
     <command> [<args>]
 .fi
 .sp
@@ -129,6 +129,30 @@ to the empty string which
 \fBgit config \-\-type=bool\fR
 will convert to
 \fBfalse\fR\&.
+.RE
+.PP
+\-\-config\-env=<name>=<envvar>
+.RS 4
+Like
+\fB\-c <name>=<value>\fR, give configuration variable
+\fI<name>\fR
+a value, where <envvar> is the name of an environment variable from which to retrieve the value\&. Unlike
+\fB\-c\fR
+there is no shortcut for directly setting the value to an empty string, instead the environment variable itself must be set to the empty string\&. It is an error if the
+\fB<envvar>\fR
+does not exist in the environment\&.
+\fB<envvar>\fR
+may not contain an equals sign to avoid ambiguity with `<name>`s which contain one\&.
+.sp
+This is useful for cases where you want to pass transitory configuration options to git, but are doing so on OS\(cqs where other processes might be able to read your cmdline (e\&.g\&.
+\fB/proc/self/cmdline\fR), but not your environ (e\&.g\&.
+\fB/proc/self/environ\fR)\&. That behavior is the default on Linux, but may not be on your system\&.
+.sp
+Note that this might add security for variables such as
+\fBhttp\&.extraHeader\fR
+where the sensitive information is part of the value, but not e\&.g\&.
+\fBurl\&.<base>\&.insteadOf\fR
+where the sensitive information can be part of the key\&.
 .RE
 .PP
 \-\-exec\-path[=<path>]
@@ -773,7 +797,7 @@ Run a merge for files needing merging\&.
 .PP
 \fBgit-mktag\fR(1)
 .RS 4
-Creates a tag object\&.
+Creates a tag object with extra validation\&.
 .RE
 .PP
 \fBgit-mktree\fR(1)
@@ -1136,6 +1160,11 @@ Hooks used by Git\&.
 \fBgitignore\fR(5)
 .RS 4
 Specifies intentionally untracked files to ignore\&.
+.RE
+.PP
+\fBgitmailmap\fR(5)
+.RS 4
+Map author/committer names and/or E\-Mail addresses\&.
 .RE
 .PP
 \fBgitmodules\fR(5)

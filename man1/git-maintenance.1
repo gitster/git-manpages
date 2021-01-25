@@ -2,12 +2,12 @@
 .\"     Title: git-maintenance
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/15/2021
+.\"      Date: 01/25/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.0.122.g4151fdb1c7
+.\"    Source: Git 2.30.0.335.ge6362826a0
 .\"  Language: English
 .\"
-.TH "GIT\-MAINTENANCE" "1" "01/15/2021" "Git 2\&.30\&.0\&.122\&.g4151fd" "Git Manual"
+.TH "GIT\-MAINTENANCE" "1" "01/25/2021" "Git 2\&.30\&.0\&.335\&.ge63628" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -288,6 +288,73 @@ The background maintenance schedule runs \fBgit maintenance run\fR processes on 
 If you find that some maintenance windows are taking longer than one hour to complete, then consider reducing the complexity of your maintenance tasks\&. For example, the \fBgc\fR task is much slower than the \fBincremental\-repack\fR task\&. However, this comes at a cost of a slightly larger object database\&. Consider moving more expensive tasks to be run less frequently\&.
 .sp
 Expert users may consider scheduling their own maintenance tasks using a different schedule than is available through \fBgit maintenance start\fR and Git configuration options\&. These users should be aware of the object database lock and how concurrent \fBgit maintenance run\fR commands behave\&. Further, the \fBgit gc\fR command should not be combined with \fBgit maintenance run\fR commands\&. \fBgit gc\fR modifies the object database but does not take the lock in the same way as \fBgit maintenance run\fR\&. If possible, use \fBgit maintenance run \-\-task=gc\fR instead of \fBgit gc\fR\&.
+.sp
+The following sections describe the mechanisms put in place to run background maintenance by \fBgit maintenance start\fR and how to customize them\&.
+.SH "BACKGROUND MAINTENANCE ON POSIX SYSTEMS"
+.sp
+The standard mechanism for scheduling background tasks on POSIX systems is cron(8)\&. This tool executes commands based on a given schedule\&. The current list of user\-scheduled tasks can be found by running \fBcrontab \-l\fR\&. The schedule written by \fBgit maintenance start\fR is similar to this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# BEGIN GIT MAINTENANCE SCHEDULE
+# The following schedule was created by Git
+# Any edits made in this region might be
+# replaced in the future by a Git command\&.
+
+0 1\-23 * * * "/<path>/git" \-\-exec\-path="/<path>" for\-each\-repo \-\-config=maintenance\&.repo maintenance run \-\-schedule=hourly
+0 0 * * 1\-6 "/<path>/git" \-\-exec\-path="/<path>" for\-each\-repo \-\-config=maintenance\&.repo maintenance run \-\-schedule=daily
+0 0 * * 0 "/<path>/git" \-\-exec\-path="/<path>" for\-each\-repo \-\-config=maintenance\&.repo maintenance run \-\-schedule=weekly
+
+# END GIT MAINTENANCE SCHEDULE
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+The comments are used as a region to mark the schedule as written by Git\&. Any modifications within this region will be completely deleted by \fBgit maintenance stop\fR or overwritten by \fBgit maintenance start\fR\&.
+.sp
+The \fBcrontab\fR entry specifies the full path of the \fBgit\fR executable to ensure that the executed \fBgit\fR command is the same one with which \fBgit maintenance start\fR was issued independent of \fBPATH\fR\&. If the same user runs \fBgit maintenance start\fR with multiple Git executables, then only the latest executable is used\&.
+.sp
+These commands use \fBgit for\-each\-repo \-\-config=maintenance\&.repo\fR to run \fBgit maintenance run \-\-schedule=<frequency>\fR on each repository listed in the multi\-valued \fBmaintenance\&.repo\fR config option\&. These are typically loaded from the user\-specific global config\&. The \fBgit maintenance\fR process then determines which maintenance tasks are configured to run on each repository with each \fB<frequency>\fR using the \fBmaintenance\&.<task>\&.schedule\fR config options\&. These values are loaded from the global or repository config values\&.
+.sp
+If the config values are insufficient to achieve your desired background maintenance schedule, then you can create your own schedule\&. If you run \fBcrontab \-e\fR, then an editor will load with your user\-specific \fBcron\fR schedule\&. In that editor, you can add your own schedule lines\&. You could start by adapting the default schedule listed earlier, or you could read the crontab(5) documentation for advanced scheduling techniques\&. Please do use the full path and \fB\-\-exec\-path\fR techniques from the default schedule to ensure you are executing the correct binaries in your schedule\&.
+.SH "BACKGROUND MAINTENANCE ON MACOS SYSTEMS"
+.sp
+While macOS technically supports \fBcron\fR, using \fBcrontab \-e\fR requires elevated privileges and the executed process does not have a full user context\&. Without a full user context, Git and its credential helpers cannot access stored credentials, so some maintenance tasks are not functional\&.
+.sp
+Instead, \fBgit maintenance start\fR interacts with the \fBlaunchctl\fR tool, which is the recommended way to schedule timed jobs in macOS\&. Scheduling maintenance through \fBgit maintenance (start|stop)\fR requires some \fBlaunchctl\fR features available only in macOS 10\&.11 or later\&.
+.sp
+Your user\-specific scheduled tasks are stored as XML\-formatted \fB\&.plist\fR files in \fB~/Library/LaunchAgents/\fR\&. You can see the currently\-registered tasks using the following command:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ ls ~/Library/LaunchAgents/org\&.git\-scm\&.git*
+org\&.git\-scm\&.git\&.daily\&.plist
+org\&.git\-scm\&.git\&.hourly\&.plist
+org\&.git\-scm\&.git\&.weekly\&.plist
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+One task is registered for each \fB\-\-schedule=<frequency>\fR option\&. To inspect how the XML format describes each schedule, open one of these \fB\&.plist\fR files in an editor and inspect the \fB<array>\fR element following the \fB<key>StartCalendarInterval</key>\fR element\&.
+.sp
+\fBgit maintenance start\fR will overwrite these files and register the tasks again with \fBlaunchctl\fR, so any customizations should be done by creating your own \fB\&.plist\fR files with distinct names\&. Similarly, the \fBgit maintenance stop\fR command will unregister the tasks with \fBlaunchctl\fR and delete the \fB\&.plist\fR files\&.
+.sp
+To create more advanced customizations to your background tasks, see launchctl\&.plist(5) for more information\&.
+.SH "BACKGROUND MAINTENANCE ON WINDOWS SYSTEMS"
+.sp
+Windows does not support \fBcron\fR and instead has its own system for scheduling background tasks\&. The \fBgit maintenance start\fR command uses the \fBschtasks\fR command to submit tasks to this system\&. You can inspect all background tasks using the Task Scheduler application\&. The tasks added by Git have names of the form \fBGit Maintenance (<frequency>)\fR\&. The Task Scheduler GUI has ways to inspect these tasks, but you can also export the tasks to XML files and view the details there\&.
+.sp
+Note that since Git is a console application, these background tasks create a console window visible to the current user\&. This can be changed manually by selecting the "Run whether user is logged in or not" option in Task Scheduler\&. This change requires a password input, which is why \fBgit maintenance start\fR does not select it by default\&.
+.sp
+If you want to customize the background tasks, please rename the tasks so future calls to \fBgit maintenance (start|stop)\fR do not overwrite your custom tasks\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

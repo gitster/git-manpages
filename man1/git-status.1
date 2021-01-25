@@ -2,12 +2,12 @@
 .\"     Title: git-status
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/15/2021
+.\"      Date: 01/25/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.0.122.g4151fdb1c7
+.\"    Source: Git 2.30.0.335.ge6362826a0
 .\"  Language: English
 .\"
-.TH "GIT\-STATUS" "1" "01/15/2021" "Git 2\&.30\&.0\&.122\&.g4151fd" "Git Manual"
+.TH "GIT\-STATUS" "1" "01/25/2021" "Git 2\&.30\&.0\&.335\&.ge63628" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -272,7 +272,62 @@ where \fBORIG_PATH\fR is where the renamed/copied contents came from\&. \fBORIG_
 .sp
 The fields (including the \fB\->\fR) are separated from each other by a single space\&. If a filename contains whitespace or other nonprintable characters, that field will be quoted in the manner of a C string literal: surrounded by ASCII double quote (34) characters, and with interior special characters backslash\-escaped\&.
 .sp
-For paths with merge conflicts, \fBX\fR and \fBY\fR show the modification states of each side of the merge\&. For paths that do not have merge conflicts, \fBX\fR shows the status of the index, and \fBY\fR shows the status of the work tree\&. For untracked paths, \fBXY\fR are \fB??\fR\&. Other status codes can be interpreted as follows:
+There are three different types of states that are shown using this format, and each one uses the \fBXY\fR syntax differently:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+When a merge is occurring and the merge was successful, or outside of a merge situation,
+\fBX\fR
+shows the status of the index and
+\fBY\fR
+shows the status of the working tree\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+When a merge conflict has occurred and has not yet been resolved,
+\fBX\fR
+and
+\fBY\fR
+show the state introduced by each head of the merge, relative to the common ancestor\&. These paths are said to be
+\fIunmerged\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+When a path is untracked,
+\fBX\fR
+and
+\fBY\fR
+are always the same, since they are unknown to the index\&.
+\fB??\fR
+is used for untracked paths\&. Ignored files are not listed unless
+\fB\-\-ignored\fR
+is used; if it is, ignored files are indicated by
+\fB!!\fR\&.
+.RE
+.sp
+Note that the term \fImerge\fR here also includes rebases using the default \fB\-\-merge\fR strategy, cherry\-picks, and anything else using the merge machinery\&.
+.sp
+In the following table, these three classes are shown in separate sections, and these characters are used for \fBX\fR and \fBY\fR fields for the first two sections that show tracked paths:
 .sp
 .RS 4
 .ie n \{\
@@ -356,8 +411,6 @@ For paths with merge conflicts, \fBX\fR and \fBY\fR show the modification states
 \fIU\fR
 = updated but unmerged
 .RE
-.sp
-Ignored files are not listed, unless \fB\-\-ignored\fR option is in effect, in which case \fBXY\fR are \fB!!\fR\&.
 .sp
 .if n \{\
 .RS 4
