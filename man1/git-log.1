@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/03/2021
+.\"      Date: 02/05/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.0.349.g30b29f044a
+.\"    Source: Git 2.30.0.452.gfb7fa4a1fd
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "02/03/2021" "Git 2\&.30\&.0\&.349\&.g30b29f" "Git Manual"
+.TH "GIT\-LOG" "1" "02/05/2021" "Git 2\&.30\&.0\&.452\&.gfb7fa4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -422,6 +422,17 @@ reset these limits (to no limit) again\&. Equivalent forms are
 \-\-first\-parent
 .RS 4
 Follow only the first parent commit upon seeing a merge commit\&. This option can give a better overview when viewing the evolution of a particular topic branch, because merges into a topic branch tend to be only about adjusting to updated upstream from time to time, and this option allows you to ignore the individual commits brought in to your history by such a merge\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+This option also changes default diff format for merge commits
+to `first\-parent`, see `\-\-diff\-merges=first\-parent` for details\&.
+.fi
+.if n \{\
+.RE
+.\}
 .RE
 .PP
 \-\-not
@@ -2800,41 +2811,7 @@ $ git log \-2 \-\-pretty=%h 4da45bef
 .sp
 By default, \fBgit log\fR does not generate any diff output\&. The options below can be used to show the changes made by each commit\&.
 .sp
-Note that unless one of \fB\-c\fR, \fB\-\-cc\fR, or \fB\-m\fR is given, merge commits will never show a diff, even if a diff format like \fB\-\-patch\fR is selected, nor will they match search options like \fB\-S\fR\&. The exception is when \fB\-\-first\-parent\fR is in use, in which merges are treated like normal single\-parent commits (this can be overridden by providing a combined\-diff option or with \fB\-\-no\-diff\-merges\fR)\&.
-.PP
-\-c
-.RS 4
-With this option, diff output for a merge commit shows the differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time\&. Furthermore, it lists only files which were modified from all parents\&.
-.RE
-.PP
-\-\-cc
-.RS 4
-This flag implies the
-\fB\-c\fR
-option and further compresses the patch output by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
-.RE
-.PP
-\-\-combined\-all\-paths
-.RS 4
-This flag causes combined diffs (used for merge commits) to list the name of the file from all parents\&. It thus only has effect when \-c or \-\-cc are specified, and is likely only useful if filename changes are detected (i\&.e\&. when either rename or copy detection have been requested)\&.
-.RE
-.PP
-\-m
-.RS 4
-This flag makes the merge commits show the full diff like regular commits; for each merge parent, a separate log entry and diff is generated\&. An exception is that only diff against the first parent is shown when
-\fB\-\-first\-parent\fR
-option is given; in that case, the output represents the changes the merge brought
-\fIinto\fR
-the then\-current branch\&.
-.RE
-.PP
-\-\-diff\-merges=off, \-\-no\-diff\-merges
-.RS 4
-Disable output of diffs for merge commits (default)\&. Useful to override
-\fB\-m\fR,
-\fB\-c\fR, or
-\fB\-\-cc\fR\&.
-.RE
+Note that unless one of \fB\-\-diff\-merges\fR variants (including short \fB\-m\fR, \fB\-c\fR, and \fB\-\-cc\fR options) is explicitly given, merge commits will not show a diff, even if a diff format like \fB\-\-patch\fR is selected, nor will they match search options like \fB\-S\fR\&. The exception is when \fB\-\-first\-parent\fR is in use, in which case \fBfirst\-parent\fR is the default format\&.
 .PP
 \-p, \-u, \-\-patch
 .RS 4
@@ -2847,6 +2824,60 @@ Suppress diff output\&. Useful for commands like
 \fBgit show\fR
 that show the patch by default, or to cancel the effect of
 \fB\-\-patch\fR\&.
+.RE
+.PP
+\-\-diff\-merges=(off|none|first\-parent|1|separate|m|combined|c|dense\-combined|cc), \-\-no\-diff\-merges
+.RS 4
+Specify diff format to be used for merge commits\&. Default is
+\fBoff\fR
+unless
+\fB\-\-first\-parent\fR
+is in use, in which case
+\fBfirst\-parent\fR
+is the default\&.
+.PP
+\-\-diff\-merges=(off|none), \-\-no\-diff\-merges
+.RS 4
+Disable output of diffs for merge commits\&. Useful to override implied value\&.
+.RE
+.PP
+\-\-diff\-merges=first\-parent, \-\-diff\-merges=1
+.RS 4
+This option makes merge commits show the full diff with respect to the first parent only\&.
+.RE
+.PP
+\-\-diff\-merges=separate, \-\-diff\-merges=m, \-m
+.RS 4
+This makes merge commits show the full diff with respect to each of the parents\&. Separate log entry and diff is generated for each parent\&.
+\fB\-m\fR
+doesn\(cqt produce any output without
+\fB\-p\fR\&.
+.RE
+.PP
+\-\-diff\-merges=combined, \-\-diff\-merges=c, \-c
+.RS 4
+With this option, diff output for a merge commit shows the differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time\&. Furthermore, it lists only files which were modified from all parents\&.
+\fB\-c\fR
+implies
+\fB\-p\fR\&.
+.RE
+.PP
+\-\-diff\-merges=dense\-combined, \-\-diff\-merges=cc, \-\-cc
+.RS 4
+With this option the output produced by
+\fB\-\-diff\-merges=combined\fR
+is further compressed by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
+\fB\-\-cc\fR
+implies
+\fB\-p\fR\&.
+.RE
+.RE
+.PP
+\-\-combined\-all\-paths
+.RS 4
+This flag causes combined diffs (used for merge commits) to list the name of the file from all parents\&. It thus only has effect when
+\fB\-\-diff\-merges=[dense\-]combined\fR
+is in use, and is likely only useful if filename changes are detected (i\&.e\&. when either rename or copy detection have been requested)\&.
 .RE
 .PP
 \-U<n>, \-\-unified=<n>
@@ -3846,7 +3877,7 @@ rename to a
 .RE
 .SH "COMBINED DIFF FORMAT"
 .sp
-Any diff\-generating command can take the \fB\-c\fR or \fB\-\-cc\fR option to produce a \fIcombined diff\fR when showing a merge\&. This is the default format when showing merges with \fBgit-diff\fR(1) or \fBgit-show\fR(1)\&. Note also that you can give the \fB\-m\fR option to any of these commands to force generation of diffs with individual parents of a merge\&.
+Any diff\-generating command can take the \fB\-c\fR or \fB\-\-cc\fR option to produce a \fIcombined diff\fR when showing a merge\&. This is the default format when showing merges with \fBgit-diff\fR(1) or \fBgit-show\fR(1)\&. Note also that you can give suitable \fB\-\-diff\-merges\fR option to any of these commands to force generation of diffs in specific format\&.
 .sp
 A "combined diff" format looks like this:
 .sp
