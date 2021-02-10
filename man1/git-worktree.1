@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/08/2021
+.\"      Date: 02/10/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.1.378.g1d4f2316c5
+.\"    Source: Git 2.30.1.427.gf9f2520108
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "02/08/2021" "Git 2\&.30\&.1\&.378\&.g1d4f23" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "02/10/2021" "Git 2\&.30\&.1\&.427\&.gf9f252" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -130,7 +130,9 @@ is used)\&.
 .PP
 list
 .RS 4
-List details of each working tree\&. The main working tree is listed first, followed by each of the linked working trees\&. The output details include whether the working tree is bare, the revision currently checked out, the branch currently checked out (or "detached HEAD" if none), and "locked" if the worktree is locked\&.
+List details of each working tree\&. The main working tree is listed first, followed by each of the linked working trees\&. The output details include whether the working tree is bare, the revision currently checked out, the branch currently checked out (or "detached HEAD" if none), "locked" if the worktree is locked, "prunable" if the worktree can be pruned by
+\fBprune\fR
+command\&.
 .RE
 .PP
 lock
@@ -318,12 +320,19 @@ With
 .RS 4
 With
 \fBprune\fR, report all removals\&.
+.sp
+With
+\fBlist\fR, output additional information about worktrees (see below)\&.
 .RE
 .PP
 \-\-expire <time>
 .RS 4
 With
 \fBprune\fR, only expire unused working trees older than
+\fB<time>\fR\&.
+.sp
+With
+\fBlist\fR, annotate missing working trees as prunable if they are older than
 \fB<time>\fR\&.
 .RE
 .PP
@@ -435,9 +444,69 @@ $ git worktree list
 .RE
 .\}
 .sp
+.sp
+The command also shows annotations for each working tree, according to its state\&. These annotations are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlocked\fR, if the working tree is locked\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBprunable\fR, if the working tree can be pruned via
+\fBgit worktree prune\fR\&.
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git worktree list
+/path/to/linked\-worktree    abcd1234 [master]
+/path/to/locked\-worktreee   acbd5678 (brancha) locked
+/path/to/prunable\-worktree  5678abc  (detached HEAD) prunable
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+For these annotations, a reason might also be available and this can be seen using the verbose mode\&. The annotation is then moved to the next line indented followed by the additional information\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git worktree list \-\-verbose
+/path/to/linked\-worktree              abcd1234 [master]
+/path/to/locked\-worktree\-no\-reason    abcd5678 (detached HEAD) locked
+/path/to/locked\-worktree\-with\-reason  1234abcd (brancha)
+        locked: working tree path is mounted on a portable device
+/path/to/prunable\-worktree            5678abc1 (detached HEAD)
+        prunable: gitdir file points to non\-existent location
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Note that the annotation is moved to the next line if the additional information is available, otherwise it stays on the same line as the working tree itself\&.
 .SS "Porcelain Format"
 .sp
-The porcelain format has a line per attribute\&. Attributes are listed with a label and value separated by a single space\&. Boolean attributes (like \fBbare\fR and \fBdetached\fR) are listed as a label only, and are present only if the value is true\&. The first attribute of a working tree is always \fBworktree\fR, an empty line indicates the end of the record\&. For example:
+The porcelain format has a line per attribute\&. Attributes are listed with a label and value separated by a single space\&. Boolean attributes (like \fBbare\fR and \fBdetached\fR) are listed as a label only, and are present only if the value is true\&. Some attributes (like \fBlocked\fR) can be listed as a label only or with a value depending upon whether a reason is available\&. The first attribute of a working tree is always \fBworktree\fR, an empty line indicates the end of the record\&. For example:
 .sp
 .if n \{\
 .RS 4
@@ -454,6 +523,37 @@ branch refs/heads/master
 worktree /path/to/other\-linked\-worktree
 HEAD 1234abc1234abc1234abc1234abc1234abc1234a
 detached
+
+worktree /path/to/linked\-worktree\-locked\-no\-reason
+HEAD 5678abc5678abc5678abc5678abc5678abc5678c
+branch refs/heads/locked\-no\-reason
+locked
+
+worktree /path/to/linked\-worktree\-locked\-with\-reason
+HEAD 3456def3456def3456def3456def3456def3456b
+branch refs/heads/locked\-with\-reason
+locked reason why is locked
+
+worktree /path/to/linked\-worktree\-prunable
+HEAD 1233def1234def1234def1234def1234def1234b
+detached
+prunable gitdir file points to non\-existent location
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+If the lock reason contains "unusual" characters such as newline, they are escaped and the entire reason is quoted as explained for the configuration variable \fBcore\&.quotePath\fR (see \fBgit-config\fR(1))\&. For Example:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git worktree list \-\-porcelain
+\&.\&.\&.
+locked "reason\enwhy is locked"
+\&.\&.\&.
 .fi
 .if n \{\
 .RE
