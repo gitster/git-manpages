@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/12/2021
+.\"      Date: 02/22/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.1.489.g328c109303
+.\"    Source: Git 2.30.1.602.g966e671106
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/12/2021" "Git 2\&.30\&.1\&.489\&.g328c10" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/22/2021" "Git 2\&.30\&.1\&.602\&.g966e67" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -5662,7 +5662,7 @@ Specify the directory from which templates will be copied\&. (See the "TEMPLATE 
 .PP
 init\&.defaultBranch
 .RS 4
-Allows overriding the default branch name e\&.g\&. when initializing a new repository or when cloning an empty repository\&.
+Allows overriding the default branch name e\&.g\&. when initializing a new repository\&.
 .RE
 .PP
 instaweb\&.browser
@@ -5815,6 +5815,11 @@ assume
 \fB\-\-no\-use\-mailmap\fR\&. True by default\&.
 .RE
 .PP
+lsrefs\&.unborn
+.RS 4
+May be "advertise" (the default), "allow", or "ignore"\&. If "advertise", the server will respond to the client sending "unborn" (as described in protocol\-v2\&.txt) and will advertise support for this feature during the protocol v2 capability advertisement\&. "allow" is the same as "advertise" except that the server will not advertise support for this feature; this is useful for load\-balanced servers that cannot be updated atomically (for example), since the administrator could configure "allow", then after a delay, configure "advertise"\&.
+.RE
+.PP
 mailinfo\&.scissors
 .RS 4
 If true, makes
@@ -5887,11 +5892,13 @@ task, but runs the
 \fBprefetch\fR
 and
 \fBcommit\-graph\fR
-tasks hourly and the
+tasks hourly, the
 \fBloose\-objects\fR
 and
 \fBincremental\-repack\fR
-tasks daily\&.
+tasks daily, and the
+\fBpack\-refs\fR
+task weekly\&.
 .RE
 .RE
 .PP
@@ -6469,6 +6476,15 @@ is the name of a temporary file containing the contents of the file from the bra
 contains the name of the file to which the merge tool should write the results of a successful merge\&.
 .RE
 .PP
+mergetool\&.<tool>\&.hideResolved
+.RS 4
+Allows the user to override the global
+\fBmergetool\&.hideResolved\fR
+value for a specific tool\&. See
+\fBmergetool\&.hideResolved\fR
+for the full description\&.
+.RE
+.PP
 mergetool\&.<tool>\&.trustExitCode
 .RS 4
 For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful\&. If this is not set to true then the merge target file timestamp is checked and the merge assumed to have been successful if the file has been updated, otherwise the user is prompted to indicate the success of the merge\&.
@@ -6521,6 +6537,24 @@ when available\&. A value of
 avoids using
 \fB\-\-auto\-merge\fR
 altogether, and is the default value\&.
+.RE
+.PP
+mergetool\&.hideResolved
+.RS 4
+During a merge Git will automatically resolve as many conflicts as possible and write the
+\fIMERGED\fR
+file containing conflict markers around any conflicts that it cannot resolve;
+\fILOCAL\fR
+and
+\fIREMOTE\fR
+normally represent the versions of the file from before Git\(cqs conflict resolution\&. This flag causes
+\fILOCAL\fR
+and
+\fIREMOTE\fR
+to be overwriten so that only the unresolved conflicts are presented to the merge tool\&. Can be configured per\-tool via the
+\fBmergetool\&.<tool>\&.hideResolved\fR
+configuration variable\&. Defaults to
+\fBtrue\fR\&.
 .RE
 .PP
 mergetool\&.keepBackup

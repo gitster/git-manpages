@@ -2,12 +2,12 @@
 .\"     Title: git-range-diff
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/12/2021
+.\"      Date: 02/22/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.1.489.g328c109303
+.\"    Source: Git 2.30.1.602.g966e671106
 .\"  Language: English
 .\"
-.TH "GIT\-RANGE\-DIFF" "1" "02/12/2021" "Git 2\&.30\&.1\&.489\&.g328c10" "Git Manual"
+.TH "GIT\-RANGE\-DIFF" "1" "02/22/2021" "Git 2\&.30\&.1\&.602\&.g966e67" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,6 +34,7 @@ git-range-diff \- Compare two commit ranges (e\&.g\&. two versions of a branch)
 .nf
 \fIgit range\-diff\fR [\-\-color=[<when>]] [\-\-no\-color] [<diff\-options>]
         [\-\-no\-dual\-color] [\-\-creation\-factor=<factor>]
+        [\-\-left\-only | \-\-right\-only]
         ( <range1> <range2> | <rev1>\&...<rev2> | <base> <rev1> <rev2> )
 .fi
 .sp
@@ -44,6 +45,51 @@ This command shows the differences between two versions of a patch series, or mo
 To that end, it first finds pairs of commits from both commit ranges that correspond with each other\&. Two commits are said to correspond when the diff between their patches (i\&.e\&. the author information, the commit message and the commit diff) is reasonably small compared to the patches\(aq size\&. See ``Algorithm`` below for details\&.
 .sp
 Finally, the list of matching commits is shown in the order of the second commit range, with unmatched commits being inserted just after all of their ancestors have been shown\&.
+.sp
+There are three ways to specify the commit ranges:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB<range1> <range2>\fR: Either commit range can be of the form
+\fB<base>\&.\&.<rev>\fR,
+\fB<rev>^!\fR
+or
+\fB<rev>^\-<n>\fR\&. See
+\fBSPECIFYING RANGES\fR
+in
+\fBgitrevisions\fR(7)
+for more details\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB<rev1>\&.\&.\&.<rev2>\fR\&. This is equivalent to
+\fB<rev2>\&.\&.<rev1> <rev1>\&.\&.<rev2>\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB<base> <rev1> <rev2>\fR: This is equivalent to
+\fB<base>\&.\&.<rev1> <base>\&.\&.<rev2>\fR\&.
+.RE
 .SH "OPTIONS"
 .PP
 \-\-no\-dual\-color
@@ -83,6 +129,20 @@ Set the creation/deletion cost fudge factor to
 \fB<percent>\fR\&. Defaults to 60\&. Try a larger value if
 \fBgit range\-diff\fR
 erroneously considers a large change a total rewrite (deletion of one commit and addition of another), and a smaller one in the reverse case\&. See the ``Algorithm`` section below for an explanation why this is needed\&.
+.RE
+.PP
+\-\-left\-only
+.RS 4
+Suppress commits that are missing from the first specified range (or the "left range" when using the
+\fB<rev1>\&.\&.\&.<rev2>\fR
+format)\&.
+.RE
+.PP
+\-\-right\-only
+.RS 4
+Suppress commits that are missing from the second specified range (or the "right range" when using the
+\fB<rev1>\&.\&.\&.<rev2>\fR
+format)\&.
 .RE
 .PP
 \-\-[no\-]notes[=<ref>]
