@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/22/2021
+.\"      Date: 02/25/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.30.1.602.g966e671106
+.\"    Source: Git 2.31.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "02/22/2021" "Git 2\&.30\&.1\&.602\&.g966e67" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "02/25/2021" "Git 2\&.31\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -381,6 +381,17 @@ separator is seen, stop reading commits and start reading paths to limit the res
 Don\(cqt print anything to standard output\&. This form is primarily meant to allow the caller to test the exit status to see if a range of objects is fully connected (or not)\&. It is faster than redirecting stdout to
 \fB/dev/null\fR
 as the output does not have to be formatted\&.
+.RE
+.PP
+\-\-disk\-usage
+.RS 4
+Suppress normal output; instead, print the sum of the bytes used for on\-disk storage by the selected commits or objects\&. This is equivalent to piping the output into
+\fBgit cat\-file \-\-batch\-check=\(aq%(objectsize:disk)\(aq\fR, except that it runs much faster (especially with
+\fB\-\-use\-bitmap\-index\fR)\&. See the
+\fBCAVEATS\fR
+section in
+\fBgit-cat-file\fR(1)
+for the limitations of what "on\-disk storage" means\&.
 .RE
 .PP
 \-\-cherry\-mark
@@ -2799,6 +2810,249 @@ in front of it\&. For example, these two are equivalent:
 .nf
 $ git log \-2 \-\-pretty=tformat:%h 4da45bef
 $ git log \-2 \-\-pretty=%h 4da45bef
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Print the list of commits reachable from the current branch\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list HEAD
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Print the list of commits on this branch, but not present in the upstream branch\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list @{upstream}\&.\&.HEAD
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Format commits with their author and commit message (see also the porcelain
+\fBgit-log\fR(1))\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list \-\-format=medium HEAD
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Format commits along with their diffs (see also the porcelain
+\fBgit-log\fR(1), which can do this in a single process)\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list HEAD |
+git diff\-tree \-\-stdin \-\-format=medium \-p
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Print the list of commits on the current branch that touched any file in the
+\fBDocumentation\fR
+directory\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list HEAD \-\- Documentation/
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Print the list of commits authored by you in the past year, on any branch, tag, or other ref\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list \-\-author=you@example\&.com \-\-since=1\&.year\&.ago \-\-all
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Print the list of objects reachable from the current branch (i\&.e\&., all commits and the blobs and trees they contain)\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list \-\-objects HEAD
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Compare the disk size of all reachable objects, versus those reachable from reflogs, versus the total packed size\&. This can tell you whether running
+\fBgit repack \-ad\fR
+might reduce the repository size (by dropping unreachable objects), and whether expiring reflogs might help\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+# reachable objects
+git rev\-list \-\-disk\-usage \-\-objects \-\-all
+# plus reflogs
+git rev\-list \-\-disk\-usage \-\-objects \-\-all \-\-reflog
+# total disk size used
+du \-c \&.git/objects/pack/*\&.pack \&.git/objects/??/*
+# alternative to du: add up "size" and "size\-pack" fields
+git count\-objects \-v
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Report the disk size of each branch, not including objects used by the current branch\&. This can find outliers that are contributing to a bloated repository size (e\&.g\&., because somebody accidentally committed large build artifacts)\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git for\-each\-ref \-\-format=\(aq%(refname)\(aq |
+while read branch
+do
+        size=$(git rev\-list \-\-disk\-usage \-\-objects HEAD\&.\&.$branch)
+        echo "$size $branch"
+done |
+sort \-n
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Compare the on\-disk size of branches in one group of refs, excluding another\&. If you co\-mingle objects from multiple remotes in a single repository, this can show which remotes are contributing to the repository size (taking the size of
+\fBorigin\fR
+as a baseline)\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rev\-list \-\-disk\-usage \-\-objects \-\-remotes=$suspect \-\-not \-\-remotes=origin
 .fi
 .if n \{\
 .RE
