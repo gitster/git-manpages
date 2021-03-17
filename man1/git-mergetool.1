@@ -2,12 +2,12 @@
 .\"     Title: git-mergetool
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/09/2021
+.\"      Date: 03/17/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.0.rc2
+.\"    Source: Git 2.31.0
 .\"  Language: English
 .\"
-.TH "GIT\-MERGETOOL" "1" "03/09/2021" "Git 2\&.31\&.0\&.rc2" "Git Manual"
+.TH "GIT\-MERGETOOL" "1" "03/17/2021" "Git 2\&.31\&.0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -150,6 +150,140 @@ configuration variable (see
 \fBgit-config\fR(1))\&. To cancel
 \fBdiff\&.orderFile\fR, use
 \fB\-O/dev/null\fR\&.
+.RE
+.SH "CONFIGURATION"
+.PP
+mergetool\&.<tool>\&.path
+.RS 4
+Override the path for the given tool\&. This is useful in case your tool is not in the PATH\&.
+.RE
+.PP
+mergetool\&.<tool>\&.cmd
+.RS 4
+Specify the command to invoke the specified merge tool\&. The specified command is evaluated in shell with the following variables available:
+\fIBASE\fR
+is the name of a temporary file containing the common base of the files to be merged, if available;
+\fILOCAL\fR
+is the name of a temporary file containing the contents of the file on the current branch;
+\fIREMOTE\fR
+is the name of a temporary file containing the contents of the file from the branch being merged;
+\fIMERGED\fR
+contains the name of the file to which the merge tool should write the results of a successful merge\&.
+.RE
+.PP
+mergetool\&.<tool>\&.hideResolved
+.RS 4
+Allows the user to override the global
+\fBmergetool\&.hideResolved\fR
+value for a specific tool\&. See
+\fBmergetool\&.hideResolved\fR
+for the full description\&.
+.RE
+.PP
+mergetool\&.<tool>\&.trustExitCode
+.RS 4
+For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful\&. If this is not set to true then the merge target file timestamp is checked and the merge assumed to have been successful if the file has been updated, otherwise the user is prompted to indicate the success of the merge\&.
+.RE
+.PP
+mergetool\&.meld\&.hasOutput
+.RS 4
+Older versions of
+\fBmeld\fR
+do not support the
+\fB\-\-output\fR
+option\&. Git will attempt to detect whether
+\fBmeld\fR
+supports
+\fB\-\-output\fR
+by inspecting the output of
+\fBmeld \-\-help\fR\&. Configuring
+\fBmergetool\&.meld\&.hasOutput\fR
+will make Git skip these checks and use the configured value instead\&. Setting
+\fBmergetool\&.meld\&.hasOutput\fR
+to
+\fBtrue\fR
+tells Git to unconditionally use the
+\fB\-\-output\fR
+option, and
+\fBfalse\fR
+avoids using
+\fB\-\-output\fR\&.
+.RE
+.PP
+mergetool\&.meld\&.useAutoMerge
+.RS 4
+When the
+\fB\-\-auto\-merge\fR
+is given, meld will merge all non\-conflicting parts automatically, highlight the conflicting parts and wait for user decision\&. Setting
+\fBmergetool\&.meld\&.useAutoMerge\fR
+to
+\fBtrue\fR
+tells Git to unconditionally use the
+\fB\-\-auto\-merge\fR
+option with
+\fBmeld\fR\&. Setting this value to
+\fBauto\fR
+makes git detect whether
+\fB\-\-auto\-merge\fR
+is supported and will only use
+\fB\-\-auto\-merge\fR
+when available\&. A value of
+\fBfalse\fR
+avoids using
+\fB\-\-auto\-merge\fR
+altogether, and is the default value\&.
+.RE
+.PP
+mergetool\&.hideResolved
+.RS 4
+During a merge Git will automatically resolve as many conflicts as possible and write the
+\fIMERGED\fR
+file containing conflict markers around any conflicts that it cannot resolve;
+\fILOCAL\fR
+and
+\fIREMOTE\fR
+normally represent the versions of the file from before Git\(cqs conflict resolution\&. This flag causes
+\fILOCAL\fR
+and
+\fIREMOTE\fR
+to be overwriten so that only the unresolved conflicts are presented to the merge tool\&. Can be configured per\-tool via the
+\fBmergetool\&.<tool>\&.hideResolved\fR
+configuration variable\&. Defaults to
+\fBfalse\fR\&.
+.RE
+.PP
+mergetool\&.keepBackup
+.RS 4
+After performing a merge, the original file with conflict markers can be saved as a file with a
+\fB\&.orig\fR
+extension\&. If this variable is set to
+\fBfalse\fR
+then this file is not preserved\&. Defaults to
+\fBtrue\fR
+(i\&.e\&. keep the backup files)\&.
+.RE
+.PP
+mergetool\&.keepTemporaries
+.RS 4
+When invoking a custom merge tool, Git uses a set of temporary files to pass to the tool\&. If the tool returns an error and this variable is set to
+\fBtrue\fR, then these temporary files will be preserved, otherwise they will be removed after the tool has exited\&. Defaults to
+\fBfalse\fR\&.
+.RE
+.PP
+mergetool\&.writeToTemp
+.RS 4
+Git writes temporary
+\fIBASE\fR,
+\fILOCAL\fR, and
+\fIREMOTE\fR
+versions of conflicting files in the worktree by default\&. Git will attempt to use a temporary directory for these files when set
+\fBtrue\fR\&. Defaults to
+\fBfalse\fR\&.
+.RE
+.PP
+mergetool\&.prompt
+.RS 4
+Prompt before each invocation of the merge resolution program\&.
 .RE
 .SH "TEMPORARY FILES"
 .sp
