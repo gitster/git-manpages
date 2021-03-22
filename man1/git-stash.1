@@ -2,12 +2,12 @@
 .\"     Title: git-stash
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/19/2021
+.\"      Date: 03/22/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.0.29.g98164e9585
+.\"    Source: Git 2.31.0.97.g1424303384
 .\"  Language: English
 .\"
-.TH "GIT\-STASH" "1" "03/19/2021" "Git 2\&.31\&.0\&.29\&.g98164e9" "Git Manual"
+.TH "GIT\-STASH" "1" "03/22/2021" "Git 2\&.31\&.0\&.97\&.g1424303" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-stash \- Stash the changes in a dirty working directory away
 .sp
 .nf
 \fIgit stash\fR list [<log\-options>]
-\fIgit stash\fR show [<diff\-options>] [<stash>]
+\fIgit stash\fR show [\-u|\-\-include\-untracked|\-\-only\-untracked] [<diff\-options>] [<stash>]
 \fIgit stash\fR drop [\-q|\-\-quiet] [<stash>]
 \fIgit stash\fR ( pop | apply ) [\-\-index] [\-q|\-\-quiet] [<stash>]
 \fIgit stash\fR branch <branchname> [<stash>]
@@ -103,13 +103,13 @@ command to control what is shown and how\&. See
 \fBgit-log\fR(1)\&.
 .RE
 .PP
-show [<diff\-options>] [<stash>]
+show [\-u|\-\-include\-untracked|\-\-only\-untracked] [<diff\-options>] [<stash>]
 .RS 4
 Show the changes recorded in the stash entry as a diff between the stashed contents and the commit back when the stash entry was first created\&. By default, the command shows the diffstat, but it will accept any format known to
 \fIgit diff\fR
 (e\&.g\&.,
 \fBgit stash show \-p stash@{1}\fR
-to view the second most recent entry in patch form)\&. You can use stash\&.showStat and/or stash\&.showPatch config variables to change the default behavior\&.
+to view the second most recent entry in patch form)\&. You can use stash\&.showIncludeUntracked, stash\&.showStat, and stash\&.showPatch config variables to change the default behavior\&.
 .RE
 .PP
 pop [\-\-index] [\-q|\-\-quiet] [<stash>]
@@ -194,16 +194,27 @@ All ignored and untracked files are also stashed and then cleaned up with
 \fBgit clean\fR\&.
 .RE
 .PP
-\-u, \-\-include\-untracked
+\-u, \-\-include\-untracked, \-\-no\-include\-untracked
 .RS 4
-This option is only valid for
+When used with the
 \fBpush\fR
 and
 \fBsave\fR
-commands\&.
-.sp
-All untracked files are also stashed and then cleaned up with
+commands, all untracked files are also stashed and then cleaned up with
 \fBgit clean\fR\&.
+.sp
+When used with the
+\fBshow\fR
+command, show the untracked files in the stash entry as part of the diff\&.
+.RE
+.PP
+\-\-only\-untracked
+.RS 4
+This option is only valid for the
+\fBshow\fR
+command\&.
+.sp
+Show only the untracked files in the stash entry as part of the diff\&.
 .RE
 .PP
 \-\-index

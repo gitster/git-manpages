@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/19/2021
+.\"      Date: 03/22/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.0.29.g98164e9585
+.\"    Source: Git 2.31.0.97.g1424303384
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "03/19/2021" "Git 2\&.31\&.0\&.29\&.g98164e9" "Git Manual"
+.TH "GITHOOKS" "5" "03/22/2021" "Git 2\&.31\&.0\&.97\&.g1424303" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -89,7 +89,7 @@ If the merge cannot be carried out automatically, the conflicts need to be resol
 .sp
 This hook is invoked by \fBgit-commit\fR(1) right after preparing the default log message, and before the editor is started\&.
 .sp
-It takes one to three parameters\&. The first is the name of the file that contains the commit log message\&. The second is the source of the commit message, and can be: \fBmessage\fR (if a \fB\-m\fR or \fB\-F\fR option was given); \fBtemplate\fR (if a \fB\-t\fR option was given or the configuration option \fBcommit\&.template\fR is set); \fBmerge\fR (if the commit is a merge or a \fB\&.git/MERGE_MSG\fR file exists); \fBsquash\fR (if a \fB\&.git/SQUASH_MSG\fR file exists); or \fBcommit\fR, followed by a commit SHA\-1 (if a \fB\-c\fR, \fB\-C\fR or \fB\-\-amend\fR option was given)\&.
+It takes one to three parameters\&. The first is the name of the file that contains the commit log message\&. The second is the source of the commit message, and can be: \fBmessage\fR (if a \fB\-m\fR or \fB\-F\fR option was given); \fBtemplate\fR (if a \fB\-t\fR option was given or the configuration option \fBcommit\&.template\fR is set); \fBmerge\fR (if the commit is a merge or a \fB\&.git/MERGE_MSG\fR file exists); \fBsquash\fR (if a \fB\&.git/SQUASH_MSG\fR file exists); or \fBcommit\fR, followed by a commit object name (if a \fB\-c\fR, \fB\-C\fR or \fB\-\-amend\fR option was given)\&.
 .sp
 If the exit status is non\-zero, \fBgit commit\fR will abort\&.
 .sp
@@ -133,7 +133,7 @@ Information about what is to be pushed is provided on the hook\(cqs standard inp
 .RS 4
 .\}
 .nf
-<local ref> SP <local sha1> SP <remote ref> SP <remote sha1> LF
+<local ref> SP <local object name> SP <remote ref> SP <remote object name> LF
 .fi
 .if n \{\
 .RE
@@ -151,7 +151,7 @@ refs/heads/master 67890 refs/heads/foreign 12345
 .RE
 .\}
 .sp
-although the full, 40\-character SHA\-1s would be supplied\&. If the foreign ref does not yet exist the \fB<remote SHA\-1>\fR will be 40 \fB0\fR\&. If a ref is to be deleted, the \fB<local ref>\fR will be supplied as \fB(delete)\fR and the \fB<local SHA\-1>\fR will be 40 \fB0\fR\&. If the local commit was specified by something other than a name which could be expanded (such as \fBHEAD~\fR, or a SHA\-1) it will be supplied as it was originally given\&.
+although the full object name would be supplied\&. If the foreign ref does not yet exist the \fB<remote object name>\fR will be the all\-zeroes object name\&. If a ref is to be deleted, the \fB<local ref>\fR will be supplied as \fB(delete)\fR and the \fB<local object name>\fR will be the all\-zeroes object name\&. If the local commit was specified by something other than a name which could be expanded (such as \fBHEAD~\fR, or an object name) it will be supplied as it was originally given\&.
 .sp
 If this hook exits with a non\-zero status, \fBgit push\fR will abort without pushing anything\&. Information about why the push is rejected may be sent to the user by writing to standard error\&.
 .SS "pre\-receive"
@@ -170,7 +170,7 @@ This hook executes once for the receive operation\&. It takes no arguments, but 
 .RE
 .\}
 .sp
-where \fB<old\-value>\fR is the old object name stored in the ref, \fB<new\-value>\fR is the new object name to be stored in the ref and \fB<ref\-name>\fR is the full name of the ref\&. When creating a new ref, \fB<old\-value>\fR is 40 \fB0\fR\&.
+where \fB<old\-value>\fR is the old object name stored in the ref, \fB<new\-value>\fR is the new object name to be stored in the ref and \fB<ref\-name>\fR is the full name of the ref\&. When creating a new ref, \fB<old\-value>\fR is the all\-zeroes object name\&.
 .sp
 If the hook exits with non\-zero status, none of the refs will be updated\&. If the hook exits with zero, updating of individual refs can still be prevented by the \fIupdate\fR hook\&.
 .sp
@@ -325,7 +325,7 @@ When enabled, the default \fIpost\-update\fR hook runs \fBgit update\-server\-in
 Both standard output and standard error output are forwarded to \fBgit send\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
 .SS "reference\-transaction"
 .sp
-This hook is invoked by any Git command that performs reference updates\&. It executes whenever a reference transaction is prepared, committed or aborted and may thus get called multiple times\&.
+This hook is invoked by any Git command that performs reference updates\&. It executes whenever a reference transaction is prepared, committed or aborted and may thus get called multiple times\&. The hook does not cover symbolic references (but that may change in the future)\&.
 .sp
 The hook takes exactly one argument, which is the current state the given reference transaction is in:
 .sp
@@ -374,6 +374,8 @@ For each reference update that was added to the transaction, the hook receives o
 .RE
 .\}
 .sp
+where \fB<old\-value>\fR is the old object name passed into the reference transaction, \fB<new\-value>\fR is the new object name to be stored in the ref and \fB<ref\-name>\fR is the full name of the ref\&. When force updating the reference regardless of its current value or when the reference is to be created anew, \fB<old\-value>\fR is the all\-zeroes object name\&. To distinguish these cases, you can inspect the current value of \fB<ref\-name>\fR via \fBgit rev\-parse\fR\&.
+.sp
 The exit status of the hook is ignored for any state except for the "prepared" state\&. In the "prepared" state, a non\-zero exit status will cause the transaction to be aborted\&. The hook will not be called with "aborted" state in that case\&.
 .SS "push\-to\-checkout"
 .sp
@@ -395,7 +397,7 @@ The hook receives a list of the rewritten commits on stdin, in the format
 .RS 4
 .\}
 .nf
-<old\-sha1> SP <new\-sha1> [ SP <extra\-info> ] LF
+<old\-object\-name> SP <new\-object\-name> [ SP <extra\-info> ] LF
 .fi
 .if n \{\
 .RE
@@ -414,7 +416,7 @@ For the
 and
 \fIfixup\fR
 operation, all commits that were squashed are listed as being rewritten to the squashed commit\&. This means that there will be several lines sharing the same
-\fInew\-sha1\fR\&.
+\fInew\-object\-name\fR\&.
 .sp
 The commits are guaranteed to be listed in the order that they were processed by rebase\&.
 .RE
