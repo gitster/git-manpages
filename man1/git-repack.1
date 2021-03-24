@@ -2,12 +2,12 @@
 .\"     Title: git-repack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/22/2021
+.\"      Date: 03/24/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.0.97.g1424303384
+.\"    Source: Git 2.31.0.121.g9198c13e34
 .\"  Language: English
 .\"
-.TH "GIT\-REPACK" "1" "03/22/2021" "Git 2\&.31\&.0\&.97\&.g1424303" "Git Manual"
+.TH "GIT\-REPACK" "1" "03/24/2021" "Git 2\&.31\&.0\&.121\&.g9198c1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -209,6 +209,23 @@ Pass the
 option to
 \fBgit\-pack\-objects\fR, see
 \fBgit-pack-objects\fR(1)\&.
+.RE
+.PP
+\-g=<factor>, \-\-geometric=<factor>
+.RS 4
+Arrange resulting pack structure so that each successive pack contains at least
+\fB<factor>\fR
+times the number of objects as the next\-largest pack\&.
+.sp
+\fBgit repack\fR
+ensures this by determining a "cut" of packfiles that need to be repacked into one in order to ensure a geometric progression\&. It picks the smallest set of packfiles such that as many of the larger packfiles (by count of objects contained in that pack) may be left intact\&.
+.sp
+Unlike other repack modes, the set of objects to pack is determined uniquely by the set of packs being "rolled\-up"; in other words, the packs determined to need to be combined in order to restore a geometric progression\&.
+.sp
+When
+\fB\-\-unpacked\fR
+is specified, loose objects are implicitly included in this "roll\-up", without respect to their reachability\&. This is subject to change in the future\&. This option (implying a drastically different repack mode) is not guaranteed to work with all other combinations of option to
+\fBgit repack\fR)\&.
 .RE
 .SH "CONFIGURATION"
 .sp
