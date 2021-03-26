@@ -2,12 +2,12 @@
 .\"     Title: git-commit
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/24/2021
+.\"      Date: 03/26/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.0.121.g9198c13e34
+.\"    Source: Git 2.31.1.133.g84d06cdc06
 .\"  Language: English
 .\"
-.TH "GIT\-COMMIT" "1" "03/24/2021" "Git 2\&.31\&.0\&.121\&.g9198c1" "Git Manual"
+.TH "GIT\-COMMIT" "1" "03/26/2021" "Git 2\&.31\&.1\&.133\&.g84d06c" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-commit \- Record changes to the repository
 .sp
 .nf
 \fIgit commit\fR [\-a | \-\-interactive | \-\-patch] [\-s] [\-v] [\-u<mode>] [\-\-amend]
-           [\-\-dry\-run] [(\-c | \-C | \-\-fixup | \-\-squash) <commit>]
+           [\-\-dry\-run] [(\-c | \-C | \-\-squash) <commit> | \-\-fixup [(amend|reword):]<commit>)]
            [\-F <file> | \-m <msg>] [\-\-reset\-author] [\-\-allow\-empty]
            [\-\-allow\-empty\-message] [\-\-no\-verify] [\-e] [\-\-author=<author>]
            [\-\-date=<date>] [\-\-cleanup=<mode>] [\-\-[no\-]status]
@@ -148,10 +148,58 @@ Like
 the editor is invoked, so that the user can further edit the commit message\&.
 .RE
 .PP
-\-\-fixup=<commit>
+\-\-fixup=[(amend|reword):]<commit>
 .RS 4
-Construct a commit message for use with
-\fBrebase \-\-autosquash\fR\&. The commit message will be the subject line from the specified commit with a prefix of "fixup! "\&. See
+Create a new commit which "fixes up"
+\fB<commit>\fR
+when applied with
+\fBgit rebase \-\-autosquash\fR\&. Plain
+\fB\-\-fixup=<commit>\fR
+creates a "fixup!" commit which changes the content of
+\fB<commit>\fR
+but leaves its log message untouched\&.
+\fB\-\-fixup=amend:<commit>\fR
+is similar but creates an "amend!" commit which also replaces the log message of
+\fB<commit>\fR
+with the log message of the "amend!" commit\&.
+\fB\-\-fixup=reword:<commit>\fR
+creates an "amend!" commit which replaces the log message of
+\fB<commit>\fR
+with its own log message but makes no changes to the content of
+\fB<commit>\fR\&.
+.sp
+The commit created by plain
+\fB\-\-fixup=<commit>\fR
+has a subject composed of "fixup!" followed by the subject line from <commit>, and is recognized specially by
+\fBgit rebase \-\-autosquash\fR\&. The
+\fB\-m\fR
+option may be used to supplement the log message of the created commit, but the additional commentary will be thrown away once the "fixup!" commit is squashed into
+\fB<commit>\fR
+by
+\fBgit rebase \-\-autosquash\fR\&.
+.sp
+The commit created by
+\fB\-\-fixup=amend:<commit>\fR
+is similar but its subject is instead prefixed with "amend!"\&. The log message of <commit> is copied into the log message of the "amend!" commit and opened in an editor so it can be refined\&. When
+\fBgit rebase \-\-autosquash\fR
+squashes the "amend!" commit into
+\fB<commit>\fR, the log message of
+\fB<commit>\fR
+is replaced by the refined log message from the "amend!" commit\&. It is an error for the "amend!" commit\(cqs log message to be empty unless
+\fB\-\-allow\-empty\-message\fR
+is specified\&.
+.sp
+\fB\-\-fixup=reword:<commit>\fR
+is shorthand for
+\fB\-\-fixup=amend:<commit> \-\-only\fR\&. It creates an "amend!" commit with only a log message (ignoring any changes staged in the index)\&. When squashed by
+\fBgit rebase \-\-autosquash\fR, it replaces the log message of
+\fB<commit>\fR
+without making any other changes\&.
+.sp
+Neither "fixup!" nor "amend!" commits change authorship of
+\fB<commit>\fR
+when applied by
+\fBgit rebase \-\-autosquash\fR\&. See
 \fBgit-rebase\fR(1)
 for details\&.
 .RE
