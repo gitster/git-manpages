@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 04/16/2021
+.\"      Date: 04/30/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.1.331.gb0c09ab879
+.\"    Source: Git 2.31.1.442.g7e39198978
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "04/16/2021" "Git 2\&.31\&.1\&.331\&.gb0c09a" "Git Manual"
+.TH "GIT\-CONFIG" "1" "04/30/2021" "Git 2\&.31\&.1\&.442\&.g7e3919" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2544,6 +2544,20 @@ and
 \fBgit-switch\fR(1)
 and
 \fBgit-checkout\fR(1)\&.
+.RE
+.PP
+checkout\&.workers
+.RS 4
+The number of parallel workers to use when updating the working tree\&. The default is one, i\&.e\&. sequential execution\&. If set to a value less than one, Git will use as many workers as the number of logical cores available\&. This setting and
+\fBcheckout\&.thresholdForParallelism\fR
+affect all commands that perform checkout\&. E\&.g\&. checkout, clone, reset, sparse\-checkout, etc\&.
+.sp
+Note: parallel checkout usually delivers better performance for repositories located on SSDs or over NFS\&. For repositories on spinning disks and/or machines with a small number of cores, the default sequential checkout often performs better\&. The size and compression level of a repository might also influence how well the parallel version performs\&.
+.RE
+.PP
+checkout\&.thresholdForParallelism
+.RS 4
+When running parallel checkout with a small number of files, the cost of subprocess spawning and inter\-process communication might outweigh the parallelization gains\&. This setting allows to define the minimum number of files for which parallel checkout should be attempted\&. The default is 100\&.
 .RE
 .PP
 clean\&.requireForce
@@ -5683,6 +5697,16 @@ if index\&.threads has been explicitly enabled,
 otherwise\&.
 .RE
 .PP
+index\&.sparse
+.RS 4
+When enabled, write the index using sparse\-directory entries\&. This has no effect unless
+\fBcore\&.sparseCheckout\fR
+and
+\fBcore\&.sparseCheckoutCone\fR
+are both enabled\&. Defaults to
+\fIfalse\fR\&.
+.RE
+.PP
 index\&.threads
 .RS 4
 Specifies the number of threads to spawn when loading the index\&. This is meant to reduce index load time on multiprocessor machines\&. Specifying 0 or
@@ -5813,6 +5837,16 @@ Exclude the specified patterns from the log decorations\&. This is similar to th
 command\-line option, but the config option can be overridden by the
 \fB\-\-decorate\-refs\fR
 option\&.
+.RE
+.PP
+log\&.diffMerges
+.RS 4
+Set default diff format to be used for merge commits\&. See
+\fB\-\-diff\-merges\fR
+in
+\fBgit-log\fR(1)
+for details\&. Defaults to
+\fBseparate\fR\&.
 .RE
 .PP
 log\&.follow
