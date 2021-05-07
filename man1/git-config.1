@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 04/30/2021
+.\"      Date: 05/07/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.1.442.g7e39198978
+.\"    Source: Git 2.31.1.527.g2d677e5b15
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "04/30/2021" "Git 2\&.31\&.1\&.442\&.g7e3919" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/07/2021" "Git 2\&.31\&.1\&.527\&.g2d677e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -540,6 +540,13 @@ You can override these rules either by command\-line options or by environment v
 GIT_CONFIG
 .RS 4
 Take the configuration from the given file instead of \&.git/config\&. Using the "\-\-global" option forces this to ~/\&.gitconfig\&. Using the "\-\-system" option forces this to $(prefix)/etc/gitconfig\&.
+.RE
+.PP
+GIT_CONFIG_GLOBAL, GIT_CONFIG_SYSTEM
+.RS 4
+Take the configuration from the given files instead from global or system\-level configuration\&. See
+\fBgit\fR(1)
+for details\&.
 .RE
 .PP
 GIT_CONFIG_NOSYSTEM
@@ -1361,6 +1368,15 @@ Advice shown if a user attempts to add an ignored file to the index\&.
 addEmptyPathspec
 .RS 4
 Advice shown if a user runs the add command without providing the pathspec parameter\&.
+.RE
+.PP
+updateSparsePath
+.RS 4
+Advice shown when either
+\fBgit-add\fR(1)
+or
+\fBgit-rm\fR(1)
+is asked to update index entries outside the current sparse checkout\&.
 .RE
 .RE
 .PP
@@ -8708,7 +8724,8 @@ will support partial clone and partial fetch object filtering\&.
 .PP
 uploadpackfilter\&.allow
 .RS 4
-Provides a default value for unspecified object filters (see: the below configuration variable)\&. Defaults to
+Provides a default value for unspecified object filters (see: the below configuration variable)\&. If set to
+\fBtrue\fR, this will also enable all filters which get added in the future\&. Defaults to
 \fBtrue\fR\&.
 .RE
 .PP
@@ -8720,6 +8737,7 @@ Explicitly allow or ban the object filter corresponding to
 may be one of:
 \fBblob:none\fR,
 \fBblob:limit\fR,
+\fBobject:type\fR,
 \fBtree\fR,
 \fBsparse:oid\fR, or
 \fBcombine\fR\&. If using combined filters, both
