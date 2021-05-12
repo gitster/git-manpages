@@ -2,12 +2,12 @@
 .\"     Title: git-interpret-trailers
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/11/2021
+.\"      Date: 05/12/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.1.575.g49f38e2de4
+.\"    Source: Git 2.31.1.606.gdf6c4f722c
 .\"  Language: English
 .\"
-.TH "GIT\-INTERPRET\-TRAI" "1" "05/11/2021" "Git 2\&.31\&.1\&.575\&.g49f38e" "Git Manual"
+.TH "GIT\-INTERPRET\-TRAI" "1" "05/12/2021" "Git 2\&.31\&.1\&.606\&.gdf6c4f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -295,23 +295,41 @@ configuration variable and it overrides what is specified by that option for tra
 .PP
 trailer\&.<token>\&.command
 .RS 4
-This option can be used to specify a shell command that will be called to automatically add or modify a trailer with the specified <token>\&.
+This option behaves in the same way as
+\fItrailer\&.<token>\&.cmd\fR, except that it doesn\(cqt pass anything as argument to the specified command\&. Instead the first occurrence of substring $ARG is replaced by the value that would be passed as argument\&.
 .sp
-When this option is specified, the behavior is as if a special
-\fI<token>=<value>\fR
-argument were added at the beginning of the command line, where <value> is taken to be the standard output of the specified command with any leading and trailing whitespace trimmed off\&.
+The
+\fItrailer\&.<token>\&.command\fR
+option has been deprecated in favor of
+\fItrailer\&.<token>\&.cmd\fR
+due to the fact that $ARG in the user\(cqs command is only replaced once and that the original way of replacing $ARG is not safe\&.
 .sp
-If the command contains the
-\fB$ARG\fR
-string, this string will be replaced with the <value> part of an existing trailer with the same <token>, if any, before the command is launched\&.
+When both
+\fItrailer\&.<token>\&.cmd\fR
+and
+\fItrailer\&.<token>\&.command\fR
+are given for the same <token>,
+\fItrailer\&.<token>\&.cmd\fR
+is used and
+\fItrailer\&.<token>\&.command\fR
+is ignored\&.
+.RE
+.PP
+trailer\&.<token>\&.cmd
+.RS 4
+This option can be used to specify a shell command that will be called: once to automatically add a trailer with the specified <token>, and then each time a
+\fI\-\-trailer <token>=<value>\fR
+argument to modify the <value> of the trailer that this option would produce\&.
+.sp
+When the specified command is first called to add a trailer with the specified <token>, the behavior is as if a special
+\fI\-\-trailer <token>=<value>\fR
+argument was added at the beginning of the "git interpret\-trailers" command, where <value> is taken to be the standard output of the command with any leading and trailing whitespace trimmed off\&.
 .sp
 If some
-\fI<token>=<value>\fR
-arguments are also passed on the command line, when a
-\fItrailer\&.<token>\&.command\fR
-is configured, the command will also be executed for each of these arguments\&. And the <value> part of these arguments, if any, will be used to replace the
-\fB$ARG\fR
-string in the command\&.
+\fI\-\-trailer <token>=<value>\fR
+arguments are also passed on the command line, the command is called again once for each of these arguments with the same <token>\&. And the <value> part of these arguments, if any, will be passed to the command as its first argument\&. This way the command can produce a <value> computed from the <value> passed in the
+\fI\-\-trailer <token>=<value>\fR
+argument\&.
 .RE
 .SH "EXAMPLES"
 .sp
@@ -477,6 +495,91 @@ $ echo "subject" | git interpret\-trailers \-\-trailer fix=42
 subject
 
 Fix #42
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Configure a
+\fIhelp\fR
+trailer with a cmd use a script
+\fBglog\-find\-author\fR
+which search specified author identity from git log in git repository and show how it works:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cat ~/bin/glog\-find\-author
+#!/bin/sh
+test \-n "$1" && git log \-\-author="$1" \-\-pretty="%an <%ae>" \-1 || true
+$ git config trailer\&.help\&.key "Helped\-by: "
+$ git config trailer\&.help\&.ifExists "addIfDifferentNeighbor"
+$ git config trailer\&.help\&.cmd "~/bin/glog\-find\-author"
+$ git interpret\-trailers \-\-trailer="help:Junio" \-\-trailer="help:Couder" <<EOF
+> subject
+>
+> message
+>
+> EOF
+subject
+
+message
+
+Helped\-by: Junio C Hamano <gitster@pobox\&.com>
+Helped\-by: Christian Couder <christian\&.couder@gmail\&.com>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Configure a
+\fIref\fR
+trailer with a cmd use a script
+\fBglog\-grep\fR
+to grep last relevant commit from git log in the git repository and show how it works:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ cat ~/bin/glog\-grep
+#!/bin/sh
+test \-n "$1" && git log \-\-grep "$1" \-\-pretty=reference \-1 || true
+$ git config trailer\&.ref\&.key "Reference\-to: "
+$ git config trailer\&.ref\&.ifExists "replace"
+$ git config trailer\&.ref\&.cmd "~/bin/glog\-grep"
+$ git interpret\-trailers \-\-trailer="ref:Add copyright notices\&." <<EOF
+> subject
+>
+> message
+>
+> EOF
+subject
+
+message
+
+Reference\-to: 8bc9a0c769 (Add copyright notices\&., 2005\-04\-07)
 .fi
 .if n \{\
 .RE
