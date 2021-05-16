@@ -2,12 +2,12 @@
 .\"     Title: git-mailinfo
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/14/2021
+.\"      Date: 05/17/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.31.1.621.g97eea85a0a
+.\"    Source: Git 2.32.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-MAILINFO" "1" "05/14/2021" "Git 2\&.31\&.1\&.621\&.g97eea8" "Git Manual"
+.TH "GIT\-MAILINFO" "1" "05/17/2021" "Git 2\&.32\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,9 @@ git-mailinfo \- Extracts patch and authorship from a single e\-mail message
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit mailinfo\fR [\-k|\-b] [\-u | \-\-encoding=<encoding> | \-n] [\-\-[no\-]scissors] <msg> <patch>
+\fIgit mailinfo\fR [\-k|\-b] [\-u | \-\-encoding=<encoding> | \-n]
+               [\-\-[no\-]scissors] [\-\-quoted\-cr=<action>]
+               <msg> <patch>
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -138,6 +140,51 @@ This can be enabled by default with the configuration option mailinfo\&.scissors
 \-\-no\-scissors
 .RS 4
 Ignore scissors lines\&. Useful for overriding mailinfo\&.scissors settings\&.
+.RE
+.PP
+\-\-quoted\-cr=<action>
+.RS 4
+Action when processes email messages sent with base64 or quoted\-printable encoding, and the decoded lines end with a CRLF instead of a simple LF\&.
+.sp
+The valid actions are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBnowarn\fR: Git will do nothing when such a CRLF is found\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBwarn\fR: Git will issue a warning for each message if such a CRLF is found\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBstrip\fR: Git will convert those CRLF to LF\&.
+.RE
+.sp
+The default action could be set by configuration option
+\fBmailinfo\&.quotedCR\fR\&. If no such configuration option has been set,
+\fBwarn\fR
+will be used\&.
 .RE
 .PP
 <msg>
