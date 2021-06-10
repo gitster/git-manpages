@@ -2,12 +2,12 @@
 .\"     Title: gitrevisions
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 06/06/2021
+.\"      Date: 06/10/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.32.0
+.\"    Source: Git 2.32.0.29.g211eca0895
 .\"  Language: English
 .\"
-.TH "GITREVISIONS" "7" "06/06/2021" "Git 2\&.32\&.0" "Git Manual"
+.TH "GITREVISIONS" "7" "06/10/2021" "Git 2\&.32\&.0\&.29\&.g211eca0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -472,6 +472,8 @@ For these commands, specifying a single revision, using the notation described i
 Specifying several revisions means the set of commits reachable from any of the given commits\&.
 .sp
 A commit\(cqs reachable set is the commit itself and the commits in its ancestry chain\&.
+.sp
+There are several notations to specify a set of connected commits (called a "revision range"), illustrated below\&.
 .SS "Commit Exclusions"
 .PP
 \fI^<rev>\fR (caret) Notation
@@ -521,6 +523,32 @@ and is defined as
 .RE
 .sp
 In these two shorthand notations, you can omit one end and let it default to HEAD\&. For example, \fIorigin\&.\&.\fR is a shorthand for \fIorigin\&.\&.HEAD\fR and asks "What did I do since I forked from the origin branch?" Similarly, \fI\&.\&.origin\fR is a shorthand for \fIHEAD\&.\&.origin\fR and asks "What did the origin do since I forked from them?" Note that \fI\&.\&.\fR would mean \fIHEAD\&.\&.HEAD\fR which is an empty range that is both reachable and unreachable from HEAD\&.
+.sp
+Commands that are specifically designed to take two distinct ranges (e\&.g\&. "git range\-diff R1 R2" to compare two ranges) do exist, but they are exceptions\&. Unless otherwise noted, all "git" commands that operate on a set of commits work on a single revision range\&. In other words, writing two "two\-dot range notation" next to each other, e\&.g\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git log A\&.\&.B C\&.\&.D
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+does \fBnot\fR specify two revision ranges for most commands\&. Instead it will name a single connected set of commits, i\&.e\&. those that are reachable from either B or D but are reachable from neither A or C\&. In a linear history like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-A\-\-\-B\-\-\-o\-\-\-o\-\-\-C\-\-\-D
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+because A and B are reachable from C, the revision range specified by these two dotted ranges is a single commit D\&.
 .SS "Other <rev>^ Parent Shorthand Notations"
 .sp
 Three other shorthands exist, particularly useful for merge commits, for naming a set that is formed by a commit and its parent commits\&.
