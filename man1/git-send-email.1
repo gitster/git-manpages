@@ -2,12 +2,12 @@
 .\"     Title: git-send-email
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 06/10/2021
+.\"      Date: 06/14/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.32.0.29.g211eca0895
+.\"    Source: Git 2.32.0.93.g670b81a890
 .\"  Language: English
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "06/10/2021" "Git 2\&.32\&.0\&.29\&.g211eca0" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "06/14/2021" "Git 2\&.32\&.0\&.93\&.g670b81a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -219,6 +219,19 @@ address, set the value to "auto"\&. If you use the sendmail binary, you must hav
 configuration variable; if that is unspecified, choosing the envelope sender is left to your MTA\&.
 .RE
 .PP
+\-\-sendmail\-cmd=<command>
+.RS 4
+Specify a command to run to send the email\&. The command should be sendmail\-like; specifically, it must support the
+\fB\-i\fR
+option\&. The command will be executed in the shell if necessary\&. Default is the value of
+\fBsendemail\&.sendmailcmd\fR\&. If unspecified, and if \-\-smtp\-server is also unspecified, git\-send\-email will search for
+\fBsendmail\fR
+in
+\fB/usr/sbin\fR,
+\fB/usr/lib\fR
+and $PATH\&.
+.RE
+.PP
 \-\-smtp\-encryption=<encryption>
 .RS 4
 Specify the encryption to use, either
@@ -285,18 +298,22 @@ Disable SMTP authentication\&. Short hand for
 .RS 4
 If set, specifies the outgoing SMTP server to use (e\&.g\&.
 \fBsmtp\&.example\&.com\fR
-or a raw IP address)\&. Alternatively it can specify a full pathname of a sendmail\-like program instead; the program must support the
-\fB\-i\fR
-option\&. Default value can be specified by the
-\fBsendemail\&.smtpServer\fR
-configuration option; the built\-in default is to search for
+or a raw IP address)\&. If unspecified, and if
+\fB\-\-sendmail\-cmd\fR
+is also unspecified, the default is to search for
 \fBsendmail\fR
 in
 \fB/usr/sbin\fR,
 \fB/usr/lib\fR
-and $PATH if such program is available, falling back to
+and $PATH if such a program is available, falling back to
 \fBlocalhost\fR
 otherwise\&.
+.sp
+For backward compatibility, this option can also specify a full pathname of a sendmail\-like program instead; the program must support the
+\fB\-i\fR
+option\&. This method does not support passing arguments or using plain command names\&. For those use cases, consider using
+\fB\-\-sendmail\-cmd\fR
+instead\&.
 .RE
 .PP
 \-\-smtp\-server\-port=<port>
