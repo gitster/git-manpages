@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 06/14/2021
+.\"      Date: 07/13/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.32.0.93.g670b81a890
+.\"    Source: Git 2.32.0.264.g75ae10bc75
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "06/14/2021" "Git 2\&.32\&.0\&.93\&.g670b81a" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/13/2021" "Git 2\&.32\&.0\&.264\&.g75ae10" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2346,7 +2346,7 @@ are ignored\&. This option may be repeated multiple times\&. Empty file names wi
 \fB\-\-ignore\-revs\-file\fR\&.
 .RE
 .PP
-blame\&.markUnblamables
+blame\&.markUnblamableLines
 .RS 4
 Mark lines that were changed by an ignored revision that we could not attribute to another commit with a
 \fI*\fR
@@ -6107,7 +6107,7 @@ that name the branches at the remote named by
 \fBbranch\&.<current branch>\&.remote\fR
 are consulted, and then they are mapped via
 \fBremote\&.<remote>\&.fetch\fR
-to their corresponding remote\-tracking branches, and the tips of these tracking branches are merged\&.
+to their corresponding remote\-tracking branches, and the tips of these tracking branches are merged\&. Defaults to true\&.
 .RE
 .PP
 merge\&.ff
@@ -6881,7 +6881,14 @@ pack\&.packSizeLimit
 The maximum size of a pack\&. This setting only affects packing to a file when repacking, i\&.e\&. the git:// protocol is unaffected\&. It can be overridden by the
 \fB\-\-max\-pack\-size\fR
 option of
-\fBgit-repack\fR(1)\&. Reaching this limit results in the creation of multiple packfiles; which in turn prevents bitmaps from being created\&. The minimum size allowed is limited to 1 MiB\&. The default is unlimited\&. Common unit suffixes of
+\fBgit-repack\fR(1)\&. Reaching this limit results in the creation of multiple packfiles\&.
+.sp
+Note that this option is rarely useful, and may result in a larger total on\-disk size (because Git will not store deltas between packs), as well as worse runtime performance (object lookup within multiple packs is slower than a single pack, and optimizations like reachability bitmaps cannot cope with multiple packs)\&.
+.sp
+If you need to actively run Git using smaller packfiles (e\&.g\&., because your filesystem does not support large files), this option may help\&. But if your goal is to transmit a packfile over a medium that supports limited sizes (e\&.g\&., removable media that cannot store the whole repository), you are likely better off creating a single large packfile and splitting it using a generic multi\-volume archive tool (e\&.g\&., Unix
+\fBsplit\fR)\&.
+.sp
+The minimum size allowed is limited to 1 MiB\&. The default is unlimited\&. Common unit suffixes of
 \fIk\fR,
 \fIm\fR, or
 \fIg\fR
@@ -7260,14 +7267,12 @@ is probably what you want\&. Possible values are:
 .IP \(bu 2.3
 .\}
 \fBsimple\fR
-\- in centralized workflow, work like
-\fBupstream\fR
-with an added safety to refuse to push if the upstream branch\(cqs name is different from the local one\&.
+\- pushes the current branch with the same name on the remote\&.
 .sp
-When pushing to a remote that is different from the remote you normally pull from, work as
-\fBcurrent\fR\&. This is the safest option and is suited for beginners\&.
+If you are working on a centralized workflow (pushing to the same repository you pull from, which is typically
+\fBorigin\fR), then you need to configure an upstream branch with the same name\&.
 .sp
-This mode has become the default in Git 2\&.0\&.
+This mode is the default since Git 2\&.0, and is the safest option suited for beginners\&.
 .RE
 .sp
 .RS 4
