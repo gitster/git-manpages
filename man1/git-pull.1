@@ -2,12 +2,12 @@
 .\"     Title: git-pull
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 08/24/2021
+.\"      Date: 08/30/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.69.gc4203212e3
+.\"    Source: Git 2.33.0.113.g6c40894d24
 .\"  Language: English
 .\"
-.TH "GIT\-PULL" "1" "08/24/2021" "Git 2\&.33\&.0\&.69\&.gc420321" "Git Manual"
+.TH "GIT\-PULL" "1" "08/30/2021" "Git 2\&.33\&.0\&.113\&.g6c4089" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,9 +37,9 @@ git-pull \- Fetch from and integrate with another repository or a local branch
 .sp
 .SH "DESCRIPTION"
 .sp
-Incorporates changes from a remote repository into the current branch\&. In its default mode, \fBgit pull\fR is shorthand for \fBgit fetch\fR followed by \fBgit merge FETCH_HEAD\fR\&.
+Incorporates changes from a remote repository into the current branch\&. If the current branch is behind the remote, then by default it will fast\-forward the current branch to match the remote\&. If the current branch and the remote have diverged, the user needs to specify how to reconcile the divergent branches with \fB\-\-rebase\fR or \fB\-\-no\-rebase\fR (or the corresponding configuration option in \fBpull\&.rebase\fR)\&.
 .sp
-More precisely, \fIgit pull\fR runs \fIgit fetch\fR with the given parameters and calls \fIgit merge\fR to merge the retrieved branch heads into the current branch\&. With \fB\-\-rebase\fR, it runs \fIgit rebase\fR instead of \fIgit merge\fR\&.
+More precisely, \fBgit pull\fR runs \fBgit fetch\fR with the given parameters and then depending on configuration options or command line flags, will call either \fBgit rebase\fR or \fBgit merge\fR to reconcile diverging branches\&.
 .sp
 <repository> should be the name of a remote repository as passed to \fBgit-fetch\fR(1)\&. <refspec> can name an arbitrary remote ref (for example, the name of a tag) or even a collection of refs with corresponding remote\-tracking branches (e\&.g\&., refs/heads/*:refs/remotes/origin/*), but usually it is the name of a branch in the remote repository\&.
 .sp
@@ -110,7 +110,7 @@ If the update is done via merge, the submodule conflicts are resolved and checke
 .PP
 \-\-commit, \-\-no\-commit
 .RS 4
-Perform the merge and commit the result\&. This option can be used to override \-\-no\-commit\&.
+Perform the merge and commit the result\&. This option can be used to override \-\-no\-commit\&. Only useful when merging\&.
 .sp
 With \-\-no\-commit perform the merge and stop just before creating a merge commit, to give the user a chance to inspect and further tweak the merge result before committing\&.
 .sp
@@ -143,9 +143,14 @@ is given a value of
 before being passed on to the commit machinery in the case of a merge conflict\&.
 .RE
 .PP
-\-\-ff, \-\-no\-ff, \-\-ff\-only
+\-\-ff\-only
 .RS 4
-Specifies how a merge is handled when the merged\-in history is already a descendant of the current history\&.
+Only update to the new history if there is no divergent local history\&. This is the default when no method for reconciling divergent histories is provided (via the \-\-rebase=* flags)\&.
+.RE
+.PP
+\-\-ff, \-\-no\-ff
+.RS 4
+When merging rather than rebasing, specifies how a merge is handled when the merged\-in history is already a descendant of the current history\&. If merging is requested,
 \fB\-\-ff\fR
 is the default unless merging an annotated (and possibly signed) tag that is not stored in its natural place in the
 \fBrefs/tags/\fR
@@ -158,9 +163,6 @@ With
 .sp
 With
 \fB\-\-no\-ff\fR, create a merge commit in all cases, even when the merge could instead be resolved as a fast\-forward\&.
-.sp
-With
-\fB\-\-ff\-only\fR, resolve the merge as a fast\-forward when possible\&. When not possible, refuse to merge and exit with a non\-zero status\&.
 .RE
 .PP
 \-S[<keyid>], \-\-gpg\-sign[=<keyid>], \-\-no\-gpg\-sign
@@ -178,7 +180,7 @@ configuration variable, and earlier
 \-\-log[=<n>], \-\-no\-log
 .RS 4
 In addition to branch names, populate the log message with one\-line descriptions from at most <n> actual commits that are being merged\&. See also
-\fBgit-fmt-merge-msg\fR(1)\&.
+\fBgit-fmt-merge-msg\fR(1)\&. Only useful when merging\&.
 .sp
 With \-\-no\-log do not list one\-line descriptions from the actual commits being merged\&.
 .RE
@@ -213,21 +215,23 @@ command to create a merge commit)\&. This allows you to create a single commit o
 With \-\-no\-squash perform the merge and commit the result\&. This option can be used to override \-\-squash\&.
 .sp
 With \-\-squash, \-\-commit is not allowed, and will fail\&.
+.sp
+Only useful when merging\&.
 .RE
 .PP
 \-\-no\-verify
 .RS 4
 This option bypasses the pre\-merge and commit\-msg hooks\&. See also
-\fBgithooks\fR(5)\&.
+\fBgithooks\fR(5)\&. Only useful when merging\&.
 .RE
 .PP
 \-s <strategy>, \-\-strategy=<strategy>
 .RS 4
 Use the given merge strategy; can be supplied more than once to specify them in the order they should be tried\&. If there is no
 \fB\-s\fR
-option, a built\-in list of strategies is used instead (\fIgit merge\-recursive\fR
+option, a built\-in list of strategies is used instead (\fBort\fR
 when merging a single head,
-\fIgit merge\-octopus\fR
+\fBoctopus\fR
 otherwise)\&.
 .RE
 .PP
@@ -239,6 +243,8 @@ Pass merge strategy specific option through to the merge strategy\&.
 \-\-verify\-signatures, \-\-no\-verify\-signatures
 .RS 4
 Verify that the tip commit of the side branch being merged is signed with a valid key, i\&.e\&. a key that has a valid uid: in the default trust model, this means the signing key has been signed by a trusted key\&. If the tip commit of the side branch is not signed with a valid key, the merge is aborted\&.
+.sp
+Only useful when merging\&.
 .RE
 .PP
 \-\-summary, \-\-no\-summary
@@ -258,6 +264,8 @@ and apply it after the operation ends\&. This means that you can run the operati
 By default,
 \fBgit merge\fR
 command refuses to merge histories that do not share a common ancestor\&. This option can be used to override this safety when merging histories of two projects that started their lives independently\&. As that is a very rare occasion, no configuration variable to enable this by default exists and will not be added\&.
+.sp
+Only useful when merging\&.
 .RE
 .PP
 \-r, \-\-rebase[=false|true|merges|preserve|interactive]
@@ -322,7 +330,7 @@ carefully\&.
 .PP
 \-\-no\-rebase
 .RS 4
-Override earlier \-\-rebase\&.
+This is shorthand for \-\-rebase=false\&.
 .RE
 .SS "Options related to fetching"
 .PP
@@ -1016,17 +1024,13 @@ git push uses:
 .sp
 The merge mechanism (\fBgit merge\fR and \fBgit pull\fR commands) allows the backend \fImerge strategies\fR to be chosen with \fB\-s\fR option\&. Some strategies can also take their own options, which can be passed by giving \fB\-X<option>\fR arguments to \fBgit merge\fR and/or \fBgit pull\fR\&.
 .PP
-resolve
+ort
 .RS 4
-This can only resolve two heads (i\&.e\&. the current branch and another branch you pulled from) using a 3\-way merge algorithm\&. It tries to carefully detect criss\-cross merge ambiguities and is considered generally safe and fast\&.
-.RE
-.PP
-recursive
-.RS 4
-This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mismerges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames, but currently cannot make use of detected copies\&. This is the default merge strategy when pulling or merging one branch\&.
+This is the default merge strategy when pulling or merging one branch\&. This strategy can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mismerges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this strategy can detect and handle merges involving renames\&. It does not make use of detected copies\&. The name for this algorithm is an acronym ("Ostensibly Recursive\(cqs Twin") and came from the fact that it was written as a replacement for the previous default algorithm,
+\fBrecursive\fR\&.
 .sp
 The
-\fIrecursive\fR
+\fIort\fR
 strategy can take the following options:
 .PP
 ours
@@ -1049,24 +1053,6 @@ This is the opposite of
 \fIours\fR, there is no
 \fItheirs\fR
 merge strategy to confuse this merge option with\&.
-.RE
-.PP
-patience
-.RS 4
-With this option,
-\fImerge\-recursive\fR
-spends a little extra time to avoid mismerges that sometimes occur due to unimportant matching lines (e\&.g\&., braces from distinct functions)\&. Use this when the branches to be merged have diverged wildly\&. See also
-\fBgit-diff\fR(1)
-\fB\-\-patience\fR\&.
-.RE
-.PP
-diff\-algorithm=[patience|minimal|histogram|myers]
-.RS 4
-Tells
-\fImerge\-recursive\fR
-to use a different diff algorithm, which can help avoid mismerges that occur due to unimportant matching lines (such as braces from distinct functions)\&. See also
-\fBgit-diff\fR(1)
-\fB\-\-diff\-algorithm\fR\&.
 .RE
 .PP
 ignore\-space\-change, ignore\-all\-space, ignore\-space\-at\-eol, ignore\-cr\-at\-eol
@@ -1138,15 +1124,6 @@ option\&. This overrides the
 configuration variable\&.
 .RE
 .PP
-no\-renames
-.RS 4
-Turn off rename detection\&. This overrides the
-\fBmerge\&.renames\fR
-configuration variable\&. See also
-\fBgit-diff\fR(1)
-\fB\-\-no\-renames\fR\&.
-.RE
-.PP
 find\-renames[=<n>]
 .RS 4
 Turn on rename detection, optionally setting the similarity threshold\&. This is the default\&. This overrides the
@@ -1170,6 +1147,54 @@ strategy, where the strategy makes a guess on how two trees must be shifted to m
 .RE
 .RE
 .PP
+recursive
+.RS 4
+This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mismerges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames\&. It does not make use of detected copies\&. This was the default strategy for resolving two heads from Git v0\&.99\&.9k until v2\&.33\&.0\&.
+.sp
+The
+\fIrecursive\fR
+strategy takes the same options as
+\fIort\fR\&. However, there are three additional options that
+\fIort\fR
+ignores (not documented above) that are potentially useful with the
+\fIrecursive\fR
+strategy:
+.PP
+patience
+.RS 4
+Deprecated synonym for
+\fBdiff\-algorithm=patience\fR\&.
+.RE
+.PP
+diff\-algorithm=[patience|minimal|histogram|myers]
+.RS 4
+Use a different diff algorithm while merging, which can help avoid mismerges that occur due to unimportant matching lines (such as braces from distinct functions)\&. See also
+\fBgit-diff\fR(1)
+\fB\-\-diff\-algorithm\fR\&. Note that
+\fBort\fR
+specifically uses
+\fBdiff\-algorithm=histogram\fR, while
+\fBrecursive\fR
+defaults to the
+\fBdiff\&.algorithm\fR
+config setting\&.
+.RE
+.PP
+no\-renames
+.RS 4
+Turn off rename detection\&. This overrides the
+\fBmerge\&.renames\fR
+configuration variable\&. See also
+\fBgit-diff\fR(1)
+\fB\-\-no\-renames\fR\&.
+.RE
+.RE
+.PP
+resolve
+.RS 4
+This can only resolve two heads (i\&.e\&. the current branch and another branch you pulled from) using a 3\-way merge algorithm\&. It tries to carefully detect criss\-cross merge ambiguities\&. It does not handle renames\&.
+.RE
+.PP
 octopus
 .RS 4
 This resolves cases with more than two heads, but refuses to do a complex merge that needs manual resolution\&. It is primarily meant to be used for bundling topic branch heads together\&. This is the default merge strategy when pulling or merging more than one branch\&.
@@ -1184,10 +1209,12 @@ merge strategy\&.
 .PP
 subtree
 .RS 4
-This is a modified recursive strategy\&. When merging trees A and B, if B corresponds to a subtree of A, B is first adjusted to match the tree structure of A, instead of reading the trees at the same level\&. This adjustment is also done to the common ancestor tree\&.
+This is a modified
+\fBort\fR
+strategy\&. When merging trees A and B, if B corresponds to a subtree of A, B is first adjusted to match the tree structure of A, instead of reading the trees at the same level\&. This adjustment is also done to the common ancestor tree\&.
 .RE
 .sp
-With the strategies that use 3\-way merge (including the default, \fIrecursive\fR), if a change is made on both branches, but later reverted on one of the branches, that change will be present in the merged result; some people find this behavior confusing\&. It occurs because only the heads and the merge base are considered when performing a merge, not the individual commits\&. The merge algorithm therefore considers the reverted change as no change at all, and substitutes the changed version instead\&.
+With the strategies that use 3\-way merge (including the default, \fIort\fR), if a change is made on both branches, but later reverted on one of the branches, that change will be present in the merged result; some people find this behavior confusing\&. It occurs because only the heads and the merge base are considered when performing a merge, not the individual commits\&. The merge algorithm therefore considers the reverted change as no change at all, and substitutes the changed version instead\&.
 .SH "DEFAULT BEHAVIOUR"
 .sp
 Often people use \fBgit pull\fR without giving any parameter\&. Traditionally, this has been equivalent to saying \fBgit pull origin\fR\&. However, when configuration \fBbranch\&.<name>\&.remote\fR is present while on branch \fB<name>\fR, that value is used instead of \fBorigin\fR\&.
