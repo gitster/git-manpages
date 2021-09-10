@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/08/2021
+.\"      Date: 09/10/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.180.g8463beaeb6
+.\"    Source: Git 2.33.0.328.g8b7c11b866
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "09/08/2021" "Git 2\&.33\&.0\&.180\&.g8463be" "Git Manual"
+.TH "GIT\-CONFIG" "1" "09/10/2021" "Git 2\&.33\&.0\&.328\&.g8b7c11" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1261,6 +1261,13 @@ pushRefNeedsUpdate
 Shown when
 \fBgit-push\fR(1)
 rejects a forced update of a branch when its remote\-tracking ref has updates that we do not have locally\&.
+.RE
+.PP
+skippedCherryPicks
+.RS 4
+Shown when
+\fBgit-rebase\fR(1)
+skips a commit that has already been cherry\-picked onto the upstream branch\&.
 .RE
 .PP
 statusAheadBehind
@@ -4929,7 +4936,7 @@ shows untracked files in the file list\&. The default is "true"\&.
 .PP
 gui\&.encoding
 .RS 4
-Specifies the default encoding to use for displaying of file contents in
+Specifies the default character encoding to use for displaying of file contents in
 \fBgit-gui\fR(1)
 and
 \fBgitk\fR(1)\&. It can be overridden by setting the
@@ -5105,7 +5112,62 @@ are the same\&.
 .PP
 help\&.autoCorrect
 .RS 4
-If git detects typos and can identify exactly one valid command similar to the error, git will automatically run the intended command after waiting a duration of time defined by this configuration value in deciseconds (0\&.1 sec)\&. If this value is 0, the suggested corrections will be shown, but not executed\&. If it is a negative integer, or "immediate", the suggested command is run immediately\&. If "never", suggestions are not shown at all\&. The default value is zero\&.
+If git detects typos and can identify exactly one valid command similar to the error, git will try to suggest the correct command or even run the suggestion automatically\&. Possible config values are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+0 (default): show the suggested command\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+positive number: run the suggested command after specified deciseconds (0\&.1 sec)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"immediate": run the suggested command immediately\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"prompt": show the suggestion and prompt for confirmation to run the command\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"never": don\(cqt run or show any suggested command\&.
+.RE
 .RE
 .PP
 help\&.htmlPath
@@ -8615,18 +8677,7 @@ in front of the ref name to negate the entry, explicitly exposing it, even if an
 .sp
 If a namespace is in use, the namespace prefix is stripped from each reference before it is matched against
 \fBtransfer\&.hiderefs\fR
-patterns\&. For example, if
-\fBrefs/heads/master\fR
-is specified in
-\fBtransfer\&.hideRefs\fR
-and the current namespace is
-\fBfoo\fR, then
-\fBrefs/namespaces/foo/refs/heads/master\fR
-is omitted from the advertisements but
-\fBrefs/heads/master\fR
-and
-\fBrefs/namespaces/bar/refs/heads/master\fR
-are still advertised as so\-called "have" lines\&. In order to match refs before stripping, add a
+patterns\&. In order to match refs before stripping, add a
 \fB^\fR
 in front of the ref name\&. If you combine
 \fB!\fR
@@ -8634,6 +8685,26 @@ and
 \fB^\fR,
 \fB!\fR
 must be specified first\&.
+.sp
+For example, if
+\fBrefs/heads/master\fR
+is specified in
+\fBtransfer\&.hideRefs\fR
+and the current namespace is
+\fBfoo\fR, then
+\fBrefs/namespaces/foo/refs/heads/master\fR
+is omitted from the advertisements\&. If
+\fBuploadpack\&.allowRefInWant\fR
+is set,
+\fBupload\-pack\fR
+will treat
+\fBwant\-ref refs/heads/master\fR
+in a protocol v2
+\fBfetch\fR
+command as if
+\fBrefs/namespaces/foo/refs/heads/master\fR
+did not exist\&.
+\fBreceive\-pack\fR, on the other hand, will still advertise the object id the ref is pointing to without mentioning its name (a so\-called "\&.have" line)\&.
 .sp
 Even if you hide refs, a client may still be able to steal the target objects via the techniques described in the "SECURITY" section of the
 \fBgitnamespaces\fR(7)
