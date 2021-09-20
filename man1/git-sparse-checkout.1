@@ -2,12 +2,12 @@
 .\"     Title: git-sparse-checkout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/15/2021
+.\"      Date: 09/20/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.363.g4c719308ce
+.\"    Source: Git 2.33.0.514.g99c99ed825
 .\"  Language: English
 .\"
-.TH "GIT\-SPARSE\-CHECKOU" "1" "09/15/2021" "Git 2\&.33\&.0\&.363\&.g4c7193" "Git Manual"
+.TH "GIT\-SPARSE\-CHECKOU" "1" "09/20/2021" "Git 2\&.33\&.0\&.514\&.g99c99e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -234,6 +234,8 @@ A/B/C
 .sp
 .sp
 If \fBcore\&.ignoreCase=true\fR, then the pattern\-matching algorithm will use a case\-insensitive check\&. This corrects for case mismatched filenames in the \fIgit sparse\-checkout set\fR command to reflect the expected cone in the working directory\&.
+.sp
+When changing the sparse\-checkout patterns in cone mode, Git will inspect each tracked directory that is not within the sparse\-checkout cone to see if it contains any untracked files\&. If all of those files are ignored due to the \fB\&.gitignore\fR patterns, then the directory will be deleted\&. If any of the untracked files within that directory is not ignored, then no deletions will occur within that directory and a warning message will appear\&. If these files are important, then reset your sparse\-checkout definition so they are included, use \fBgit add\fR and \fBgit commit\fR to store them, then remove any remaining files manually to ensure Git can behave optimally\&.
 .SH "SUBMODULES"
 .sp
 If your repository contains one or more submodules, then submodules are populated based on interactions with the \fBgit submodule\fR command\&. Specifically, \fBgit submodule init \-\- <path>\fR will ensure the submodule at \fB<path>\fR is present, while \fBgit submodule deinit [\-f] \-\- <path>\fR will remove the files for the submodule at \fB<path>\fR (including any untracked files, uncommitted changes, and unpushed history)\&. Similar to how sparse\-checkout removes files from the working tree but still leaves entries in the index, deinitialized submodules are removed from the working directory but still have an entry in the index\&.

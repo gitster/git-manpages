@@ -2,12 +2,12 @@
 .\"     Title: git-maintenance
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/15/2021
+.\"      Date: 09/20/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.363.g4c719308ce
+.\"    Source: Git 2.33.0.514.g99c99ed825
 .\"  Language: English
 .\"
-.TH "GIT\-MAINTENANCE" "1" "09/15/2021" "Git 2\&.33\&.0\&.363\&.g4c7193" "Git Manual"
+.TH "GIT\-MAINTENANCE" "1" "09/20/2021" "Git 2\&.33\&.0\&.514\&.g99c99e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -283,6 +283,31 @@ section for the list of accepted
 \fB<task>\fR
 values\&.
 .RE
+.PP
+\-\-scheduler=auto|crontab|systemd\-timer|launchctl|schtasks
+.RS 4
+When combined with the
+\fBstart\fR
+subcommand, specify the scheduler for running the hourly, daily and weekly executions of
+\fBgit maintenance run\fR\&. Possible values for
+\fB<scheduler>\fR
+are
+\fBauto\fR,
+\fBcrontab\fR
+(POSIX),
+\fBsystemd\-timer\fR
+(Linux),
+\fBlaunchctl\fR
+(macOS), and
+\fBschtasks\fR
+(Windows)\&. When
+\fBauto\fR
+is specified, the appropriate platform\-specific scheduler is used; on Linux,
+\fBsystemd\-timer\fR
+is used if available, otherwise
+\fBcrontab\fR\&. Default is
+\fBauto\fR\&.
+.RE
 .SH "TROUBLESHOOTING"
 .sp
 The \fBgit maintenance\fR command is designed to simplify the repository maintenance patterns while minimizing user wait time during Git commands\&. A variety of configuration options are available to allow customizing this process\&. The default maintenance options focus on operations that complete quickly, even on large repositories\&.
@@ -327,6 +352,53 @@ The \fBcrontab\fR entry specifies the full path of the \fBgit\fR executable to e
 These commands use \fBgit for\-each\-repo \-\-config=maintenance\&.repo\fR to run \fBgit maintenance run \-\-schedule=<frequency>\fR on each repository listed in the multi\-valued \fBmaintenance\&.repo\fR config option\&. These are typically loaded from the user\-specific global config\&. The \fBgit maintenance\fR process then determines which maintenance tasks are configured to run on each repository with each \fB<frequency>\fR using the \fBmaintenance\&.<task>\&.schedule\fR config options\&. These values are loaded from the global or repository config values\&.
 .sp
 If the config values are insufficient to achieve your desired background maintenance schedule, then you can create your own schedule\&. If you run \fBcrontab \-e\fR, then an editor will load with your user\-specific \fBcron\fR schedule\&. In that editor, you can add your own schedule lines\&. You could start by adapting the default schedule listed earlier, or you could read the crontab(5) documentation for advanced scheduling techniques\&. Please do use the full path and \fB\-\-exec\-path\fR techniques from the default schedule to ensure you are executing the correct binaries in your schedule\&.
+.SH "BACKGROUND MAINTENANCE ON LINUX SYSTEMD SYSTEMS"
+.sp
+While Linux supports \fBcron\fR, depending on the distribution, \fBcron\fR may be an optional package not necessarily installed\&. On modern Linux distributions, systemd timers are superseding it\&.
+.sp
+If user systemd timers are available, they will be used as a replacement of \fBcron\fR\&.
+.sp
+In this case, \fBgit maintenance start\fR will create user systemd timer units and start the timers\&. The current list of user\-scheduled tasks can be found by running \fBsystemctl \-\-user list\-timers\fR\&. The timers written by \fBgit maintenance start\fR are similar to this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ systemctl \-\-user list\-timers
+NEXT                         LEFT          LAST                         PASSED     UNIT                         ACTIVATES
+Thu 2021\-04\-29 19:00:00 CEST 42min left    Thu 2021\-04\-29 18:00:11 CEST 17min ago  git\-maintenance@hourly\&.timer git\-maintenance@hourly\&.service
+Fri 2021\-04\-30 00:00:00 CEST 5h 42min left Thu 2021\-04\-29 00:00:11 CEST 18h ago    git\-maintenance@daily\&.timer  git\-maintenance@daily\&.service
+Mon 2021\-05\-03 00:00:00 CEST 3 days left   Mon 2021\-04\-26 00:00:11 CEST 3 days ago git\-maintenance@weekly\&.timer git\-maintenance@weekly\&.service
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+One timer is registered for each \fB\-\-schedule=<frequency>\fR option\&.
+.sp
+The definition of the systemd units can be inspected in the following files:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+~/\&.config/systemd/user/git\-maintenance@\&.timer
+~/\&.config/systemd/user/git\-maintenance@\&.service
+~/\&.config/systemd/user/timers\&.target\&.wants/git\-maintenance@hourly\&.timer
+~/\&.config/systemd/user/timers\&.target\&.wants/git\-maintenance@daily\&.timer
+~/\&.config/systemd/user/timers\&.target\&.wants/git\-maintenance@weekly\&.timer
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+\fBgit maintenance start\fR will overwrite these files and start the timer again with \fBsystemctl \-\-user\fR, so any customization should be done by creating a drop\-in file, i\&.e\&. a \fB\&.conf\fR suffixed file in the \fB~/\&.config/systemd/user/git\-maintenance@\&.service\&.d\fR directory\&.
+.sp
+\fBgit maintenance stop\fR will stop the user systemd timers and delete the above mentioned files\&.
+.sp
+For more details, see \fBsystemd\&.timer(5)\fR\&.
 .SH "BACKGROUND MAINTENANCE ON MACOS SYSTEMS"
 .sp
 While macOS technically supports \fBcron\fR, using \fBcrontab \-e\fR requires elevated privileges and the executed process does not have a full user context\&. Without a full user context, Git and its credential helpers cannot access stored credentials, so some maintenance tasks are not functional\&.

@@ -2,12 +2,12 @@
 .\"     Title: git-multi-pack-index
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/15/2021
+.\"      Date: 09/20/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.363.g4c719308ce
+.\"    Source: Git 2.33.0.514.g99c99ed825
 .\"  Language: English
 .\"
-.TH "GIT\-MULTI\-PACK\-IN" "1" "09/15/2021" "Git 2\&.33\&.0\&.363\&.g4c7193" "Git Manual"
+.TH "GIT\-MULTI\-PACK\-IN" "1" "09/20/2021" "Git 2\&.33\&.0\&.514\&.g99c99e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-multi-pack-index \- Write and verify multi\-pack\-indexes
 .sp
 .nf
 \fIgit multi\-pack\-index\fR [\-\-object\-dir=<dir>] [\-\-[no\-]progress]
-        [\-\-preferred\-pack=<pack>] <subcommand>
+        [\-\-preferred\-pack=<pack>] [\-\-[no\-]bitmap] <subcommand>
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -48,6 +48,9 @@ Use given directory for the location of Git objects\&. We check
 for the current MIDX file, and
 \fB<dir>/packs\fR
 for the pack\-files to index\&.
+.sp
+\fB<dir>\fR
+must be an alternate of the current repository\&.
 .RE
 .PP
 \-\-[no\-]progress
@@ -65,7 +68,14 @@ sub\-command:
 .PP
 \-\-preferred\-pack=<pack>
 .RS 4
-Optionally specify the tie\-breaking pack used when multiple packs contain the same object\&. If not given, ties are broken in favor of the pack with the lowest mtime\&.
+Optionally specify the tie\-breaking pack used when multiple packs contain the same object\&.
+\fB<pack>\fR
+must contain at least one object\&. If not given, ties are broken in favor of the pack with the lowest mtime\&.
+.RE
+.PP
+\-\-[no\-]bitmap
+.RS 4
+Control whether or not a multi\-pack bitmap is written\&.
 .RE
 .RE
 .PP
@@ -111,6 +121,28 @@ Write a MIDX file for the packfiles in the current \&.git folder\&.
 .\}
 .nf
 $ git multi\-pack\-index write
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Write a MIDX file for the packfiles in the current \&.git folder with a corresponding bitmap\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git multi\-pack\-index write \-\-preferred\-pack=<pack> \-\-bitmap
 .fi
 .if n \{\
 .RE
