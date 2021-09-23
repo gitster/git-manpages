@@ -2,12 +2,12 @@
 .\"     Title: git
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/20/2021
+.\"      Date: 09/23/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.514.g99c99ed825
+.\"    Source: Git 2.33.0.591.gddb1055343
 .\"  Language: English
 .\"
-.TH "GIT" "1" "09/20/2021" "Git 2\&.33\&.0\&.514\&.g99c99e" "Git Manual"
+.TH "GIT" "1" "09/23/2021" "Git 2\&.33\&.0\&.591\&.gddb105" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -56,6 +56,15 @@ A formatted and hyperlinked copy of the latest Git documentation can be viewed a
 Prints the Git suite version that the
 \fIgit\fR
 program came from\&.
+.sp
+This option is internaly converted to
+\fBgit version \&.\&.\&.\fR
+and accepts the same options as the
+\fBgit-version\fR(1)
+command\&. If
+\fB\-\-help\fR
+is also given, it takes precedence over
+\fB\-\-version\fR\&.
 .RE
 .PP
 \-\-help
@@ -1918,6 +1927,17 @@ For internal use only\&. Used in handshaking the wire protocol\&. Contains a col
 \fI:\fR
 separated list of keys with optional values
 \fIkey[=value]\fR\&. Presence of unknown keys and values must be ignored\&.
+.sp
+Note that servers may need to be configured to allow this variable to pass over some transports\&. It will be propagated automatically when accessing local repositories (i\&.e\&.,
+\fBfile://\fR
+or a filesystem path), as well as over the
+\fBgit://\fR
+protocol\&. For git\-over\-http, it should work automatically in most configurations, but see the discussion in
+\fBgit-http-backend\fR(1)\&. For git\-over\-ssh, the ssh server may need to be configured to allow clients to pass this variable (e\&.g\&., by using
+\fBAcceptEnv GIT_PROTOCOL\fR
+with OpenSSH)\&.
+.sp
+This configuration is optional\&. If the variable is not propagated, then clients will fall back to the original "v0" protocol (but may miss out on some performance improvements or features)\&. This variable currently only affects clones and fetches; it is not yet used for pushes (but may be in the future)\&.
 .RE
 .PP
 \fBGIT_OPTIONAL_LOCKS\fR
