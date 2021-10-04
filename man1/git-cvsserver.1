@@ -2,12 +2,12 @@
 .\"     Title: git-cvsserver
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/28/2021
+.\"      Date: 10/04/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.610.gcefe983a32
+.\"    Source: Git 2.33.0.664.g0785eb7698
 .\"  Language: English
 .\"
-.TH "GIT\-CVSSERVER" "1" "09/28/2021" "Git 2\&.33\&.0\&.610\&.gcefe98" "Git Manual"
+.TH "GIT\-CVSSERVER" "1" "10/04/2021" "Git 2\&.33\&.0\&.664\&.g0785eb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -139,7 +139,7 @@ Note: Some inetd servers let you specify the name of the executable independentl
 .RE
 .\}
 .sp
-Only anonymous access is provided by pserve by default\&. To commit you will have to create pserver accounts, simply add a gitcvs\&.authdb setting in the config file of the repositories you want the cvsserver to allow writes to, for example:
+Only anonymous access is provided by pserver by default\&. To commit you will have to create pserver accounts, simply add a gitcvs\&.authdb setting in the config file of the repositories you want the cvsserver to allow writes to, for example:
 .sp
 .if n \{\
 .RS 4
@@ -158,8 +158,9 @@ The format of these files is username followed by the encrypted password, for ex
 .RS 4
 .\}
 .nf
-   myuser:$1Oyx5r9mdGZ2
-   myuser:$1$BA)@$vbnMJMDym7tA32AamXrm\&./
+   myuser:sqkNi8zPf01HI
+   myuser:$1$9K7FzU28$VfF6EoPYCJEYcVQwATgOP/
+   myuser:$5$\&.NqmNH1vwfzGpV8B$znZIcumu1tNLATgV2l6e1/mY8RzhUDHMOaVOeL1cxV3
 .fi
 .if n \{\
 .RE
@@ -167,19 +168,9 @@ The format of these files is username followed by the encrypted password, for ex
 .sp
 You can use the
 \fIhtpasswd\fR
-facility that comes with Apache to make these files, but Apache\(cqs MD5 crypt method differs from the one used by most C library\(cqs crypt() function, so don\(cqt use the \-m option\&.
+facility that comes with Apache to make these files, but only with the \-d option (or \-B if your system suports it)\&.
 .sp
-Alternatively you can produce the password with perl\(cqs crypt() operator:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-   perl \-e \(aqmy ($user, $pass) = @ARGV; printf "%s:%s\en", $user, crypt($user, $pass)\(aq $USER password
-.fi
-.if n \{\
-.RE
-.\}
+Preferably use the system specific utility that manages password hash creation in your platform (e\&.g\&. mkpasswd in Linux, encrypt in OpenBSD or pwhash in NetBSD) and paste it in the right location\&.
 .sp
 Then provide your password via the pserver method, for example:
 .sp
@@ -187,7 +178,7 @@ Then provide your password via the pserver method, for example:
 .RS 4
 .\}
 .nf
-   cvs \-d:pserver:someuser:somepassword <at> server/path/repo\&.git co <HEAD_name>
+   cvs \-d:pserver:someuser:somepassword@server:/path/repo\&.git co <HEAD_name>
 .fi
 .if n \{\
 .RE
@@ -204,7 +195,7 @@ Note: Newer CVS versions (>= 1\&.12\&.11) also support specifying CVS_SERVER dir
 .RS 4
 .\}
 .nf
-cvs \-d ":ext;CVS_SERVER=git cvsserver:user@server/path/repo\&.git" co <HEAD_name>
+   cvs \-d ":ext;CVS_SERVER=git cvsserver:user@server/path/repo\&.git" co <HEAD_name>
 .fi
 .if n \{\
 .RE
@@ -296,8 +287,8 @@ restricted to
 .RS 4
 .\}
 .nf
-     export CVSROOT=:ext:user@server:/var/git/project\&.git
-     export CVS_SERVER="git cvsserver"
+   export CVSROOT=:ext:user@server:/var/git/project\&.git
+   export CVS_SERVER="git cvsserver"
 .fi
 .if n \{\
 .RE
@@ -339,7 +330,7 @@ directory:
 .RS 4
 .\}
 .nf
-     cvs co \-d project\-master master
+   cvs co \-d project\-master master
 .fi
 .if n \{\
 .RE
