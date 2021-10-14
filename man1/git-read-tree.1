@@ -2,12 +2,12 @@
 .\"     Title: git-read-tree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/11/2021
+.\"      Date: 10/14/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.0.785.g2a97289ad8
+.\"    Source: Git 2.33.1.637.gf443b226ca
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "10/11/2021" "Git 2\&.33\&.0\&.785\&.g2a9728" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "10/14/2021" "Git 2\&.33\&.1\&.637\&.gf443b2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,8 +33,7 @@ git-read-tree \- Reads tree information into the index
 .sp
 .nf
 \fIgit read\-tree\fR [[\-m [\-\-trivial] [\-\-aggressive] | \-\-reset | \-\-prefix=<prefix>]
-                [\-u [\-\-exclude\-per\-directory=<gitignore>] | \-i]]
-                [\-\-index\-output=<file>] [\-\-no\-sparse\-checkout]
+                [\-u | \-i]] [\-\-index\-output=<file>] [\-\-no\-sparse\-checkout]
                 (\-\-empty | <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
 .fi
 .sp
@@ -55,7 +54,7 @@ Perform a merge, not just a read\&. The command will refuse to run if your index
 \-\-reset
 .RS 4
 Same as \-m, except that unmerged entries are discarded instead of failing\&. When used with
-\fB\-u\fR, updates leading to loss of working tree changes will not abort the operation\&.
+\fB\-u\fR, updates leading to loss of working tree changes or untracked files or directories will not abort the operation\&.
 .RE
 .PP
 \-u
@@ -129,20 +128,6 @@ when both sides add a path identically\&. The resolution is to add that path\&.
 .RS 4
 Keep the current index contents, and read the contents of the named tree\-ish under the directory at
 \fB<prefix>\fR\&. The command will refuse to overwrite entries that already existed in the original index file\&.
-.RE
-.PP
-\-\-exclude\-per\-directory=<gitignore>
-.RS 4
-When running the command with
-\fB\-u\fR
-and
-\fB\-m\fR
-options, the merge result may need to overwrite paths that are not tracked in the current branch\&. The command usually refuses to proceed with the merge to avoid losing such a path\&. However this safety valve sometimes gets in the way\&. For example, it often happens that the other branch added a file that used to be a generated file in your branch, and the safety valve triggers when you try to switch to that branch after you ran
-\fBmake\fR
-but before running
-\fBmake clean\fR
-to remove the generated file\&. This option tells the command to read per\-directory exclude file (usually
-\fI\&.gitignore\fR) and allows such an untracked but explicitly ignored file to be overwritten\&.
 .RE
 .PP
 \-\-index\-output=<file>
