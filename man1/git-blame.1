@@ -2,12 +2,12 @@
 .\"     Title: git-blame
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/14/2021
+.\"      Date: 10/18/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.1.637.gf443b226ca
+.\"    Source: Git 2.33.1.711.g9d530dc002
 .\"  Language: English
 .\"
-.TH "GIT\-BLAME" "1" "10/14/2021" "Git 2\&.33\&.1\&.637\&.gf443b2" "Git Manual"
+.TH "GIT\-BLAME" "1" "10/18/2021" "Git 2\&.33\&.1\&.711\&.g9d530d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,8 +35,8 @@ git-blame \- Show what revision and author last modified each line of a file
 \fIgit blame\fR [\-c] [\-b] [\-l] [\-\-root] [\-t] [\-f] [\-n] [\-s] [\-e] [\-p] [\-w] [\-\-incremental]
             [\-L <range>] [\-S <revs\-file>] [\-M] [\-C] [\-C] [\-C] [\-\-since=<date>]
             [\-\-ignore\-rev <rev>] [\-\-ignore\-revs\-file <file>]
-            [\-\-progress] [\-\-abbrev=<n>] [<rev> | \-\-contents <file> | \-\-reverse <rev>\&.\&.<rev>]
-            [\-\-] <file>
+            [\-\-color\-lines] [\-\-color\-by\-age] [\-\-progress] [\-\-abbrev=<n>]
+            [<rev> | \-\-contents <file> | \-\-reverse <rev>\&.\&.<rev>] [\-\-] <file>
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -305,6 +305,20 @@ config option\&. An empty file name,
 \fB""\fR, will clear the list of revs from previously processed files\&.
 .RE
 .PP
+\-\-color\-lines
+.RS 4
+Color line annotations in the default format differently if they come from the same commit as the preceding line\&. This makes it easier to distinguish code blocks introduced by different commits\&. The color defaults to cyan and can be adjusted using the
+\fBcolor\&.blame\&.repeatedLines\fR
+config option\&.
+.RE
+.PP
+\-\-color\-by\-age
+.RS 4
+Color line annotations depending on the age of the line in the default format\&. The
+\fBcolor\&.blame\&.highlightRecent\fR
+config option controls what color is used for each range of age\&.
+.RE
+.PP
 \-h
 .RS 4
 Show help message\&.
@@ -357,6 +371,48 @@ Ignore whitespace when comparing the parent\(cqs version and the child\(cqs to f
 .RS 4
 Instead of using the default 7+1 hexadecimal digits as the abbreviated object name, use <m>+1 digits, where <m> is at least <n> but ensures the commit object names are unique\&. Note that 1 column is used for a caret to mark the boundary commit\&.
 .RE
+.SH "THE DEFAULT FORMAT"
+.sp
+When neither \fB\-\-porcelain\fR nor \fB\-\-incremental\fR option is specified, \fBgit blame\fR will output annotation for each line with:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+abbreviated object name for the commit the line came from;
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+author ident (by default author name and date, unless
+\fB\-s\fR
+or
+\fB\-e\fR
+is specified); and
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+line number
+.RE
+.sp
+before the line contents\&.
 .SH "THE PORCELAIN FORMAT"
 .sp
 In this format, each line is output after a header; the header at the minimum has the first line which has:

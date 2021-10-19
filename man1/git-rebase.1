@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/14/2021
+.\"      Date: 10/18/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.1.637.gf443b226ca
+.\"    Source: Git 2.33.1.711.g9d530dc002
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "10/14/2021" "Git 2\&.33\&.1\&.637\&.gf443b2" "Git Manual"
+.TH "GIT\-REBASE" "1" "10/18/2021" "Git 2\&.33\&.1\&.711\&.g9d530d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -638,12 +638,6 @@ mode is turned on, such commits are instead rebased onto
 (or
 \fB<onto>\fR, if specified)\&.
 .sp
-The
-\fB\-\-rebase\-merges\fR
-mode is similar in spirit to the deprecated
-\fB\-\-preserve\-merges\fR
-but works with interactive rebases, where commits can be reordered, inserted and dropped at will\&.
-.sp
 It is currently only possible to recreate the merge commits using the
 \fBort\fR
 merge strategy; different merge strategies can be used only via explicit
@@ -651,21 +645,6 @@ merge strategy; different merge strategies can be used only via explicit
 commands\&.
 .sp
 See also REBASING MERGES and INCOMPATIBLE OPTIONS below\&.
-.RE
-.PP
-\-p, \-\-preserve\-merges
-.RS 4
-[DEPRECATED: use
-\fB\-\-rebase\-merges\fR
-instead] Recreate merge commits instead of flattening the history by replaying commits a merge commit introduces\&. Merge conflict resolutions or manual amendments to merge commits are not preserved\&.
-.sp
-This uses the
-\fB\-\-interactive\fR
-machinery internally, but combining it with the
-\fB\-\-interactive\fR
-option explicitly is generally not a good idea unless you know what you are doing (see BUGS below)\&.
-.sp
-See also INCOMPATIBLE OPTIONS below\&.
 .RE
 .PP
 \-x <cmd>, \-\-exec <cmd>
@@ -713,9 +692,7 @@ See also INCOMPATIBLE OPTIONS below\&.
 .PP
 \-\-root
 .RS 4
-Rebase all commits reachable from <branch>, instead of limiting them with an <upstream>\&. This allows you to rebase the root commit(s) on a branch\&. When used with \-\-onto, it will skip changes already contained in <newbase> (instead of <upstream>) whereas without \-\-onto it will operate on every change\&. When used together with both \-\-onto and \-\-preserve\-merges,
-\fIall\fR
-root commits will be rewritten to have <newbase> as parent instead\&.
+Rebase all commits reachable from <branch>, instead of limiting them with an <upstream>\&. This allows you to rebase the root commit(s) on a branch\&. When used with \-\-onto, it will skip changes already contained in <newbase> (instead of <upstream>) whereas without \-\-onto it will operate on every change\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
@@ -890,17 +867,6 @@ are incompatible with the following options:
 .sp -1
 .IP \(bu 2.3
 .\}
-\-\-preserve\-merges
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
 \-\-interactive
 .RE
 .sp
@@ -971,83 +937,6 @@ are incompatible with the following options:
 .RE
 .sp
 In addition, the following pairs of options are incompatible:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-preserve\-merges and \-\-interactive
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-preserve\-merges and \-\-signoff
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-preserve\-merges and \-\-rebase\-merges
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-preserve\-merges and \-\-empty=
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-preserve\-merges and \-\-ignore\-whitespace
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-preserve\-merges and \-\-committer\-date\-is\-author\-date
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-preserve\-merges and \-\-ignore\-date
-.RE
 .sp
 .RS 4
 .ie n \{\
@@ -2096,50 +1985,6 @@ for editing the rebase instruction file\&. The value is meant to be interpreted 
 \fBGIT_SEQUENCE_EDITOR\fR
 environment variable\&. When not configured the default commit message editor is used instead\&.
 .RE
-.SH "BUGS"
-.sp
-The todo list presented by the deprecated \fB\-\-preserve\-merges \-\-interactive\fR does not represent the topology of the revision graph (use \fB\-\-rebase\-merges\fR instead)\&. Editing commits and rewording their commit messages should work fine, but attempts to reorder commits tend to produce counterintuitive results\&. Use \fB\-\-rebase\-merges\fR in such scenarios instead\&.
-.sp
-For example, an attempt to rearrange
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-1 \-\-\- 2 \-\-\- 3 \-\-\- 4 \-\-\- 5
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.sp
-to
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-1 \-\-\- 2 \-\-\- 4 \-\-\- 3 \-\-\- 5
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.sp
-by moving the "pick 4" line will result in the following history:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-        3
-       /
-1 \-\-\- 2 \-\-\- 4 \-\-\- 5
-.fi
-.if n \{\
-.RE
-.\}
-.sp
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

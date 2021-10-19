@@ -2,12 +2,12 @@
 .\"     Title: git-repack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/14/2021
+.\"      Date: 10/18/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.33.1.637.gf443b226ca
+.\"    Source: Git 2.33.1.711.g9d530dc002
 .\"  Language: English
 .\"
-.TH "GIT\-REPACK" "1" "10/14/2021" "Git 2\&.33\&.1\&.637\&.gf443b2" "Git Manual"
+.TH "GIT\-REPACK" "1" "10/18/2021" "Git 2\&.33\&.1\&.711\&.g9d530d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-repack \- Pack unpacked objects in a repository
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit repack\fR [\-a] [\-A] [\-d] [\-f] [\-F] [\-l] [\-n] [\-q] [\-b] [\-\-window=<n>] [\-\-depth=<n>] [\-\-threads=<n>] [\-\-keep\-pack=<pack\-name>]
+\fIgit repack\fR [\-a] [\-A] [\-d] [\-f] [\-F] [\-l] [\-n] [\-q] [\-b] [\-m] [\-\-window=<n>] [\-\-depth=<n>] [\-\-threads=<n>] [\-\-keep\-pack=<pack\-name>] [\-\-write\-midx]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -160,10 +160,11 @@ is set\&. Note that this option may result in a larger and slower repository; se
 \-b, \-\-write\-bitmap\-index
 .RS 4
 Write a reachability bitmap index as part of the repack\&. This only makes sense when used with
-\fB\-a\fR
+\fB\-a\fR,
+\fB\-A\fR
 or
-\fB\-A\fR, as the bitmaps must be able to refer to all reachable objects\&. This option overrides the setting of
-\fBrepack\&.writeBitmaps\fR\&. This option has no effect if multiple packfiles are created\&.
+\fB\-m\fR, as the bitmaps must be able to refer to all reachable objects\&. This option overrides the setting of
+\fBrepack\&.writeBitmaps\fR\&. This option has no effect if multiple packfiles are created, unless writing a MIDX (in which case a multi\-pack bitmap is created)\&.
 .RE
 .PP
 \-\-pack\-kept\-objects
@@ -227,6 +228,17 @@ When
 \fB\-\-unpacked\fR
 is specified, loose objects are implicitly included in this "roll\-up", without respect to their reachability\&. This is subject to change in the future\&. This option (implying a drastically different repack mode) is not guaranteed to work with all other combinations of option to
 \fBgit repack\fR\&.
+.sp
+When writing a multi\-pack bitmap,
+\fBgit repack\fR
+selects the largest resulting pack as the preferred pack for object selection by the MIDX (see
+\fBgit-multi-pack-index\fR(1))\&.
+.RE
+.PP
+\-m, \-\-write\-midx
+.RS 4
+Write a multi\-pack index (see
+\fBgit-multi-pack-index\fR(1)) containing the non\-redundant packs\&.
 .RE
 .SH "CONFIGURATION"
 .sp
