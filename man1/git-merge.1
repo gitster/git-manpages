@@ -2,12 +2,12 @@
 .\"     Title: git-merge
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 12/10/2021
+.\"      Date: 12/15/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.34.1.182.ge773545c7f
+.\"    Source: Git 2.34.1.297.g69a9c10c95
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "12/10/2021" "Git 2\&.34\&.1\&.182\&.ge77354" "Git Manual"
+.TH "GIT\-MERGE" "1" "12/15/2021" "Git 2\&.34\&.1\&.297\&.g69a9c1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -462,7 +462,8 @@ By default, Git uses the same style as the one used by the "merge" program from 
 .\}
 .nf
 Here are lines that are either unchanged from the common
-ancestor, or cleanly resolved because only one side changed\&.
+ancestor, or cleanly resolved because only one side changed,
+or cleanly resolved because both sides changed the same way\&.
 <<<<<<< yours:sample\&.txt
 Conflict resolution is hard;
 let\(aqs go shopping\&.
@@ -480,18 +481,46 @@ The area where a pair of conflicting changes happened is marked with markers \fB
 .sp
 The default format does not show what the original said in the conflicting area\&. You cannot tell how many lines are deleted and replaced with Barbie\(cqs remark on your side\&. The only thing you can tell is that your side wants to say it is hard and you\(cqd prefer to go shopping, while the other side wants to claim it is easy\&.
 .sp
-An alternative style can be used by setting the "merge\&.conflictStyle" configuration variable to "diff3"\&. In "diff3" style, the above conflict may look like this:
+An alternative style can be used by setting the "merge\&.conflictStyle" configuration variable to either "diff3" or "zdiff3"\&. In "diff3" style, the above conflict may look like this:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
 Here are lines that are either unchanged from the common
-ancestor, or cleanly resolved because only one side changed\&.
+ancestor, or cleanly resolved because only one side changed,
+<<<<<<< yours:sample\&.txt
+or cleanly resolved because both sides changed the same way\&.
+Conflict resolution is hard;
+let\(aqs go shopping\&.
+||||||| base:sample\&.txt
+or cleanly resolved because both sides changed identically\&.
+Conflict resolution is hard\&.
+=======
+or cleanly resolved because both sides changed the same way\&.
+Git makes conflict resolution easy\&.
+>>>>>>> theirs:sample\&.txt
+And here is another line that is cleanly resolved or unmodified\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+while in "zdiff3" style, it may look like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+Here are lines that are either unchanged from the common
+ancestor, or cleanly resolved because only one side changed,
+or cleanly resolved because both sides changed the same way\&.
 <<<<<<< yours:sample\&.txt
 Conflict resolution is hard;
 let\(aqs go shopping\&.
-|||||||
+||||||| base:sample\&.txt
+or cleanly resolved because both sides changed identically\&.
 Conflict resolution is hard\&.
 =======
 Git makes conflict resolution easy\&.
@@ -899,7 +928,7 @@ marker\&. An alternate style, "diff3", adds a
 \fB|||||||\fR
 marker and the original text before the
 \fB=======\fR
-marker\&.
+marker\&. The "merge" style tends to produce smaller conflict regions than diff3, both because of the exclusion of the original text, and because when a subset of lines match on the two sides they are just pulled out of the conflict region\&. Another alternate style, "zdiff3", is similar to diff3 but removes matching lines on the two sides from the conflict region when those matching lines appear near either the beginning or end of a conflict region\&.
 .RE
 .PP
 merge\&.defaultToUpstream
