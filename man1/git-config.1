@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 12/15/2021
+.\"      Date: 12/21/2021
 .\"    Manual: Git Manual
-.\"    Source: Git 2.34.1.297.g69a9c10c95
+.\"    Source: Git 2.34.1.363.g597af311a2
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "12/15/2021" "Git 2\&.34\&.1\&.297\&.g69a9c1" "Git Manual"
+.TH "GIT\-CONFIG" "1" "12/21/2021" "Git 2\&.34\&.1\&.363\&.g597af3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -4823,7 +4823,12 @@ will enable the
 \fB\-\-perl\-regexp\fR
 option accordingly, while the value
 \fIdefault\fR
-will return to the default matching behavior\&.
+will use the
+\fBgrep\&.extendedRegexp\fR
+option to choose between
+\fIbasic\fR
+and
+\fIextended\fR\&.
 .RE
 .PP
 grep\&.extendedRegexp
@@ -4959,6 +4964,8 @@ and git verify\-commit/tag will fail\&.
 This file can be set to a location outside of the repository and every developer maintains their own trust store\&. A central repository server could generate this file automatically from ssh keys with push access to verify the code against\&. In a corporate setting this file is probably generated at a global location from automation that already handles developer ssh keys\&.
 .sp
 A repository that only allows signed commits can store the file in the repository itself using a path relative to the top\-level of the working tree\&. This way only committers with an already valid key can add or change keys in the keyring\&.
+.sp
+Since OpensSSH 8\&.8 this file allows specifying a key lifetime using valid\-after & valid\-before options\&. Git will mark signatures as valid if the signing key was valid at the time of the signatures creation\&. This allows users to change a signing key without invalidating all previously made signatures\&.
 .sp
 Using a SSH CA key with the cert\-authority option (see ssh\-keygen(1) "CERTIFICATES") is also valid\&.
 .RE
@@ -8990,7 +8997,13 @@ If
 \fBgit-tag\fR(1)
 or
 \fBgit-commit\fR(1)
-is not selecting the key you want it to automatically when creating a signed tag or commit, you can override the default selection with this variable\&. This option is passed unchanged to gpg\(cqs \-\-local\-user parameter, so you may specify a key using any method that gpg supports\&. If gpg\&.format is set to "ssh" this can contain the literal ssh public key (e\&.g\&.: "ssh\-rsa XXXXXX identifier") or a file which contains it and corresponds to the private key used for signing\&. The private key needs to be available via ssh\-agent\&. Alternatively it can be set to a file containing a private key directly\&. If not set git will call gpg\&.ssh\&.defaultKeyCommand (e\&.g\&.: "ssh\-add \-L") and try to use the first key available\&.
+is not selecting the key you want it to automatically when creating a signed tag or commit, you can override the default selection with this variable\&. This option is passed unchanged to gpg\(cqs \-\-local\-user parameter, so you may specify a key using any method that gpg supports\&. If gpg\&.format is set to
+\fBssh\fR
+this can contain the path to either your private ssh key or the public key when ssh\-agent is used\&. Alternatively it can contain a public key prefixed with
+\fBkey::\fR
+directly (e\&.g\&.: "key::ssh\-rsa XXXXXX identifier")\&. The private key needs to be available via ssh\-agent\&. If not set git will call gpg\&.ssh\&.defaultKeyCommand (e\&.g\&.: "ssh\-add \-L") and try to use the first key available\&. For backward compatibility, a raw key which begins with "ssh\-", such as "ssh\-rsa XXXXXX identifier", is treated as "key::ssh\-rsa XXXXXX identifier", but this form is deprecated; use the
+\fBkey::\fR
+form instead\&.
 .RE
 .PP
 versionsort\&.prereleaseSuffix (deprecated)
