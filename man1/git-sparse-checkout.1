@@ -2,12 +2,12 @@
 .\"     Title: git-sparse-checkout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 12/23/2021
+.\"      Date: 01/03/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.34.1.390.g2ae0a9cb82
+.\"    Source: Git 2.34.1.428.gdcc0cd074f
 .\"  Language: English
 .\"
-.TH "GIT\-SPARSE\-CHECKOU" "1" "12/23/2021" "Git 2\&.34\&.1\&.390\&.g2ae0a9" "Git Manual"
+.TH "GIT\-SPARSE\-CHECKOU" "1" "01/03/2022" "Git 2\&.34\&.1\&.428\&.gdcc0cd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -47,29 +47,28 @@ THIS COMMAND IS EXPERIMENTAL\&. ITS BEHAVIOR, AND THE BEHAVIOR OF OTHER COMMANDS
 Describe the patterns in the sparse\-checkout file\&.
 .RE
 .PP
-\fIinit\fR
+\fIset\fR
 .RS 4
-Enable the
-\fBcore\&.sparseCheckout\fR
-setting\&. If the sparse\-checkout file does not exist, then populate it with patterns that match every file in the root directory and no other directories, then will remove all directories tracked by Git\&. Add patterns to the sparse\-checkout file to repopulate the working directory\&.
+Enable the necessary config settings (extensions\&.worktreeConfig, core\&.sparseCheckout, core\&.sparseCheckoutCone) if they are not already enabled, and write a set of patterns to the sparse\-checkout file from the list of arguments following the
+\fIset\fR
+subcommand\&. Update the working directory to match the new patterns\&.
 .sp
-To avoid interfering with other worktrees, it first enables the
-\fBextensions\&.worktreeConfig\fR
-setting and makes sure to set the
-\fBcore\&.sparseCheckout\fR
-setting in the worktree\-specific config file\&.
+When the
+\fB\-\-stdin\fR
+option is provided, the patterns are read from standard in as a newline\-delimited list instead of from the arguments\&.
 .sp
 When
 \fB\-\-cone\fR
-is provided, the
+is passed or
 \fBcore\&.sparseCheckoutCone\fR
-setting is also set, allowing for better performance with a limited set of patterns (see
+is enabled, the input list is considered a list of directories instead of sparse\-checkout patterns\&. This allows for better performance with a limited set of patterns (see
 \fICONE PATTERN SET\fR
-below)\&.
+below)\&. Note that the set command will write patterns to the sparse\-checkout file to include all files contained in those directories (recursively) as well as files that are siblings of ancestor directories\&. The input format matches the output of
+\fBgit ls\-tree \-\-name\-only\fR\&. This includes interpreting pathnames that begin with a double quote (") as C\-style quoted strings\&. This may become the default in the future; \-\-no\-cone can be passed to request non\-cone mode\&.
 .sp
 Use the
 \fB\-\-[no\-]sparse\-index\fR
-option to toggle the use of the sparse index format\&. This reduces the size of the index to be more closely aligned with your sparse\-checkout definition\&. This can have significant performance advantages for commands such as
+option to use a sparse index (the default is to not use it)\&. A sparse index reduces the size of the index to be more closely aligned with your sparse\-checkout definition\&. This can have significant performance advantages for commands such as
 \fBgit status\fR
 or
 \fBgit add\fR\&. This feature is still experimental\&. Some commands might be slower with a sparse index until they are properly integrated with the feature\&.
@@ -78,22 +77,6 @@ or
 Using a sparse index requires modifying the index in a way that is not completely understood by external tools\&. If you have trouble with this compatibility, then run
 \fBgit sparse\-checkout init \-\-no\-sparse\-index\fR
 to rewrite your index to not be sparse\&. Older versions of Git will not understand the sparse directory entries index extension and may fail to interact with your repository until it is disabled\&.
-.RE
-.PP
-\fIset\fR
-.RS 4
-Write a set of patterns to the sparse\-checkout file, as given as a list of arguments following the
-\fIset\fR
-subcommand\&. Update the working directory to match the new patterns\&. Enable the core\&.sparseCheckout config setting if it is not already enabled\&.
-.sp
-When the
-\fB\-\-stdin\fR
-option is provided, the patterns are read from standard in as a newline\-delimited list instead of from the arguments\&.
-.sp
-When
-\fBcore\&.sparseCheckoutCone\fR
-is enabled, the input list is considered a list of directories instead of sparse\-checkout patterns\&. The command writes patterns to the sparse\-checkout file to include all files contained in those directories (recursively) as well as files that are siblings of ancestor directories\&. The input format matches the output of
-\fBgit ls\-tree \-\-name\-only\fR\&. This includes interpreting pathnames that begin with a double quote (") as C\-style quoted strings\&.
 .RE
 .PP
 \fIadd\fR
@@ -112,23 +95,64 @@ subcommand\&.
 Reapply the sparsity pattern rules to paths in the working tree\&. Commands like merge or rebase can materialize paths to do their work (e\&.g\&. in order to show you a conflict), and other sparse\-checkout commands might fail to sparsify an individual file (e\&.g\&. because it has unstaged changes or conflicts)\&. In such cases, it can make sense to run
 \fBgit sparse\-checkout reapply\fR
 later after cleaning up affected paths (e\&.g\&. resolving conflicts, undoing or committing changes, etc\&.)\&.
+.sp
+The
+\fBreapply\fR
+command can also take
+\fB\-\-[no\-]cone\fR
+and
+\fB\-\-[no\-]sparse\-index\fR
+flags, with the same meaning as the flags from the
+\fBset\fR
+command, in order to change which sparsity mode you are using without needing to also respecify all sparsity paths\&.
 .RE
 .PP
 \fIdisable\fR
 .RS 4
 Disable the
 \fBcore\&.sparseCheckout\fR
-config setting, and restore the working directory to include all files\&. Leaves the sparse\-checkout file intact so a later
-\fIgit sparse\-checkout init\fR
-command may return the working directory to the same state\&.
+config setting, and restore the working directory to include all files\&.
+.RE
+.PP
+\fIinit\fR
+.RS 4
+Deprecated command that behaves like
+\fBset\fR
+with no specified paths\&. May be removed in the future\&.
+.sp
+Historically,
+\fBset\fR
+did not handle all the necessary config settings, which meant that both
+\fBinit\fR
+and
+\fBset\fR
+had to be called\&. Invoking both meant the
+\fBinit\fR
+step would first remove nearly all tracked files (and in cone mode, ignored files too), then the
+\fBset\fR
+step would add many of the tracked files (but not ignored files) back\&. In addition to the lost files, the performance and UI of this combination was poor\&.
+.sp
+Also, historically,
+\fBinit\fR
+would not actually initialize the sparse\-checkout file if it already existed\&. This meant it was possible to return to a sparse\-checkout without remembering which paths to pass to a subsequent
+\fIset\fR
+or
+\fIadd\fR
+command\&. However,
+\fB\-\-cone\fR
+and
+\fB\-\-sparse\-index\fR
+options would not be remembered across the disable command, so the easy restore of calling a plain
+\fBinit\fR
+decreased in utility\&.
 .RE
 .SH "SPARSE CHECKOUT"
 .sp
-"Sparse checkout" allows populating the working directory sparsely\&. It uses the skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file in the working directory is worth looking at\&. If the skip\-worktree bit is set, then the file is ignored in the working directory\&. Git will not populate the contents of those files, which makes a sparse checkout helpful when working in a repository with many files, but only a few are important to the current user\&.
+"Sparse checkout" allows populating the working directory sparsely\&. It uses the skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file in the working directory is worth looking at\&. If the skip\-worktree bit is set, then the file is ignored in the working directory\&. Git will avoid populating the contents of those files, which makes a sparse checkout helpful when working in a repository with many files, but only a few are important to the current user\&.
 .sp
 The \fB$GIT_DIR/info/sparse\-checkout\fR file is used to define the skip\-worktree reference bitmap\&. When Git updates the working directory, it updates the skip\-worktree bits in the index based on this file\&. The files matching the patterns in the file will appear in the working directory, and the rest will not\&.
 .sp
-To enable the sparse\-checkout feature, run \fBgit sparse\-checkout init\fR to initialize a simple sparse\-checkout file and enable the \fBcore\&.sparseCheckout\fR config setting\&. Then, run \fBgit sparse\-checkout set\fR to modify the patterns in the sparse\-checkout file\&.
+To enable the sparse\-checkout feature, run \fBgit sparse\-checkout set\fR to set the patterns you want to use\&.
 .sp
 To repopulate the working directory with all files, use the \fBgit sparse\-checkout disable\fR command\&.
 .SH "FULL PATTERN SET"
