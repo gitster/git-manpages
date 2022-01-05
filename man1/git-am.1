@@ -2,12 +2,12 @@
 .\"     Title: git-am
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/03/2022
+.\"      Date: 01/05/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.34.1.428.gdcc0cd074f
+.\"    Source: Git 2.34.1.493.ge83ba647f7
 .\"  Language: English
 .\"
-.TH "GIT\-AM" "1" "01/03/2022" "Git 2\&.34\&.1\&.428\&.gdcc0cd" "Git Manual"
+.TH "GIT\-AM" "1" "01/05/2022" "Git 2\&.34\&.1\&.493\&.ge83ba6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,8 +39,9 @@ git-am \- Apply a series of patches from a mailbox
          [\-\-exclude=<path>] [\-\-include=<path>] [\-\-reject] [\-q | \-\-quiet]
          [\-\-[no\-]scissors] [\-S[<keyid>]] [\-\-patch\-format=<format>]
          [\-\-quoted\-cr=<action>]
+         [\-\-empty=(stop|drop|keep)]
          [(<mbox> | <Maildir>)\&...]
-\fIgit am\fR (\-\-continue | \-\-skip | \-\-abort | \-\-quit | \-\-show\-current\-patch[=(diff|raw)])
+\fIgit am\fR (\-\-continue | \-\-skip | \-\-abort | \-\-quit | \-\-show\-current\-patch[=(diff|raw)] | \-\-allow\-empty)
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -116,6 +117,14 @@ This flag will be passed down to
 \fIgit mailinfo\fR
 (see
 \fBgit-mailinfo\fR(1))\&.
+.RE
+.PP
+\-\-empty=(stop|drop|keep)
+.RS 4
+By default, or when the option is set to
+\fIstop\fR, the command errors out on an input e\-mail message lacking a patch and stops into the middle of the current am session\&. When this option is set to
+\fIdrop\fR, skip such an e\-mail message instead\&. When this option is set to
+\fIkeep\fR, create an empty commit, recording the contents of the e\-mail message as its log\&.
 .RE
 .PP
 \-m, \-\-message\-id
@@ -263,6 +272,11 @@ has stopped due to conflicts\&. If
 is specified, show the raw contents of the e\-mail message; if
 \fBdiff\fR, show the diff portion only\&. Defaults to
 \fBraw\fR\&.
+.RE
+.PP
+\-\-allow\-empty
+.RS 4
+After a patch failure on an input e\-mail message lacking a patch, create an empty commit with the contents of the e\-mail message as its log message\&.
 .RE
 .SH "DISCUSSION"
 .sp
