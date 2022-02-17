@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/05/2022
+.\"      Date: 02/16/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.46.g38062e73e0
+.\"    Source: Git 2.35.1.193.g45fe28c951
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/05/2022" "Git 2\&.35\&.1\&.46\&.g38062e7" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/16/2022" "Git 2\&.35\&.1\&.193\&.g45fe28" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -960,6 +960,20 @@ becomes
 \fBfoo/**\fR\&. In other words, it matches all branches that begin with
 \fBfoo/\fR\&. This is useful if your branches are organized hierarchically and you would like to apply a configuration to all the branches in that hierarchy\&.
 .RE
+.PP
+\fBhasconfig:remote\&.*\&.url:\fR
+.RS 4
+The data that follows this keyword is taken to be a pattern with standard globbing wildcards and two additional ones,
+\fB**/\fR
+and
+\fB/**\fR, that can match multiple components\&. The first time this keyword is seen, the rest of the config files will be scanned for remote URLs (without applying any values)\&. If there exists at least one remote URL that matches this pattern, the include condition is met\&.
+.sp
+Files included by this option (directly or indirectly) are not allowed to contain remote URLs\&.
+.sp
+Note that unlike other includeIf conditions, resolving this condition relies on information that is not yet known at the point of reading the condition\&. A typical use case is this option being present as a system\-level or global\-level config, and the remote URL being in a local\-level config; hence the need to scan ahead when resolving this condition\&. In order to avoid the chicken\-and\-egg problem in which potentially\-included files can affect whether such files are potentially included, Git breaks the cycle by prohibiting these files from affecting the resolution of these conditions (thus, prohibiting them from declaring remote URLs)\&.
+.sp
+As for the naming of this keyword, it is for forwards compatibiliy with a naming scheme that supports more variable\-based include conditions, but currently Git only supports the exact keyword described above\&.
+.RE
 .sp
 A few more notes on matching via \fBgitdir\fR and \fBgitdir/i\fR:
 .sp
@@ -1056,6 +1070,14 @@ Note that "\&.\&./" is not special and will match literally, which is unlikely w
 ; currently checked out
 [includeIf "onbranch:foo\-branch"]
         path = foo\&.inc
+
+; include only if a remote with the given URL exists (note
+; that such a URL may be provided later in a file or in a
+; file read after this file is read, as seen in this example)
+[includeIf "hasconfig:remote\&.*\&.url:https://example\&.com/**"]
+        path = foo\&.inc
+[remote "origin"]
+        url = https://example\&.com/git
 .fi
 .if n \{\
 .RE
@@ -4190,9 +4212,9 @@ for detail\&.
 .PP
 fetch\&.negotiationAlgorithm
 .RS 4
-Control how information about the commits in the local repository is sent when negotiating the contents of the packfile to be sent by the server\&. Set to "skipping" to use an algorithm that skips commits in an effort to converge faster, but may result in a larger\-than\-necessary packfile; or set to "noop" to not send any information at all, which will almost certainly result in a larger\-than\-necessary packfile, but will skip the negotiation step\&. The default is "default" which instructs Git to use the default algorithm that never skips commits (unless the server has acknowledged it or one of its descendants)\&. If
+Control how information about the commits in the local repository is sent when negotiating the contents of the packfile to be sent by the server\&. Set to "consecutive" to use an algorithm that walks over consecutive commits checking each one\&. Set to "skipping" to use an algorithm that skips commits in an effort to converge faster, but may result in a larger\-than\-necessary packfile; or set to "noop" to not send any information at all, which will almost certainly result in a larger\-than\-necessary packfile, but will skip the negotiation step\&. Set to "default" to override settings made previously and use the default behaviour\&. The default is normally "consecutive", but if
 \fBfeature\&.experimental\fR
-is enabled, then this setting defaults to "skipping"\&. Unknown values will cause
+is true, then the default is "skipping"\&. Unknown values will cause
 \fIgit fetch\fR
 to error out\&.
 .sp
@@ -4969,7 +4991,7 @@ This file can be set to a location outside of the repository and every developer
 .sp
 A repository that only allows signed commits can store the file in the repository itself using a path relative to the top\-level of the working tree\&. This way only committers with an already valid key can add or change keys in the keyring\&.
 .sp
-Since OpensSSH 8\&.8 this file allows specifying a key lifetime using valid\-after & valid\-before options\&. Git will mark signatures as valid if the signing key was valid at the time of the signatures creation\&. This allows users to change a signing key without invalidating all previously made signatures\&.
+Since OpensSSH 8\&.8 this file allows specifying a key lifetime using valid\-after & valid\-before options\&. Git will mark signatures as valid if the signing key was valid at the time of the signature\(cqs creation\&. This allows users to change a signing key without invalidating all previously made signatures\&.
 .sp
 Using a SSH CA key with the cert\-authority option (see ssh\-keygen(1) "CERTIFICATES") is also valid\&.
 .RE
@@ -8330,11 +8352,6 @@ or only for those submodules where
 \fBsubmodule\&.<name>\&.ignore=all\fR\&. The only exception to that rule is that status and commit will show staged submodule changes\&. To also view the summary for ignored submodules you can either use the \-\-ignore\-submodules=dirty command\-line option or the
 \fIgit submodule summary\fR
 command, which shows a similar output but does not honor these settings\&.
-.RE
-.PP
-stash\&.useBuiltin
-.RS 4
-Unused configuration variable\&. Used in Git versions 2\&.22 to 2\&.26 as an escape hatch to enable the legacy shellscript implementation of stash\&. Now the built\-in rewrite of it in C is always used\&. Setting this will emit a warning, to alert any remaining users that setting this now does nothing\&.
 .RE
 .PP
 stash\&.showIncludeUntracked
