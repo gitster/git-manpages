@@ -2,12 +2,12 @@
 .\"     Title: git-branch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/17/2022
+.\"      Date: 02/18/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.225.ge2ac9141e6
+.\"    Source: Git 2.35.1.273.ge6ebfd0e8c
 .\"  Language: English
 .\"
-.TH "GIT\-BRANCH" "1" "02/17/2022" "Git 2\&.35\&.1\&.225\&.ge2ac91" "Git Manual"
+.TH "GIT\-BRANCH" "1" "02/18/2022" "Git 2\&.35\&.1\&.273\&.ge6ebfd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,7 +40,8 @@ git-branch \- List, create, or delete branches
         [\-\-points\-at <object>] [\-\-format=<format>]
         [(\-r | \-\-remotes) | (\-a | \-\-all)]
         [\-\-list] [<pattern>\&...]
-\fIgit branch\fR [\-\-track[=(direct|inherit)] | \-\-no\-track] [\-f] <branchname> [<start\-point>]
+\fIgit branch\fR [\-\-track[=(direct|inherit)] | \-\-no\-track] [\-f]
+        [\-\-recurse\-submodules] <branchname> [<start\-point>]
 \fIgit branch\fR (\-\-set\-upstream\-to=<upstream> | \-u <upstream>) [<branchname>]
 \fIgit branch\fR \-\-unset\-upstream [<branchname>]
 \fIgit branch\fR (\-m | \-M) [<oldbranch>] <newbranch>
@@ -275,6 +276,20 @@ options are used\&.
 \-\-no\-track
 .RS 4
 Do not set up "upstream" configuration, even if the branch\&.autoSetupMerge configuration variable is set\&.
+.RE
+.PP
+\-\-recurse\-submodules
+.RS 4
+THIS OPTION IS EXPERIMENTAL! Causes the current command to recurse into submodules if
+\fBsubmodule\&.propagateBranches\fR
+is enabled\&. See
+\fBsubmodule\&.propagateBranches\fR
+in
+\fBgit-config\fR(1)\&. Currently, only branch creation is supported\&.
+.sp
+When used in branch creation, a new branch <branchname> will be created in the superproject and all of the submodules in the superproject\(cqs <start\-point>\&. In submodules, the branch will point to the submodule commit in the superproject\(cqs <start\-point> but the branch\(cqs tracking information will be set up based on the submodule\(cqs branches and remotes e\&.g\&.
+\fBgit branch \-\-recurse\-submodules topic origin/main\fR
+will create the submodule branch "topic" that points to the submodule commit in the superproject\(cqs "origin/main", but tracks the submodule\(cqs "origin/main"\&.
 .RE
 .PP
 \-\-set\-upstream

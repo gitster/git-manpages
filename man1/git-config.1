@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/17/2022
+.\"      Date: 02/18/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.225.ge2ac9141e6
+.\"    Source: Git 2.35.1.273.ge6ebfd0e8c
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/17/2022" "Git 2\&.35\&.1\&.225\&.ge2ac91" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/18/2022" "Git 2\&.35\&.1\&.273\&.ge6ebfd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1429,6 +1429,13 @@ Advice shown if a user attempts to recursively tag a tag object\&.
 submoduleAlternateErrorStrategyDie
 .RS 4
 Advice shown when a submodule\&.alternateErrorStrategy option configured to "die" causes a fatal error\&.
+.RE
+.PP
+submodulesNotUpdated
+.RS 4
+Advice shown when a user runs a submodule command that fails because
+\fBgit submodule update \-\-init\fR
+was not run\&.
 .RE
 .PP
 addIgnoredFile
@@ -8460,19 +8467,9 @@ submodule\&.recurse
 .RS 4
 A boolean indicating if commands should enable the
 \fB\-\-recurse\-submodules\fR
-option by default\&. Applies to all commands that support this option (\fBcheckout\fR,
-\fBfetch\fR,
-\fBgrep\fR,
-\fBpull\fR,
-\fBpush\fR,
-\fBread\-tree\fR,
-\fBreset\fR,
-\fBrestore\fR
-and
-\fBswitch\fR) except
-\fBclone\fR
-and
-\fBls\-files\fR\&. Defaults to false\&. When set to true, it can be deactivated via the
+option by default\&. Defaults to false\&.
+.sp
+When set to true, it can be deactivated via the
 \fB\-\-no\-recurse\-submodules\fR
 option\&. Note that some Git commands lacking this option may call some of the above commands affected by
 \fBsubmodule\&.recurse\fR; for instance
@@ -8483,6 +8480,71 @@ but does not have a
 \fB\-\-no\-recurse\-submodules\fR
 option\&. For these commands a workaround is to temporarily change the configuration value by using
 \fBgit \-c submodule\&.recurse=0\fR\&.
+.sp
+The following list shows the commands that accept
+\fB\-\-recurse\-submodules\fR
+and whether they are supported by this setting\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBcheckout\fR,
+\fBfetch\fR,
+\fBgrep\fR,
+\fBpull\fR,
+\fBpush\fR,
+\fBread\-tree\fR,
+\fBreset\fR,
+\fBrestore\fR
+and
+\fBswitch\fR
+are always supported\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBclone\fR
+and
+\fBls\-files\fR
+are not supported\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBbranch\fR
+is supported only if
+\fBsubmodule\&.propagateBranches\fR
+is enabled
+.RE
+.RE
+.PP
+submodule\&.propagateBranches
+.RS 4
+[EXPERIMENTAL] A boolean that enables branching support when using
+\fB\-\-recurse\-submodules\fR
+or
+\fBsubmodule\&.recurse=true\fR\&. Enabling this will allow certain commands to accept
+\fB\-\-recurse\-submodules\fR
+and certain commands that already accept
+\fB\-\-recurse\-submodules\fR
+will now consider branches\&. Defaults to false\&.
 .RE
 .PP
 submodule\&.fetchJobs
