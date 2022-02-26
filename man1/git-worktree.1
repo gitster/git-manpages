@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/23/2022
+.\"      Date: 02/25/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.291.gdab1b7905d
+.\"    Source: Git 2.35.1.354.g715d08a9e5
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "02/23/2022" "Git 2\&.35\&.1\&.291\&.gdab1b7" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "02/25/2022" "Git 2\&.35\&.1\&.354\&.g715d08" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -370,7 +370,7 @@ For example, \fBmain\-worktree/HEAD\fR or \fBmain\-worktree/refs/bisect/good\fR 
 To access refs, it\(cqs best not to look inside \fB$GIT_DIR\fR directly\&. Instead use commands such as \fBgit-rev-parse\fR(1) or \fBgit-update-ref\fR(1) which will handle refs correctly\&.
 .SH "CONFIGURATION FILE"
 .sp
-By default, the repository \fBconfig\fR file is shared across all working trees\&. If the config variables \fBcore\&.bare\fR or \fBcore\&.worktree\fR are already present in the config file, they will be applied to the main working trees only\&.
+By default, the repository \fBconfig\fR file is shared across all working trees\&. If the config variables \fBcore\&.bare\fR or \fBcore\&.worktree\fR are present in the common config file and \fBextensions\&.worktreeConfig\fR is disabled, then they will be applied to the main working tree only\&.
 .sp
 In order to have configuration specific to working trees, you can turn on the \fBworktreeConfig\fR extension, e\&.g\&.:
 .sp
@@ -398,9 +398,20 @@ Note that in this file, the exception for \fBcore\&.bare\fR and \fBcore\&.worktr
 .IP \(bu 2.3
 .\}
 \fBcore\&.worktree\fR
-and
+should never be shared\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 \fBcore\&.bare\fR
-should never be shared
+should not be shared if the value is
+\fBcore\&.bare=true\fR\&.
 .RE
 .sp
 .RS 4
@@ -414,6 +425,8 @@ should never be shared
 \fBcore\&.sparseCheckout\fR
 is recommended per working tree, unless you are sure you always use sparse checkout for all working trees\&.
 .RE
+.sp
+See the documentation of \fBextensions\&.worktreeConfig\fR in \fBgit-config\fR(1) for more details\&.
 .SH "DETAILS"
 .sp
 Each linked working tree has a private sub\-directory in the repository\(cqs \fB$GIT_DIR/worktrees\fR directory\&. The private sub\-directory\(cqs name is usually the base name of the linked working tree\(cqs path, possibly appended with a number to make it unique\&. For example, when \fB$GIT_DIR=/path/main/\&.git\fR the command \fBgit worktree add /path/other/test\-next next\fR creates the linked working tree in \fB/path/other/test\-next\fR and also creates a \fB$GIT_DIR/worktrees/test\-next\fR directory (or \fB$GIT_DIR/worktrees/test\-next1\fR if \fBtest\-next\fR is already taken)\&.

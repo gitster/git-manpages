@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/23/2022
+.\"      Date: 02/25/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.291.gdab1b7905d
+.\"    Source: Git 2.35.1.354.g715d08a9e5
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/23/2022" "Git 2\&.35\&.1\&.291\&.gdab1b7" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/25/2022" "Git 2\&.35\&.1\&.354\&.g715d08" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -236,11 +236,20 @@ the section called \(lqFILES\(rq\&.
 Similar to
 \fB\-\-local\fR
 except that
-\fB\&.git/config\&.worktree\fR
+\fB$GIT_DIR/config\&.worktree\fR
 is read from or written to if
 \fBextensions\&.worktreeConfig\fR
-is present\&. If not it\(cqs the same as
-\fB\-\-local\fR\&.
+is enabled\&. If not it\(cqs the same as
+\fB\-\-local\fR\&. Note that
+\fB$GIT_DIR\fR
+is equal to
+\fB$GIT_COMMON_DIR\fR
+for the main working tree, but is of the form
+\fB$GIT_DIR/worktrees/<id>/\fR
+for other working trees\&. See
+\fBgit-worktree\fR(1)
+to learn how to enable
+\fBextensions\&.worktreeConfig\fR\&.
 .RE
 .PP
 \-f <config\-file>, \-\-file <config\-file>
@@ -2666,6 +2675,16 @@ in command line\&. See
 \fBgit-clone\fR(1)
 .RE
 .PP
+clone\&.filterSubmodules
+.RS 4
+If a partial clone filter is provided (see
+\fB\-\-filter\fR
+in
+\fBgit-rev-list\fR(1)) and
+\fB\-\-recurse\-submodules\fR
+is used, also apply the filter to submodules\&.
+.RE
+.PP
 color\&.advice
 .RS 4
 A boolean to enable/disable color in hints (e\&.g\&. when a push failed, see
@@ -4065,6 +4084,79 @@ Note that this setting should only be set by
 \fBgit-init\fR(1)
 or
 \fBgit-clone\fR(1)\&. Trying to change it after initialization will not work and will produce hard\-to\-diagnose issues\&.
+.RE
+.PP
+extensions\&.worktreeConfig
+.RS 4
+If enabled, then worktrees will load config settings from the
+\fB$GIT_DIR/config\&.worktree\fR
+file in addition to the
+\fB$GIT_COMMON_DIR/config\fR
+file\&. Note that
+\fB$GIT_COMMON_DIR\fR
+and
+\fB$GIT_DIR\fR
+are the same for the main working tree, while other working trees have
+\fB$GIT_DIR\fR
+equal to
+\fB$GIT_COMMON_DIR/worktrees/<id>/\fR\&. The settings in the
+\fBconfig\&.worktree\fR
+file will override settings from any other config files\&.
+.sp
+When enabling
+\fBextensions\&.worktreeConfig\fR, you must be careful to move certain values from the common config file to the main working tree\(cqs
+\fBconfig\&.worktree\fR
+file, if present:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBcore\&.worktree\fR
+must be moved from
+\fB$GIT_COMMON_DIR/config\fR
+to
+\fB$GIT_COMMON_DIR/config\&.worktree\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If
+\fBcore\&.bare\fR
+is true, then it must be moved from
+\fB$GIT_COMMON_DIR/config\fR
+to
+\fB$GIT_COMMON_DIR/config\&.worktree\fR\&.
+.sp
+It may also be beneficial to adjust the locations of
+\fBcore\&.sparseCheckout\fR
+and
+\fBcore\&.sparseCheckoutCone\fR
+depending on your desire for customizable sparse\-checkout settings for each worktree\&. By default, the
+\fBgit sparse\-checkout\fR
+builtin enables
+\fBextensions\&.worktreeConfig\fR, assigns these config values on a per\-worktree basis, and uses the
+\fB$GIT_DIR/info/sparse\-checkout\fR
+file to specify the sparsity for each worktree independently\&. See
+\fBgit-sparse-checkout\fR(1)
+for more details\&.
+.sp
+For historical reasons,
+\fBextensions\&.worktreeConfig\fR
+is respected regardless of the
+\fBcore\&.repositoryFormatVersion\fR
+setting\&.
+.RE
 .RE
 .PP
 fastimport\&.unpackLimit
