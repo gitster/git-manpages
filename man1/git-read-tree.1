@@ -2,12 +2,12 @@
 .\"     Title: git-read-tree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/07/2022
+.\"      Date: 03/09/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.415.gc2162907e9
+.\"    Source: Git 2.35.1.455.g1a4874565f
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "03/07/2022" "Git 2\&.35\&.1\&.415\&.gc21629" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "03/09/2022" "Git 2\&.35\&.1\&.455\&.g1a4874" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -440,9 +440,11 @@ However, if you have local changes in the working tree that would be overwritten
 In other words, there is no need to worry about what exists only in the working tree\&. When you have local changes in a part of the project that is not involved in the merge, your changes do not interfere with the merge, and are kept intact\&. When they \fBdo\fR interfere, the merge does not even start (\fIgit read\-tree\fR complains loudly and fails without modifying anything)\&. In such a case, you can simply continue doing what you were in the middle of doing, and when your working tree is ready (i\&.e\&. you have finished your work\-in\-progress), attempt the merge again\&.
 .SH "SPARSE CHECKOUT"
 .sp
+Note: The \fBupdate\-index\fR and \fBread\-tree\fR primitives for supporting the skip\-worktree bit predated the introduction of \fBgit-sparse-checkout\fR(1)\&. Users are encouraged to use \fBsparse\-checkout\fR in preference to these low\-level primitives\&.
+.sp
 "Sparse checkout" allows populating the working directory sparsely\&. It uses the skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file in the working directory is worth looking at\&.
 .sp
-\fIgit read\-tree\fR and other merge\-based commands (\fIgit merge\fR, \fIgit checkout\fR\&...) can help maintaining the skip\-worktree bitmap and working directory update\&. \fB$GIT_DIR/info/sparse\-checkout\fR is used to define the skip\-worktree reference bitmap\&. When \fIgit read\-tree\fR needs to update the working directory, it resets the skip\-worktree bit in the index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, skip\-worktree will not be set on that entry\&. Otherwise, skip\-worktree will be set\&.
+\fIgit read\-tree\fR and other merge\-based commands (\fIgit merge\fR, \fIgit checkout\fR\&...) can help maintaining the skip\-worktree bitmap and working directory update\&. \fB$GIT_DIR/info/sparse\-checkout\fR is used to define the skip\-worktree reference bitmap\&. When \fIgit read\-tree\fR needs to update the working directory, it resets the skip\-worktree bit in the index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, or the entry corresponds to a file present in the working tree, then skip\-worktree will not be set on that entry\&. Otherwise, skip\-worktree will be set\&.
 .sp
 Then it compares the new skip\-worktree value with the previous one\&. If skip\-worktree turns from set to unset, it will add the corresponding file back\&. If it turns from unset to set, that file will be removed\&.
 .sp
