@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/16/2022
+.\"      Date: 03/27/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.577.g74cc1aa55f
+.\"    Source: Git 2.35.1.677.gabf474a5dd
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "03/16/2022" "Git 2\&.35\&.1\&.577\&.g74cc1a" "Git Manual"
+.TH "GIT\-CONFIG" "1" "03/27/2022" "Git 2\&.35\&.1\&.677\&.gabf474" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2175,13 +2175,210 @@ errors\&. The default tab width is 8\&. Allowed values are 1 to 63\&.
 .RE
 .RE
 .PP
+core\&.fsync
+.RS 4
+A comma\-separated list of components of the repository that should be hardened via the core\&.fsyncMethod when created or modified\&. You can disable hardening of any component by prefixing it with a
+\fI\-\fR\&. Items that are not hardened may be lost in the event of an unclean system shutdown\&. Unless you have special requirements, it is recommended that you leave this option empty or pick one of
+\fBcommitted\fR,
+\fBadded\fR, or
+\fBall\fR\&.
+.sp
+When this configuration is encountered, the set of components starts with the platform default value, disabled components are removed, and additional components are added\&.
+\fBnone\fR
+resets the state so that the platform default is ignored\&.
+.sp
+The empty string resets the fsync configuration to the platform default\&. The default on most platforms is equivalent to
+\fBcore\&.fsync=committed,\-loose\-object\fR, which has good performance, but risks losing recent work in the event of an unclean system shutdown\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBnone\fR
+clears the set of fsynced components\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBloose\-object\fR
+hardens objects added to the repo in loose\-object form\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBpack\fR
+hardens objects added to the repo in packfile form\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBpack\-metadata\fR
+hardens packfile bitmaps and indexes\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBcommit\-graph\fR
+hardens the commit graph file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBindex\fR
+hardens the index when it is modified\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBobjects\fR
+is an aggregate option that is equivalent to
+\fBloose\-object,pack\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBreference\fR
+hardens references modified in the repo\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBderived\-metadata\fR
+is an aggregate option that is equivalent to
+\fBpack\-metadata,commit\-graph\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBcommitted\fR
+is an aggregate option that is currently equivalent to
+\fBobjects\fR\&. This mode sacrifices some performance to ensure that work that is committed to the repository with
+\fBgit commit\fR
+or similar commands is hardened\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBadded\fR
+is an aggregate option that is currently equivalent to
+\fBcommitted,index\fR\&. This mode sacrifices additional performance to ensure that the results of commands like
+\fBgit add\fR
+and similar operations are hardened\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBall\fR
+is an aggregate option that syncs all individual components above\&.
+.RE
+.RE
+.PP
+core\&.fsyncMethod
+.RS 4
+A value indicating the strategy Git will use to harden repository data using fsync and related primitives\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBfsync\fR
+uses the fsync() system call or platform equivalents\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBwriteout\-only\fR
+issues pagecache writeback requests, but depending on the filesystem and storage hardware, data added to the repository may not be durable in the event of a system crash\&. This is the default mode on macOS\&.
+.RE
+.RE
+.PP
 core\&.fsyncObjectFiles
 .RS 4
 This boolean will enable
 \fIfsync()\fR
-when writing object files\&.
+when writing object files\&. This setting is deprecated\&. Use core\&.fsync instead\&.
 .sp
-This is a total waste of time and effort on a filesystem that orders data writes properly, but can be useful for filesystems that do not use journalling (traditional UNIX filesystems) or that only journal metadata and not file contents (OS X\(cqs HFS+, or Linux ext3 with "data=writeback")\&.
+This setting affects data added to the Git repository in loose\-object form\&. When set to true, Git will issue an fsync or similar system call to flush caches so that loose\-objects remain consistent in the face of a unclean system shutdown\&.
 .RE
 .PP
 core\&.preloadIndex
@@ -8124,6 +8321,17 @@ repack\&.writeBitmaps
 When true, git will write a bitmap index when packing all objects to disk (e\&.g\&., when
 \fBgit repack \-a\fR
 is run)\&. This index can speed up the "counting objects" phase of subsequent packs created for clones and fetches, at the cost of some disk space and extra time spent on the initial repack\&. This has no effect if multiple packfiles are created\&. Defaults to true on bare repos, false otherwise\&.
+.RE
+.PP
+repack\&.updateServerInfo
+.RS 4
+If set to false,
+\fBgit-repack\fR(1)
+will not run
+\fBgit-update-server-info\fR(1)\&. Defaults to true\&. Can be overridden when true by the
+\fB\-n\fR
+option of
+\fBgit-repack\fR(1)\&.
 .RE
 .PP
 rerere\&.autoUpdate
