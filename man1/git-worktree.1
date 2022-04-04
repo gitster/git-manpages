@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/29/2022
+.\"      Date: 04/04/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.693.g805e0a6808
+.\"    Source: Git 2.36.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "03/29/2022" "Git 2\&.35\&.1\&.693\&.g805e0a" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "04/04/2022" "Git 2\&.36\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-worktree \- Manage multiple working trees
 .sp
 .nf
 \fIgit worktree add\fR [\-f] [\-\-detach] [\-\-checkout] [\-\-lock [\-\-reason <string>]] [\-b <new\-branch>] <path> [<commit\-ish>]
-\fIgit worktree list\fR [\-v | \-\-porcelain]
+\fIgit worktree list\fR [\-v | \-\-porcelain [\-z]]
 \fIgit worktree lock\fR [\-\-reason <string>] <worktree>
 \fIgit worktree move\fR <worktree> <new\-path>
 \fIgit worktree prune\fR [\-n] [\-v] [\-\-expire <expire>]
@@ -309,7 +309,16 @@ With
 \-\-porcelain
 .RS 4
 With
-\fBlist\fR, output in an easy\-to\-parse format for scripts\&. This format will remain stable across Git versions and regardless of user configuration\&. See below for details\&.
+\fBlist\fR, output in an easy\-to\-parse format for scripts\&. This format will remain stable across Git versions and regardless of user configuration\&. It is recommended to combine this with
+\fB\-z\fR\&. See below for details\&.
+.RE
+.PP
+\-z
+.RS 4
+Terminate each line with a NUL rather than a newline when
+\fB\-\-porcelain\fR
+is specified with
+\fBlist\fR\&. This makes it possible to parse the output when a worktree path contains a newline character\&.
 .RE
 .PP
 \-q, \-\-quiet
@@ -523,7 +532,7 @@ $ git worktree list \-\-verbose
 Note that the annotation is moved to the next line if the additional information is available, otherwise it stays on the same line as the worktree itself\&.
 .SS "Porcelain Format"
 .sp
-The porcelain format has a line per attribute\&. Attributes are listed with a label and value separated by a single space\&. Boolean attributes (like \fBbare\fR and \fBdetached\fR) are listed as a label only, and are present only if the value is true\&. Some attributes (like \fBlocked\fR) can be listed as a label only or with a value depending upon whether a reason is available\&. The first attribute of a worktree is always \fBworktree\fR, an empty line indicates the end of the record\&. For example:
+The porcelain format has a line per attribute\&. If \fB\-z\fR is given then the lines are terminated with NUL rather than a newline\&. Attributes are listed with a label and value separated by a single space\&. Boolean attributes (like \fBbare\fR and \fBdetached\fR) are listed as a label only, and are present only if the value is true\&. Some attributes (like \fBlocked\fR) can be listed as a label only or with a value depending upon whether a reason is available\&. The first attribute of a worktree is always \fBworktree\fR, an empty line indicates the end of the record\&. For example:
 .sp
 .if n \{\
 .RS 4
@@ -561,7 +570,7 @@ prunable gitdir file points to non\-existent location
 .\}
 .sp
 .sp
-If the lock reason contains "unusual" characters such as newline, they are escaped and the entire reason is quoted as explained for the configuration variable \fBcore\&.quotePath\fR (see \fBgit-config\fR(1))\&. For Example:
+Unless \fB\-z\fR is used any "unusual" characters in the lock reason such as newlines are escaped and the entire reason is quoted as explained for the configuration variable \fBcore\&.quotePath\fR (see \fBgit-config\fR(1))\&. For Example:
 .sp
 .if n \{\
 .RS 4

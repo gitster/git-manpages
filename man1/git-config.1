@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/29/2022
+.\"      Date: 04/04/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.35.1.693.g805e0a6808
+.\"    Source: Git 2.36.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "03/29/2022" "Git 2\&.35\&.1\&.693\&.g805e0a" "Git Manual"
+.TH "GIT\-CONFIG" "1" "04/04/2022" "Git 2\&.36\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1240,6 +1240,11 @@ variables default to
 \fItrue\fR, and you can tell Git that you do not need help by setting these to
 \fIfalse\fR:
 .PP
+ambiguousFetchRefspec
+.RS 4
+Advice shown when fetch refspec for multiple remotes map to the same remote\-tracking branch namespace and causes branch tracking set\-up to fail\&.
+.RE
+.PP
 fetchShowForcedUpdates
 .RS 4
 Advice shown when
@@ -1358,13 +1363,13 @@ Advice shown when
 refuses to merge to avoid overwriting local changes\&.
 .RE
 .PP
-resetQuiet
+resetNoRefresh
 .RS 4
 Advice to consider using the
-\fB\-\-quiet\fR
+\fB\-\-no\-refresh\fR
 option to
 \fBgit-reset\fR(1)
-when the command takes more than 2 seconds to enumerate unstaged changes after reset\&.
+when the command takes more than 2 seconds to refresh the index after reset\&.
 .RE
 .PP
 resolveConflict
@@ -1544,13 +1549,39 @@ elsewhere\&.
 .PP
 core\&.fsmonitor
 .RS 4
-If set, the value of this variable is used as a command which will identify all files that may have changed since the requested date/time\&. This information is used to speed up git by avoiding unnecessary processing of files that have not changed\&. See the "fsmonitor\-watchman" section of
+If set to true, enable the built\-in file system monitor daemon for this working directory (\fBgit-fsmonitor\(emdaemon\fR(1))\&.
+.sp
+Like hook\-based file system monitors, the built\-in file system monitor can speed up Git commands that need to refresh the Git index (e\&.g\&.
+\fBgit status\fR) in a working directory with many files\&. The built\-in monitor eliminates the need to install and maintain an external third\-party tool\&.
+.sp
+The built\-in file system monitor is currently available only on a limited set of supported platforms\&. Currently, this includes Windows and MacOS\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+Otherwise, this variable contains the pathname of the "fsmonitor"
+hook command\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This hook command is used to identify all files that may have changed since the requested date/time\&. This information is used to speed up git by avoiding unnecessary scanning of files that have not changed\&.
+.sp
+See the "fsmonitor\-watchman" section of
 \fBgithooks\fR(5)\&.
+.sp
+Note that if you concurrently use multiple versions of Git, such as one version on the command line and another version in an IDE tool, that the definition of
+\fBcore\&.fsmonitor\fR
+was extended to allow boolean values in addition to hook pathnames\&. Git versions 2\&.35\&.1 and prior will not understand the boolean values and will consider the "true" or "false" values as hook pathnames to be invoked\&. Git versions 2\&.26 thru 2\&.35\&.1 default to hook protocol V2 and will fall back to no fsmonitor (full scan)\&. Git versions prior to 2\&.26 default to hook protocol V1 and will silently assume there were no changes to report (no scan), so status commands may report incomplete results\&. For this reason, it is best to upgrade all of your Git versions before using the built\-in file system monitor\&.
 .RE
 .PP
 core\&.fsmonitorHookVersion
 .RS 4
-Sets the version of hook that is to be used when calling fsmonitor\&. There are currently versions 1 and 2\&. When this is not set, version 2 will be tried first and if it fails then version 1 will be tried\&. Version 1 uses a timestamp as input to determine which files have changes since that time but some monitors like watchman have race conditions when used with a timestamp\&. Version 2 uses an opaque string so that the monitor can return something that can be used to determine what files have changed without race conditions\&.
+Sets the protocol version to be used when invoking the "fsmonitor" hook\&.
+.sp
+There are currently versions 1 and 2\&. When this is not set, version 2 will be tried first and if it fails then version 1 will be tried\&. Version 1 uses a timestamp as input to determine which files have changes since that time but some monitors like Watchman have race conditions when used with a timestamp\&. Version 2 uses an opaque string so that the monitor can return something that can be used to determine what files have changed without race conditions\&.
 .RE
 .PP
 core\&.trustctime
@@ -8272,7 +8303,10 @@ When set to true, this remote will be used to fetch promisor objects\&.
 .PP
 remote\&.<name>\&.partialclonefilter
 .RS 4
-The filter that will be applied when fetching from this promisor remote\&.
+The filter that will be applied when fetching from this promisor remote\&. Changing or clearing this value will only affect fetches for new commits\&. To fetch associated objects for commits already present in the local object database, use the
+\fB\-\-refetch\fR
+option of
+\fBgit-fetch\fR(1)\&.
 .RE
 .PP
 remotes\&.<group>
@@ -8349,15 +8383,6 @@ is enabled if there is an
 \fBrr\-cache\fR
 directory under the
 \fB$GIT_DIR\fR, e\&.g\&. if "rerere" was previously used in the repository\&.
-.RE
-.PP
-reset\&.quiet
-.RS 4
-When set to true,
-\fIgit reset\fR
-will default to the
-\fI\-\-quiet\fR
-option\&.
 .RE
 .PP
 sendemail\&.identity
