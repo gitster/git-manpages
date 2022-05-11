@@ -2,12 +2,12 @@
 .\"     Title: git-mergetool
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/06/2022
+.\"      Date: 05/10/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.36.1.19.ge8005e4871
+.\"    Source: Git 2.36.1.60.gb9de974d38
 .\"  Language: English
 .\"
-.TH "GIT\-MERGETOOL" "1" "05/06/2022" "Git 2\&.36\&.1\&.19\&.ge8005e4" "Git Manual"
+.TH "GIT\-MERGETOOL" "1" "05/10/2022" "Git 2\&.36\&.1\&.60\&.gb9de974" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -234,6 +234,11 @@ avoids using
 altogether, and is the default value\&.
 .RE
 .PP
+mergetool\&.vimdiff\&.layout
+.RS 4
+The vimdiff backend uses this variable to control how its split windows look like\&. Applies even if you are using Neovim (\fBnvim\fR) or gVim (\fBgvim\fR) as the merge tool\&. See BACKEND SPECIFIC HINTS section for details\&.
+.RE
+.PP
 mergetool\&.hideResolved
 .RS 4
 During a merge Git will automatically resolve as many conflicts as possible and write the
@@ -290,6 +295,428 @@ Prompt before each invocation of the merge resolution program\&.
 \fBgit mergetool\fR creates \fB*\&.orig\fR backup files while resolving merges\&. These are safe to remove once a file has been merged and its \fBgit mergetool\fR session has completed\&.
 .sp
 Setting the \fBmergetool\&.keepBackup\fR configuration variable to \fBfalse\fR causes \fBgit mergetool\fR to automatically remove the backup as files are successfully merged\&.
+.SH "BACKEND SPECIFIC HINTS"
+.SS "vimdiff"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBDescription\fR
+.RS 4
+.sp
+When specifying \fB\-\-tool=vimdiff\fR in \fBgit mergetool\fR Git will open Vim with a 4 windows layout distributed in the following way:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|             |           |              |
+|   LOCAL     |   BASE    |   REMOTE     |
+|             |           |              |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|                                        |
+|                MERGED                  |
+|                                        |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+\fBLOCAL\fR, \fBBASE\fR and \fBREMOTE\fR are read\-only buffers showing the contents of the conflicting file in specific commits ("commit you are merging into", "common ancestor commit" and "commit you are merging from" respectively)
+.sp
+\fBMERGED\fR is a writable buffer where you have to resolve the conflicts (using the other read\-only buffers as a reference)\&. Once you are done, save and exit Vim as usual (\fB:wq\fR) or, if you want to abort, exit using \fB:cq\fR\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBLayout configuration\fR
+.RS 4
+.sp
+You can change the windows layout used by Vim by setting configuration variable \fBmergetool\&.vimdiff\&.layout\fR which accepts a string where the following separators have special meaning:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB+\fR
+is used to "open a new tab"
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB,\fR
+is used to "open a new vertical split"
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB/\fR
+is used to "open a new horizontal split"
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB@\fR
+is used to indicate which is the file containing the final version after solving the conflicts\&. If not present,
+\fBMERGED\fR
+will be used by default\&.
+.RE
+.sp
+The precedence of the operators is this one (you can use parentheses to change it):
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+`@` > `+` > `/` > `,`
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Let\(cqs see some examples to understand how it works:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlayout = "(LOCAL,BASE,REMOTE)/MERGED"\fR
+.sp
+This is exactly the same as the default layout we have already seen\&.
+.sp
+Note that
+\fB/\fR
+has precedence over
+\fB,\fR
+and thus the parenthesis are not needed in this case\&. The next layout definition is equivalent:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+layout = "LOCAL,BASE,REMOTE / MERGED"
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlayout = "LOCAL,MERGED,REMOTE"\fR
+.sp
+If, for some reason, we are not interested in the
+\fBBASE\fR
+buffer\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|             |           |              |
+|             |           |              |
+|   LOCAL     |   MERGED  |   REMOTE     |
+|             |           |              |
+|             |           |              |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlayout = "MERGED"\fR
+.sp
+Only the
+\fBMERGED\fR
+buffer will be shown\&. Note, however, that all the other ones are still loaded in vim, and you can access them with the "buffers" command\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|                                        |
+|                                        |
+|                 MERGED                 |
+|                                        |
+|                                        |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlayout = "@LOCAL,REMOTE"\fR
+.sp
+When
+\fBMERGED\fR
+is not present in the layout, you must "mark" one of the buffers with an asterisk\&. That will become the buffer you need to edit and save after resolving the conflicts\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|                   |                    |
+|                   |                    |
+|                   |                    |
+|     LOCAL         |    REMOTE          |
+|                   |                    |
+|                   |                    |
+|                   |                    |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlayout = "LOCAL,BASE,REMOTE / MERGED + BASE,LOCAL + BASE,REMOTE"\fR
+.sp
+Three tabs will open: the first one is a copy of the default layout, while the other two only show the differences between (\fBBASE\fR
+and
+\fBLOCAL\fR) and (\fBBASE\fR
+and
+\fBREMOTE\fR) respectively\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+| <TAB #1> |  TAB #2  |  TAB #3  |       |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|             |           |              |
+|   LOCAL     |   BASE    |   REMOTE     |
+|             |           |              |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|                                        |
+|                MERGED                  |
+|                                        |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|  TAB #1  | <TAB #2> |  TAB #3  |       |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|                   |                    |
+|                   |                    |
+|                   |                    |
+|     BASE          |    LOCAL           |
+|                   |                    |
+|                   |                    |
+|                   |                    |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|  TAB #1  |  TAB #2  | <TAB #3> |       |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|                   |                    |
+|                   |                    |
+|                   |                    |
+|     BASE          |    REMOTE          |
+|                   |                    |
+|                   |                    |
+|                   |                    |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBlayout = "LOCAL,BASE,REMOTE / MERGED + BASE,LOCAL + BASE,REMOTE + (LOCAL/BASE/REMOTE),MERGED"\fR
+.sp
+Same as the previous example, but adds a fourth tab with the same information as the first tab, with a different layout\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|  TAB #1  |  TAB #2  |  TAB #3  | <TAB #4> |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+|       LOCAL         |                     |
+|\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-|                     |
+|       BASE          |        MERGED       |
+|\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-|                     |
+|       REMOTE        |                     |
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Note how in the third tab definition we need to use parenthesis to make
+\fB,\fR
+have precedence over
+\fB/\fR\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBVariants\fR
+.RS 4
+.sp
+Instead of \fB\-\-tool=vimdiff\fR, you can also use one of these other variants:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB\-\-tool=gvimdiff\fR, to open gVim instead of Vim\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fB\-\-tool=nvimdiff\fR, to open Neovim instead of Vim\&.
+.RE
+.sp
+When using these variants, in order to specify a custom layout you will have to set configuration variables \fBmergetool\&.gvimdiff\&.layout\fR and \fBmergetool\&.nvimdiff\&.layout\fR instead of \fBmergetool\&.vimdiff\&.layout\fR
+.sp
+In addition, for backwards compatibility with previous Git versions, you can also append \fB1\fR, \fB2\fR or \fB3\fR to either \fBvimdiff\fR or any of the variants (ex: \fBvimdiff3\fR, \fBnvimdiff1\fR, etc\&...) to use a predefined layout\&. In other words, using \fB\-\-tool=[g,n,]vimdiffx\fR is the same as using \fB\-\-tool=[g,n,]vimdiff\fR and setting configuration variable \fBmergetool\&.[g,n,]vimdiff\&.layout\fR to\&...
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBx=1\fR:
+\fB"@LOCAL, REMOTE"\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBx=2\fR:
+\fB"LOCAL, MERGED, REMOTE"\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBx=3\fR:
+\fB"MERGED"\fR
+.RE
+.sp
+Example: using \fB\-\-tool=gvimdiff2\fR will open \fBgvim\fR with three columns (LOCAL, MERGED and REMOTE)\&.
+.RE
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
