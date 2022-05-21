@@ -2,12 +2,12 @@
 .\"     Title: git-p4
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/11/2022
+.\"      Date: 05/20/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.36.1.74.g277cf0bc36
+.\"    Source: Git 2.36.1.153.gf9b95943b6
 .\"  Language: English
 .\"
-.TH "GIT\-P4" "1" "05/11/2022" "Git 2\&.36\&.1\&.74\&.g277cf0b" "Git Manual"
+.TH "GIT\-P4" "1" "05/20/2022" "Git 2\&.36\&.1\&.153\&.gf9b959" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -789,7 +789,32 @@ Specify that the p4 client spec should be used to identify p4 depot paths of int
 .PP
 git\-p4\&.pathEncoding
 .RS 4
-Perforce keeps the encoding of a path as given by the originating OS\&. Git expects paths encoded as UTF\-8\&. Use this config to tell git\-p4 what encoding Perforce had used for the paths\&. This encoding is used to transcode the paths to UTF\-8\&. As an example, Perforce on Windows often uses "cp1252" to encode path names\&.
+Perforce keeps the encoding of a path as given by the originating OS\&. Git expects paths encoded as UTF\-8\&. Use this config to tell git\-p4 what encoding Perforce had used for the paths\&. This encoding is used to transcode the paths to UTF\-8\&. As an example, Perforce on Windows often uses "cp1252" to encode path names\&. If this option is passed into a p4 clone request, it is persisted in the resulting new git repo\&.
+.RE
+.PP
+git\-p4\&.metadataDecodingStrategy
+.RS 4
+Perforce keeps the encoding of a changelist descriptions and user full names as stored by the client on a given OS\&. The p4v client uses the OS\-local encoding, and so different users can end up storing different changelist descriptions or user full names in different encodings, in the same depot\&. Git tolerates inconsistent/incorrect encodings in commit messages and author names, but expects them to be specified in utf\-8\&. git\-p4 can use three different decoding strategies in handling the encoding uncertainty in Perforce:
+\fIpassthrough\fR
+simply passes the original bytes through from Perforce to git, creating usable but incorrectly\-encoded data when the Perforce data is encoded as anything other than utf\-8\&.
+\fIstrict\fR
+expects the Perforce data to be encoded as utf\-8, and fails to import when this is not true\&.
+\fIfallback\fR
+attempts to interpret the data as utf\-8, and otherwise falls back to using a secondary encoding \- by default the common windows encoding
+\fIcp\-1252\fR
+\- with upper\-range bytes escaped if decoding with the fallback encoding also fails\&. Under python2 the default strategy is
+\fIpassthrough\fR
+for historical reasons, and under python3 the default is
+\fIfallback\fR\&. When
+\fIstrict\fR
+is selected and decoding fails, the error message will propose changing this config parameter as a workaround\&. If this option is passed into a p4 clone request, it is persisted into the resulting new git repo\&.
+.RE
+.PP
+git\-p4\&.metadataFallbackEncoding
+.RS 4
+Specify the fallback encoding to use when decoding Perforce author names and changelists descriptions using the
+\fIfallback\fR
+strategy (see git\-p4\&.metadataDecodingStrategy)\&. The fallback encoding will only be used when decoding as utf\-8 fails\&. This option defaults to cp1252, a common windows encoding\&. If this option is passed into a p4 clone request, it is persisted into the resulting new git repo\&.
 .RE
 .PP
 git\-p4\&.largeFileSystem
