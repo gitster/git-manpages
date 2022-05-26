@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/25/2022
+.\"      Date: 05/26/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.36.1.182.g6afdb07b7b
+.\"    Source: Git 2.36.1.195.g8ddf593a25
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "05/25/2022" "Git 2\&.36\&.1\&.182\&.g6afdb0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "05/26/2022" "Git 2\&.36\&.1\&.195\&.g8ddf59" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2703,7 +2703,8 @@ options\&. The valid settings are:
 \fBfalse\fR \(em no automatic setup is done;
 \fBtrue\fR \(em automatic setup is done when the starting point is a remote\-tracking branch;
 \fBalways\fR \(em  automatic setup is done when the starting point is either a local branch or remote\-tracking branch;
-\fBinherit\fR \(em if the starting point has a tracking configuration, it is copied to the new branch\&. This option defaults to true\&.
+\fBinherit\fR \(em if the starting point has a tracking configuration, it is copied to the new branch;
+\fBsimple\fR \(em automatic setup is done only when the starting point is a remote\-tracking branch and the new branch has the same name as the remote branch\&. This option defaults to true\&.
 .RE
 .PP
 branch\&.autoSetupRebase
@@ -2737,7 +2738,7 @@ and
 which remote to fetch from/push to\&. The remote to push to may be overridden with
 \fBremote\&.pushDefault\fR
 (for all branches)\&. The remote to push to, for the current branch, may be further overridden by
-\fBbranch\&.<name>\&.pushRemote\fR\&. If no remote is configured, or if you are not on any branch, it defaults to
+\fBbranch\&.<name>\&.pushRemote\fR\&. If no remote is configured, or if you are not on any branch and there is more than one remote defined in the repository, it defaults to
 \fBorigin\fR
 for fetching and
 \fBremote\&.pushDefault\fR
@@ -7279,6 +7280,19 @@ pull\&.twohead
 The default merge strategy to use when pulling a single branch\&.
 .RE
 .PP
+push\&.autoSetupRemote
+.RS 4
+If set to "true" assume
+\fB\-\-set\-upstream\fR
+on default push when no upstream tracking exists for the current branch; this option takes effect with push\&.default options
+\fIsimple\fR,
+\fIupstream\fR, and
+\fIcurrent\fR\&. It is useful if by default you want new branches to be pushed to the default remote (like the behavior of
+\fIpush\&.default=current\fR) and you also want the upstream tracking to be set\&. Workflows most likely to benefit from this option are
+\fIsimple\fR
+central workflows where all branches are expected to have the same name on the remote\&.
+.RE
+.PP
 push\&.default
 .RS 4
 Defines the action
@@ -7993,6 +8007,18 @@ to the string
 list\&. If
 \fBsafe\&.directory=*\fR
 is set in system config and you want to re\-enable this protection, then initialize your list with an empty value before listing the repositories that you deem safe\&.
+.sp
+As explained, Git only allows you to access repositories owned by yourself, i\&.e\&. the user who is running Git, by default\&. When Git is running as
+\fIroot\fR
+in a non Windows platform that provides sudo, however, git checks the SUDO_UID environment variable that sudo creates and will allow access to the uid recorded as its value instead\&. This is to make it easy to perform a common sequence during installation "make && sudo make install"\&. A git process running under
+\fIsudo\fR
+runs as
+\fIroot\fR
+but the
+\fIsudo\fR
+command exports the environment variable to record which id the original user has\&. If that is not what you would prefer and want git to only trust repositories that are owned by root instead, then you must remove the
+\fBSUDO_UID\fR
+variable from root\(cqs environment before invoking git\&.
 .RE
 .PP
 sendemail\&.identity
