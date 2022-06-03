@@ -2,12 +2,12 @@
 .\"     Title: git-gc
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 06/01/2022
+.\"      Date: 06/03/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.36.1.210.g2668e3608e
+.\"    Source: Git 2.36.1.299.gab336e8f1c
 .\"  Language: English
 .\"
-.TH "GIT\-GC" "1" "06/01/2022" "Git 2\&.36\&.1\&.210\&.g2668e3" "Git Manual"
+.TH "GIT\-GC" "1" "06/03/2022" "Git 2\&.36\&.1\&.299\&.gab336e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -67,6 +67,11 @@ Once housekeeping is triggered by exceeding the limits of configuration options 
 \fBgc\&.auto\fR
 and
 \fBgc\&.autoPackLimit\fR, all other housekeeping tasks (e\&.g\&. rerere, working trees, reflog\&...) will be performed as well\&.
+.RE
+.PP
+\-\-cruft
+.RS 4
+When expiring unreachable objects, pack them separately into a cruft pack instead of storing the loose objects as loose objects\&.
 .RE
 .PP
 \-\-prune=<date>
@@ -238,12 +243,25 @@ to enable it within all non\-bare repos or it can be set to a boolean value\&. T
 \fBtrue\fR\&.
 .RE
 .PP
+gc\&.cruftPacks
+.RS 4
+Store unreachable objects in a cruft pack (see
+\fBgit-repack\fR(1)) instead of as loose objects\&. The default is
+\fBfalse\fR\&.
+.RE
+.PP
 gc\&.pruneExpire
 .RS 4
 When
 \fIgit gc\fR
 is run, it will call
-\fIprune \-\-expire 2\&.weeks\&.ago\fR\&. Override the grace period with this config variable\&. The value "now" may be used to disable this grace period and always prune unreachable objects immediately, or "never" may be used to suppress pruning\&. This feature helps prevent corruption when
+\fIprune \-\-expire 2\&.weeks\&.ago\fR
+(and
+\fIrepack \-\-cruft \-\-cruft\-expiration 2\&.weeks\&.ago\fR
+if using cruft packs via
+\fBgc\&.cruftPacks\fR
+or
+\fB\-\-cruft\fR)\&. Override the grace period with this config variable\&. The value "now" may be used to disable this grace period and always prune unreachable objects immediately, or "never" may be used to suppress pruning\&. This feature helps prevent corruption when
 \fIgit gc\fR
 runs concurrently with another process writing to the repository; see the "NOTES" section of
 \fBgit-gc\fR(1)\&.

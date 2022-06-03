@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 06/01/2022
+.\"      Date: 06/03/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.36.1.210.g2668e3608e
+.\"    Source: Git 2.36.1.299.gab336e8f1c
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "06/01/2022" "Git 2\&.36\&.1\&.210\&.g2668e3" "Git Manual"
+.TH "GIT\-CONFIG" "1" "06/03/2022" "Git 2\&.36\&.1\&.299\&.gab336e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2401,6 +2401,26 @@ uses the fsync() system call or platform equivalents\&.
 \fBwriteout\-only\fR
 issues pagecache writeback requests, but depending on the filesystem and storage hardware, data added to the repository may not be durable in the event of a system crash\&. This is the default mode on macOS\&.
 .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBbatch\fR
+enables a mode that uses writeout\-only flushes to stage multiple updates in the disk writeback cache and then does a single full fsync of a dummy file to trigger the disk cache flush at the end of the operation\&.
+.sp
+Currently
+\fBbatch\fR
+mode only applies to loose\-object files\&. Other repository data is made durable as if
+\fBfsync\fR
+was specified\&. This mode is expected to be as safe as
+\fBfsync\fR
+on macOS for repos stored on HFS+ or APFS filesystems and on Windows for repos stored on NTFS or ReFS filesystems\&.
+.RE
 .RE
 .PP
 core\&.fsyncObjectFiles
@@ -2503,7 +2523,8 @@ for more information\&.
 .PP
 core\&.sparseCheckoutCone
 .RS 4
-Enables the "cone mode" of the sparse checkout feature\&. When the sparse\-checkout file contains a limited set of patterns, then this mode provides significant performance advantages\&. See
+Enables the "cone mode" of the sparse checkout feature\&. When the sparse\-checkout file contains a limited set of patterns, this mode provides significant performance advantages\&. The "non cone mode" can be requested to allow specifying a more flexible patterns by setting this variable to
+\fIfalse\fR\&. See
 \fBgit-sparse-checkout\fR(1)
 for more information\&.
 .RE
@@ -4761,12 +4782,25 @@ to enable it within all non\-bare repos or it can be set to a boolean value\&. T
 \fBtrue\fR\&.
 .RE
 .PP
+gc\&.cruftPacks
+.RS 4
+Store unreachable objects in a cruft pack (see
+\fBgit-repack\fR(1)) instead of as loose objects\&. The default is
+\fBfalse\fR\&.
+.RE
+.PP
 gc\&.pruneExpire
 .RS 4
 When
 \fIgit gc\fR
 is run, it will call
-\fIprune \-\-expire 2\&.weeks\&.ago\fR\&. Override the grace period with this config variable\&. The value "now" may be used to disable this grace period and always prune unreachable objects immediately, or "never" may be used to suppress pruning\&. This feature helps prevent corruption when
+\fIprune \-\-expire 2\&.weeks\&.ago\fR
+(and
+\fIrepack \-\-cruft \-\-cruft\-expiration 2\&.weeks\&.ago\fR
+if using cruft packs via
+\fBgc\&.cruftPacks\fR
+or
+\fB\-\-cruft\fR)\&. Override the grace period with this config variable\&. The value "now" may be used to disable this grace period and always prune unreachable objects immediately, or "never" may be used to suppress pruning\&. This feature helps prevent corruption when
 \fIgit gc\fR
 runs concurrently with another process writing to the repository; see the "NOTES" section of
 \fBgit-gc\fR(1)\&.
@@ -7993,6 +8027,15 @@ will not run
 \fB\-n\fR
 option of
 \fBgit-repack\fR(1)\&.
+.RE
+.PP
+repack\&.cruftWindow, repack\&.cruftWindowMemory, repack\&.cruftDepth, repack\&.cruftThreads
+.RS 4
+Parameters used by
+\fBgit-pack-objects\fR(1)
+when generating a cruft pack and the respective parameters are not given over the command line\&. See similarly named
+\fBpack\&.*\fR
+configuration variables for defaults and meaning\&.
 .RE
 .PP
 rerere\&.autoUpdate
