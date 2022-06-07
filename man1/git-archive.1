@@ -2,12 +2,12 @@
 .\"     Title: git-archive
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 06/03/2022
+.\"      Date: 06/07/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.36.1.299.gab336e8f1c
+.\"    Source: Git 2.36.1.363.g9c897eef06
 .\"  Language: English
 .\"
-.TH "GIT\-ARCHIVE" "1" "06/03/2022" "Git 2\&.36\&.1\&.299\&.gab336e" "Git Manual"
+.TH "GIT\-ARCHIVE" "1" "06/07/2022" "Git 2\&.36\&.1\&.363\&.g9c897e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -66,7 +66,10 @@ Report progress to stderr\&.
 .PP
 \-\-prefix=<prefix>/
 .RS 4
-Prepend <prefix>/ to each filename in the archive\&.
+Prepend <prefix>/ to paths in the archive\&. Can be repeated; its rightmost value is used for all tracked files\&. See below which value gets used by
+\fB\-\-add\-file\fR
+and
+\fB\-\-add\-virtual\-file\fR\&.
 .RE
 .PP
 \-o <file>, \-\-output=<file>
@@ -76,9 +79,29 @@ Write the archive to <file> instead of stdout\&.
 .PP
 \-\-add\-file=<file>
 .RS 4
-Add a non\-tracked file to the archive\&. Can be repeated to add multiple files\&. The path of the file in the archive is built by concatenating the value for
+Add a non\-tracked file to the archive\&. Can be repeated to add multiple files\&. The path of the file in the archive is built by concatenating the value of the last
 \fB\-\-prefix\fR
-(if any) and the basename of <file>\&.
+option (if any) before this
+\fB\-\-add\-file\fR
+and the basename of <file>\&.
+.RE
+.PP
+\-\-add\-virtual\-file=<path>:<content>
+.RS 4
+Add the specified contents to the archive\&. Can be repeated to add multiple files\&. The path of the file in the archive is built by concatenating the value of the last
+\fB\-\-prefix\fR
+option (if any) before this
+\fB\-\-add\-virtual\-file\fR
+and
+\fB<path>\fR\&.
+.sp
+The
+\fB<path>\fR
+argument can start and end with a literal double\-quote character; the contained file name is interpreted as a C\-style string, i\&.e\&. the backslash is interpreted as escape character\&. The path must be quoted if it contains a colon, to avoid the colon from being misinterpreted as the separator between the path and the contents, or if the path begins or ends with a double\-quote character\&.
+.sp
+The file mode is limited to a regular file, and the option may be subject to platform\-dependent command\-line limits\&. For non\-trivial cases, write an untracked file and use
+\fB\-\-add\-file\fR
+instead\&.
 .RE
 .PP
 \-\-worktree\-attributes
@@ -220,6 +243,14 @@ Put everything in the current head\(cqs Documentation/ directory into
 \fBgit archive \-o latest\&.zip HEAD\fR
 .RS 4
 Create a Zip archive that contains the contents of the latest commit on the current branch\&. Note that the output format is inferred by the extension of the output file\&.
+.RE
+.PP
+\fBgit archive \-o latest\&.tar \-\-prefix=build/ \-\-add\-file=configure \-\-prefix= HEAD\fR
+.RS 4
+Creates a tar archive that contains the contents of the latest commit on the current branch with no prefix and the untracked file
+\fIconfigure\fR
+with the prefix
+\fIbuild/\fR\&.
 .RE
 .PP
 \fBgit config tar\&.tar\&.xz\&.command "xz \-c"\fR
