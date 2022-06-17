@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 06/13/2022
+.\"      Date: 06/17/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.0.rc0
+.\"    Source: Git 2.37.0.rc0.54.gb4eda05d58
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "06/13/2022" "Git 2\&.37\&.0\&.rc0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "06/17/2022" "Git 2\&.37\&.0\&.rc0\&.54\&.gb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -4379,52 +4379,6 @@ option, most executions will create a very small commit\-graph file on top of th
 \fBgit log \-\-graph\fR\&. Defaults to false\&.
 .RE
 .PP
-fetch\&.credentialsInUrl
-.RS 4
-A URL can contain plaintext credentials in the form
-\fB<protocol>://<user>:<password>@<domain>/<path>\fR\&. Using such URLs is not recommended as it exposes the password in multiple ways, including Git storing the URL as plaintext in the repository config\&. The
-\fBfetch\&.credentialsInUrl\fR
-option provides instruction for how Git should react to seeing such a URL, with these values:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBallow\fR
-(default): Git will proceed with its activity without warning\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBwarn\fR: Git will write a warning message to
-\fBstderr\fR
-when parsing a URL with a plaintext credential\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBdie\fR: Git will write a failure message to
-\fBstderr\fR
-when parsing a URL with a plaintext credential\&.
-.RE
-.RE
-.PP
 format\&.attach
 .RS 4
 Enable multipart/mixed attachments as the default for
@@ -5146,7 +5100,10 @@ trust\&. Setting this option overrides the required trust\-level for all operati
 .PP
 gpg\&.ssh\&.defaultKeyCommand
 .RS 4
-This command that will be run when user\&.signingkey is not set and a ssh signature is requested\&. On successful exit a valid ssh public key is expected in the first line of its output\&. To automatically use the first available key from your ssh\-agent set this to "ssh\-add \-L"\&.
+This command that will be run when user\&.signingkey is not set and a ssh signature is requested\&. On successful exit a valid ssh public key prefixed with
+\fBkey::\fR
+is expected in the first line of its output\&. This allows for a script doing a dynamic lookup of the correct public key when it is impractical to statically configure
+\fBuser\&.signingKey\fR\&. For example when keys or SSH Certificates are rotated frequently or selection of the right key depends on external factors unknown to git\&.
 .RE
 .PP
 gpg\&.ssh\&.allowedSignersFile
@@ -5842,7 +5799,7 @@ backend was configured via
 overrides this behavior\&.
 .RE
 .PP
-http\&.pinnedpubkey
+http\&.pinnedPubkey
 .RS 4
 Public key of the https service\&. It may either be the filename of a PEM or DER encoded public key file or a string starting with
 \fIsha256//\fR
@@ -8869,6 +8826,99 @@ environment variable\&.
 trace2\&.maxFiles
 .RS 4
 Integer\&. When writing trace files to a target directory, do not write additional traces if we would exceed this many files\&. Instead, write a sentinel file that will block further tracing to this directory\&. Defaults to 0, which disables this check\&.
+.RE
+.PP
+transfer\&.credentialsInUrl
+.RS 4
+A configured URL can contain plaintext credentials in the form
+\fB<protocol>://<user>:<password>@<domain>/<path>\fR\&. You may want to warn or forbid the use of such configuration (in favor of using
+\fBgit-credential\fR(1))\&. This will be used on
+\fBgit-clone\fR(1),
+\fBgit-fetch\fR(1),
+\fBgit-push\fR(1), and any other direct use of the configured URL\&.
+.sp
+Note that this is currently limited to detecting credentials in
+\fBremote\&.<name>\&.url\fR
+configuration, it won\(cqt detect credentials in
+\fBremote\&.<name>\&.pushurl\fR
+configuration\&.
+.sp
+You might want to enable this to prevent inadvertent credentials exposure, e\&.g\&. because:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The OS or system where you\(cqre running git may not provide way way or otherwise allow you to configure the permissions of the configuration file where the username and/or password are stored\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Even if it does, having such data stored "at rest" might expose you in other ways, e\&.g\&. a backup process might copy the data to another system\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The git programs will pass the full URL to one another as arguments on the command\-line, meaning the credentials will be exposed to oher users on OS\(cqs or systems that allow other users to see the full process list of other users\&. On linux the "hidepid" setting documented in procfs(5) allows for configuring this behavior\&.
+.sp
+If such concerns don\(cqt apply to you then you probably don\(cqt need to be concerned about credentials exposure due to storing that sensitive data in git\(cqs configuration files\&. If you do want to use this, set
+\fBtransfer\&.credentialsInUrl\fR
+to one of these values:
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBallow\fR
+(default): Git will proceed with its activity without warning\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBwarn\fR: Git will write a warning message to
+\fBstderr\fR
+when parsing a URL with a plaintext credential\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBdie\fR: Git will write a failure message to
+\fBstderr\fR
+when parsing a URL with a plaintext credential\&.
+.RE
 .RE
 .PP
 transfer\&.fsckObjects
