@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 07/12/2022
+.\"      Date: 07/18/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.1.38.gf2e5255fc2
+.\"    Source: Git 2.37.1.188.g71a8fab31b
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "07/12/2022" "Git 2\&.37\&.1\&.38\&.gf2e5255" "Git Manual"
+.TH "GIT\-CONFIG" "1" "07/18/2022" "Git 2\&.37\&.1\&.188\&.g71a8fa" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1933,15 +1933,61 @@ are supported\&.
 .PP
 core\&.bigFileThreshold
 .RS 4
-Files larger than this size are stored deflated, without attempting delta compression\&. Storing large files without delta compression avoids excessive memory usage, at the slight expense of increased disk usage\&. Additionally files larger than this size are always treated as binary\&.
-.sp
-Default is 512 MiB on all platforms\&. This should be reasonable for most projects as source code and other text files can still be delta compressed, but larger binary media files won\(cqt be\&.
-.sp
-Common unit suffixes of
+The size of files considered "big", which as discussed below changes the behavior of numerous git commands, as well as how such files are stored within the repository\&. The default is 512 MiB\&. Common unit suffixes of
 \fIk\fR,
 \fIm\fR, or
 \fIg\fR
 are supported\&.
+.sp
+Files above the configured limit will be:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Stored deflated in packfiles, without attempting delta compression\&.
+.sp
+The default limit is primarily set with this use\-case in mind\&. With it, most projects will have their source code and other text files delta compressed, but not larger binary media files\&.
+.sp
+Storing large files without delta compression avoids excessive memory usage, at the slight expense of increased disk usage\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Will be treated as if they were labeled "binary" (see
+\fBgitattributes\fR(5))\&. e\&.g\&.
+\fBgit-log\fR(1)
+and
+\fBgit-diff\fR(1)
+will not compute diffs for files above this limit\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Will generally be streamed when written, which avoids excessive memory usage, at the cost of some fixed overhead\&. Commands that make use of this include
+\fBgit-archive\fR(1),
+\fBgit-fast-import\fR(1),
+\fBgit-index-pack\fR(1),
+\fBgit-unpack-objects\fR(1)
+and
+\fBgit-fsck\fR(1)\&.
+.RE
 .RE
 .PP
 core\&.excludesFile
@@ -7562,6 +7608,13 @@ at the time of push overrides this configuration setting\&.
 push\&.negotiate
 .RS 4
 If set to "true", attempt to reduce the size of the packfile sent by rounds of negotiation in which the client and the server attempt to find commits in common\&. If "false", Git will rely solely on the server\(cqs ref advertisement to find commits in common\&.
+.RE
+.PP
+push\&.useBitmaps
+.RS 4
+If set to "false", disable use of bitmaps for "git push" even if
+\fBpack\&.useBitmaps\fR
+is "true", without preventing other git operations from using bitmaps\&. Default is true\&.
 .RE
 .PP
 rebase\&.backend
