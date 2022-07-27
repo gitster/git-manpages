@@ -2,12 +2,12 @@
 .\"     Title: git-daemon
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 07/22/2022
+.\"      Date: 07/27/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.1.223.g6a475b71f8
+.\"    Source: Git 2.37.1.261.g15b17e6480
 .\"  Language: English
 .\"
-.TH "GIT\-DAEMON" "1" "07/22/2022" "Git 2\&.37\&.1\&.223\&.g6a475b" "Git Manual"
+.TH "GIT\-DAEMON" "1" "07/27/2022" "Git 2\&.37\&.1\&.261\&.g15b17e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -52,7 +52,7 @@ git-daemon \- A really simple server for Git repositories
 .sp
 A really simple TCP Git daemon that normally listens on port "DEFAULT_GIT_PORT" aka 9418\&. It waits for a connection asking for a service, and will serve that service if it is enabled\&.
 .sp
-It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any Git directory that hasn\(cqt explicitly been marked for export this way (unless the \fB\-\-export\-all\fR parameter is specified)\&. If you pass some directory paths as \fIgit daemon\fR arguments, you can further restrict the offers to a whitelist comprising of those\&.
+It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any Git directory that hasn\(cqt explicitly been marked for export this way (unless the \fB\-\-export\-all\fR parameter is specified)\&. If you pass some directory paths as \fIgit daemon\fR arguments, the offers are limited to repositories within those directories\&.
 .sp
 By default, only \fBupload\-pack\fR service is enabled, which serves \fIgit fetch\-pack\fR and \fIgit ls\-remote\fR clients, which are invoked from \fIgit fetch\fR, \fIgit pull\fR, and \fIgit clone\fR\&.
 .sp
@@ -65,7 +65,7 @@ An \fBupload\-archive\fR also exists to serve \fIgit archive\fR\&.
 .RS 4
 Match paths exactly (i\&.e\&. don\(cqt allow "/foo/repo" when the real path is "/foo/repo\&.git" or "/foo/repo/\&.git") and don\(cqt do user\-relative paths\&.
 \fIgit daemon\fR
-will refuse to start when this option is enabled and no whitelist is specified\&.
+will refuse to start when this option is enabled and no directory arguments are provided\&.
 .RE
 .PP
 \-\-base\-path=<path>
@@ -90,7 +90,7 @@ will attempt to lookup without prefixing the base path\&. This is useful for swi
 .PP
 \-\-interpolated\-path=<pathtemplate>
 .RS 4
-To support virtual hosting, an interpolated path template can be used to dynamically construct alternate paths\&. The template supports %H for the target hostname as supplied by the client but converted to all lowercase, %CH for the canonical hostname, %IP for the server\(cqs IP address, %P for the port number, and %D for the absolute path of the named repository\&. After interpolation, the path is validated against the directory whitelist\&.
+To support virtual hosting, an interpolated path template can be used to dynamically construct alternate paths\&. The template supports %H for the target hostname as supplied by the client but converted to all lowercase, %CH for the canonical hostname, %IP for the server\(cqs IP address, %P for the port number, and %D for the absolute path of the named repository\&. After interpolation, the path is validated against the directory list\&.
 .RE
 .PP
 \-\-export\-all
@@ -269,7 +269,11 @@ The external command can optionally write a single line to its standard output t
 .PP
 <directory>
 .RS 4
-A directory to add to the whitelist of allowed directories\&. Unless \-\-strict\-paths is specified this will also include subdirectories of each named directory\&.
+The remaining arguments provide a list of directories\&. If any directories are specified, then the
+\fBgit\-daemon\fR
+process will serve a requested directory only if it is contained in one of these directories\&. If
+\fB\-\-strict\-paths\fR
+is specified, then the requested directory must match one of these directories exactly\&.
 .RE
 .SH "SERVICES"
 .sp
@@ -329,7 +333,12 @@ git             9418/tcp                # Git Version Control System
 .RS 4
 To set up
 \fIgit daemon\fR
-as an inetd service that handles any repository under the whitelisted set of directories, /pub/foo and /pub/bar, place an entry like the following into /etc/inetd all on one line:
+as an inetd service that handles any repository within
+\fB/pub/foo\fR
+or
+\fB/pub/bar\fR, place an entry like the following into
+\fB/etc/inetd\fR
+all on one line:
 .sp
 .if n \{\
 .RS 4
