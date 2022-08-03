@@ -2,12 +2,12 @@
 .\"     Title: git-ls-files
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 08/01/2022
+.\"      Date: 08/03/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.1.311.g350dc9f0e8
+.\"    Source: Git 2.37.1.357.g4af7188bc9
 .\"  Language: English
 .\"
-.TH "GIT\-LS\-FILES" "1" "08/01/2022" "Git 2\&.37\&.1\&.311\&.g350dc9" "Git Manual"
+.TH "GIT\-LS\-FILES" "1" "08/03/2022" "Git 2\&.37\&.1\&.357\&.g4af718" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -43,7 +43,7 @@ git-ls-files \- Show information about files in the index and the working tree
                 [\-\-exclude\-standard]
                 [\-\-error\-unmatch] [\-\-with\-tree=<tree\-ish>]
                 [\-\-full\-name] [\-\-recurse\-submodules]
-                [\-\-abbrev[=<n>]] [\-\-] [<file>\&...]
+                [\-\-abbrev[=<n>]] [\-\-format=<format>] [\-\-] [<file>\&...]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -267,6 +267,38 @@ Both the <eolinfo> in the index ("i/<eolinfo>") and in the working tree ("w/<eol
 If the index is sparse, show the sparse directories without expanding to the contained files\&. Sparse directories will be shown with a trailing slash, such as "x/" for a sparse directory "x"\&.
 .RE
 .PP
+\-\-format=<format>
+.RS 4
+A string that interpolates
+\fB%(fieldname)\fR
+from the result being shown\&. It also interpolates
+\fB%%\fR
+to
+\fB%\fR, and
+\fB%xx\fR
+where
+\fBxx\fR
+are hex digits interpolates to character with hex code
+\fBxx\fR; for example
+\fB%00\fR
+interpolates to
+\fB\e0\fR
+(NUL),
+\fB%09\fR
+to
+\fB\et\fR
+(TAB) and %0a to
+\fB\en\fR
+(LF)\&. \-\-format cannot be combined with
+\fB\-s\fR,
+\fB\-o\fR,
+\fB\-k\fR,
+\fB\-t\fR,
+\fB\-\-resolve\-undo\fR
+and
+\fB\-\-eol\fR\&.
+.RE
+.PP
 \-\-
 .RS 4
 Do not interpret any more arguments as options\&.
@@ -297,6 +329,55 @@ Files to show\&. If no files are given all files which match the other specified
 For an unmerged path, instead of recording a single mode/SHA\-1 pair, the index records up to three such pairs; one from tree O in stage 1, A in stage 2, and B in stage 3\&. This information can be used by the user (or the porcelain) to see what should eventually be recorded at the path\&. (see \fBgit-read-tree\fR(1) for more information on state)
 .sp
 Without the \fB\-z\fR option, pathnames with "unusual" characters are quoted as explained for the configuration variable \fBcore\&.quotePath\fR (see \fBgit-config\fR(1))\&. Using \fB\-z\fR the filename is output verbatim and the line is terminated by a NUL byte\&.
+.sp
+It is possible to print in a custom format by using the \fB\-\-format\fR option, which is able to interpolate different fields using a \fB%(fieldname)\fR notation\&. For example, if you only care about the "objectname" and "path" fields, you can execute with a specific "\-\-format" like
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git ls\-files \-\-format=\(aq%(objectname) %(path)\(aq
+.fi
+.if n \{\
+.RE
+.\}
+.SH "FIELD NAMES"
+.sp
+The way each path is shown can be customized by using the \fB\-\-format=<format>\fR option, where the %(fieldname) in the <format> string for various aspects of the index entry are interpolated\&. The following "fieldname" are understood:
+.PP
+objectmode
+.RS 4
+The mode of the file which is recorded in the index\&.
+.RE
+.PP
+objectname
+.RS 4
+The name of the file which is recorded in the index\&.
+.RE
+.PP
+stage
+.RS 4
+The stage of the file which is recorded in the index\&.
+.RE
+.PP
+eolinfo:index, eolinfo:worktree
+.RS 4
+The <eolinfo> (see the description of the
+\fB\-\-eol\fR
+option) of the contents in the index or in the worktree for the path\&.
+.RE
+.PP
+eolattr
+.RS 4
+The <eolattr> (see the description of the
+\fB\-\-eol\fR
+option) that applies to the path\&.
+.RE
+.PP
+path
+.RS 4
+The pathname of the file which is recorded in the index\&.
+.RE
 .SH "EXCLUDE PATTERNS"
 .sp
 \fIgit ls\-files\fR can use a list of "exclude patterns" when traversing the directory tree and finding files to show when the flags \-\-others or \-\-ignored are specified\&. \fBgitignore\fR(5) specifies the format of exclude patterns\&.
