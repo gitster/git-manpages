@@ -2,12 +2,12 @@
 .\"     Title: git-shortlog
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 08/25/2022
+.\"      Date: 08/30/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.2.411.g7c46ea0ded
+.\"    Source: Git 2.37.3.446.gd42b38dfb5
 .\"  Language: English
 .\"
-.TH "GIT\-SHORTLOG" "1" "08/25/2022" "Git 2\&.37\&.2\&.411\&.g7c46ea" "Git Manual"
+.TH "GIT\-SHORTLOG" "1" "08/30/2022" "Git 2\&.37\&.3\&.446\&.gd42b38" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -700,17 +700,14 @@ Additional option to
 to remove some needless merges from the resulting history, as there are no selected commits contributing to this merge\&.
 .RE
 .PP
-\-\-ancestry\-path
+\-\-ancestry\-path[=<commit>]
 .RS 4
 When given a range of commits to display (e\&.g\&.
 \fIcommit1\&.\&.commit2\fR
 or
-\fIcommit2 ^commit1\fR), only display commits that exist directly on the ancestry chain between the
+\fIcommit2 ^commit1\fR), only display commits in that range that are ancestors of <commit>, descendants of <commit>, or <commit> itself\&. If no commit is specified, use
 \fIcommit1\fR
-and
-\fIcommit2\fR, i\&.e\&. commits that are both descendants of
-\fIcommit1\fR, and ancestors of
-\fIcommit2\fR\&.
+(the excluded part of the range) as <commit>\&. Can be passed multiple times; if so, a commit is included if it is any of the commits given or if it is an ancestor or descendant of one of them\&.
 .RE
 .sp
 A more detailed explanation follows\&.
@@ -1112,9 +1109,9 @@ was then removed completely, because it had one parent and is TREESAME\&.
 .sp
 There is another simplification mode available:
 .PP
-\-\-ancestry\-path
+\-\-ancestry\-path[=<commit>]
 .RS 4
-Limit the displayed commits to those directly on the ancestry chain between the \(lqfrom\(rq and \(lqto\(rq commits in the given commit range\&. I\&.e\&. only display commits that are ancestor of the \(lqto\(rq commit and descendants of the \(lqfrom\(rq commit\&.
+Limit the displayed commits to those which are an ancestor of <commit>, or which are a descendant of <commit>, or are <commit> itself\&.
 .sp
 As an example use case, consider the following commit history:
 .sp
@@ -1180,6 +1177,48 @@ range, it results in:
 .RE
 .\}
 .sp
+We can also use
+\fB\-\-ancestry\-path=D\fR
+instead of
+\fB\-\-ancestry\-path\fR
+which means the same thing when applied to the
+\fID\&.\&.M\fR
+range but is just more explicit\&.
+.sp
+If we instead are interested in a given topic within this range, and all commits affected by that topic, we may only want to view the subset of
+\fBD\&.\&.M\fR
+which contain that topic in their ancestry path\&. So, using
+\fB\-\-ancestry\-path=H D\&.\&.M\fR
+for example would result in:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+                E
+                 \e
+                  G\-\-\-H\-\-\-I\-\-\-J
+                               \e
+                                L\-\-M
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Whereas
+\fB\-\-ancestry\-path=K D\&.\&.M\fR
+would result in
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+                K\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-L\-\-M
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .RE
 .sp
 Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new example history\&.
@@ -1235,7 +1274,7 @@ When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover t
 .\}
 .sp
 .sp
-Here, the merge commits \fBO\fR and \fBP\fR contribute extra noise, as they did not actually contribute a change to \fBfile\&.txt\fR\&. They only merged a topic that was based on an older version of \fBfile\&.txt\fR\&. This is a common issue in repositories using a workflow where many contributors work in parallel and merge their topic branches along a single trunk: manu unrelated merges appear in the \fB\-\-full\-history\fR results\&.
+Here, the merge commits \fBO\fR and \fBP\fR contribute extra noise, as they did not actually contribute a change to \fBfile\&.txt\fR\&. They only merged a topic that was based on an older version of \fBfile\&.txt\fR\&. This is a common issue in repositories using a workflow where many contributors work in parallel and merge their topic branches along a single trunk: many unrelated merges appear in the \fB\-\-full\-history\fR results\&.
 .sp
 When using the \fB\-\-simplify\-merges\fR option, the commits \fBO\fR and \fBP\fR disappear from the results\&. This is because the rewritten second parents of \fBO\fR and \fBP\fR are reachable from their first parents\&. Those edges are removed and then the commits look like single\-parent commits that are TREESAME to their parent\&. This also happens to the commit \fBN\fR, resulting in a history view as follows:
 .sp
