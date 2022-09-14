@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/13/2022
+.\"      Date: 09/14/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.3.611.ge188ec3a73
+.\"    Source: Git 2.37.3.662.g36f8e7ed7d
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "09/13/2022" "Git 2\&.37\&.3\&.611\&.ge188ec" "Git Manual"
+.TH "GIT\-CONFIG" "1" "09/14/2022" "Git 2\&.37\&.3\&.662\&.g36f8e7" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3940,21 +3940,6 @@ diff\&.<driver>\&.cachetextconv
 Set this option to true to make the diff driver cache the text conversion outputs\&. See
 \fBgitattributes\fR(5)
 for details\&.
-.RE
-.PP
-diff\&.tool
-.RS 4
-Controls which diff tool is used by
-\fBgit-difftool\fR(1)\&. This variable overrides the value configured in
-\fBmerge\&.tool\fR\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom diff tool and requires that a corresponding difftool\&.<tool>\&.cmd variable is defined\&.
-.RE
-.PP
-diff\&.guitool
-.RS 4
-Controls which diff tool is used by
-\fBgit-difftool\fR(1)
-when the \-g/\-\-gui flag is specified\&. This variable overrides the value configured in
-\fBmerge\&.guitool\fR\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom diff tool and requires that a corresponding difftool\&.<guitool>\&.cmd variable is defined\&.
 .PP
 \fBaraxis\fR
 .RS 4
@@ -4153,9 +4138,19 @@ in
 \fBgit-diff\fR(1)\&.
 .RE
 .PP
-difftool\&.<tool>\&.path
+diff\&.tool
 .RS 4
-Override the path for the given tool\&. This is useful in case your tool is not in the PATH\&.
+Controls which diff tool is used by
+\fBgit-difftool\fR(1)\&. This variable overrides the value configured in
+\fBmerge\&.tool\fR\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom diff tool and requires that a corresponding difftool\&.<tool>\&.cmd variable is defined\&.
+.RE
+.PP
+diff\&.guitool
+.RS 4
+Controls which diff tool is used by
+\fBgit-difftool\fR(1)
+when the \-g/\-\-gui flag is specified\&. This variable overrides the value configured in
+\fBmerge\&.guitool\fR\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom diff tool and requires that a corresponding difftool\&.<guitool>\&.cmd variable is defined\&.
 .RE
 .PP
 difftool\&.<tool>\&.cmd
@@ -4165,6 +4160,28 @@ Specify the command to invoke the specified diff tool\&. The specified command i
 is set to the name of the temporary file containing the contents of the diff pre\-image and
 \fIREMOTE\fR
 is set to the name of the temporary file containing the contents of the diff post\-image\&.
+.sp
+See the
+\fB\-\-tool=<tool>\fR
+option in
+\fBgit-difftool\fR(1)
+for more details\&.
+.RE
+.PP
+difftool\&.<tool>\&.path
+.RS 4
+Override the path for the given tool\&. This is useful in case your tool is not in the PATH\&.
+.RE
+.PP
+difftool\&.trustExitCode
+.RS 4
+Exit difftool if the invoked diff tool returns a non\-zero exit status\&.
+.sp
+See the
+\fB\-\-trust\-exit\-code\fR
+option in
+\fBgit-difftool\fR(1)
+for more details\&.
 .RE
 .PP
 difftool\&.prompt
@@ -5088,11 +5105,14 @@ option is set to a value other than
 .PP
 grep\&.threads
 .RS 4
-Number of grep worker threads to use\&. See
-\fBgrep\&.threads\fR
-in
-\fBgit-grep\fR(1)
-for more information\&.
+Number of grep worker threads to use\&. If unset (or set to 0), Git will use as many threads as the number of logical cores available\&.
+.RE
+.PP
+grep\&.fullName
+.RS 4
+If set to true, enable
+\fB\-\-full\-name\fR
+option by default\&.
 .RE
 .PP
 grep\&.fallbackToNoIndex
@@ -6264,6 +6284,8 @@ command\&. Setting a value for log\&.date is similar to using
 option\&. See
 \fBgit-log\fR(1)
 for details\&.
+.sp
+If the format is set to "auto:foo" and the pager is in use, format "foo" will be the used for the date format\&. Otherwise "default" will be used\&.
 .RE
 .PP
 log\&.decorate
@@ -7004,6 +7026,11 @@ Which merge strategy to choose by default when resolving notes conflicts\&. Must
 \fBmanual\fR\&. See "NOTES MERGE STRATEGIES" section of
 \fBgit-notes\fR(1)
 for more information on each strategy\&.
+.sp
+This setting can be overridden by passing the
+\fB\-\-strategy\fR
+option to
+\fBgit-notes\fR(1)\&.
 .RE
 .PP
 notes\&.<name>\&.mergeStrategy
@@ -7015,11 +7042,26 @@ for more information on the available strategies\&.
 .PP
 notes\&.displayRef
 .RS 4
-The (fully qualified) refname from which to show notes when showing commit messages\&. The value of this variable can be set to a glob, in which case notes from all matching refs will be shown\&. You may also specify this configuration variable several times\&. A warning will be issued for refs that do not exist, but a glob that does not match any refs is silently ignored\&.
+Which ref (or refs, if a glob or specified more than once), in addition to the default set by
+\fBcore\&.notesRef\fR
+or
+\fBGIT_NOTES_REF\fR, to read notes from when showing commit messages with the
+\fIgit log\fR
+family of commands\&.
 .sp
 This setting can be overridden with the
 \fBGIT_NOTES_DISPLAY_REF\fR
 environment variable, which must be a colon separated list of refs or globs\&.
+.sp
+A warning will be issued for refs that do not exist, but a glob that does not match any refs is silently ignored\&.
+.sp
+This setting can be disabled by the
+\fB\-\-no\-notes\fR
+option to the
+\fIgit log\fR
+family of commands, or by the
+\fB\-\-notes=<ref>\fR
+option accepted by those commands\&.
 .sp
 The effective value of "core\&.notesRef" (possibly overridden by GIT_NOTES_REF) is also implicitly added to the list of refs to be displayed\&.
 .RE
@@ -7029,9 +7071,13 @@ notes\&.rewrite\&.<command>
 When rewriting commits with <command> (currently
 \fBamend\fR
 or
-\fBrebase\fR) and this variable is set to
-\fBtrue\fR, Git automatically copies your notes from the original to the rewritten commit\&. Defaults to
-\fBtrue\fR, but see "notes\&.rewriteRef" below\&.
+\fBrebase\fR), if this variable is
+\fBfalse\fR, git will not copy notes from the original to the rewritten commit\&. Defaults to
+\fBtrue\fR\&. See also "\fBnotes\&.rewriteRef\fR" below\&.
+.sp
+This setting can be overridden with the
+\fBGIT_NOTES_REWRITE_REF\fR
+environment variable, which must be a colon separated list of refs or globs\&.
 .RE
 .PP
 notes\&.rewriteMode
@@ -7050,15 +7096,17 @@ environment variable\&.
 .PP
 notes\&.rewriteRef
 .RS 4
-When copying notes during a rewrite, specifies the (fully qualified) ref whose notes should be copied\&. The ref may be a glob, in which case notes in all matching refs will be copied\&. You may also specify this configuration several times\&.
+When copying notes during a rewrite, specifies the (fully qualified) ref whose notes should be copied\&. May be a glob, in which case notes in all matching refs will be copied\&. You may also specify this configuration several times\&.
 .sp
 Does not have a default value; you must configure this variable to enable note rewriting\&. Set it to
 \fBrefs/notes/commits\fR
 to enable rewriting for the default commit notes\&.
 .sp
-This setting can be overridden with the
+Can be overridden with the
 \fBGIT_NOTES_REWRITE_REF\fR
-environment variable, which must be a colon separated list of refs or globs\&.
+environment variable\&. See
+\fBnotes\&.rewrite\&.<command>\fR
+above for a further description of its format\&.
 .RE
 .PP
 pack\&.window
@@ -8314,11 +8362,103 @@ parameters found below, taking precedence over those when this identity is selec
 \fBsendemail\&.identity\fR\&.
 .RE
 .PP
-sendemail\&.aliasesFile, sendemail\&.aliasFileType, sendemail\&.annotate, sendemail\&.bcc, sendemail\&.cc, sendemail\&.ccCmd, sendemail\&.chainReplyTo, sendemail\&.confirm, sendemail\&.envelopeSender, sendemail\&.from, sendemail\&.multiEdit, sendemail\&.signedoffbycc, sendemail\&.smtpPass, sendemail\&.suppresscc, sendemail\&.suppressFrom, sendemail\&.to, sendemail\&.tocmd, sendemail\&.smtpDomain, sendemail\&.smtpServer, sendemail\&.smtpServerPort, sendemail\&.smtpServerOption, sendemail\&.smtpUser, sendemail\&.thread, sendemail\&.transferEncoding, sendemail\&.validate, sendemail\&.xmailer
+sendemail\&.multiEdit
 .RS 4
-See
+If true (default), a single editor instance will be spawned to edit files you have to edit (patches when
+\fB\-\-annotate\fR
+is used, and the summary when
+\fB\-\-compose\fR
+is used)\&. If false, files will be edited one after the other, spawning a new editor each time\&.
+.RE
+.PP
+sendemail\&.confirm
+.RS 4
+Sets the default for whether to confirm before sending\&. Must be one of
+\fIalways\fR,
+\fInever\fR,
+\fIcc\fR,
+\fIcompose\fR, or
+\fIauto\fR\&. See
+\fB\-\-confirm\fR
+in the
 \fBgit-send-email\fR(1)
-for description\&.
+documentation for the meaning of these values\&.
+.RE
+.PP
+sendemail\&.aliasesFile
+.RS 4
+To avoid typing long email addresses, point this to one or more email aliases files\&. You must also supply
+\fBsendemail\&.aliasFileType\fR\&.
+.RE
+.PP
+sendemail\&.aliasFileType
+.RS 4
+Format of the file(s) specified in sendemail\&.aliasesFile\&. Must be one of
+\fImutt\fR,
+\fImailrc\fR,
+\fIpine\fR,
+\fIelm\fR, or
+\fIgnus\fR, or
+\fIsendmail\fR\&.
+.sp
+What an alias file in each format looks like can be found in the documentation of the email program of the same name\&. The differences and limitations from the standard formats are described below:
+.PP
+sendmail
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Quoted aliases and quoted addresses are not supported: lines that contain a
+\fB"\fR
+symbol are ignored\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Redirection to a file (\fB/path/name\fR) or pipe (\fB|command\fR) is not supported\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+File inclusion (\fB:include: /path/name\fR) is not supported\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Warnings are printed on the standard error output for any explicitly unsupported constructs, and any other lines that are not recognized by the parser\&.
+.RE
+.RE
+.RE
+.PP
+sendemail\&.annotate, sendemail\&.bcc, sendemail\&.cc, sendemail\&.ccCmd, sendemail\&.chainReplyTo, sendemail\&.envelopeSender, sendemail\&.from, sendemail\&.signedoffbycc, sendemail\&.smtpPass, sendemail\&.suppresscc, sendemail\&.suppressFrom, sendemail\&.to, sendemail\&.tocmd, sendemail\&.smtpDomain, sendemail\&.smtpServer, sendemail\&.smtpServerPort, sendemail\&.smtpServerOption, sendemail\&.smtpUser, sendemail\&.thread, sendemail\&.transferEncoding, sendemail\&.validate, sendemail\&.xmailer
+.RS 4
+These configuration variables all provide a default for
+\fBgit-send-email\fR(1)
+command\-line options\&. See its documentation for details\&.
 .RE
 .PP
 sendemail\&.signedoffcc (deprecated)

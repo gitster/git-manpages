@@ -2,12 +2,12 @@
 .\"     Title: git-switch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/13/2022
+.\"      Date: 09/14/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.3.611.ge188ec3a73
+.\"    Source: Git 2.37.3.662.g36f8e7ed7d
 .\"  Language: English
 .\"
-.TH "GIT\-SWITCH" "1" "09/13/2022" "Git 2\&.37\&.3\&.611\&.ge188ec" "Git Manual"
+.TH "GIT\-SWITCH" "1" "09/14/2022" "Git 2\&.37\&.3\&.662\&.g36f8e7" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -405,6 +405,67 @@ $ git switch \-c good\-surprises
 .RE
 .\}
 .sp
+.SH "CONFIGURATION"
+.sp
+Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
+.PP
+checkout\&.defaultRemote
+.RS 4
+When you run
+\fBgit checkout <something>\fR
+or
+\fBgit switch <something>\fR
+and only have one remote, it may implicitly fall back on checking out and tracking e\&.g\&.
+\fBorigin/<something>\fR\&. This stops working as soon as you have more than one remote with a
+\fB<something>\fR
+reference\&. This setting allows for setting the name of a preferred remote that should always win when it comes to disambiguation\&. The typical use\-case is to set this to
+\fBorigin\fR\&.
+.sp
+Currently this is used by
+\fBgit-switch\fR(1)
+and
+\fBgit-checkout\fR(1)
+when
+\fBgit checkout <something>\fR
+or
+\fBgit switch <something>\fR
+will checkout the
+\fB<something>\fR
+branch on another remote, and by
+\fBgit-worktree\fR(1)
+when
+\fBgit worktree add\fR
+refers to a remote branch\&. This setting might be used for other checkout\-like commands or functionality in the future\&.
+.RE
+.PP
+checkout\&.guess
+.RS 4
+Provides the default value for the
+\fB\-\-guess\fR
+or
+\fB\-\-no\-guess\fR
+option in
+\fBgit checkout\fR
+and
+\fBgit switch\fR\&. See
+\fBgit-switch\fR(1)
+and
+\fBgit-checkout\fR(1)\&.
+.RE
+.PP
+checkout\&.workers
+.RS 4
+The number of parallel workers to use when updating the working tree\&. The default is one, i\&.e\&. sequential execution\&. If set to a value less than one, Git will use as many workers as the number of logical cores available\&. This setting and
+\fBcheckout\&.thresholdForParallelism\fR
+affect all commands that perform checkout\&. E\&.g\&. checkout, clone, reset, sparse\-checkout, etc\&.
+.sp
+Note: parallel checkout usually delivers better performance for repositories located on SSDs or over NFS\&. For repositories on spinning disks and/or machines with a small number of cores, the default sequential checkout often performs better\&. The size and compression level of a repository might also influence how well the parallel version performs\&.
+.RE
+.PP
+checkout\&.thresholdForParallelism
+.RS 4
+When running parallel checkout with a small number of files, the cost of subprocess spawning and inter\-process communication might outweigh the parallelization gains\&. This setting allows to define the minimum number of files for which parallel checkout should be attempted\&. The default is 100\&.
+.RE
 .SH "SEE ALSO"
 .sp
 \fBgit-checkout\fR(1), \fBgit-branch\fR(1)

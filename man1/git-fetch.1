@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/13/2022
+.\"      Date: 09/14/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.3.611.ge188ec3a73
+.\"    Source: Git 2.37.3.662.g36f8e7ed7d
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "09/13/2022" "Git 2\&.37\&.3\&.611\&.ge188ec" "Git Manual"
+.TH "GIT\-FETCH" "1" "09/14/2022" "Git 2\&.37\&.3\&.662\&.g36f8e7" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1190,6 +1190,147 @@ The victim sends "have" lines advertising the IDs of objects it has that are not
 .IP "  2." 4.2
 .\}
 As in #1, the attacker chooses an object ID X to steal\&. The victim sends an object Y that the attacker already has, and the attacker falsely claims to have X and not Y, so the victim sends Y as a delta against X\&. The delta reveals regions of X that are similar to Y to the attacker\&.
+.RE
+.SH "CONFIGURATION"
+.sp
+Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
+.PP
+fetch\&.recurseSubmodules
+.RS 4
+This option controls whether
+\fBgit fetch\fR
+(and the underlying fetch in
+\fBgit pull\fR) will recursively fetch into populated submodules\&. This option can be set either to a boolean value or to
+\fIon\-demand\fR\&. Setting it to a boolean changes the behavior of fetch and pull to recurse unconditionally into submodules when set to true or to not recurse at all when set to false\&. When set to
+\fIon\-demand\fR, fetch and pull will only recurse into a populated submodule when its superproject retrieves a commit that updates the submodule\(cqs reference\&. Defaults to
+\fIon\-demand\fR, or to the value of
+\fIsubmodule\&.recurse\fR
+if set\&.
+.RE
+.PP
+fetch\&.fsckObjects
+.RS 4
+If it is set to true, git\-fetch\-pack will check all fetched objects\&. See
+\fBtransfer\&.fsckObjects\fR
+for what\(cqs checked\&. Defaults to false\&. If not set, the value of
+\fBtransfer\&.fsckObjects\fR
+is used instead\&.
+.RE
+.PP
+fetch\&.fsck\&.<msg\-id>
+.RS 4
+Acts like
+\fBfsck\&.<msg\-id>\fR, but is used by
+\fBgit-fetch-pack\fR(1)
+instead of
+\fBgit-fsck\fR(1)\&. See the
+\fBfsck\&.<msg\-id>\fR
+documentation for details\&.
+.RE
+.PP
+fetch\&.fsck\&.skipList
+.RS 4
+Acts like
+\fBfsck\&.skipList\fR, but is used by
+\fBgit-fetch-pack\fR(1)
+instead of
+\fBgit-fsck\fR(1)\&. See the
+\fBfsck\&.skipList\fR
+documentation for details\&.
+.RE
+.PP
+fetch\&.unpackLimit
+.RS 4
+If the number of objects fetched over the Git native transfer is below this limit, then the objects will be unpacked into loose object files\&. However if the number of received objects equals or exceeds this limit then the received pack will be stored as a pack, after adding any missing delta bases\&. Storing the pack from a push can make the push operation complete faster, especially on slow filesystems\&. If not set, the value of
+\fBtransfer\&.unpackLimit\fR
+is used instead\&.
+.RE
+.PP
+fetch\&.prune
+.RS 4
+If true, fetch will automatically behave as if the
+\fB\-\-prune\fR
+option was given on the command line\&. See also
+\fBremote\&.<name>\&.prune\fR
+and the PRUNING section of
+\fBgit-fetch\fR(1)\&.
+.RE
+.PP
+fetch\&.pruneTags
+.RS 4
+If true, fetch will automatically behave as if the
+\fBrefs/tags/*:refs/tags/*\fR
+refspec was provided when pruning, if not set already\&. This allows for setting both this option and
+\fBfetch\&.prune\fR
+to maintain a 1=1 mapping to upstream refs\&. See also
+\fBremote\&.<name>\&.pruneTags\fR
+and the PRUNING section of
+\fBgit-fetch\fR(1)\&.
+.RE
+.PP
+fetch\&.output
+.RS 4
+Control how ref update status is printed\&. Valid values are
+\fBfull\fR
+and
+\fBcompact\fR\&. Default value is
+\fBfull\fR\&. See section OUTPUT in
+\fBgit-fetch\fR(1)
+for detail\&.
+.RE
+.PP
+fetch\&.negotiationAlgorithm
+.RS 4
+Control how information about the commits in the local repository is sent when negotiating the contents of the packfile to be sent by the server\&. Set to "consecutive" to use an algorithm that walks over consecutive commits checking each one\&. Set to "skipping" to use an algorithm that skips commits in an effort to converge faster, but may result in a larger\-than\-necessary packfile; or set to "noop" to not send any information at all, which will almost certainly result in a larger\-than\-necessary packfile, but will skip the negotiation step\&. Set to "default" to override settings made previously and use the default behaviour\&. The default is normally "consecutive", but if
+\fBfeature\&.experimental\fR
+is true, then the default is "skipping"\&. Unknown values will cause
+\fIgit fetch\fR
+to error out\&.
+.sp
+See also the
+\fB\-\-negotiate\-only\fR
+and
+\fB\-\-negotiation\-tip\fR
+options to
+\fBgit-fetch\fR(1)\&.
+.RE
+.PP
+fetch\&.showForcedUpdates
+.RS 4
+Set to false to enable
+\fB\-\-no\-show\-forced\-updates\fR
+in
+\fBgit-fetch\fR(1)
+and
+\fBgit-pull\fR(1)
+commands\&. Defaults to true\&.
+.RE
+.PP
+fetch\&.parallel
+.RS 4
+Specifies the maximal number of fetch operations to be run in parallel at a time (submodules, or remotes when the
+\fB\-\-multiple\fR
+option of
+\fBgit-fetch\fR(1)
+is in effect)\&.
+.sp
+A value of 0 will give some reasonable default\&. If unset, it defaults to 1\&.
+.sp
+For submodules, this setting can be overridden using the
+\fBsubmodule\&.fetchJobs\fR
+config setting\&.
+.RE
+.PP
+fetch\&.writeCommitGraph
+.RS 4
+Set to true to write a commit\-graph after every
+\fBgit fetch\fR
+command that downloads a pack\-file from a remote\&. Using the
+\fB\-\-split\fR
+option, most executions will create a very small commit\-graph file on top of the existing commit\-graph file(s)\&. Occasionally, these files will merge and the write may take longer\&. Having an updated commit\-graph file helps performance of many Git commands, including
+\fBgit merge\-base\fR,
+\fBgit push \-f\fR, and
+\fBgit log \-\-graph\fR\&. Defaults to false\&.
 .RE
 .SH "BUGS"
 .sp

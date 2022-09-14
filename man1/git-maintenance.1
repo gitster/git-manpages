@@ -2,12 +2,12 @@
 .\"     Title: git-maintenance
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 09/13/2022
+.\"      Date: 09/14/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.37.3.611.ge188ec3a73
+.\"    Source: Git 2.37.3.662.g36f8e7ed7d
 .\"  Language: English
 .\"
-.TH "GIT\-MAINTENANCE" "1" "09/13/2022" "Git 2\&.37\&.3\&.611\&.ge188ec" "Git Manual"
+.TH "GIT\-MAINTENANCE" "1" "09/14/2022" "Git 2\&.37\&.3\&.662\&.g36f8e7" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -435,6 +435,124 @@ Windows does not support \fBcron\fR and instead has its own system for schedulin
 Note that since Git is a console application, these background tasks create a console window visible to the current user\&. This can be changed manually by selecting the "Run whether user is logged in or not" option in Task Scheduler\&. This change requires a password input, which is why \fBgit maintenance start\fR does not select it by default\&.
 .sp
 If you want to customize the background tasks, please rename the tasks so future calls to \fBgit maintenance (start|stop)\fR do not overwrite your custom tasks\&.
+.SH "CONFIGURATION"
+.sp
+Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
+.PP
+maintenance\&.auto
+.RS 4
+This boolean config option controls whether some commands run
+\fBgit maintenance run \-\-auto\fR
+after doing their normal work\&. Defaults to true\&.
+.RE
+.PP
+maintenance\&.strategy
+.RS 4
+This string config option provides a way to specify one of a few recommended schedules for background maintenance\&. This only affects which tasks are run during
+\fBgit maintenance run \-\-schedule=X\fR
+commands, provided no
+\fB\-\-task=<task>\fR
+arguments are provided\&. Further, if a
+\fBmaintenance\&.<task>\&.schedule\fR
+config value is set, then that value is used instead of the one provided by
+\fBmaintenance\&.strategy\fR\&. The possible strategy strings are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBnone\fR: This default setting implies no task are run at any schedule\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBincremental\fR: This setting optimizes for performing small maintenance activities that do not delete any data\&. This does not schedule the
+\fBgc\fR
+task, but runs the
+\fBprefetch\fR
+and
+\fBcommit\-graph\fR
+tasks hourly, the
+\fBloose\-objects\fR
+and
+\fBincremental\-repack\fR
+tasks daily, and the
+\fBpack\-refs\fR
+task weekly\&.
+.RE
+.RE
+.PP
+maintenance\&.<task>\&.enabled
+.RS 4
+This boolean config option controls whether the maintenance task with name
+\fB<task>\fR
+is run when no
+\fB\-\-task\fR
+option is specified to
+\fBgit maintenance run\fR\&. These config values are ignored if a
+\fB\-\-task\fR
+option exists\&. By default, only
+\fBmaintenance\&.gc\&.enabled\fR
+is true\&.
+.RE
+.PP
+maintenance\&.<task>\&.schedule
+.RS 4
+This config option controls whether or not the given
+\fB<task>\fR
+runs during a
+\fBgit maintenance run \-\-schedule=<frequency>\fR
+command\&. The value must be one of "hourly", "daily", or "weekly"\&.
+.RE
+.PP
+maintenance\&.commit\-graph\&.auto
+.RS 4
+This integer config option controls how often the
+\fBcommit\-graph\fR
+task should be run as part of
+\fBgit maintenance run \-\-auto\fR\&. If zero, then the
+\fBcommit\-graph\fR
+task will not run with the
+\fB\-\-auto\fR
+option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run when the number of reachable commits that are not in the commit\-graph file is at least the value of
+\fBmaintenance\&.commit\-graph\&.auto\fR\&. The default value is 100\&.
+.RE
+.PP
+maintenance\&.loose\-objects\&.auto
+.RS 4
+This integer config option controls how often the
+\fBloose\-objects\fR
+task should be run as part of
+\fBgit maintenance run \-\-auto\fR\&. If zero, then the
+\fBloose\-objects\fR
+task will not run with the
+\fB\-\-auto\fR
+option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run when the number of loose objects is at least the value of
+\fBmaintenance\&.loose\-objects\&.auto\fR\&. The default value is 100\&.
+.RE
+.PP
+maintenance\&.incremental\-repack\&.auto
+.RS 4
+This integer config option controls how often the
+\fBincremental\-repack\fR
+task should be run as part of
+\fBgit maintenance run \-\-auto\fR\&. If zero, then the
+\fBincremental\-repack\fR
+task will not run with the
+\fB\-\-auto\fR
+option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run when the number of pack\-files not in the multi\-pack\-index is at least the value of
+\fBmaintenance\&.incremental\-repack\&.auto\fR\&. The default value is 10\&.
+.RE
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
