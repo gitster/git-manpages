@@ -2,12 +2,12 @@
 .\"     Title: git
 .\"    Author: [see the "Authors" section]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/07/2022
+.\"      Date: 10/10/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.38.0.15.gbbe21b64a0
+.\"    Source: Git 2.38.0.68.ge85701b4af
 .\"  Language: English
 .\"
-.TH "GIT" "1" "10/07/2022" "Git 2\&.38\&.0\&.15\&.gbbe21b6" "Git Manual"
+.TH "GIT" "1" "10/10/2022" "Git 2\&.38\&.0\&.68\&.ge85701b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1418,21 +1418,23 @@ Higher level SCMs may provide and manage additional information in the \fB$GIT_D
 Please see \fBgitglossary\fR(7)\&.
 .SH "ENVIRONMENT VARIABLES"
 .sp
-Various Git commands use the following environment variables:
+Various Git commands pay attention to environment variables and change their behavior\&. The environment variables marked as "Boolean" take their values the same way as Boolean valued configuration variables, e\&.g\&. "true", "yes", "on" and positive numbers are taken as "yes"\&.
+.sp
+Here are the variables:
 .SS "The Git Repository"
 .sp
 These environment variables apply to \fIall\fR core Git commands\&. Nb: it is worth noting that they may be used/overridden by SCMS sitting above Git so take care if using a foreign front\-end\&.
 .PP
 \fBGIT_INDEX_FILE\fR
 .RS 4
-This environment allows the specification of an alternate index file\&. If not specified, the default of
+This environment variable specifies an alternate index file\&. If not specified, the default of
 \fB$GIT_DIR/index\fR
 is used\&.
 .RE
 .PP
 \fBGIT_INDEX_VERSION\fR
 .RS 4
-This environment variable allows the specification of an index version for new repositories\&. It won\(cqt affect existing index files\&. By default index file version 2 or 3 is used\&. See
+This environment variable specifies what index version is used when writing the index file out\&. It won\(cqt affect existing index files\&. By default index file version 2 or 3 is used\&. See
 \fBgit-update-index\fR(1)
 for more information\&.
 .RE
@@ -1493,7 +1495,7 @@ This should be a colon\-separated list of absolute paths\&. If set, it is a list
 .PP
 \fBGIT_DISCOVERY_ACROSS_FILESYSTEM\fR
 .RS 4
-When run in a directory that does not have "\&.git" repository directory, Git tries to find such a directory in the parent directories to find the top of the working tree, but by default it does not cross filesystem boundaries\&. This environment variable can be set to true to tell Git not to stop at filesystem boundaries\&. Like
+When run in a directory that does not have "\&.git" repository directory, Git tries to find such a directory in the parent directories to find the top of the working tree, but by default it does not cross filesystem boundaries\&. This Boolean environment variable can be set to true to tell Git not to stop at filesystem boundaries\&. Like
 \fBGIT_CEILING_DIRECTORIES\fR, this will not affect an explicit repository directory set via
 \fBGIT_DIR\fR
 or on the command line\&.
@@ -1728,6 +1730,11 @@ refer to OpenSSH, plink or tortoiseplink\&. This variable overrides the config s
 that serves the same purpose\&.
 .RE
 .PP
+\fBGIT_SSL_NO_VERIFY\fR
+.RS 4
+Setting and exporting this environment variable to any value tells Git not to verify the SSL certificate when fetching or pushing over HTTPS\&.
+.RE
+.PP
 \fBGIT_ASKPASS\fR
 .RS 4
 If this environment variable is set, then Git commands which need to acquire passwords or passphrases (e\&.g\&. for HTTP or IMAP authentication) will call this program with a suitable prompt as command\-line argument and read the password from its STDOUT\&. See also the
@@ -1738,8 +1745,7 @@ option in
 .PP
 \fBGIT_TERMINAL_PROMPT\fR
 .RS 4
-If this environment variable is set to
-\fB0\fR, git will not prompt on the terminal (e\&.g\&., when asking for HTTP authentication)\&.
+If this Boolean environment variable is set to false, git will not prompt on the terminal (e\&.g\&., when asking for HTTP authentication)\&.
 .RE
 .PP
 \fBGIT_CONFIG_GLOBAL\fR, \fBGIT_CONFIG_SYSTEM\fR
@@ -1762,11 +1768,11 @@ to skip reading configuration files of the respective level\&.
 .RS 4
 Whether to skip reading settings from the system\-wide
 \fB$(prefix)/etc/gitconfig\fR
-file\&. This environment variable can be used along with
+file\&. This Boolean environment variable can be used along with
 \fB$HOME\fR
 and
 \fB$XDG_CONFIG_HOME\fR
-to create a predictable environment for a picky script, or you can set it temporarily to avoid using a buggy
+to create a predictable environment for a picky script, or you can set it to true to temporarily avoid using a buggy
 \fB/etc/gitconfig\fR
 file while waiting for someone with sufficient permissions to fix it\&.
 .RE
@@ -1922,16 +1928,12 @@ for full details\&.
 .PP
 \fBGIT_TRACE_REDACT\fR
 .RS 4
-By default, when tracing is activated, Git redacts the values of cookies, the "Authorization:" header, the "Proxy\-Authorization:" header and packfile URIs\&. Set this variable to
-\fB0\fR
-to prevent this redaction\&.
+By default, when tracing is activated, Git redacts the values of cookies, the "Authorization:" header, the "Proxy\-Authorization:" header and packfile URIs\&. Set this Boolean environment variable to false to prevent this redaction\&.
 .RE
 .PP
 \fBGIT_LITERAL_PATHSPECS\fR
 .RS 4
-Setting this variable to
-\fB1\fR
-will cause Git to treat all pathspecs literally, rather than as glob patterns\&. For example, running
+Setting this Boolean environment variable to true will cause Git to treat all pathspecs literally, rather than as glob patterns\&. For example, running
 \fBGIT_LITERAL_PATHSPECS=1 git log \-\- \(aq*\&.c\(aq\fR
 will search for commits that touch the path
 \fB*\&.c\fR, not any paths that the glob
@@ -1944,23 +1946,17 @@ diff output, etc)\&.
 .PP
 \fBGIT_GLOB_PATHSPECS\fR
 .RS 4
-Setting this variable to
-\fB1\fR
-will cause Git to treat all pathspecs as glob patterns (aka "glob" magic)\&.
+Setting this Boolean environment variable to true will cause Git to treat all pathspecs as glob patterns (aka "glob" magic)\&.
 .RE
 .PP
 \fBGIT_NOGLOB_PATHSPECS\fR
 .RS 4
-Setting this variable to
-\fB1\fR
-will cause Git to treat all pathspecs as literal (aka "literal" magic)\&.
+Setting this Boolean environment variable to true will cause Git to treat all pathspecs as literal (aka "literal" magic)\&.
 .RE
 .PP
 \fBGIT_ICASE_PATHSPECS\fR
 .RS 4
-Setting this variable to
-\fB1\fR
-will cause Git to treat all pathspecs as case\-insensitive\&.
+Setting this Boolean environment variable to true will cause Git to treat all pathspecs as case\-insensitive\&.
 .RE
 .PP
 \fBGIT_REFLOG_ACTION\fR
@@ -1972,8 +1968,7 @@ to set its name to this variable when it is invoked as the top level command by 
 .PP
 \fBGIT_REF_PARANOIA\fR
 .RS 4
-If set to
-\fB0\fR, ignore broken or badly named refs when iterating over lists of refs\&. Normally Git will try to include any such refs, which may cause some operations to fail\&. This is usually preferable, as potentially destructive operations (e\&.g\&.,
+If this Boolean environment variable is set to false, ignore broken or badly named refs when iterating over lists of refs\&. Normally Git will try to include any such refs, which may cause some operations to fail\&. This is usually preferable, as potentially destructive operations (e\&.g\&.,
 \fBgit-prune\fR(1)) are better off aborting rather than ignoring broken refs (and thus considering the history they point to as not worth saving)\&. The default value is
 \fB1\fR
 (i\&.e\&., be paranoid about detecting and aborting all operations)\&. You should not normally need to set this to
@@ -1998,7 +1993,7 @@ for more details\&.
 .PP
 \fBGIT_PROTOCOL_FROM_USER\fR
 .RS 4
-Set to 0 to prevent protocols used by fetch/push/clone which are configured to the
+Set this Boolean environment variable to false to prevent protocols used by fetch/push/clone which are configured to the
 \fBuser\fR
 state\&. This is useful to restrict recursive submodule initialization from an untrusted repository or for programs which feed potentially\-untrusted URLS to git commands\&. See
 \fBgit-config\fR(1)
@@ -2026,8 +2021,7 @@ This configuration is optional\&. If the variable is not propagated, then client
 .PP
 \fBGIT_OPTIONAL_LOCKS\fR
 .RS 4
-If set to
-\fB0\fR, Git will complete any requested operation without performing any optional sub\-operations that require taking a lock\&. For example, this will prevent
+If this Boolean environment variable is set to false, Git will complete any requested operation without performing any optional sub\-operations that require taking a lock\&. For example, this will prevent
 \fBgit status\fR
 from refreshing the index as a side effect\&. This is useful for processes running in the background which do not want to cause lock contention with other operations on the repository\&. Defaults to
 \fB1\fR\&.
