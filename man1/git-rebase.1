@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/28/2022
+.\"      Date: 11/04/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.38.1.280.g63bba4fdd8
+.\"    Source: Git 2.38.1.385.g3b08839926
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "10/28/2022" "Git 2\&.38\&.1\&.280\&.g63bba4" "Git Manual"
+.TH "GIT\-REBASE" "1" "11/04/2022" "Git 2\&.38\&.1\&.385\&.g3b0883" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -319,9 +319,11 @@ and
 \fB<branch>\fR\&. Running
 \fBgit rebase \-\-keep\-base <upstream> <branch>\fR
 is equivalent to running
-\fBgit rebase \-\-onto <upstream>\&.\&.\&.<branch> <upstream> <branch>\fR\&.
+\fBgit rebase \-\-reapply\-cherry\-picks \-\-no\-fork\-point \-\-onto <upstream>\&.\&.\&.<branch> <upstream> <branch>\fR\&.
 .sp
-This option is useful in the case where one is developing a feature on top of an upstream branch\&. While the feature is being worked on, the upstream branch may advance and it may not be the best idea to keep rebasing on top of the upstream but to keep the base commit as\-is\&.
+This option is useful in the case where one is developing a feature on top of an upstream branch\&. While the feature is being worked on, the upstream branch may advance and it may not be the best idea to keep rebasing on top of the upstream but to keep the base commit as\-is\&. As the base commit is unchanged this option implies
+\fB\-\-reapply\-cherry\-picks\fR
+to avoid losing commits\&.
 .sp
 Although both this option and
 \fB\-\-fork\-point\fR
@@ -397,6 +399,8 @@ Note that commits which start empty are kept (unless
 is specified), and commits which are clean cherry\-picks (as determined by
 \fBgit log \-\-cherry\-mark \&.\&.\&.\fR) are detected and dropped as a preliminary step (unless
 \fB\-\-reapply\-cherry\-picks\fR
+or
+\fB\-\-keep\-base\fR
 is passed)\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
@@ -424,9 +428,11 @@ Reapply all clean cherry\-picks of any upstream commit instead of preemptively d
 \fB\-\-empty\fR
 flag\&.)
 .sp
-By default (or if
+In the absence of
+\fB\-\-keep\-base\fR
+(or if
 \fB\-\-no\-reapply\-cherry\-picks\fR
-is given), these commits will be automatically dropped\&. Because this necessitates reading all upstream commits, this can be expensive in repos with a large number of upstream commits that need to be read\&. When using the
+is given), these commits will be automatically dropped\&. Because this necessitates reading all upstream commits, this can be expensive in repositories with a large number of upstream commits that need to be read\&. When using the
 \fImerge\fR
 backend, warnings will be issued for each dropped commit (unless
 \fB\-\-quiet\fR
@@ -434,12 +440,11 @@ is given)\&. Advice will also be issued unless
 \fBadvice\&.skippedCherryPicks\fR
 is set to false (see
 \fBgit-config\fR(1))\&.
-.sp
-\fB\-\-reapply\-cherry\-picks\fR
-allows rebase to forgo reading all upstream commits, potentially improving performance\&.
-.sp
-See also INCOMPATIBLE OPTIONS below\&.
 .RE
+.sp
++ \fB\-\-reapply\-cherry\-picks\fR allows rebase to forgo reading all upstream commits, potentially improving performance\&.
+.sp
++ See also INCOMPATIBLE OPTIONS below\&.
 .PP
 \-\-allow\-empty\-message
 .RS 4
@@ -618,6 +623,8 @@ will be used as a fallback\&.
 .sp
 If
 \fB<upstream>\fR
+or
+\fB\-\-keep\-base\fR
 is given on the command line, then the default is
 \fB\-\-no\-fork\-point\fR, otherwise the default is
 \fB\-\-fork\-point\fR\&. See also

@@ -2,12 +2,12 @@
 .\"     Title: git-merge-tree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 10/28/2022
+.\"      Date: 11/04/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.38.1.280.g63bba4fdd8
+.\"    Source: Git 2.38.1.385.g3b08839926
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE\-TREE" "1" "10/28/2022" "Git 2\&.38\&.1\&.280\&.g63bba4" "Git Manual"
+.TH "GIT\-MERGE\-TREE" "1" "11/04/2022" "Git 2\&.38\&.1\&.385\&.g3b0883" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -152,6 +152,41 @@ Whereas for a conflicted merge, the output is by default of the form:
 .\}
 .sp
 These are discussed individually below\&.
+.sp
+However, there is an exception\&. If \fB\-\-stdin\fR is passed, then there is an extra section at the beginning, a NUL character at the end, and then all the sections repeat for each line of input\&. Thus, if the first merge is conflicted and the second is clean, the output would be of the form:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<Merge status>
+<OID of toplevel tree>
+<Conflicted file info>
+<Informational messages>
+NUL
+<Merge status>
+<OID of toplevel tree>
+NUL
+.fi
+.if n \{\
+.RE
+.\}
+.SS "Merge status"
+.sp
+This is an integer status followed by a NUL character\&. The integer status is:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+0: merge had conflicts
+1: merge was clean
+&lt;0: something prevented the merge from running (e\&.g\&. access to repository
+    objects denied by filesystem)
+.fi
+.if n \{\
+.RE
+.\}
 .SS "OID of toplevel tree"
 .sp
 This is a tree object that represents what would be checked out in the working tree at the end of \fBgit merge\fR\&. If there were conflicts, then files within this tree may have embedded conflict markers\&. This section is always followed by a newline (or NUL if \fB\-z\fR is passed)\&.
@@ -172,7 +207,81 @@ This is a sequence of lines with the format
 The filename will be quoted as explained for the configuration variable \fBcore\&.quotePath\fR (see \fBgit-config\fR(1))\&. However, if the \fB\-\-name\-only\fR option is passed, the mode, object, and stage will be omitted\&. If \fB\-z\fR is passed, the "lines" are terminated by a NUL character instead of a newline character\&.
 .SS "Informational messages"
 .sp
-This always starts with a blank line (or NUL if \fB\-z\fR is passed) to separate it from the previous sections, and then has free\-form messages about the merge, such as:
+This section provides informational messages, typically about conflicts\&. The format of the section varies significantly depending on whether \fB\-z\fR is passed\&.
+.sp
+If \fB\-z\fR is passed:
+.sp
+The output format is zero or more conflict informational records, each of the form:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<list\-of\-paths><conflict\-type>NUL<conflict\-message>NUL
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+where <list\-of\-paths> is of the form
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<number\-of\-paths>NUL<path1>NUL<path2>NUL\&.\&.\&.<pathN>NUL
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+and includes paths (or branch names) affected by the conflict or informational message in <conflict\-message>\&. Also, <conflict\-type> is a stable string explaining the type of conflict, such as
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"Auto\-merging"
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"CONFLICT (rename/delete)"
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"CONFLICT (submodule lacks merge base)"
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"CONFLICT (binary)"
+.RE
+.sp
+and <conflict\-message> is a more detailed message about the conflict which often (but not always) embeds the <stable\-short\-type\-description> within it\&. These strings may change in future Git versions\&. Some examples:
 .sp
 .RS 4
 .ie n \{\
@@ -204,7 +313,7 @@ This always starts with a blank line (or NUL if \fB\-z\fR is passed) to separate
 .sp -1
 .IP \(bu 2.3
 .\}
-"Failed to merge submodule <submodule> (<reason>)"
+"Failed to merge submodule <submodule> (no merge base)"
 .RE
 .sp
 .RS 4
@@ -218,10 +327,12 @@ This always starts with a blank line (or NUL if \fB\-z\fR is passed) to separate
 "Warning: cannot merge binary files: <filename>"
 .RE
 .sp
-Note that these free\-form messages will never have a NUL character in or between them, even if \-z is passed\&. It is simply a large block of text taking up the remainder of the output\&.
+If \fB\-z\fR is NOT passed:
+.sp
+This section starts with a blank line to separate it from the previous sections, and then only contains the <conflict\-message> information from the previous section (separated by newlines)\&. These are non\-stable strings that should not be parsed by scripts, and are just meant for human consumption\&. Also, note that while <conflict\-message> strings usually do not contain embedded newlines, they sometimes do\&. (However, the free\-form messages will never have an embedded NUL character)\&. So, the entire block of information is meant for human readers as an agglomeration of all conflict messages\&.
 .SH "EXIT STATUS"
 .sp
-For a successful, non\-conflicted merge, the exit status is 0\&. When the merge has conflicts, the exit status is 1\&. If the merge is not able to complete (or start) due to some kind of error, the exit status is something other than 0 or 1 (and the output is unspecified)\&.
+For a successful, non\-conflicted merge, the exit status is 0\&. When the merge has conflicts, the exit status is 1\&. If the merge is not able to complete (or start) due to some kind of error, the exit status is something other than 0 or 1 (and the output is unspecified)\&. When \-\-stdin is passed, the return status is 0 for both successful and conflicted merges, and something other than 0 or 1 if it cannot complete all the requested merges\&.
 .SH "USAGE NOTES"
 .sp
 This command is intended as low\-level plumbing, similar to \fBgit-hash-object\fR(1), \fBgit-mktree\fR(1), \fBgit-commit-tree\fR(1), \fBgit-write-tree\fR(1), \fBgit-update-ref\fR(1), and \fBgit-mktag\fR(1)\&. Thus, it can be used as a part of a series of steps such as:
