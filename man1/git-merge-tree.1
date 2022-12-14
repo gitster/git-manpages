@@ -2,12 +2,12 @@
 .\"     Title: git-merge-tree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 12/12/2022
+.\"      Date: 12/14/2022
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.0
+.\"    Source: Git 2.39.0.56.g57e2c6ebbe
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE\-TREE" "1" "12/12/2022" "Git 2\&.39\&.0" "Git Manual"
+.TH "GIT\-MERGE\-TREE" "1" "12/14/2022" "Git 2\&.39\&.0\&.56\&.g57e2c6e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -122,6 +122,12 @@ Write any informational messages such as "Auto\-merging <path>" or CONFLICT noti
 \-\-allow\-unrelated\-histories
 .RS 4
 merge\-tree will by default error out if the two branches specified share no common history\&. This flag can be given to override that check and make the merge proceed anyway\&.
+.RE
+.PP
+\-\-merge\-base=<commit>
+.RS 4
+Instead of finding the merge\-bases for <branch1> and <branch2>, specify a merge\-base for the merge, and specifying multiple bases is currently not supported\&. This option is incompatible with
+\fB\-\-stdin\fR\&.
 .RE
 .SH "OUTPUT"
 .sp
@@ -389,6 +395,21 @@ Conflicted file info)
 any messages that would have been printed to stdout (the
 Informational messages)
 .RE
+.SH "INPUT FORMAT"
+.sp
+\fIgit merge\-tree \-\-stdin\fR input format is fully text based\&. Each line has this format:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[<base\-commit> \-\- ]<branch1> <branch2>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+If one line is separated by \fB\-\-\fR, the string before the separator is used for specifying a merge\-base for the merge and the string after the separator describes the branches to be merged\&.
 .SH "MISTAKES TO AVOID"
 .sp
 Do NOT look through the resulting toplevel tree to try to find which files conflict; parse the Conflicted file info section instead\&. Not only would parsing an entire tree be horrendously slow in large repositories, there are numerous types of conflicts not representable by conflict markers (modify/delete, mode conflict, binary file changed on both sides, file/directory conflicts, various rename conflict permutations, etc\&.)
