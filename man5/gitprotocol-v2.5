@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 12/28/2022
+.\"      Date: 01/02/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.0.137.g6bae53b138
+.\"    Source: Git 2.39.0.158.g2b4f5a4e4b
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "12/28/2022" "Git 2\&.39\&.0\&.137\&.g6bae53" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "01/02/2023" "Git 2\&.39\&.0\&.158\&.g2b4f5a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1091,6 +1091,193 @@ obj\-info = obj\-id SP obj\-size
 .if n \{\
 .RE
 .\}
+.SS "bundle\-uri"
+.sp
+If the \fIbundle\-uri\fR capability is advertised, the server supports the \(oqbundle\-uri\(cq command\&.
+.sp
+The capability is currently advertised with no value (i\&.e\&. not "bundle\-uri=somevalue"), a value may be added in the future for supporting command\-wide extensions\&. Clients MUST ignore any unknown capability values and proceed with the \(aqbundle\-uri` dialog they support\&.
+.sp
+The \fIbundle\-uri\fR command is intended to be issued before \fBfetch\fR to get URIs to bundle files (see \fBgit-bundle\fR(1)) to "seed" and inform the subsequent \fBfetch\fR command\&.
+.sp
+The client CAN issue \fBbundle\-uri\fR before or after any other valid command\&. To be useful to clients it\(cqs expected that it\(cqll be issued after an \fBls\-refs\fR and before \fBfetch\fR, but CAN be issued at any time in the dialog\&.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBDISCUSSION of bundle-uri\fR
+.RS 4
+.sp
+The intent of the feature is optimize for server resource consumption in the common case by changing the common case of fetching a very large PACK during \fBgit-clone\fR(1) into a smaller incremental fetch\&.
+.sp
+It also allows servers to achieve better caching in combination with an \fBuploadpack\&.packObjectsHook\fR (see \fBgit-config\fR(1))\&.
+.sp
+By having new clones or fetches be a more predictable and common negotiation against the tips of recently produces *\&.bundle file(s)\&. Servers might even pre\-generate the results of such negotiations for the \fBuploadpack\&.packObjectsHook\fR as new pushes come in\&.
+.sp
+One way that servers could take advantage of these bundles is that the server would anticipate that fresh clones will download a known bundle, followed by catching up to the current state of the repository using ref tips found in that bundle (or bundles)\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBPROTOCOL for bundle-uri\fR
+.RS 4
+.sp
+A \fBbundle\-uri\fR request takes no arguments, and as noted above does not currently advertise a capability value\&. Both may be added in the future\&.
+.sp
+When the client issues a \fBcommand=bundle\-uri\fR request, the response is a list of key\-value pairs provided as packet lines with value \fB<key>=<value>\fR\&. Each \fB<key>\fR should be interpreted as a config key from the \fBbundle\&.*\fR namespace to construct a list of bundles\&. These keys are grouped by a \fBbundle\&.<id>\&.\fR subsection, where each key corresponding to a given \fB<id>\fR contributes attributes to the bundle defined by that \fB<id>\fR\&. See \fBgit-config\fR(1) for the specific details of these keys and how the Git client will interpret their values\&.
+.sp
+Clients MUST parse the line according to the above format, lines that do not conform to the format SHOULD be discarded\&. The user MAY be warned in such a case\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBbundle-uri CLIENT AND SERVER EXPECTATIONS\fR
+.RS 4
+.PP
+URI CONTENTS
+.RS 4
+The content at the advertised URIs MUST be one of two types\&.
+.sp
+The advertised URI may contain a bundle file that
+\fBgit bundle verify\fR
+would accept\&. I\&.e\&. they MUST contain one or more reference tips for use by the client, MUST indicate prerequisites (in any) with standard "\-" prefixes, and MUST indicate their "object\-format", if applicable\&.
+.sp
+The advertised URI may alternatively contain a plaintext file that
+\fBgit config \-\-list\fR
+would accept (with the
+\fB\-\-file\fR
+option)\&. The key\-value pairs in this list are in the
+\fBbundle\&.*\fR
+namespace (see
+\fBgit-config\fR(1))\&.
+.RE
+.PP
+bundle\-uri CLIENT ERROR RECOVERY
+.RS 4
+A client MUST above all gracefully degrade on errors, whether that error is because of bad missing/data in the bundle URI(s), because that client is too dumb to e\&.g\&. understand and fully parse out bundle headers and their prerequisite relationships, or something else\&.
+.sp
+Server operators should feel confident in turning on "bundle\-uri" and not worry if e\&.g\&. their CDN goes down that clones or fetches will run into hard failures\&. Even if the server bundle bundle(s) are incomplete, or bad in some way the client should still end up with a functioning repository, just as if it had chosen not to use this protocol extension\&.
+.sp
+All subsequent discussion on client and server interaction MUST keep this in mind\&.
+.RE
+.PP
+bundle\-uri SERVER TO CLIENT
+.RS 4
+The ordering of the returned bundle uris is not significant\&. Clients MUST parse their headers to discover their contained OIDS and prerequisites\&. A client MUST consider the content of the bundle(s) themselves and their header as the ultimate source of truth\&.
+.sp
+A server MAY even return bundle(s) that don\(cqt have any direct relationship to the repository being cloned (either through accident, or intentional "clever" configuration), and expect a client to sort out what data they\(cqd like from the bundle(s), if any\&.
+.RE
+.PP
+bundle\-uri CLIENT TO SERVER
+.RS 4
+The client SHOULD provide reference tips found in the bundle header(s) as
+\fIhave\fR
+lines in any subsequent
+\fBfetch\fR
+request\&. A client MAY also ignore the bundle(s) entirely if doing so is deemed worse for some reason, e\&.g\&. if the bundles can\(cqt be downloaded, it doesn\(cqt like the tips it finds etc\&.
+.RE
+.PP
+WHEN ADVERTISED BUNDLE(S) REQUIRE NO FURTHER NEGOTIATION
+.RS 4
+If after issuing
+\fBbundle\-uri\fR
+and
+\fBls\-refs\fR, and getting the header(s) of the bundle(s) the client finds that the ref tips it wants can be retrieved entirely from advertised bundle(s), the client MAY disconnect from the Git server\&. The results of such a
+\fIclone\fR
+or
+\fIfetch\fR
+should be indistinguishable from the state attained without using bundle\-uri\&.
+.RE
+.PP
+EARLY CLIENT DISCONNECTIONS AND ERROR RECOVERY
+.RS 4
+A client MAY perform an early disconnect while still downloading the bundle(s) (having streamed and parsed their headers)\&. In such a case the client MUST gracefully recover from any errors related to finishing the download and validation of the bundle(s)\&.
+.sp
+I\&.e\&. a client might need to re\-connect and issue a
+\fIfetch\fR
+command, and possibly fall back to not making use of
+\fIbundle\-uri\fR
+at all\&.
+.sp
+This "MAY" behavior is specified as such (and not a "SHOULD") on the assumption that a server advertising bundle uris is more likely than not to be serving up a relatively large repository, and to be pointing to URIs that have a good chance of being in working order\&. A client MAY e\&.g\&. look at the payload size of the bundles as a heuristic to see if an early disconnect is worth it, should falling back on a full "fetch" dialog be necessary\&.
+.RE
+.PP
+WHEN ADVERTISED BUNDLE(S) REQUIRE FURTHER NEGOTIATION
+.RS 4
+A client SHOULD commence a negotiation of a PACK from the server via the "fetch" command using the OID tips found in advertised bundles, even if\(cqs still in the process of downloading those bundle(s)\&.
+.sp
+This allows for aggressive early disconnects from any interactive server dialog\&. The client blindly trusts that the advertised OID tips are relevant, and issues them as
+\fIhave\fR
+lines, it then requests any tips it would like (usually from the "ls\-refs" advertisement) via
+\fIwant\fR
+lines\&. The server will then compute a (hopefully small) PACK with the expected difference between the tips from the bundle(s) and the data requested\&.
+.sp
+The only connection the client then needs to keep active is to the concurrently downloading static bundle(s), when those and the incremental PACK are retrieved they should be inflated and validated\&. Any errors at this point should be gracefully recovered from, see above\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBbundle-uri PROTOCOL FEATURES\fR
+.RS 4
+.sp
+The client constructs a bundle list from the \fB<key>=<value>\fR pairs provided by the server\&. These pairs are part of the \fBbundle\&.*\fR namespace as documented in \fBgit-config\fR(1)\&. In this section, we discuss some of these keys and describe the actions the client will do in response to this information\&.
+.sp
+In particular, the \fBbundle\&.version\fR key specifies an integer value\&. The only accepted value at the moment is \fB1\fR, but if the client sees an unexpected value here then the client MUST ignore the bundle list\&.
+.sp
+As long as \fBbundle\&.version\fR is understood, all other unknown keys MAY be ignored by the client\&. The server will guarantee compatibility with older clients, though newer clients may be better able to use the extra keys to minimize downloads\&.
+.sp
+Any backwards\-incompatible addition of pre\-URI key\-value will be guarded by a new \fBbundle\&.version\fR value or values in \fIbundle\-uri\fR capability advertisement itself, and/or by new future \fBbundle\-uri\fR request arguments\&.
+.sp
+Some example key\-value pairs that are not currently implemented but could be implemented in the future include:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Add a "hash=<val>" or "size=<bytes>" advertise the expected hash or size of the bundle file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Advertise that one or more bundle files are the same (to e\&.g\&. have clients round\-robin or otherwise choose one of N possible files)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A "oid=<OID>" shortcut and "prerequisite=<OID>" shortcut\&. For expressing the common case of a bundle with one tip and no prerequisites, or one tip and one prerequisite\&.
+.sp
+This would allow for optimizing the common case of servers who\(cqd like to provide one "big bundle" containing only their "main" branch, and/or incremental updates thereof\&.
+.sp
+A client receiving such a a response MAY assume that they can skip retrieving the header from a bundle at the indicated URI, and thus save themselves and the server(s) the request(s) needed to inspect the headers of that bundle or bundles\&.
+.RE
+.RE
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
