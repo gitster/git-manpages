@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/08/2023
+.\"      Date: 01/16/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.0.198.ga38d39a4c5
+.\"    Source: Git 2.39.0.227.g262c45b6a1
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "01/08/2023" "Git 2\&.39\&.0\&.198\&.ga38d39" "Git Manual"
+.TH "GIT\-CONFIG" "1" "01/16/2023" "Git 2\&.39\&.0\&.227\&.g262c45" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -4380,6 +4380,19 @@ may be slow and these new defaults improve performance:
 .sp -1
 .IP \(bu 2.3
 .\}
+\fBindex\&.skipHash=true\fR
+speeds up index writes by not computing a trailing checksum\&. Note that this will cause Git versions earlier than 2\&.13\&.0 to refuse to parse the index and Git versions earlier than 2\&.40\&.0 will report a corrupted index during
+\fBgit fsck\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 \fBindex\&.version=4\fR
 enables path\-prefix compression in the index\&.
 .RE
@@ -6285,6 +6298,18 @@ index\&.version
 Specify the version with which new index files should be initialized\&. This does not affect existing repositories\&. If
 \fBfeature\&.manyFiles\fR
 is enabled, then the default is 4\&.
+.RE
+.PP
+index\&.skipHash
+.RS 4
+When enabled, do not compute the trailing hash for the index file\&. This accelerates Git commands that manipulate the index, such as
+\fBgit add\fR,
+\fBgit commit\fR, or
+\fBgit status\fR\&. Instead of storing the checksum, write a trailing set of bytes with value zero, indicating that the computation was skipped\&.
+.sp
+If you enable
+\fBindex\&.skipHash\fR, then Git clients older than 2\&.13\&.0 will refuse to parse the index and Git clients older than 2\&.40\&.0 will report an error during
+\fBgit fsck\fR\&.
 .RE
 .PP
 init\&.templateDir
