@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/20/2023
+.\"      Date: 01/21/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.1.254.g904d404274
+.\"    Source: Git 2.39.1.308.g56c8fb1e95
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "01/20/2023" "Git 2\&.39\&.1\&.254\&.g904d40" "Git Manual"
+.TH "GITHOOKS" "5" "01/21/2023" "Git 2\&.39\&.1\&.308\&.g56c8fb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,6 +39,20 @@ Hooks are programs you can place in a hooks directory to trigger actions at cert
 By default the hooks directory is \fB$GIT_DIR/hooks\fR, but that can be changed via the \fBcore\&.hooksPath\fR configuration variable (see \fBgit-config\fR(1))\&.
 .sp
 Before Git invokes a hook, it changes its working directory to either $GIT_DIR in a bare repository or the root of the working tree in a non\-bare repository\&. An exception are hooks triggered during a push (\fIpre\-receive\fR, \fIupdate\fR, \fIpost\-receive\fR, \fIpost\-update\fR, \fIpush\-to\-checkout\fR) which are always executed in $GIT_DIR\&.
+.sp
+Environment variables, such as \fBGIT_DIR\fR, \fBGIT_WORK_TREE\fR, etc\&., are exported so that Git commands run by the hook can correctly locate the repository\&. If your hook needs to invoke Git commands in a foreign repository or in a different working tree of the same repository, then it should clear these environment variables so they do not interfere with Git operations at the foreign location\&. For example:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+local_desc=$(git describe)
+foreign_desc=$(unset $(git rev\-parse \-\-local\-env\-vars); git \-C \&.\&./foreign\-repo describe)
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .sp
 Hooks can get their arguments via the environment, command\-line arguments, and stdin\&. See the documentation for each hook below for details\&.
 .sp

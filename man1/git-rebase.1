@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/20/2023
+.\"      Date: 01/21/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.1.254.g904d404274
+.\"    Source: Git 2.39.1.308.g56c8fb1e95
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "01/20/2023" "Git 2\&.39\&.1\&.254\&.g904d40" "Git Manual"
+.TH "GIT\-REBASE" "1" "01/21/2023" "Git 2\&.39\&.1\&.308\&.g56c8fb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -48,6 +48,22 @@ If \fB<upstream>\fR is not specified, the upstream configured in \fBbranch\&.<na
 All changes made by commits in the current branch but that are not in \fB<upstream>\fR are saved to a temporary area\&. This is the same set of commits that would be shown by \fBgit log <upstream>\&.\&.HEAD\fR; or by \fBgit log \(aqfork_point\(aq\&.\&.HEAD\fR, if \fB\-\-fork\-point\fR is active (see the description on \fB\-\-fork\-point\fR below); or by \fBgit log HEAD\fR, if the \fB\-\-root\fR option is specified\&.
 .sp
 The current branch is reset to \fB<upstream>\fR or \fB<newbase>\fR if the \fB\-\-onto\fR option was supplied\&. This has the exact same effect as \fBgit reset \-\-hard <upstream>\fR (or \fB<newbase>\fR)\&. \fBORIG_HEAD\fR is set to point at the tip of the branch before the reset\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+\fBORIG_HEAD\fR is not guaranteed to still point to the previous branch tip at the end of the rebase if other commands that write that pseudo\-ref (e\&.g\&. \fBgit reset\fR) are used during the rebase\&. The previous branch tip, however, is accessible using the reflog of the current branch (i\&.e\&. \fB@{1}\fR, see \fBgitrevisions\fR(7))\&.
+.sp .5v
+.RE
 .sp
 The commits that were previously saved into the temporary area are then reapplied to the current branch, one by one, in order\&. Note that any commits in \fBHEAD\fR which introduce the same textual changes as a commit in \fBHEAD\&.\&.<upstream>\fR are omitted (i\&.e\&., a patch already accepted upstream with a different commit message or timestamp will be skipped)\&.
 .sp
