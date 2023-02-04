@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 01/30/2023
+.\"      Date: 02/03/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.1.388.g2fc9e9ca3c
+.\"    Source: Git 2.39.1.409.ga6a323b31e
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "01/30/2023" "Git 2\&.39\&.1\&.388\&.g2fc9e9" "Git Manual"
+.TH "GIT\-REBASE" "1" "02/03/2023" "Git 2\&.39\&.1\&.409\&.ga6a323" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -315,6 +315,50 @@ git rebase \-\-abort
 .if n \{\
 .RE
 .\}
+.SH "MODE OPTIONS"
+.sp
+The options in this section cannot be used with any other option, including not with each other:
+.PP
+\-\-continue
+.RS 4
+Restart the rebasing process after having resolved a merge conflict\&.
+.RE
+.PP
+\-\-skip
+.RS 4
+Restart the rebasing process by skipping the current patch\&.
+.RE
+.PP
+\-\-abort
+.RS 4
+Abort the rebase operation and reset HEAD to the original branch\&. If
+\fB<branch>\fR
+was provided when the rebase operation was started, then
+\fBHEAD\fR
+will be reset to
+\fB<branch>\fR\&. Otherwise
+\fBHEAD\fR
+will be reset to where it was when the rebase operation was started\&.
+.RE
+.PP
+\-\-quit
+.RS 4
+Abort the rebase operation but
+\fBHEAD\fR
+is not reset back to the original branch\&. The index and working tree are also left unchanged as a result\&. If a temporary stash entry was created using
+\fB\-\-autostash\fR, it will be saved to the stash list\&.
+.RE
+.PP
+\-\-edit\-todo
+.RS 4
+Edit the todo list during an interactive rebase\&.
+.RE
+.PP
+\-\-show\-current\-patch
+.RS 4
+Show the current patch in an interactive rebase or when rebase is stopped because of conflicts\&. This is the equivalent of
+\fBgit show REBASE_HEAD\fR\&.
+.RE
 .SH "OPTIONS"
 .PP
 \-\-onto <newbase>
@@ -366,31 +410,6 @@ Upstream branch to compare against\&. May be any valid commit, not just an exist
 .RS 4
 Working branch; defaults to
 \fBHEAD\fR\&.
-.RE
-.PP
-\-\-continue
-.RS 4
-Restart the rebasing process after having resolved a merge conflict\&.
-.RE
-.PP
-\-\-abort
-.RS 4
-Abort the rebase operation and reset HEAD to the original branch\&. If
-\fB<branch>\fR
-was provided when the rebase operation was started, then
-\fBHEAD\fR
-will be reset to
-\fB<branch>\fR\&. Otherwise
-\fBHEAD\fR
-will be reset to where it was when the rebase operation was started\&.
-.RE
-.PP
-\-\-quit
-.RS 4
-Abort the rebase operation but
-\fBHEAD\fR
-is not reset back to the original branch\&. The index and working tree are also left unchanged as a result\&. If a temporary stash entry was created using
-\fB\-\-autostash\fR, it will be saved to the stash list\&.
 .RE
 .PP
 \-\-apply
@@ -456,33 +475,18 @@ is given)\&. Advice will also be issued unless
 \fBadvice\&.skippedCherryPicks\fR
 is set to false (see
 \fBgit-config\fR(1))\&.
+.sp
+\fB\-\-reapply\-cherry\-picks\fR
+allows rebase to forgo reading all upstream commits, potentially improving performance\&.
+.sp
+See also INCOMPATIBLE OPTIONS below\&.
 .RE
-.sp
-+ \fB\-\-reapply\-cherry\-picks\fR allows rebase to forgo reading all upstream commits, potentially improving performance\&.
-.sp
-+ See also INCOMPATIBLE OPTIONS below\&.
 .PP
 \-\-allow\-empty\-message
 .RS 4
 No\-op\&. Rebasing commits with an empty message used to fail and this option would override that behavior, allowing commits with empty messages to be rebased\&. Now commits with an empty message do not cause rebasing to halt\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
-.RE
-.PP
-\-\-skip
-.RS 4
-Restart the rebasing process by skipping the current patch\&.
-.RE
-.PP
-\-\-edit\-todo
-.RS 4
-Edit the todo list during an interactive rebase\&.
-.RE
-.PP
-\-\-show\-current\-patch
-.RS 4
-Show the current patch in an interactive rebase or when rebase is stopped because of conflicts\&. This is the equivalent of
-\fBgit show REBASE_HEAD\fR\&.
 .RE
 .PP
 \-m, \-\-merge
@@ -798,13 +802,7 @@ See also INCOMPATIBLE OPTIONS below\&.
 .RS 4
 Rebase all commits reachable from
 \fB<branch>\fR, instead of limiting them with an
-\fB<upstream>\fR\&. This allows you to rebase the root commit(s) on a branch\&. When used with
-\fB\-\-onto\fR, it will skip changes already contained in
-\fB<newbase>\fR
-(instead of
-\fB<upstream>\fR) whereas without
-\fB\-\-onto\fR
-it will operate on every change\&.
+\fB<upstream>\fR\&. This allows you to rebase the root commit(s) on a branch\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
@@ -874,6 +872,8 @@ Automatically force\-update any branches that point to commits that are being re
 If the configuration variable
 \fBrebase\&.updateRefs\fR
 is set, then this option can be used to override and disable this setting\&.
+.sp
+See also INCOMPATIBLE OPTIONS below\&.
 .RE
 .SH "INCOMPATIBLE OPTIONS"
 .sp
@@ -955,18 +955,7 @@ are incompatible with the following options:
 .sp -1
 .IP \(bu 2.3
 .\}
-\-\-allow\-empty\-message
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-[no\-]autosquash
+\-\-autosquash
 .RE
 .sp
 .RS 4
@@ -1032,18 +1021,7 @@ are incompatible with the following options:
 .sp -1
 .IP \(bu 2.3
 .\}
-\-\-reapply\-cherry\-picks
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\-\-edit\-todo
+\-\-[no\-]reapply\-cherry\-picks when used without \-\-keep\-base
 .RE
 .sp
 .RS 4
@@ -1065,7 +1043,7 @@ are incompatible with the following options:
 .sp -1
 .IP \(bu 2.3
 .\}
-\-\-root when used in combination with \-\-onto
+\-\-root when used without \-\-onto
 .RE
 .sp
 In addition, the following pairs of options are incompatible:
