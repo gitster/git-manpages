@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/14/2023
+.\"      Date: 02/22/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.2.456.gb1485644f9
+.\"    Source: Git 2.39.2.542.g06dd2baa8d
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "02/14/2023" "Git 2\&.39\&.2\&.456\&.gb14856" "Git Manual"
+.TH "GIT\-CONFIG" "1" "02/22/2023" "Git 2\&.39\&.2\&.542\&.g06dd2b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2635,13 +2635,8 @@ is deprecated, as it does not follow the usual naming convention for configurati
 .PP
 add\&.interactive\&.useBuiltin
 .RS 4
-Set to
-\fBfalse\fR
-to fall back to the original Perl implementation of the interactive version of
-\fBgit-add\fR(1)
-instead of the built\-in version\&. Is
-\fBtrue\fR
-by default\&.
+Unused configuration variable\&. Used in Git versions v2\&.25\&.0 to v2\&.36\&.0 to enable the built\-in version of
+\fBgit-add\fR(1)\(aqs interactive mode, which then became the default in Git versions v2\&.37\&.0 to v2\&.39\&.0\&.
 .RE
 .PP
 alias\&.*
@@ -2964,6 +2959,14 @@ This string value should be either
 \fBall\fR
 or
 \fBany\fR\&. This value describes whether all of the advertised bundles are required to unbundle a complete understanding of the bundled information (\fBall\fR) or if any one of the listed bundle URIs is sufficient (\fBany\fR)\&.
+.RE
+.PP
+bundle\&.heuristic
+.RS 4
+If this string\-valued key exists, then the bundle list is designed to work well with incremental
+\fBgit fetch\fR
+commands\&. The heuristic signals that there are additional keys available for each bundle that help determine which subset of bundles the client should download\&. The only value currently understood is
+\fBcreationToken\fR\&.
 .RE
 .PP
 bundle\&.<id>\&.*
@@ -4546,6 +4549,40 @@ option, most executions will create a very small commit\-graph file on top of th
 \fBgit merge\-base\fR,
 \fBgit push \-f\fR, and
 \fBgit log \-\-graph\fR\&. Defaults to false\&.
+.RE
+.PP
+fetch\&.bundleURI
+.RS 4
+This value stores a URI for downloading Git object data from a bundle URI before performing an incremental fetch from the origin Git server\&. This is similar to how the
+\fB\-\-bundle\-uri\fR
+option behaves in
+\fBgit-clone\fR(1)\&.
+\fBgit clone \-\-bundle\-uri\fR
+will set the
+\fBfetch\&.bundleURI\fR
+value if the supplied bundle URI contains a bundle list that is organized for incremental fetches\&.
+.sp
+If you modify this value and your repository has a
+\fBfetch\&.bundleCreationToken\fR
+value, then remove that
+\fBfetch\&.bundleCreationToken\fR
+value before fetching from the new bundle URI\&.
+.RE
+.PP
+fetch\&.bundleCreationToken
+.RS 4
+When using
+\fBfetch\&.bundleURI\fR
+to fetch incrementally from a bundle list that uses the "creationToken" heuristic, this config value stores the maximum
+\fBcreationToken\fR
+value of the downloaded bundles\&. This value is used to prevent downloading bundles in the future if the advertised
+\fBcreationToken\fR
+is not strictly larger than this value\&.
+.sp
+The creation token values are chosen by the provider serving the specific bundle URI\&. If you modify the URI at
+\fBfetch\&.bundleURI\fR, then be sure to remove the value for the
+\fBfetch\&.bundleCreationToken\fR
+value before fetching\&.
 .RE
 .PP
 format\&.attach

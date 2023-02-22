@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/14/2023
+.\"      Date: 02/22/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.39.2.456.gb1485644f9
+.\"    Source: Git 2.39.2.542.g06dd2baa8d
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "02/14/2023" "Git 2\&.39\&.2\&.456\&.gb14856" "Git Manual"
+.TH "GIT\-FETCH" "1" "02/22/2023" "Git 2\&.39\&.2\&.542\&.g06dd2b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -774,7 +774,7 @@ You can choose to provide the name of a remote which you had previously configur
 .\}
 .sp
 .sp
-The \fB<pushurl>\fR is used for pushes only\&. It is optional and defaults to \fB<URL>\fR\&.
+The \fB<pushurl>\fR is used for pushes only\&. It is optional and defaults to \fB<URL>\fR\&. Pushing to a remote affects all defined pushurls or to all defined urls if no pushurls are defined\&. Fetch, however, will only fetch from the first defined url if muliple urls are defined\&.
 .SS "Named file in \fB$GIT_DIR/remotes\fR"
 .sp
 You can choose to provide the name of a file in \fB$GIT_DIR/remotes\fR\&. The URL in this file will be used to access the repository\&. The refspec in this file will be used as default when you do not provide a refspec on the command line\&. This file should have the following format:
@@ -1337,6 +1337,40 @@ option, most executions will create a very small commit\-graph file on top of th
 \fBgit merge\-base\fR,
 \fBgit push \-f\fR, and
 \fBgit log \-\-graph\fR\&. Defaults to false\&.
+.RE
+.PP
+fetch\&.bundleURI
+.RS 4
+This value stores a URI for downloading Git object data from a bundle URI before performing an incremental fetch from the origin Git server\&. This is similar to how the
+\fB\-\-bundle\-uri\fR
+option behaves in
+\fBgit-clone\fR(1)\&.
+\fBgit clone \-\-bundle\-uri\fR
+will set the
+\fBfetch\&.bundleURI\fR
+value if the supplied bundle URI contains a bundle list that is organized for incremental fetches\&.
+.sp
+If you modify this value and your repository has a
+\fBfetch\&.bundleCreationToken\fR
+value, then remove that
+\fBfetch\&.bundleCreationToken\fR
+value before fetching from the new bundle URI\&.
+.RE
+.PP
+fetch\&.bundleCreationToken
+.RS 4
+When using
+\fBfetch\&.bundleURI\fR
+to fetch incrementally from a bundle list that uses the "creationToken" heuristic, this config value stores the maximum
+\fBcreationToken\fR
+value of the downloaded bundles\&. This value is used to prevent downloading bundles in the future if the advertised
+\fBcreationToken\fR
+is not strictly larger than this value\&.
+.sp
+The creation token values are chosen by the provider serving the specific bundle URI\&. If you modify the URI at
+\fBfetch\&.bundleURI\fR, then be sure to remove the value for the
+\fBfetch\&.bundleCreationToken\fR
+value before fetching\&.
 .RE
 .SH "BUGS"
 .sp
