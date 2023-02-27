@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 02/24/2023
+.\"      Date: 02/27/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.0.rc0
+.\"    Source: Git 2.40.0.rc0.32.ga0f05f6840
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "02/24/2023" "Git 2\&.40\&.0\&.rc0" "Git Manual"
+.TH "GITATTRIBUTES" "5" "02/27/2023" "Git 2\&.40\&.0\&.rc0\&.32\&.ga" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -885,6 +885,62 @@ To define an external diff driver \fBjcdiff\fR, add a section to your \fB$GIT_DI
 .sp
 .sp
 When Git needs to show you a diff for the path with \fBdiff\fR attribute set to \fBjcdiff\fR, it calls the command you specified with the above configuration, i\&.e\&. \fBj\-c\-diff\fR, with 7 parameters, just like \fBGIT_EXTERNAL_DIFF\fR program is called\&. See \fBgit\fR(1) for details\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSetting the internal diff algorithm\fR
+.RS 4
+.sp
+The diff algorithm can be set through the \fBdiff\&.algorithm\fR config key, but sometimes it may be helpful to set the diff algorithm per path\&. For example, one may want to use the \fBminimal\fR diff algorithm for \&.json files, and the \fBhistogram\fR for \&.c files, and so on without having to pass in the algorithm through the command line each time\&.
+.sp
+First, in \fB\&.gitattributes\fR, assign the \fBdiff\fR attribute for paths\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+*\&.json diff=<name>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Then, define a "diff\&.<name>\&.algorithm" configuration to specify the diff algorithm, choosing from \fBmyers\fR, \fBpatience\fR, \fBminimal\fR, or \fBhistogram\fR\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[diff "<name>"]
+  algorithm = histogram
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+This diff algorithm applies to user facing diff output like git\-diff(1), git\-show(1) and is used for the \fB\-\-stat\fR output as well\&. The merge machinery will not use the diff algorithm set through this method\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+If \fBdiff\&.<name>\&.command\fR is defined for path with the \fBdiff=<name>\fR attribute, it is executed as an external diff driver (see above), and adding \fBdiff\&.<name>\&.algorithm\fR has no effect, as the algorithm is not passed to the external diff driver\&.
+.sp .5v
+.RE
 .RE
 .sp
 .it 1 an-trap
