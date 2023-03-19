@@ -2,12 +2,12 @@
 .\"     Title: git-bundle
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/17/2023
+.\"      Date: 03/19/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.0.71.g950264636c
+.\"    Source: Git 2.40.0.115.ge25cabbf6b
 .\"  Language: English
 .\"
-.TH "GIT\-BUNDLE" "1" "03/17/2023" "Git 2\&.40\&.0\&.71\&.g9502646" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "03/19/2023" "Git 2\&.40\&.0\&.115\&.ge25cab" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-bundle \- Move objects and refs by archive
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit bundle\fR create [\-q | \-\-quiet | \-\-progress | \-\-all\-progress] [\-\-all\-progress\-implied]
+\fIgit bundle\fR create [\-q | \-\-quiet | \-\-progress]
                     [\-\-version=<version>] <file> <git\-rev\-list\-args>
 \fIgit bundle\fR verify [\-q | \-\-quiet] <file>
 \fIgit bundle\fR list\-heads <file> [<refname>\&...]
@@ -70,7 +70,10 @@ arguments to define the bundle contents\&.
 \fIoptions\fR
 contains the options specific to the
 \fIgit bundle create\fR
-subcommand\&.
+subcommand\&. If
+\fIfile\fR
+is
+\fB\-\fR, the bundle is written to stdout\&.
 .RE
 .PP
 verify <file>
@@ -79,12 +82,18 @@ Used to check that a bundle file is valid and will apply cleanly to the current 
 \fIgit bundle\fR
 prints a list of missing commits, if any\&. Finally, information about additional capabilities, such as "object filter", is printed\&. See "Capabilities" in
 \fBgitformat-bundle\fR(5)
-for more information\&. The exit code is zero for success, but will be nonzero if the bundle file is invalid\&.
+for more information\&. The exit code is zero for success, but will be nonzero if the bundle file is invalid\&. If
+\fIfile\fR
+is
+\fB\-\fR, the bundle is read from stdin\&.
 .RE
 .PP
 list\-heads <file>
 .RS 4
-Lists the references defined in the bundle\&. If followed by a list of references, only references matching those given are printed out\&.
+Lists the references defined in the bundle\&. If followed by a list of references, only references matching those given are printed out\&. If
+\fIfile\fR
+is
+\fB\-\fR, the bundle is read from stdin\&.
 .RE
 .PP
 unbundle <file>
@@ -92,7 +101,10 @@ unbundle <file>
 Passes the objects in the bundle to
 \fIgit index\-pack\fR
 for storage in the repository, then prints the names of all defined references\&. If a list of references is given, only references matching those in the list are printed\&. This command is really plumbing, intended to be called only by
-\fIgit fetch\fR\&.
+\fIgit fetch\fR\&. If
+\fIfile\fR
+is
+\fB\-\fR, the bundle is read from stdin\&.
 .RE
 .PP
 <git\-rev\-list\-args>
@@ -118,16 +130,6 @@ acts like
 \-\-progress
 .RS 4
 Progress status is reported on the standard error stream by default when it is attached to a terminal, unless \-q is specified\&. This flag forces progress status even if the standard error stream is not directed to a terminal\&.
-.RE
-.PP
-\-\-all\-progress
-.RS 4
-When \-\-stdout is specified then progress report is displayed during the object count and compression phases but inhibited during the write\-out phase\&. The reason is that in some cases the output stream is directly linked to another command which may wish to display progress status of its own as it processes incoming pack data\&. This flag is like \-\-progress except that it forces progress report for the write\-out phase as well even if \-\-stdout is used\&.
-.RE
-.PP
-\-\-all\-progress\-implied
-.RS 4
-This is used to imply \-\-all\-progress whenever progress display is activated\&. Unlike \-\-all\-progress this flag doesn\(cqt actually force any progress display by itself\&.
 .RE
 .PP
 \-\-version=<version>
