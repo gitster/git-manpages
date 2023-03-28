@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/21/2023
+.\"      Date: 03/28/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.0.130.g27d43aaaf5
+.\"    Source: Git 2.40.0.141.g8d90352acc
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "03/21/2023" "Git 2\&.40\&.0\&.130\&.g27d43a" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "03/28/2023" "Git 2\&.40\&.0\&.141\&.g8d9035" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -419,7 +419,7 @@ as the output does not have to be formatted\&.
 \-\-disk\-usage, \-\-disk\-usage=human
 .RS 4
 Suppress normal output; instead, print the sum of the bytes used for on\-disk storage by the selected commits or objects\&. This is equivalent to piping the output into
-\fBgit cat\-file \-\-batch\-check=\(aq%(objectsize:disk)\(aq\fR, except that it runs much faster (especially with
+\fBgit cat\-file \-\-batch\-check=\*(Aq%(objectsize:disk)\*(Aq\fR, except that it runs much faster (especially with
 \fB\-\-use\-bitmap\-index\fR)\&. See the
 \fBCAVEATS\fR
 section in
@@ -663,7 +663,7 @@ In the following, we will always refer to the same example history to illustrate
          /     /   /   /   /   /
         I     B   C   D   E   Y
          \e   /   /   /   /   /
-          `\-\-\-\-\-\-\-\-\-\-\-\-\-\(aq   X
+          `\-\-\-\-\-\-\-\-\-\-\-\-\-\*(Aq   X
 .fi
 .if n \{\
 .RE
@@ -879,7 +879,7 @@ Merges are always included\&. However, their parent list is rewritten: Along eac
          /     /   /   /   /
         I     B   /   D   /
          \e   /   /   /   /
-          `\-\-\-\-\-\-\-\-\-\-\-\-\-\(aq
+          `\-\-\-\-\-\-\-\-\-\-\-\-\-\*(Aq
 .fi
 .if n \{\
 .RE
@@ -890,7 +890,7 @@ Compare to
 without rewriting above\&. Note that
 \fBE\fR
 was pruned away because it is TREESAME, but the parent list of P was rewritten to contain
-\fBE\fR\(aqs parent
+\fBE\fR\*(Aqs parent
 \fBI\fR\&. The same happened for
 \fBC\fR
 and
@@ -925,7 +925,7 @@ with parent rewriting does (see above)\&.
 Then simplify each commit
 \fBC\fR
 to its replacement
-\fBC\(aq\fR
+\fBC\*(Aq\fR
 in the final history according to the following rules:
 .sp
 .RS 4
@@ -937,7 +937,7 @@ in the final history according to the following rules:
 .IP \(bu 2.3
 .\}
 Set
-\fBC\(aq\fR
+\fBC\*(Aq\fR
 to
 \fBC\fR\&.
 .RE
@@ -953,9 +953,9 @@ to
 Replace each parent
 \fBP\fR
 of
-\fBC\(aq\fR
+\fBC\*(Aq\fR
 with its simplification
-\fBP\(aq\fR\&. In the process, drop parents that are ancestors of other parents or that are root commits TREESAME to an empty tree, and remove duplicates, but take care to never drop all parents that we are TREESAME to\&.
+\fBP\*(Aq\fR\&. In the process, drop parents that are ancestors of other parents or that are root commits TREESAME to an empty tree, and remove duplicates, but take care to never drop all parents that we are TREESAME to\&.
 .RE
 .sp
 .RS 4
@@ -967,7 +967,7 @@ with its simplification
 .IP \(bu 2.3
 .\}
 If after this parent rewriting,
-\fBC\(aq\fR
+\fBC\*(Aq\fR
 is a root or merge commit (has zero or >1 parents), a boundary commit, or !TREESAME, it remains\&. Otherwise, it is replaced with its only parent\&.
 .RE
 .sp
@@ -983,7 +983,7 @@ with parent rewriting\&. The example turns into:
          /     /       /
         I     B       D
          \e   /       /
-          `\-\-\-\-\-\-\-\-\-\(aq
+          `\-\-\-\-\-\-\-\-\-\*(Aq
 .fi
 .if n \{\
 .RE
@@ -1004,7 +1004,7 @@ over
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBN\fR\(aqs parent list had
+\fBN\fR\*(Aqs parent list had
 \fBI\fR
 removed, because it is an ancestor of the other parent
 \fBM\fR\&. Still,
@@ -1020,7 +1020,7 @@ remained because it is !TREESAME\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBP\fR\(aqs parent list similarly had
+\fBP\fR\*(Aqs parent list similarly had
 \fBI\fR
 removed\&.
 \fBP\fR
@@ -1035,7 +1035,7 @@ was then removed completely, because it had one parent and is TREESAME\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBQ\fR\(aqs parent list had
+\fBQ\fR\*(Aqs parent list had
 \fBY\fR
 simplified to
 \fBX\fR\&.
@@ -1170,10 +1170,10 @@ A common problem users face when looking at simplified history is that a commit 
 .nf
           \&.\-A\-\-\-M\-\-\-\-\-C\-\-N\-\-\-O\-\-\-P
          /     / \e  \e  \e/   /   /
-        I     B   \e  R\-\(aq`\-Z\(aq   /
+        I     B   \e  R\-\*(Aq`\-Z\*(Aq   /
          \e   /     \e/         /
           \e /      /\e        /
-           `\-\-\-X\-\-\(aq  `\-\-\-Y\-\-\(aq
+           `\-\-\-X\-\-\*(Aq  `\-\-\-Y\-\-\*(Aq
 .fi
 .if n \{\
 .RE
@@ -1203,10 +1203,10 @@ When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover t
 .nf
           \&.\-A\-\-\-M\-\-\-\-\-\-\-\-N\-\-\-O\-\-\-P
          /     / \e  \e  \e/   /   /
-        I     B   \e  R\-\(aq`\-\-\(aq   /
+        I     B   \e  R\-\*(Aq`\-\-\*(Aq   /
          \e   /     \e/         /
           \e /      /\e        /
-           `\-\-\-X\-\-\(aq  `\-\-\-\-\-\-\(aq
+           `\-\-\-X\-\-\*(Aq  `\-\-\-\-\-\-\*(Aq
 .fi
 .if n \{\
 .RE
@@ -1226,7 +1226,7 @@ When using the \fB\-\-simplify\-merges\fR option, the commits \fBO\fR and \fBP\f
         I     B      R
          \e   /      /
           \e /      /
-           `\-\-\-X\-\-\(aq
+           `\-\-\-X\-\-\*(Aq
 .fi
 .if n \{\
 .RE
@@ -1286,7 +1286,7 @@ is paired with
         I     B      R
          \e   /      /
           \e /      /
-           `\-\-\-X\-\-\(aq
+           `\-\-\-X\-\-\*(Aq
 .fi
 .if n \{\
 .RE
@@ -1342,7 +1342,7 @@ outputs
 .RE
 .\}
 .sp
-would be of roughly the same length\&. Finding the change which introduces a regression is thus reduced to a binary search: repeatedly generate and test new \(aqmidpoint\(cqs until the commit chain is of length one\&.
+would be of roughly the same length\&. Finding the change which introduces a regression is thus reduced to a binary search: repeatedly generate and test new \*(Aqmidpoint\(cqs until the commit chain is of length one\&.
 .RE
 .PP
 \-\-bisect\-vars
@@ -1537,7 +1537,7 @@ and individual filters are %\-encoded (i\&.e\&. URL\-encoded)\&. Besides the
 and
 \fI%\fR
 characters, the following characters are reserved and also must be encoded:
-\fB~!@#$^&*()[]{}\e;",<>?\fR\fB\(aq`\fR
+\fB~!@#$^&*()[]{}\e;",<>?\fR\fB\*(Aq`\fR
 as well as all characters with ASCII code <=
 \fB0x20\fR, which includes space and newline\&.
 .sp
@@ -2139,7 +2139,7 @@ CommitDate: <committer\-date>
 .\}
 .sp
 This format is used to refer to another commit in a commit message and is the same as
-\fB\-\-pretty=\(aqformat:%C(auto)%h (%s, %ad)\(aq\fR\&. By default, the date is formatted with
+\fB\-\-pretty=\*(Aqformat:%C(auto)%h (%s, %ad)\*(Aq\fR\&. By default, the date is formatted with
 \fB\-\-date=short\fR
 unless another
 \fB\-\-date\fR
@@ -2926,12 +2926,12 @@ format works exactly like
 .\}
 .nf
 $ git log \-2 \-\-pretty=format:%h 4da45bef \e
-  | perl \-pe \(aq$_ \&.= " \-\- NO NEWLINE\en" unless /\en/\(aq
+  | perl \-pe \*(Aq$_ \&.= " \-\- NO NEWLINE\en" unless /\en/\*(Aq
 4da45be
 7134973 \-\- NO NEWLINE
 
 $ git log \-2 \-\-pretty=tformat:%h 4da45bef \e
-  | perl \-pe \(aq$_ \&.= " \-\- NO NEWLINE\en" unless /\en/\(aq
+  | perl \-pe \*(Aq$_ \&.= " \-\- NO NEWLINE\en" unless /\en/\*(Aq
 4da45be
 7134973
 .fi
@@ -3163,7 +3163,7 @@ Report the disk size of each branch, not including objects used by the current b
 .RS 4
 .\}
 .nf
-git for\-each\-ref \-\-format=\(aq%(refname)\(aq |
+git for\-each\-ref \-\-format=\*(Aq%(refname)\*(Aq |
 while read branch
 do
         size=$(git rev\-list \-\-disk\-usage \-\-objects HEAD\&.\&.$branch)

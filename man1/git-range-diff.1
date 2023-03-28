@@ -2,12 +2,12 @@
 .\"     Title: git-range-diff
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/21/2023
+.\"      Date: 03/28/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.0.130.g27d43aaaf5
+.\"    Source: Git 2.40.0.141.g8d90352acc
 .\"  Language: English
 .\"
-.TH "GIT\-RANGE\-DIFF" "1" "03/21/2023" "Git 2\&.40\&.0\&.130\&.g27d43a" "Git Manual"
+.TH "GIT\-RANGE\-DIFF" "1" "03/28/2023" "Git 2\&.40\&.0\&.141\&.g8d9035" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -45,7 +45,7 @@ This command shows the differences between two versions of a patch series, or mo
 .sp
 In the presence of \fB<path>\fR arguments, these commit ranges are limited accordingly\&.
 .sp
-To that end, it first finds pairs of commits from both commit ranges that correspond with each other\&. Two commits are said to correspond when the diff between their patches (i\&.e\&. the author information, the commit message and the commit diff) is reasonably small compared to the patches\(aq size\&. See ``Algorithm`` below for details\&.
+To that end, it first finds pairs of commits from both commit ranges that correspond with each other\&. Two commits are said to correspond when the diff between their patches (i\&.e\&. the author information, the commit message and the commit diff) is reasonably small compared to the patches\*(Aq size\&. See ``Algorithm`` below for details\&.
 .sp
 Finally, the list of matching commits is shown in the order of the second commit range, with unmatched commits being inserted just after all of their ancestors have been shown\&.
 .sp
@@ -240,7 +240,7 @@ A typical output of \fBgit range\-diff\fR would look like this:
 .sp
 In this example, there are 3 old and 3 new commits, where the developer removed the 3rd, added a new one before the first two, and modified the commit message of the 2nd commit as well its diff\&.
 .sp
-When the output goes to a terminal, it is color\-coded by default, just like regular \fBgit diff\fR\(aqs output\&. In addition, the first line (adding a commit) is green, the last line (deleting a commit) is red, the second line (with a perfect match) is yellow like the commit header of \fBgit show\fR\(aqs output, and the third line colors the old commit red, the new one green and the rest like \fBgit show\fR\(aqs commit header\&.
+When the output goes to a terminal, it is color\-coded by default, just like regular \fBgit diff\fR\*(Aqs output\&. In addition, the first line (adding a commit) is green, the last line (deleting a commit) is red, the second line (with a perfect match) is yellow like the commit header of \fBgit show\fR\*(Aqs output, and the third line colors the old commit red, the new one green and the rest like \fBgit show\fR\*(Aqs commit header\&.
 .sp
 A naive color\-coded diff of diffs is actually a bit hard to read, though, as it colors the entire lines red or green\&. The line that added "What is unexpected" in the old commit, for example, is completely red, even if the intent of the old commit was to add something\&.
 .sp
@@ -278,7 +278,7 @@ We are looking for a "best" explanation of the new series in terms of the old on
 .nf
     1            A
                /
-    2 \-\-\-\-\-\-\-\-\(aq  B
+    2 \-\-\-\-\-\-\-\-\*(Aq  B
 
                  C
 .fi
@@ -295,7 +295,7 @@ This explanation comes for "free" because there was no change\&. Similarly \fBC\
 .nf
     1 \-\-\-\-\&.      A
           |    /
-    2 \-\-\-\-+\-\-\-\(aq  B
+    2 \-\-\-\-+\-\-\-\*(Aq  B
           |
           `\-\-\-\-\- C
           c>0
@@ -313,7 +313,7 @@ In mathematical terms, what we are looking for is some sort of a minimum cost bi
 .nf
     1 \-\-\-\-\&.      A
           |    /
-    2 \-\-\-\-+\-\-\-\(aq  B
+    2 \-\-\-\-+\-\-\-\*(Aq  B
           |
     o     `\-\-\-\-\- C
           c>0
@@ -326,7 +326,7 @@ In mathematical terms, what we are looking for is some sort of a minimum cost bi
 .\}
 .sp
 .sp
-The cost of an edge \fBo\-\-C\fR is the size of \fBC\fR\(aqs diff, modified by a fudge factor that should be smaller than 100%\&. The cost of an edge \fBo\-\-o\fR is free\&. The fudge factor is necessary because even if \fB1\fR and \fBC\fR have nothing in common, they may still share a few empty lines and such, possibly making the assignment \fB1\-\-C\fR, \fBo\-\-o\fR slightly cheaper than \fB1\-\-o\fR, \fBo\-\-C\fR even if \fB1\fR and \fBC\fR have nothing in common\&. With the fudge factor we require a much larger common part to consider patches as corresponding\&.
+The cost of an edge \fBo\-\-C\fR is the size of \fBC\fR\*(Aqs diff, modified by a fudge factor that should be smaller than 100%\&. The cost of an edge \fBo\-\-o\fR is free\&. The fudge factor is necessary because even if \fB1\fR and \fBC\fR have nothing in common, they may still share a few empty lines and such, possibly making the assignment \fB1\-\-C\fR, \fBo\-\-o\fR slightly cheaper than \fB1\-\-o\fR, \fBo\-\-C\fR even if \fB1\fR and \fBC\fR have nothing in common\&. With the fudge factor we require a much larger common part to consider patches as corresponding\&.
 .sp
 The overall time needed to compute this algorithm is the time needed to compute n+m commit diffs and then n*m diffs of patches, plus the time needed to compute the least\-cost assignment between n and m diffs\&. Git uses an implementation of the Jonker\-Volgenant algorithm to solve the assignment problem, which has cubic runtime complexity\&. The matching found in this case will look like this:
 .sp
@@ -336,9 +336,9 @@ The overall time needed to compute this algorithm is the time needed to compute 
 .nf
     1 \-\-\-\-\&.      A
           |    /
-    2 \-\-\-\-+\-\-\-\(aq  B
-       \&.\-\-+\-\-\-\-\-\(aq
-    o \-\(aq  `\-\-\-\-\- C
+    2 \-\-\-\-+\-\-\-\*(Aq  B
+       \&.\-\-+\-\-\-\-\-\*(Aq
+    o \-\*(Aq  `\-\-\-\-\- C
           c>0
     o \-\-\-\-\-\-\-\-\-\- o
 
