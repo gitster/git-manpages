@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 03/31/2023
+.\"      Date: 04/04/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.0.166.g140b9478da
+.\"    Source: Git 2.40.0.214.gae73b2c8f1
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "03/31/2023" "Git 2\&.40\&.0\&.166\&.g140b94" "Git Manual"
+.TH "GIT\-REBASE" "1" "04/04/2023" "Git 2\&.40\&.0\&.214\&.gae73b2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -723,21 +723,30 @@ The commit list format can be changed by setting the configuration option rebase
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
 .PP
-\-r, \-\-rebase\-merges[=(rebase\-cousins|no\-rebase\-cousins)]
+\-r, \-\-rebase\-merges[=(rebase\-cousins|no\-rebase\-cousins)], \-\-no\-rebase\-merges
 .RS 4
 By default, a rebase will simply drop merge commits from the todo list, and put the rebased commits into a single, linear branch\&. With
 \fB\-\-rebase\-merges\fR, the rebase will instead try to preserve the branching structure within the commits that are to be rebased, by recreating the merge commits\&. Any resolved merge conflicts or manual amendments in these merge commits will have to be resolved/re\-applied manually\&.
+\fB\-\-no\-rebase\-merges\fR
+can be used to countermand both the
+\fBrebase\&.rebaseMerges\fR
+config option and a previous
+\fB\-\-rebase\-merges\fR\&.
 .sp
-By default, or when
+When rebasing merges, there are two modes:
+\fBrebase\-cousins\fR
+and
+\fBno\-rebase\-cousins\fR\&. If the mode is not specified, it defaults to
+\fBno\-rebase\-cousins\fR\&. In
 \fBno\-rebase\-cousins\fR
-was specified, commits which do not have
+mode, commits which do not have
 \fB<upstream>\fR
 as direct ancestor will keep their original branch point, i\&.e\&. commits that would be excluded by
 \fBgit-log\fR(1)\*(Aqs
 \fB\-\-ancestry\-path\fR
-option will keep their original ancestry by default\&. If the
+option will keep their original ancestry by default\&. In
 \fBrebase\-cousins\fR
-mode is turned on, such commits are instead rebased onto
+mode, such commits are instead rebased onto
 \fB<upstream>\fR
 (or
 \fB<onto>\fR, if specified)\&.
@@ -2099,6 +2108,26 @@ rebase\&.forkPoint
 If set to false set
 \fB\-\-no\-fork\-point\fR
 option by default\&.
+.RE
+.PP
+rebase\&.rebaseMerges
+.RS 4
+Whether and how to set the
+\fB\-\-rebase\-merges\fR
+option by default\&. Can be
+\fBrebase\-cousins\fR,
+\fBno\-rebase\-cousins\fR, or a boolean\&. Setting to true or to
+\fBno\-rebase\-cousins\fR
+is equivalent to
+\fB\-\-rebase\-merges=no\-rebase\-cousins\fR, setting to
+\fBrebase\-cousins\fR
+is equivalent to
+\fB\-\-rebase\-merges=rebase\-cousins\fR, and setting to false is equivalent to
+\fB\-\-no\-rebase\-merges\fR\&. Passing
+\fB\-\-rebase\-merges\fR
+on the command line, with or without an argument, overrides any
+\fBrebase\&.rebaseMerges\fR
+configuration\&.
 .RE
 .PP
 sequence\&.editor
