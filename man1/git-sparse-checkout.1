@@ -2,12 +2,12 @@
 .\"     Title: git-sparse-checkout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 04/07/2023
+.\"      Date: 04/11/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.0.316.gf285f68a13
+.\"    Source: Git 2.40.0.335.g9857273be0
 .\"  Language: English
 .\"
-.TH "GIT\-SPARSE\-CHECKOU" "1" "04/07/2023" "Git 2\&.40\&.0\&.316\&.gf285f6" "Git Manual"
+.TH "GIT\-SPARSE\-CHECKOU" "1" "04/11/2023" "Git 2\&.40\&.0\&.335\&.g985727" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-sparse-checkout \- Reduce your working tree to a subset of tracked files
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit sparse\-checkout\fR (init | list | set | add | reapply | disable) [<options>]
+\fIgit sparse\-checkout\fR (init | list | set | add | reapply | disable | check\-rules) [<options>]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -164,6 +164,38 @@ and
 options would not be remembered across the disable command, so the easy restore of calling a plain
 \fBinit\fR
 decreased in utility\&.
+.RE
+.PP
+\fIcheck\-rules\fR
+.RS 4
+Check whether sparsity rules match one or more paths\&.
+.sp
+By default
+\fBcheck\-rules\fR
+reads a list of paths from stdin and outputs only the ones that match the current sparsity rules\&. The input is expected to consist of one path per line, matching the output of
+\fBgit ls\-tree \-\-name\-only\fR
+including that pathnames that begin with a double quote (") are interpreted as C\-style quoted strings\&.
+.sp
+When called with the
+\fB\-\-rules\-file <file>\fR
+flag the input files are matched against the sparse checkout rules found in
+\fB<file>\fR
+instead of the current ones\&. The rules in the files are expected to be in the same form as accepted by
+\fBgit sparse\-checkout set \-\-stdin\fR
+(in particular, they must be newline\-delimited)\&.
+.sp
+By default, the rules passed to the
+\fB\-\-rules\-file\fR
+option are interpreted as cone mode directories\&. To pass non\-cone mode patterns with
+\fB\-\-rules\-file\fR, combine the option with the
+\fB\-\-no\-cone\fR
+option\&.
+.sp
+When called with the
+\fB\-z\fR
+flag, the format of the paths input on stdin as well as the output paths are \e0 terminated and not quoted\&. Note that this does not apply to the format of the rules passed with the
+\fB\-\-rules\-file\fR
+option\&.
 .RE
 .SH "EXAMPLES"
 .PP
