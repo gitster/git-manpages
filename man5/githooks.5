@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 04/25/2023
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.1.375.g9ce9dea4e1
+.\"    Source: Git 2.40.1.423.g2807bd2c10
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "04/25/2023" "Git 2\&.40\&.1\&.375\&.g9ce9de" "Git Manual"
+.TH "GITHOOKS" "5" "04/25/2023" "Git 2\&.40\&.1\&.423\&.g2807bd" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -437,6 +437,22 @@ The commits are guaranteed to be listed in the order that they were processed by
 .SS "sendemail\-validate"
 .sp
 This hook is invoked by \fBgit-send-email\fR(1)\&. It takes a single parameter, the name of the file that holds the e\-mail to be sent\&. Exiting with a non\-zero status causes \fBgit send\-email\fR to abort before sending any e\-mails\&.
+.sp
+The following environment variables are set when executing the hook\&.
+.PP
+\fBGIT_SENDEMAIL_FILE_COUNTER\fR
+.RS 4
+A 1\-based counter incremented by one for every file holding an e\-mail to be sent (excluding any FIFOs)\&. This counter does not follow the patch series counter scheme\&. It will always start at 1 and will end at GIT_SENDEMAIL_FILE_TOTAL\&.
+.RE
+.PP
+\fBGIT_SENDEMAIL_FILE_TOTAL\fR
+.RS 4
+The total number of files that will be sent (excluding any FIFOs)\&. This counter does not follow the patch series counter scheme\&. It will always be equal to the number of files being sent, whether there is a cover letter or not\&.
+.RE
+.sp
+These variables may for instance be used to validate patch series\&.
+.sp
+The sample \fBsendemail\-validate\fR hook that comes with Git checks that all sent patches (excluding the cover letter) can be applied on top of the upstream repository default branch without conflicts\&. Some placeholders are left for additional validation steps to be performed after all patches of a given series have been applied\&.
 .SS "fsmonitor\-watchman"
 .sp
 This hook is invoked when the configuration option \fBcore\&.fsmonitor\fR is set to \fB\&.git/hooks/fsmonitor\-watchman\fR or \fB\&.git/hooks/fsmonitor\-watchmanv2\fR depending on the version of the hook to use\&.
