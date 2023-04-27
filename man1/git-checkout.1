@@ -2,12 +2,12 @@
 .\"     Title: git-checkout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 04/25/2023
+.\"      Date: 2023-04-27
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.1.423.g2807bd2c10
+.\"    Source: Git 2.40.1.445.gf85cd430b1
 .\"  Language: English
 .\"
-.TH "GIT\-CHECKOUT" "1" "04/25/2023" "Git 2\&.40\&.1\&.423\&.g2807bd" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "2023\-04\-27" "Git 2\&.40\&.1\&.445\&.gf85cd4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -721,22 +721,9 @@ $ git log \-g \-2 HEAD
 .sp
 When there is only one argument given and it is not \fB\-\-\fR (e\&.g\&. \fBgit checkout abc\fR), and when the argument is both a valid \fB<tree\-ish>\fR (e\&.g\&. a branch \fBabc\fR exists) and a valid \fB<pathspec>\fR (e\&.g\&. a file or a directory whose name is "abc" exists), Git would usually ask you to disambiguate\&. Because checking out a branch is so common an operation, however, \fBgit checkout abc\fR takes "abc" as a \fB<tree\-ish>\fR in such a situation\&. Use \fBgit checkout \-\- <pathspec>\fR if you want to checkout these paths out of the index\&.
 .SH "EXAMPLES"
+.SS "1\&. Paths"
 .sp
-.RS 4
-.ie n \{\
-\h'-04' 1.\h'+01'\c
-.\}
-.el \{\
-.sp -1
-.IP "  1." 4.2
-.\}
-The following sequence checks out the
-\fBmaster\fR
-branch, reverts the
-\fBMakefile\fR
-to two revisions back, deletes
-\fBhello\&.c\fR
-by mistake, and gets it back from the index\&.
+The following sequence checks out the \fBmaster\fR branch, reverts the \fBMakefile\fR to two revisions back, deletes \fBhello\&.c\fR by mistake, and gets it back from the index\&.
 .sp
 .if n \{\
 .RS 4
@@ -751,6 +738,7 @@ $ git checkout hello\&.c            \fB(3)\fR
 .RE
 .\}
 .sp
+.sp
 \fB1. \fRswitch branch
 .br
 \fB2. \fRtake a file out of another commit
@@ -758,10 +746,9 @@ $ git checkout hello\&.c            \fB(3)\fR
 \fB3. \fRrestore
 \fBhello\&.c\fR
 from the index
+.br
 .sp
-If you want to check out
-\fIall\fR
-C source files out of the index, you can say
+If you want to check out \fIall\fR C source files out of the index, you can say
 .sp
 .if n \{\
 .RS 4
@@ -773,13 +760,10 @@ $ git checkout \-\- \*(Aq*\&.c\*(Aq
 .RE
 .\}
 .sp
-Note the quotes around
-\fB*\&.c\fR\&. The file
-\fBhello\&.c\fR
-will also be checked out, even though it is no longer in the working tree, because the file globbing is used to match entries in the index (not in the working tree by the shell)\&.
 .sp
-If you have an unfortunate branch that is named
-\fBhello\&.c\fR, this step would be confused as an instruction to switch to that branch\&. You should instead write:
+Note the quotes around \fB*\&.c\fR\&. The file \fBhello\&.c\fR will also be checked out, even though it is no longer in the working tree, because the file globbing is used to match entries in the index (not in the working tree by the shell)\&.
+.sp
+If you have an unfortunate branch that is named \fBhello\&.c\fR, this step would be confused as an instruction to switch to that branch\&. You should instead write:
 .sp
 .if n \{\
 .RS 4
@@ -791,17 +775,8 @@ $ git checkout \-\- hello\&.c
 .RE
 .\}
 .sp
-.br
-.RE
+.SS "2\&. Merge"
 .sp
-.RS 4
-.ie n \{\
-\h'-04' 2.\h'+01'\c
-.\}
-.el \{\
-.sp -1
-.IP "  2." 4.2
-.\}
 After working in the wrong branch, switching to the correct branch would be done using:
 .sp
 .if n \{\
@@ -814,9 +789,8 @@ $ git checkout mytopic
 .RE
 .\}
 .sp
-However, your "wrong" branch and correct
-\fBmytopic\fR
-branch may differ in files that you have modified locally, in which case the above checkout would fail like this:
+.sp
+However, your "wrong" branch and correct \fBmytopic\fR branch may differ in files that you have modified locally, in which case the above checkout would fail like this:
 .sp
 .if n \{\
 .RS 4
@@ -829,9 +803,8 @@ error: You have local changes to \*(Aqfrotz\*(Aq; not switching branches\&.
 .RE
 .\}
 .sp
-You can give the
-\fB\-m\fR
-flag to the command, which would try a three\-way merge:
+.sp
+You can give the \fB\-m\fR flag to the command, which would try a three\-way merge:
 .sp
 .if n \{\
 .RS 4
@@ -844,24 +817,11 @@ Auto\-merging frotz
 .RE
 .\}
 .sp
-After this three\-way merge, the local modifications are
-\fInot\fR
-registered in your index file, so
-\fBgit diff\fR
-would show you what changes you made since the tip of the new branch\&.
-.RE
 .sp
-.RS 4
-.ie n \{\
-\h'-04' 3.\h'+01'\c
-.\}
-.el \{\
-.sp -1
-.IP "  3." 4.2
-.\}
-When a merge conflict happens during switching branches with the
-\fB\-m\fR
-option, you would see something like this:
+After this three\-way merge, the local modifications are \fInot\fR registered in your index file, so \fBgit diff\fR would show you what changes you made since the tip of the new branch\&.
+.SS "3\&. Merge conflict"
+.sp
+When a merge conflict happens during switching branches with the \fB\-m\fR option, you would see something like this:
 .sp
 .if n \{\
 .RS 4
@@ -876,11 +836,8 @@ fatal: merge program failed
 .RE
 .\}
 .sp
-At this point,
-\fBgit diff\fR
-shows the changes cleanly merged as in the previous example, as well as the changes in the conflicted files\&. Edit and resolve the conflict and mark it resolved with
-\fBgit add\fR
-as usual:
+.sp
+At this point, \fBgit diff\fR shows the changes cleanly merged as in the previous example, as well as the changes in the conflicted files\&. Edit and resolve the conflict and mark it resolved with \fBgit add\fR as usual:
 .sp
 .if n \{\
 .RS 4
@@ -893,7 +850,6 @@ $ git add frotz
 .RE
 .\}
 .sp
-.RE
 .SH "CONFIGURATION"
 .sp
 Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
