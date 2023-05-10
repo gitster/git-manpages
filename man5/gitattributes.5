@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-05-09
+.\"      Date: 2023-05-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.1.515.g5597cfdf47
+.\"    Source: Git 2.40.1.552.g91428f078b
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "2023\-05\-09" "Git 2\&.40\&.1\&.515\&.g5597cf" "Git Manual"
+.TH "GITATTRIBUTES" "5" "2023\-05\-10" "Git 2\&.40\&.1\&.552\&.g91428f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -128,13 +128,13 @@ These attributes affect how the contents stored in the repository are copied to 
 \fBtext\fR
 .RS 4
 .sp
-This attribute enables and controls end\-of\-line normalization\&. When a text file is normalized, its line endings are converted to LF in the repository\&. To control what line ending style is used in the working directory, use the \fBeol\fR attribute for a single file and the \fBcore\&.eol\fR configuration variable for all text files\&. Note that setting \fBcore\&.autocrlf\fR to \fBtrue\fR or \fBinput\fR overrides \fBcore\&.eol\fR (see the definitions of those options in \fBgit-config\fR(1))\&.
+This attribute marks the path as a text file, which enables end\-of\-line conversion: When a matching file is added to the index, the file\(cqs line endings are normalized to LF in the index\&. Conversely, when the file is copied from the index to the working directory, its line endings may be converted from LF to CRLF depending on the \fBeol\fR attribute, the Git config, and the platform (see explanation of \fBeol\fR below)\&.
 .PP
 Set
 .RS 4
 Setting the
 \fBtext\fR
-attribute on a path enables end\-of\-line normalization and marks the path as a text file\&. End\-of\-line conversion takes place without guessing the content type\&.
+attribute on a path enables end\-of\-line conversion on checkin and checkout as described above\&. Line endings are normalized to LF in the index every time the file is checked in, even if the file was previously added to Git with CRLF line endings\&.
 .RE
 .PP
 Unset
@@ -148,7 +148,7 @@ Set to string value "auto"
 .RS 4
 When
 \fBtext\fR
-is set to "auto", the path is marked for automatic end\-of\-line conversion\&. If Git decides that the content is text, its line endings are converted to LF on checkin\&. When the file has been committed with CRLF, no conversion is done\&.
+is set to "auto", Git decides by itself whether the file is text or binary\&. If it is text and the file was not already in Git with CRLF endings, line endings are converted on checkin and checkout as described above\&. Otherwise, no conversion is done on checkin or checkout\&.
 .RE
 .PP
 Unspecified
@@ -171,16 +171,34 @@ Any other value causes Git to act as if \fBtext\fR has been left unspecified\&.
 \fBeol\fR
 .RS 4
 .sp
-This attribute sets a specific line\-ending style to be used in the working directory\&. This attribute has effect only if the \fBtext\fR attribute is set or unspecified, or if it is set to \fBauto\fR, the file is detected as text, and it is stored with LF endings in the index\&. Note that setting this attribute on paths which are in the index with CRLF line endings may make the paths to be considered dirty unless \fBtext=auto\fR is set\&. Adding the path to the index again will normalize the line endings in the index\&.
+This attribute marks a path to use a specific line\-ending style in the working tree when it is checked out\&. It has effect only if \fBtext\fR or \fBtext=auto\fR is set (see above), but specifying \fBeol\fR automatically sets \fBtext\fR if \fBtext\fR was left unspecified\&.
 .PP
 Set to string value "crlf"
 .RS 4
-This setting forces Git to normalize line endings for this file on checkin and convert them to CRLF when the file is checked out\&.
+This setting converts the file\(cqs line endings in the working directory to CRLF when the file is checked out\&.
 .RE
 .PP
 Set to string value "lf"
 .RS 4
-This setting forces Git to normalize line endings to LF on checkin and prevents conversion to CRLF when the file is checked out\&.
+This setting uses the same line endings in the working directory as in the index when the file is checked out\&.
+.RE
+.PP
+Unspecified
+.RS 4
+If the
+\fBeol\fR
+attribute is unspecified for a file, its line endings in the working directory are determined by the
+\fBcore\&.autocrlf\fR
+or
+\fBcore\&.eol\fR
+configuration variable (see the definitions of those options in
+\fBgit-config\fR(1))\&. If
+\fBtext\fR
+is set but neither of those variables is, the default is
+\fBeol=crlf\fR
+on Windows and
+\fBeol=lf\fR
+on all other platforms\&.
 .RE
 .RE
 .sp
