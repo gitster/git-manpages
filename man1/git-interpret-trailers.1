@@ -2,12 +2,12 @@
 .\"     Title: git-interpret-trailers
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-05-11
+.\"      Date: 2023-05-15
 .\"    Manual: Git Manual
-.\"    Source: Git 2.40.1.556.g5bc069e383
+.\"    Source: Git 2.41.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-INTERPRET\-TRAILERS" "1" "2023\-05\-11" "Git 2\&.40\&.1\&.556\&.g5bc069" "Git Manual"
+.TH "GIT\-INTERPRET\-TRAILERS" "1" "2023\-05\-15" "Git 2\&.41\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -357,7 +357,7 @@ $ cat msg\&.txt
 subject
 
 message
-$ cat msg\&.txt | git interpret\-trailers \-\-trailer \*(Aqsign: Alice <alice@example\&.com>\*(Aq \-\-trailer \*(Aqsign: Bob <bob@example\&.com>\*(Aq
+$ git interpret\-trailers \-\-trailer \*(Aqsign: Alice <alice@example\&.com>\*(Aq \-\-trailer \*(Aqsign: Bob <bob@example\&.com>\*(Aq <msg\&.txt
 subject
 
 message
@@ -452,17 +452,30 @@ trailer with a command to automatically add a \*(AqSigned\-off\-by: \*(Aq with t
 .RS 4
 .\}
 .nf
+$ cat msg1\&.txt
+subject
+
+message
 $ git config trailer\&.sign\&.key "Signed\-off\-by: "
 $ git config trailer\&.sign\&.ifmissing add
 $ git config trailer\&.sign\&.ifexists doNothing
-$ git config trailer\&.sign\&.command \*(Aqecho "$(git config user\&.name) <$(git config user\&.email)>"\*(Aq
-$ git interpret\-trailers <<EOF
-> EOF
+$ git config trailer\&.sign\&.cmd \*(Aqecho "$(git config user\&.name) <$(git config user\&.email)>"\*(Aq
+$ git interpret\-trailers \-\-trailer sign <msg1\&.txt
+subject
+
+message
 
 Signed\-off\-by: Bob <bob@example\&.com>
-$ git interpret\-trailers <<EOF
-> Signed\-off\-by: Alice <alice@example\&.com>
-> EOF
+$ cat msg2\&.txt
+subject
+
+message
+
+Signed\-off\-by: Alice <alice@example\&.com>
+$ git interpret\-trailers \-\-trailer sign <msg2\&.txt
+subject
+
+message
 
 Signed\-off\-by: Alice <alice@example\&.com>
 .fi
@@ -524,15 +537,14 @@ which search specified author identity from git log in git repository and show h
 $ cat ~/bin/glog\-find\-author
 #!/bin/sh
 test \-n "$1" && git log \-\-author="$1" \-\-pretty="%an <%ae>" \-1 || true
+$ cat msg\&.txt
+subject
+
+message
 $ git config trailer\&.help\&.key "Helped\-by: "
 $ git config trailer\&.help\&.ifExists "addIfDifferentNeighbor"
 $ git config trailer\&.help\&.cmd "~/bin/glog\-find\-author"
-$ git interpret\-trailers \-\-trailer="help:Junio" \-\-trailer="help:Couder" <<EOF
-> subject
->
-> message
->
-> EOF
+$ git interpret\-trailers \-\-trailer="help:Junio" \-\-trailer="help:Couder" <msg\&.txt
 subject
 
 message
@@ -567,15 +579,14 @@ to grep last relevant commit from git log in the git repository and show how it 
 $ cat ~/bin/glog\-grep
 #!/bin/sh
 test \-n "$1" && git log \-\-grep "$1" \-\-pretty=reference \-1 || true
+$ cat msg\&.txt
+subject
+
+message
 $ git config trailer\&.ref\&.key "Reference\-to: "
 $ git config trailer\&.ref\&.ifExists "replace"
 $ git config trailer\&.ref\&.cmd "~/bin/glog\-grep"
-$ git interpret\-trailers \-\-trailer="ref:Add copyright notices\&." <<EOF
-> subject
->
-> message
->
-> EOF
+$ git interpret\-trailers \-\-trailer="ref:Add copyright notices\&." <msg\&.txt
 subject
 
 message
@@ -604,17 +615,20 @@ trailer with a command to show the subject of a commit that is related, and show
 .RS 4
 .\}
 .nf
+$ cat msg\&.txt
+subject
+
+message
+
+see: HEAD~2
+$ cat ~/bin/glog\-ref
+#!/bin/sh
+git log \-1 \-\-oneline \-\-format="%h (%s)" \-\-abbrev\-commit \-\-abbrev=14
 $ git config trailer\&.see\&.key "See\-also: "
 $ git config trailer\&.see\&.ifExists "replace"
 $ git config trailer\&.see\&.ifMissing "doNothing"
-$ git config trailer\&.see\&.command "git log \-1 \-\-oneline \-\-format=\e"%h (%s)\e" \-\-abbrev\-commit \-\-abbrev=14 \e$ARG"
-$ git interpret\-trailers <<EOF
-> subject
->
-> message
->
-> see: HEAD~2
-> EOF
+$ git config trailer\&.see\&.cmd "glog\-ref"
+$ git interpret\-trailers \-\-trailer=see <msg\&.txt
 subject
 
 message
@@ -645,22 +659,21 @@ trailer:
 .RS 4
 .\}
 .nf
-$ sed \-e \*(Aqs/ Z$/ /\*(Aq >commit_template\&.txt <<EOF
-> ***subject***
->
-> ***message***
->
-> Fixes: Z
-> Cc: Z
-> Reviewed\-by: Z
-> Signed\-off\-by: Z
-> EOF
+$ cat temp\&.txt
+***subject***
+
+***message***
+
+Fixes: Z
+Cc: Z
+Reviewed\-by: Z
+Signed\-off\-by: Z
+$ sed \-e \*(Aqs/ Z$/ /\*(Aq temp\&.txt > commit_template\&.txt
 $ git config commit\&.template commit_template\&.txt
-$ cat >\&.git/hooks/commit\-msg <<EOF
-> #!/bin/sh
-> git interpret\-trailers \-\-trim\-empty \-\-trailer "git\-version: \e$(git describe)" "\e$1" > "\e$1\&.new"
-> mv "\e$1\&.new" "\e$1"
-> EOF
+$ cat \&.git/hooks/commit\-msg
+#!/bin/sh
+git interpret\-trailers \-\-trim\-empty \-\-trailer "git\-version: \e$(git describe)" "\e$1" > "\e$1\&.new"
+mv "\e$1\&.new" "\e$1"
 $ chmod +x \&.git/hooks/commit\-msg
 .fi
 .if n \{\
