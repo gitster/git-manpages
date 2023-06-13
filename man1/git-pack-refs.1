@@ -2,12 +2,12 @@
 .\"     Title: git-pack-refs
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-06-01
+.\"      Date: 2023-06-13
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0
+.\"    Source: Git 2.41.0.28.gd7d8841f67
 .\"  Language: English
 .\"
-.TH "GIT\-PACK\-REFS" "1" "2023\-06\-01" "Git 2\&.41\&.0" "Git Manual"
+.TH "GIT\-PACK\-REFS" "1" "2023\-06\-13" "Git 2\&.41\&.0\&.28\&.gd7d8841" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-pack-refs \- Pack heads and tags for efficient repository access
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit pack\-refs\fR [\-\-all] [\-\-no\-prune]
+\fIgit pack\-refs\fR [\-\-all] [\-\-no\-prune] [\-\-include <pattern>] [\-\-exclude <pattern>]
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -48,7 +48,7 @@ A recommended practice to deal with a repository with too many refs is to pack i
 .PP
 \-\-all
 .RS 4
-The command by default packs all tags and refs that are already packed, and leaves other refs alone\&. This is because branches are expected to be actively developed and packing their tips does not help performance\&. This option causes branch tips to be packed as well\&. Useful for a repository with many branches of historical interests\&.
+The command by default packs all tags and refs that are already packed, and leaves other refs alone\&. This is because branches are expected to be actively developed and packing their tips does not help performance\&. This option causes all refs to be packed as well, with the exception of hidden refs, broken refs, and symbolic refs\&. Useful for a repository with many branches of historical interests\&.
 .RE
 .PP
 \-\-no\-prune
@@ -57,6 +57,38 @@ The command usually removes loose refs under
 \fB$GIT_DIR/refs\fR
 hierarchy after packing them\&. This option tells it not to\&.
 .RE
+.PP
+\-\-include <pattern>
+.RS 4
+Pack refs based on a
+\fBglob(7)\fR
+pattern\&. Repetitions of this option accumulate inclusion patterns\&. If a ref is both included in
+\fB\-\-include\fR
+and
+\fB\-\-exclude\fR,
+\fB\-\-exclude\fR
+takes precedence\&. Using
+\fB\-\-include\fR
+will preclude all tags from being included by default\&. Symbolic refs and broken refs will never be packed\&. When used with
+\fB\-\-all\fR, it will be a noop\&. Use
+\fB\-\-no\-include\fR
+to clear and reset the list of patterns\&.
+.RE
+.PP
+\-\-exclude <pattern>
+.RS 4
+Do not pack refs matching the given
+\fBglob(7)\fR
+pattern\&. Repetitions of this option accumulate exclusion patterns\&. Use
+\fB\-\-no\-exclude\fR
+to clear and reset the list of patterns\&. If a ref is already packed, including it with
+\fB\-\-exclude\fR
+will not unpack it\&.
+.RE
+.sp
+When used with \fB\-\-all\fR, pack only loose refs which do not match any of the provided \fB\-\-exclude\fR patterns\&.
+.sp
+When used with \fB\-\-include\fR, refs provided to \fB\-\-include\fR, minus refs that are provided to \fB\-\-exclude\fR will be packed\&.
 .SH "BUGS"
 .sp
 Older documentation written before the packed\-refs mechanism was introduced may still say things like "\&.git/refs/heads/<branch> file exists" when it means "branch <branch> exists"\&.
