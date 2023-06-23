@@ -2,12 +2,12 @@
 .\"     Title: git-gc
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-06-13
+.\"      Date: 2023-06-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0.28.gd7d8841f67
+.\"    Source: Git 2.41.0.191.g6ff334181c
 .\"  Language: English
 .\"
-.TH "GIT\-GC" "1" "2023\-06\-13" "Git 2\&.41\&.0\&.28\&.gd7d8841" "Git Manual"
+.TH "GIT\-GC" "1" "2023\-06\-23" "Git 2\&.41\&.0\&.191\&.g6ff334" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -296,6 +296,13 @@ or
 \fBgit rebase\fR
 and are the commits prior to the amend or rebase occurring\&. Since these changes are not part of the current project most users will want to expire them sooner, which is why the default is more aggressive than
 \fBgc\&.reflogExpire\fR\&.
+.RE
+.PP
+gc\&.recentObjectsHook
+.RS 4
+When considering whether or not to remove an object (either when generating a cruft pack or storing unreachable objects as loose), use the shell to execute the specified command(s)\&. Interpret their output as object IDs which Git will consider as "recent", regardless of their age\&. By treating their mtimes as "now", any objects (and their descendants) mentioned in the output will be kept regardless of their true age\&.
+.sp
+Output must contain exactly one hex object ID per line, and nothing else\&. Objects which cannot be found in the repository are ignored\&. Multiple hooks are supported, but all must exit successfully, else the operation (either generating a cruft pack or unpacking unreachable objects) will be halted\&.
 .RE
 .PP
 gc\&.rerereResolved

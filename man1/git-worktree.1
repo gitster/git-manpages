@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-06-13
+.\"      Date: 2023-06-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0.28.gd7d8841f67
+.\"    Source: Git 2.41.0.191.g6ff334181c
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "2023\-06\-13" "Git 2\&.41\&.0\&.28\&.gd7d8841" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "2023\-06\-23" "Git 2\&.41\&.0\&.191\&.g6ff334" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-worktree \- Manage multiple working trees
 .sp
 .nf
 \fIgit worktree add\fR [\-f] [\-\-detach] [\-\-checkout] [\-\-lock [\-\-reason <string>]]
-                   [\-b <new\-branch>] <path> [<commit\-ish>]
+                   [\-\-orphan] [(\-b | \-B) <new\-branch>] <path> [<commit\-ish>]
 \fIgit worktree list\fR [\-v | \-\-porcelain [\-z]]
 \fIgit worktree lock\fR [\-\-reason <string>] <worktree>
 \fIgit worktree move\fR <worktree> <new\-path>
@@ -129,6 +129,28 @@ was given\&. If
 does exist, it will be checked out in the new worktree, if it\(cqs not checked out anywhere else, otherwise the command will refuse to create the worktree (unless
 \fB\-\-force\fR
 is used)\&.
+.sp
+If
+\fB<commit\-ish>\fR
+is omitted, neither
+\fB\-\-detach\fR, or
+\fB\-\-orphan\fR
+is used, and there are no valid local branches (or remote branches if
+\fB\-\-guess\-remote\fR
+is specified) then, as a convenience, the new worktree is associated with a new orphan branch named
+\fB<branch>\fR
+(after
+\fB$(basename <path>)\fR
+if neither
+\fB\-b\fR
+or
+\fB\-B\fR
+is used) as if
+\fB\-\-orphan\fR
+was passed to the command\&. In the event the repository has a remote and
+\fB\-\-guess\-remote\fR
+is used, but no remote or local branches exist, then the command fails with a warning reminding the user to fetch from their remote first (or override by using
+\fB\-f/\-\-force\fR)\&.
 .RE
 .PP
 list
@@ -305,6 +327,13 @@ after
 .RS 4
 With
 \fBprune\fR, do not remove anything; just report what it would remove\&.
+.RE
+.PP
+\-\-orphan
+.RS 4
+With
+\fBadd\fR, make the new worktree and index empty, associating the worktree with a new orphan/unborn branch named
+\fB<new\-branch>\fR\&.
 .RE
 .PP
 \-\-porcelain

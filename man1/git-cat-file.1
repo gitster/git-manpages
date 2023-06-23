@@ -2,12 +2,12 @@
 .\"     Title: git-cat-file
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-06-13
+.\"      Date: 2023-06-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0.28.gd7d8841f67
+.\"    Source: Git 2.41.0.191.g6ff334181c
 .\"  Language: English
 .\"
-.TH "GIT\-CAT\-FILE" "1" "2023\-06\-13" "Git 2\&.41\&.0\&.28\&.gd7d8841" "Git Manual"
+.TH "GIT\-CAT\-FILE" "1" "2023\-06\-23" "Git 2\&.41\&.0\&.191\&.g6ff334" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,7 +37,7 @@ git-cat-file \- Provide content or type and size information for repository obje
 \fIgit cat\-file\fR (\-t | \-s) [\-\-allow\-unknown\-type] <object>
 \fIgit cat\-file\fR (\-\-batch | \-\-batch\-check | \-\-batch\-command) [\-\-batch\-all\-objects]
              [\-\-buffer] [\-\-follow\-symlinks] [\-\-unordered]
-             [\-\-textconv | \-\-filters] [\-z]
+             [\-\-textconv | \-\-filters] [\-Z]
 \fIgit cat\-file\fR (\-\-textconv | \-\-filters)
              [<rev>:<path|tree\-ish> | \-\-path=<path|tree\-ish> <rev>]
 .fi
@@ -422,12 +422,22 @@ symlink 11
 .\}
 .RE
 .PP
+\-Z
+.RS 4
+Only meaningful with
+\fB\-\-batch\fR,
+\fB\-\-batch\-check\fR, or
+\fB\-\-batch\-command\fR; input and output is NUL\-delimited instead of newline\-delimited\&.
+.RE
+.PP
 \-z
 .RS 4
 Only meaningful with
 \fB\-\-batch\fR,
 \fB\-\-batch\-check\fR, or
-\fB\-\-batch\-command\fR; input is NUL\-delimited instead of newline\-delimited\&.
+\fB\-\-batch\-command\fR; input is NUL\-delimited instead of newline\-delimited\&. This option is deprecated in favor of
+\fB\-Z\fR
+as the output can otherwise be ambiguous\&.
 .RE
 .SH "OUTPUT"
 .sp
@@ -617,6 +627,8 @@ notdir SP <size> LF
 .sp
 .sp
 is printed when, during symlink resolution, a file is used as a directory name\&.
+.sp
+Alternatively, when \fB\-Z\fR is passed, the line feeds in any of the above examples are replaced with NUL terminators\&. This ensures that output will be parsable if the output itself would contain a linefeed and is thus recommended for scripting purposes\&.
 .SH "CAVEATS"
 .sp
 Note that the sizes of objects on disk are reported accurately, but care should be taken in drawing conclusions about which refs or objects are responsible for disk usage\&. The size of a packed non\-delta object may be much larger than the size of objects which delta against it, but the choice of which object is the base and which is the delta is arbitrary and is subject to change during a repack\&.

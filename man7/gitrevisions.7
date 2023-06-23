@@ -2,12 +2,12 @@
 .\"     Title: gitrevisions
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-06-13
+.\"      Date: 2023-06-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0.28.gd7d8841f67
+.\"    Source: Git 2.41.0.191.g6ff334181c
 .\"  Language: English
 .\"
-.TH "GITREVISIONS" "7" "2023\-06\-13" "Git 2\&.41\&.0\&.28\&.gd7d8841" "Git Manual"
+.TH "GITREVISIONS" "7" "2023\-06\-23" "Git 2\&.41\&.0\&.191\&.g6ff334" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -97,9 +97,13 @@ exists, that is what you mean (this is usually useful only for
 \fBHEAD\fR,
 \fBFETCH_HEAD\fR,
 \fBORIG_HEAD\fR,
-\fBMERGE_HEAD\fR
+\fBMERGE_HEAD\fR,
+\fBREBASE_HEAD\fR,
+\fBREVERT_HEAD\fR,
+\fBCHERRY_PICK_HEAD\fR,
+\fBBISECT_HEAD\fR
 and
-\fBCHERRY_PICK_HEAD\fR);
+\fBAUTO_MERGE\fR);
 .RE
 .sp
 .RS 4
@@ -165,14 +169,22 @@ if it exists;
 otherwise,
 \fIrefs/remotes/<refname>/HEAD\fR
 if it exists\&.
-.sp
+.RE
+.PP
 \fBHEAD\fR
+.RS 4
 names the commit on which you based the changes in the working tree\&.
+.RE
+.PP
 \fBFETCH_HEAD\fR
+.RS 4
 records the branch which you fetched from a remote repository with your last
 \fBgit fetch\fR
 invocation\&.
+.RE
+.PP
 \fBORIG_HEAD\fR
+.RS 4
 is created by commands that move your
 \fBHEAD\fR
 in a drastic way (\fBgit am\fR,
@@ -181,12 +193,45 @@ in a drastic way (\fBgit am\fR,
 \fBgit reset\fR), to record the position of the
 \fBHEAD\fR
 before their operation, so that you can easily change the tip of the branch back to the state before you ran them\&.
+.RE
+.PP
 \fBMERGE_HEAD\fR
+.RS 4
 records the commit(s) which you are merging into your branch when you run
 \fBgit merge\fR\&.
+.RE
+.PP
+\fBREBASE_HEAD\fR
+.RS 4
+during a rebase, records the commit at which the operation is currently stopped, either because of conflicts or an
+\fBedit\fR
+command in an interactive rebase\&.
+.RE
+.PP
+\fBREVERT_HEAD\fR
+.RS 4
+records the commit which you are reverting when you run
+\fBgit revert\fR\&.
+.RE
+.PP
 \fBCHERRY_PICK_HEAD\fR
+.RS 4
 records the commit which you are cherry\-picking when you run
 \fBgit cherry\-pick\fR\&.
+.RE
+.PP
+\fBBISECT_HEAD\fR
+.RS 4
+records the current commit to be tested when you run
+\fBgit bisect \-\-no\-checkout\fR\&.
+.RE
+.PP
+\fBAUTO_MERGE\fR
+.RS 4
+records a tree object corresponding to the state the
+\fIort\fR
+merge strategy wrote to the working tree when a merge operation resulted in conflicts\&.
+.RE
 .sp
 Note that any of the
 \fIrefs/*\fR
@@ -195,7 +240,6 @@ cases above may come either from the
 directory or from the
 \fB$GIT_DIR/packed\-refs\fR
 file\&. While the ref name encoding is unspecified, UTF\-8 is preferred as some output processing may assume ref names in UTF\-8\&.
-.RE
 .RE
 .PP
 \fI@\fR

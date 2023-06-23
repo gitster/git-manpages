@@ -2,12 +2,12 @@
 .\"     Title: git-interpret-trailers
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-06-13
+.\"      Date: 2023-06-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0.28.gd7d8841f67
+.\"    Source: Git 2.41.0.191.g6ff334181c
 .\"  Language: English
 .\"
-.TH "GIT\-INTERPRET\-TRAILERS" "1" "2023\-06\-13" "Git 2\&.41\&.0\&.28\&.gd7d8841" "Git Manual"
+.TH "GIT\-INTERPRET\-TRAILERS" "1" "2023\-06\-23" "Git 2\&.41\&.0\&.191\&.g6ff334" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,15 +39,33 @@ git-interpret-trailers \- Add or parse structured information in commit messages
 .sp
 .SH "DESCRIPTION"
 .sp
-Help parsing or adding \fItrailers\fR lines, that look similar to RFC 822 e\-mail headers, at the end of the otherwise free\-form part of a commit message\&.
+Add or parse \fItrailer\fR lines that look similar to RFC 822 e\-mail headers, at the end of the otherwise free\-form part of a commit message\&. For example, in the following commit message
 .sp
-This command reads some patches or commit messages from either the <file> arguments or the standard input if no <file> is specified\&. If \fB\-\-parse\fR is specified, the output consists of the parsed trailers\&.
+.if n \{\
+.RS 4
+.\}
+.nf
+subject
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit\&.
+
+Signed\-off\-by: Alice <alice@example\&.com>
+Signed\-off\-by: Bob <bob@example\&.com>
+.fi
+.if n \{\
+.RE
+.\}
 .sp
-Otherwise, this command applies the arguments passed using the \fB\-\-trailer\fR option, if any, to the commit message part of each input file\&. The result is emitted on the standard output\&.
 .sp
-Some configuration variables control the way the \fB\-\-trailer\fR arguments are applied to each commit message and the way any existing trailer in the commit message is changed\&. They also make it possible to automatically add some trailers\&.
+the last two lines starting with "Signed\-off\-by" are trailers\&.
 .sp
-By default, a \fI<token>=<value>\fR or \fI<token>:<value>\fR argument given using \fB\-\-trailer\fR will be appended after the existing trailers only if the last trailer has a different (<token>, <value>) pair (or if there is no existing trailer)\&. The <token> and <value> parts will be trimmed to remove starting and trailing whitespace, and the resulting trimmed <token> and <value> will appear in the message like this:
+This command reads commit messages from either the <file> arguments or the standard input if no <file> is specified\&. If \fB\-\-parse\fR is specified, the output consists of the parsed trailers\&. Otherwise, this command applies the arguments passed using the \fB\-\-trailer\fR option, if any, to each input file\&. The result is emitted on the standard output\&.
+.sp
+This command can also operate on the output of \fBgit-format-patch\fR(1), which is more elaborate than a plain commit message\&. Namely, such output includes a commit message (as above), a "\-\-\-" divider line, and a patch part\&. For these inputs, the divider and patch parts are not modified by this command and are emitted as is on the output, unless \fB\-\-no\-divider\fR is specified\&.
+.sp
+Some configuration variables control the way the \fB\-\-trailer\fR arguments are applied to each input and the way any existing trailer in the input is changed\&. They also make it possible to automatically add some trailers\&.
+.sp
+By default, a \fI<token>=<value>\fR or \fI<token>:<value>\fR argument given using \fB\-\-trailer\fR will be appended after the existing trailers only if the last trailer has a different (<token>, <value>) pair (or if there is no existing trailer)\&. The <token> and <value> parts will be trimmed to remove starting and trailing whitespace, and the resulting trimmed <token> and <value> will appear in the output like this:
 .sp
 .if n \{\
 .RS 4
@@ -60,15 +78,27 @@ token: value
 .\}
 .sp
 .sp
-This means that the trimmed <token> and <value> will be separated by \fB\*(Aq: \*(Aq\fR (one colon followed by one space)\&.
+This means that the trimmed <token> and <value> will be separated by \fB\*(Aq: \*(Aq\fR (one colon followed by one space)\&. For convenience, the <token> can be a shortened string key (e\&.g\&., "sign") instead of the full string which should appear before the separator on the output (e\&.g\&., "Signed\-off\-by")\&. This can be configured using the \fItrailer\&.<token>\&.key\fR configuration variable\&.
 .sp
-By default the new trailer will appear at the end of all the existing trailers\&. If there is no existing trailer, the new trailer will appear after the commit message part of the output, and, if there is no line with only spaces at the end of the commit message part, one blank line will be added before the new trailer\&.
+By default the new trailer will appear at the end of all the existing trailers\&. If there is no existing trailer, the new trailer will appear at the end of the input\&. A blank line will be added before the new trailer if there isn\(cqt one already\&.
 .sp
-Existing trailers are extracted from the input message by looking for a group of one or more lines that (i) is all trailers, or (ii) contains at least one Git\-generated or user\-configured trailer and consists of at least 25% trailers\&. The group must be preceded by one or more empty (or whitespace\-only) lines\&. The group must either be at the end of the message or be the last non\-whitespace lines before a line that starts with \fI\-\-\-\fR (followed by a space or the end of the line)\&. Such three minus signs start the patch part of the message\&. See also \fB\-\-no\-divider\fR below\&.
+Existing trailers are extracted from the input by looking for a group of one or more lines that (i) is all trailers, or (ii) contains at least one Git\-generated or user\-configured trailer and consists of at least 25% trailers\&. The group must be preceded by one or more empty (or whitespace\-only) lines\&. The group must either be at the end of the input or be the last non\-whitespace lines before a line that starts with \fI\-\-\-\fR (followed by a space or the end of the line)\&.
 .sp
-When reading trailers, there can be no whitespace before or inside the token, but any number of regular space and tab characters are allowed between the token and the separator\&. There can be whitespaces before, inside or after the value\&. The value may be split over multiple lines with each subsequent line starting with at least one whitespace, like the "folding" in RFC 822\&.
+When reading trailers, there can be no whitespace before or inside the <token>, but any number of regular space and tab characters are allowed between the <token> and the separator\&. There can be whitespaces before, inside or after the <value>\&. The <value> may be split over multiple lines with each subsequent line starting with at least one whitespace, like the "folding" in RFC 822\&. Example:
 .sp
-Note that \fItrailers\fR do not follow and are not intended to follow many rules for RFC 822 headers\&. For example they do not follow the encoding rules and probably many other rules\&.
+.if n \{\
+.RS 4
+.\}
+.nf
+token: This is a very long value, with spaces and
+  newlines in it\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.sp
+Note that trailers do not follow (nor are they intended to follow) many of the rules for RFC 822 headers\&. For example they do not follow the encoding rule\&.
 .SH "OPTIONS"
 .PP
 \-\-in\-place
@@ -78,12 +108,12 @@ Edit the files in place\&.
 .PP
 \-\-trim\-empty
 .RS 4
-If the <value> part of any trailer contains only whitespace, the whole trailer will be removed from the resulting message\&. This applies to existing trailers as well as new trailers\&.
+If the <value> part of any trailer contains only whitespace, the whole trailer will be removed from the output\&. This applies to existing trailers as well as new trailers\&.
 .RE
 .PP
 \-\-trailer <token>[(=|:)<value>]
 .RS 4
-Specify a (<token>, <value>) pair that should be applied as a trailer to the input messages\&. See the description of this command\&.
+Specify a (<token>, <value>) pair that should be applied as a trailer to the inputs\&. See the description of this command\&.
 .RE
 .PP
 \-\-where <placement>, \-\-no\-where
@@ -105,7 +135,7 @@ or
 .PP
 \-\-if\-exists <action>, \-\-no\-if\-exists
 .RS 4
-Specify what action will be performed when there is already at least one trailer with the same <token> in the message\&. A setting provided with
+Specify what action will be performed when there is already at least one trailer with the same <token> in the input\&. A setting provided with
 \fI\-\-if\-exists\fR
 overrides all configuration variables and applies to all
 \fI\-\-trailer\fR
@@ -123,7 +153,7 @@ and
 .PP
 \-\-if\-missing <action>, \-\-no\-if\-missing
 .RS 4
-Specify what action will be performed when there is no other trailer with the same <token> in the message\&. A setting provided with
+Specify what action will be performed when there is no other trailer with the same <token> in the input\&. A setting provided with
 \fI\-\-if\-missing\fR
 overrides all configuration variables and applies to all
 \fI\-\-trailer\fR
@@ -218,7 +248,7 @@ If it is
 .PP
 trailer\&.ifexists
 .RS 4
-This option makes it possible to choose what action will be performed when there is already at least one trailer with the same <token> in the message\&.
+This option makes it possible to choose what action will be performed when there is already at least one trailer with the same <token> in the input\&.
 .sp
 The valid values for this option are:
 \fBaddIfDifferentNeighbor\fR
@@ -233,21 +263,21 @@ With
 \fBaddIfDifferentNeighbor\fR, a new trailer will be added only if no trailer with the same (<token>, <value>) pair is above or below the line where the new trailer will be added\&.
 .sp
 With
-\fBaddIfDifferent\fR, a new trailer will be added only if no trailer with the same (<token>, <value>) pair is already in the message\&.
+\fBaddIfDifferent\fR, a new trailer will be added only if no trailer with the same (<token>, <value>) pair is already in the input\&.
 .sp
 With
-\fBadd\fR, a new trailer will be added, even if some trailers with the same (<token>, <value>) pair are already in the message\&.
+\fBadd\fR, a new trailer will be added, even if some trailers with the same (<token>, <value>) pair are already in the input\&.
 .sp
 With
 \fBreplace\fR, an existing trailer with the same <token> will be deleted and the new trailer will be added\&. The deleted trailer will be the closest one (with the same <token>) to the place where the new one will be added\&.
 .sp
 With
-\fBdoNothing\fR, nothing will be done; that is no new trailer will be added if there is already one with the same <token> in the message\&.
+\fBdoNothing\fR, nothing will be done; that is no new trailer will be added if there is already one with the same <token> in the input\&.
 .RE
 .PP
 trailer\&.ifmissing
 .RS 4
-This option makes it possible to choose what action will be performed when there is not yet any trailer with the same <token> in the message\&.
+This option makes it possible to choose what action will be performed when there is not yet any trailer with the same <token> in the input\&.
 .sp
 The valid values for this option are:
 \fBadd\fR
@@ -296,14 +326,11 @@ configuration variable and it overrides what is specified by that option for tra
 .PP
 trailer\&.<token>\&.command
 .RS 4
-This option behaves in the same way as
-\fItrailer\&.<token>\&.cmd\fR, except that it doesn\(cqt pass anything as argument to the specified command\&. Instead the first occurrence of substring $ARG is replaced by the value that would be passed as argument\&.
+Deprecated in favor of
+\fItrailer\&.<token>\&.cmd\fR\&. This option behaves in the same way as
+\fItrailer\&.<token>\&.cmd\fR, except that it doesn\(cqt pass anything as argument to the specified command\&. Instead the first occurrence of substring $ARG is replaced by the <value> that would be passed as argument\&.
 .sp
-The
-\fItrailer\&.<token>\&.command\fR
-option has been deprecated in favor of
-\fItrailer\&.<token>\&.cmd\fR
-due to the fact that $ARG in the user\(cqs command is only replaced once and that the original way of replacing $ARG is not safe\&.
+Note that $ARG in the user\(cqs command is only replaced once and that the original way of replacing $ARG is not safe\&.
 .sp
 When both
 \fItrailer\&.<token>\&.cmd\fR
@@ -318,9 +345,9 @@ is ignored\&.
 .PP
 trailer\&.<token>\&.cmd
 .RS 4
-This option can be used to specify a shell command that will be called: once to automatically add a trailer with the specified <token>, and then each time a
+This option can be used to specify a shell command that will be called once to automatically add a trailer with the specified <token>, and then called each time a
 \fI\-\-trailer <token>=<value>\fR
-argument to modify the <value> of the trailer that this option would produce\&.
+argument is specified to modify the <value> of the trailer that this option would produce\&.
 .sp
 When the specified command is first called to add a trailer with the specified <token>, the behavior is as if a special
 \fI\-\-trailer <token>=<value>\fR
@@ -346,7 +373,7 @@ Configure a
 \fIsign\fR
 trailer with a
 \fISigned\-off\-by\fR
-key, and then add two of these trailers to a message:
+key, and then add two of these trailers to a commit message file:
 .sp
 .if n \{\
 .RS 4
@@ -356,11 +383,11 @@ $ git config trailer\&.sign\&.key "Signed\-off\-by"
 $ cat msg\&.txt
 subject
 
-message
+body text
 $ git interpret\-trailers \-\-trailer \*(Aqsign: Alice <alice@example\&.com>\*(Aq \-\-trailer \*(Aqsign: Bob <bob@example\&.com>\*(Aq <msg\&.txt
 subject
 
-message
+body text
 
 Signed\-off\-by: Alice <alice@example\&.com>
 Signed\-off\-by: Bob <bob@example\&.com>
@@ -381,7 +408,7 @@ Signed\-off\-by: Bob <bob@example\&.com>
 .\}
 Use the
 \fB\-\-in\-place\fR
-option to edit a message file in place:
+option to edit a commit message file in place:
 .sp
 .if n \{\
 .RS 4
@@ -390,14 +417,14 @@ option to edit a message file in place:
 $ cat msg\&.txt
 subject
 
-message
+body text
 
 Signed\-off\-by: Bob <bob@example\&.com>
 $ git interpret\-trailers \-\-trailer \*(AqAcked\-by: Alice <alice@example\&.com>\*(Aq \-\-in\-place msg\&.txt
 $ cat msg\&.txt
 subject
 
-message
+body text
 
 Signed\-off\-by: Bob <bob@example\&.com>
 Acked\-by: Alice <alice@example\&.com>
@@ -455,7 +482,7 @@ trailer with a command to automatically add a \*(AqSigned\-off\-by: \*(Aq with t
 $ cat msg1\&.txt
 subject
 
-message
+body text
 $ git config trailer\&.sign\&.key "Signed\-off\-by: "
 $ git config trailer\&.sign\&.ifmissing add
 $ git config trailer\&.sign\&.ifexists doNothing
@@ -463,19 +490,19 @@ $ git config trailer\&.sign\&.cmd \*(Aqecho "$(git config user\&.name) <$(git co
 $ git interpret\-trailers \-\-trailer sign <msg1\&.txt
 subject
 
-message
+body text
 
 Signed\-off\-by: Bob <bob@example\&.com>
 $ cat msg2\&.txt
 subject
 
-message
+body text
 
 Signed\-off\-by: Alice <alice@example\&.com>
 $ git interpret\-trailers \-\-trailer sign <msg2\&.txt
 subject
 
-message
+body text
 
 Signed\-off\-by: Alice <alice@example\&.com>
 .fi
@@ -540,14 +567,14 @@ test \-n "$1" && git log \-\-author="$1" \-\-pretty="%an <%ae>" \-1 || true
 $ cat msg\&.txt
 subject
 
-message
+body text
 $ git config trailer\&.help\&.key "Helped\-by: "
 $ git config trailer\&.help\&.ifExists "addIfDifferentNeighbor"
 $ git config trailer\&.help\&.cmd "~/bin/glog\-find\-author"
 $ git interpret\-trailers \-\-trailer="help:Junio" \-\-trailer="help:Couder" <msg\&.txt
 subject
 
-message
+body text
 
 Helped\-by: Junio C Hamano <gitster@pobox\&.com>
 Helped\-by: Christian Couder <christian\&.couder@gmail\&.com>
@@ -582,14 +609,14 @@ test \-n "$1" && git log \-\-grep "$1" \-\-pretty=reference \-1 || true
 $ cat msg\&.txt
 subject
 
-message
+body text
 $ git config trailer\&.ref\&.key "Reference\-to: "
 $ git config trailer\&.ref\&.ifExists "replace"
 $ git config trailer\&.ref\&.cmd "~/bin/glog\-grep"
 $ git interpret\-trailers \-\-trailer="ref:Add copyright notices\&." <msg\&.txt
 subject
 
-message
+body text
 
 Reference\-to: 8bc9a0c769 (Add copyright notices\&., 2005\-04\-07)
 .fi
@@ -618,7 +645,7 @@ trailer with a command to show the subject of a commit that is related, and show
 $ cat msg\&.txt
 subject
 
-message
+body text
 
 see: HEAD~2
 $ cat ~/bin/glog\-ref
@@ -631,7 +658,7 @@ $ git config trailer\&.see\&.cmd "glog\-ref"
 $ git interpret\-trailers \-\-trailer=see <msg\&.txt
 subject
 
-message
+body text
 
 See\-also: fe3187489d69c4 (subject of related commit)
 .fi
