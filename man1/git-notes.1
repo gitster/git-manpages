@@ -2,12 +2,12 @@
 .\"     Title: git-notes
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-07-04
+.\"      Date: 2023-07-06
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0.250.ga646b86cd1
+.\"    Source: Git 2.41.0.318.g061c58647e
 .\"  Language: English
 .\"
-.TH "GIT\-NOTES" "1" "2023\-07\-04" "Git 2\&.41\&.0\&.250\&.ga646b8" "Git Manual"
+.TH "GIT\-NOTES" "1" "2023\-07\-06" "Git 2\&.41\&.0\&.318\&.g061c58" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,10 +33,10 @@ git-notes \- Add or inspect object notes
 .sp
 .nf
 \fIgit notes\fR [list [<object>]]
-\fIgit notes\fR add [\-f] [\-\-allow\-empty] [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
+\fIgit notes\fR add [\-f] [\-\-allow\-empty] [\-\-[no\-]separator | \-\-separator=<paragraph\-break>] [\-\-[no\-]stripspace] [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
 \fIgit notes\fR copy [\-f] ( \-\-stdin | <from\-object> [<to\-object>] )
-\fIgit notes\fR append [\-\-allow\-empty] [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
-\fIgit notes\fR edit [\-\-allow\-empty] [<object>]
+\fIgit notes\fR append [\-\-allow\-empty] [\-\-[no\-]separator | \-\-separator=<paragraph\-break>] [\-\-[no\-]stripspace] [\-F <file> | \-m <msg> | (\-c | \-C) <object>] [<object>]
+\fIgit notes\fR edit [\-\-allow\-empty] [<object>] [\-\-[no\-]stripspace]
 \fIgit notes\fR show [<object>]
 \fIgit notes\fR merge [\-v | \-q] [\-s <strategy> ] <notes\-ref>
 \fIgit notes\fR merge \-\-commit [\-v | \-q]
@@ -74,7 +74,12 @@ to overwrite existing notes)\&. However, if you\(cqre using
 \fBadd\fR
 interactively (using an editor to supply the notes contents), then \- instead of aborting \- the existing notes will be opened in the editor (like the
 \fBedit\fR
-subcommand)\&.
+subcommand)\&. If you specify multiple
+\fB\-m\fR
+and
+\fB\-F\fR, a blank line will be inserted between the messages\&. Use the
+\fB\-\-separator\fR
+option to insert other delimiters\&.
 .RE
 .PP
 copy
@@ -105,7 +110,13 @@ hook\&.)
 .PP
 append
 .RS 4
-Append to the notes of an existing object (defaults to HEAD)\&. Creates a new notes object if needed\&.
+Append new message(s) given by
+\fB\-m\fR
+or
+\fB\-F\fR
+options to an existing note, or add them as a new note if one does not exist, for the object (defaults to HEAD)\&. When appending to an existing note, a blank line is added before each new message as an inter\-paragraph separator\&. The separator can be customized with the
+\fB\-\-separator\fR
+option\&.
 .RE
 .PP
 edit
@@ -156,7 +167,8 @@ Use the given note message (instead of prompting)\&. If multiple
 \fB\-m\fR
 options are given, their values are concatenated as separate paragraphs\&. Lines starting with
 \fB#\fR
-and empty lines other than a single line between paragraphs will be stripped out\&.
+and empty lines other than a single line between paragraphs will be stripped out, if you wish to keep them verbatim, use
+\fB\-\-no\-stripspace\fR\&.
 .RE
 .PP
 \-F <file>, \-\-file=<file>
@@ -165,14 +177,18 @@ Take the note message from the given file\&. Use
 \fI\-\fR
 to read the note message from the standard input\&. Lines starting with
 \fB#\fR
-and empty lines other than a single line between paragraphs will be stripped out\&.
+and empty lines other than a single line between paragraphs will be stripped out, if you wish to keep them verbatim, use with
+\fB\-\-no\-stripspace\fR
+option\&.
 .RE
 .PP
 \-C <object>, \-\-reuse\-message=<object>
 .RS 4
 Take the given blob object (for example, another note) as the note message\&. (Use
 \fBgit notes copy <object>\fR
-instead to copy notes between objects\&.)
+instead to copy notes between objects\&.)\&. By default, message will be copied verbatim, but if you wish to strip out the lines starting with
+\fB#\fR
+and empty lines other than a single line between paragraphs, use with`\-\-stripspace` option\&.
 .RE
 .PP
 \-c <object>, \-\-reedit\-message=<object>
@@ -186,6 +202,19 @@ the editor is invoked, so that the user can further edit the note message\&.
 \-\-allow\-empty
 .RS 4
 Allow an empty note object to be stored\&. The default behavior is to automatically remove empty notes\&.
+.RE
+.PP
+\-\-[no\-]separator, \-\-separator=<paragraph\-break>
+.RS 4
+Specify a string used as a custom inter\-paragraph separator (a newline is added at the end as needed)\&. If
+\fB\-\-no\-separator\fR, no separators will be added between paragraphs\&. Defaults to a blank line\&.
+.RE
+.PP
+\-\-[no\-]stripspace
+.RS 4
+Strip leading and trailing whitespace from the note message\&. Also strip out empty lines other than a single line between paragraphs\&. For lines starting with
+\fB#\fR
+will be stripped out in non\-editor cases like "\-m", "\-F" and "\-C", but not in editor case like "git notes edit", "\-c", etc\&.
 .RE
 .PP
 \-\-ref <ref>
