@@ -2,12 +2,12 @@
 .\"     Title: git-submodule
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-08-02
+.\"      Date: 2023-08-04
 .\"    Manual: Git Manual
-.\"    Source: Git 2.41.0.494.g1b0a512956
+.\"    Source: Git 2.42.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-SUBMODULE" "1" "2023\-08\-02" "Git 2\&.41\&.0\&.494\&.g1b0a51" "Git Manual"
+.TH "GIT\-SUBMODULE" "1" "2023\-08\-04" "Git 2\&.42\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -111,14 +111,27 @@ init [\-\-] [<path>\&...]
 .RS 4
 Initialize the submodules recorded in the index (which were added and committed elsewhere) by setting
 \fBsubmodule\&.$name\&.url\fR
-in \&.git/config\&. It uses the same setting from
+in
+\fB\&.git/config\fR, using the same setting from
 \fB\&.gitmodules\fR
 as a template\&. If the URL is relative, it will be resolved using the default remote\&. If there is no default remote, the current repository will be assumed to be upstream\&.
 .sp
 Optional <path> arguments limit which submodules will be initialized\&. If no path is specified and submodule\&.active has been configured, submodules configured to be active will be initialized, otherwise all submodules are initialized\&.
 .sp
-When present, it will also copy the value of
-\fBsubmodule\&.$name\&.update\fR\&. This command does not alter existing information in \&.git/config\&. You can then customize the submodule clone URLs in \&.git/config for your local setup and proceed to
+It will also copy the value of
+\fBsubmodule\&.$name\&.update\fR, if present in the
+\fB\&.gitmodules\fR
+file, to
+\fB\&.git/config\fR, but (1) this command does not alter existing information in
+\fB\&.git/config\fR, and (2)
+\fBsubmodule\&.$name\&.update\fR
+that is set to a custom command is
+\fBnot\fR
+copied for security reasons\&.
+.sp
+You can then customize the submodule clone URLs in
+\fB\&.git/config\fR
+for your local setup and proceed to
 \fBgit submodule update\fR; you can also just use
 \fBgit submodule update \-\-init\fR
 without the explicit
@@ -158,7 +171,13 @@ Update the registered submodules to match what the superproject expects by cloni
 \fBsubmodule\&.<name>\&.update\fR
 configuration variable\&. The command line option takes precedence over the configuration variable\&. If neither is given, a
 \fIcheckout\fR
-is performed\&. The
+is performed\&. (note: what is in
+\fB\&.gitmodules\fR
+file is irrelevant at this point; see
+\fBgit submodule init\fR
+above for how
+\fB\&.gitmodules\fR
+is used)\&. The
 \fIupdate\fR
 procedures supported both from the command line as well as through the
 \fBsubmodule\&.<name>\&.update\fR
@@ -184,23 +203,23 @@ merge
 the commit recorded in the superproject will be merged into the current branch in the submodule\&.
 .RE
 .sp
-The following
-\fIupdate\fR
-procedures are only available via the
-\fBsubmodule\&.<name>\&.update\fR
-configuration variable:
+The following update procedures have additional limitations:
 .PP
 custom command
 .RS 4
-arbitrary shell command that takes a single argument (the sha1 of the commit recorded in the superproject) is executed\&. When
+mechanism for running arbitrary commands with the commit ID as an argument\&. Specifically, if the
 \fBsubmodule\&.<name>\&.update\fR
-is set to
-\fI!command\fR, the remainder after the exclamation mark is the custom command\&.
+configuration variable is set to
+\fB!custom command\fR, the object name of the commit recorded in the superproject for the submodule is appended to the
+\fBcustom command\fR
+string and executed\&. Note that this mechanism is not supported in the
+\fB\&.gitmodules\fR
+file or on the command line\&.
 .RE
 .PP
 none
 .RS 4
-the submodule is not updated\&.
+the submodule is not updated\&. This update procedure is not allowed on the command line\&.
 .RE
 .sp
 If the submodule is not yet initialized, and you just want to use the setting as stored in
