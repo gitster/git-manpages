@@ -2,12 +2,12 @@
 .\"     Title: gitformat-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-09-05
+.\"      Date: 2023-09-07
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.122.g1fc548b2d6
+.\"    Source: Git 2.42.0.158.g94e83dcf5b
 .\"  Language: English
 .\"
-.TH "GITFORMAT\-PACK" "5" "2023\-09\-05" "Git 2\&.42\&.0\&.122\&.g1fc548" "Git Manual"
+.TH "GITFORMAT\-PACK" "5" "2023\-09\-07" "Git 2\&.42\&.0\&.158\&.g94e83d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1129,37 +1129,6 @@ This mode is invoked internally by \fBgit-repack\fR(1) when instructed to write 
 When a repository already has a cruft pack, \fBgit repack \-\-cruft\fR typically only adds objects to it\&. An exception to this is when \fBgit repack\fR is given the \fB\-\-cruft\-expiration\fR option, which allows the generated cruft pack to omit expired objects instead of waiting for \fBgit-gc\fR(1) to expire those objects later on\&.
 .sp
 It is \fBgit-gc\fR(1) that is typically responsible for removing expired unreachable objects\&.
-.SS "Caution for mixed\-version environments"
-.sp
-Repositories that have cruft packs in them will continue to work with any older version of Git\&. Note, however, that previous versions of Git which do not understand the \fB\&.mtimes\fR file will use the cruft pack\(cqs mtime as the mtime for all of the objects in it\&. In other words, do not expect older (pre\-cruft pack) versions of Git to interpret or even read the contents of the \fB\&.mtimes\fR file\&.
-.sp
-Note that having mixed versions of Git GC\-ing the same repository can lead to unreachable objects never being completely pruned\&. This can happen under the following circumstances:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-An older version of Git running GC explodes the contents of an existing cruft pack loose, using the cruft pack\(cqs mtime\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-A newer version running GC collects those loose objects into a cruft pack, where the \&.mtime file reflects the loose object\(cqs actual mtimes, but the cruft pack mtime is "now"\&.
-.RE
-.sp
-Repeating this process will lead to unreachable objects not getting pruned as a result of repeatedly resetting the objects\*(Aq mtimes to the present time\&.
-.sp
-If you are GC\-ing repositories in a mixed version environment, consider omitting the \fB\-\-cruft\fR option when using \fBgit-repack\fR(1) and \fBgit-gc\fR(1), and setting the \fBgc\&.cruftPacks\fR configuration to "false" until all writers understand cruft packs\&.
 .SS "Alternatives"
 .sp
 Notable alternatives to this design include:
@@ -1172,23 +1141,10 @@ Notable alternatives to this design include:
 .sp -1
 .IP \(bu 2.3
 .\}
-The location of the per\-object mtime data, and
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Storing unreachable objects in multiple cruft packs\&.
+The location of the per\-object mtime data\&.
 .RE
 .sp
 On the location of mtime data, a new auxiliary file tied to the pack was chosen to avoid complicating the \fB\&.idx\fR format\&. If the \fB\&.idx\fR format were ever to gain support for optional chunks of data, it may make sense to consolidate the \fB\&.mtimes\fR format into the \fB\&.idx\fR itself\&.
-.sp
-Storing unreachable objects among multiple cruft packs (e\&.g\&., creating a new cruft pack during each repacking operation including only unreachable objects which aren\(cqt already stored in an earlier cruft pack) is significantly more complicated to construct, and so aren\(cqt pursued here\&. The obvious drawback to the current implementation is that the entire cruft pack must be re\-written from scratch\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
