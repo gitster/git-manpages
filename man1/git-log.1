@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-09-13
+.\"      Date: 2023-09-14
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.176.gd6c51973e4
+.\"    Source: Git 2.42.0.216.gbda494f404
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "2023\-09\-13" "Git 2\&.42\&.0\&.176\&.gd6c519" "Git Manual"
+.TH "GIT\-LOG" "1" "2023\-09\-14" "Git 2\&.42\&.0\&.216\&.gbda494" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2256,7 +2256,8 @@ a raw
 .PP
 \fI%x00\fR
 .RS 4
-print a byte from a hex code
+\fI%x\fR
+followed by two hexadecimal digits is replaced with a byte with the hexadecimal digits\*(Aq value (we will call this "literal formatting code" in the rest of this document)\&.
 .RE
 .RE
 .sp
@@ -2582,7 +2583,73 @@ ref names, like the \-\-decorate option of
 ref names without the " (", ")" wrapping\&.
 .RE
 .PP
-\fI%(describe[:options])\fR
+\fI%(decorate[:<options>])\fR
+.RS 4
+ref names with custom decorations\&. The
+\fBdecorate\fR
+string may be followed by a colon and zero or more comma\-separated options\&. Option values may contain literal formatting codes\&. These must be used for commas (\fB%x2C\fR) and closing parentheses (\fB%x29\fR), due to their role in the option syntax\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIprefix=<value>\fR: Shown before the list of ref names\&. Defaults to "\ \&\fB(\fR"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIsuffix=<value>\fR: Shown after the list of ref names\&. Defaults to "\fB)\fR"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIseparator=<value>\fR: Shown between ref names\&. Defaults to "\fB,\fR\ \&"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fIpointer=<value>\fR: Shown between HEAD and the branch it points to, if any\&. Defaults to "\ \&\fB\->\fR\ \&"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fItag=<value>\fR: Shown before tag names\&. Defaults to "\fBtag:\fR\ \&"\&.
+.RE
+.sp
+For example, to produce decorations with no wrapping or tag annotations, and spaces as separators:
+.sp
+\fB%(decorate:prefix=,suffix=,tag=,separator= )\fR
+.RE
+.PP
+\fI%(describe[:<options>])\fR
 .RS 4
 human\-readable name, like
 \fBgit-describe\fR(1); empty string for undescribable commits\&. The
@@ -2765,12 +2832,12 @@ or
 reflog subject
 .RE
 .PP
-\fI%(trailers[:options])\fR
+\fI%(trailers[:<options>])\fR
 .RS 4
 display the trailers of the body as interpreted by
 \fBgit-interpret-trailers\fR(1)\&. The
 \fBtrailers\fR
-string may be followed by a colon and zero or more comma\-separated options\&. If any option is provided multiple times the last occurrence wins\&.
+string may be followed by a colon and zero or more comma\-separated options\&. If any option is provided multiple times, the last occurrence wins\&.
 .sp
 .RS 4
 .ie n \{\
@@ -2951,8 +3018,8 @@ Note that unless one of \fB\-\-diff\-merges\fR variants (including short \fB\-m\
 .PP
 \-p, \-u, \-\-patch
 .RS 4
-Generate patch (see section titled
-"Generating patch text with \-p")\&.
+Generate patch (see
+the section called \(lqGENERATING PATCH TEXT WITH \-P\(rq)\&.
 .RE
 .PP
 \-s, \-\-no\-patch
