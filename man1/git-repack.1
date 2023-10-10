@@ -2,12 +2,12 @@
 .\"     Title: git-repack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-04
+.\"      Date: 2023-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.325.g3a06386e31
+.\"    Source: Git 2.42.0.345.gaab89be2eb
 .\"  Language: English
 .\"
-.TH "GIT\-REPACK" "1" "2023\-10\-04" "Git 2\&.42\&.0\&.325\&.g3a0638" "Git Manual"
+.TH "GIT\-REPACK" "1" "2023\-10\-10" "Git 2\&.42\&.0\&.345\&.gaab89b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -184,6 +184,38 @@ Maximum size of each output pack file\&. The size can be suffixed with "k", "m",
 \fBpack\&.packSizeLimit\fR
 is set\&. Note that this option may result in a larger and slower repository; see the discussion in
 \fBpack\&.packSizeLimit\fR\&.
+.RE
+.PP
+\-\-filter=<filter\-spec>
+.RS 4
+Remove objects matching the filter specification from the resulting packfile and put them into a separate packfile\&. Note that objects used in the working directory are not filtered out\&. So for the split to fully work, it\(cqs best to perform it in a bare repo and to use the
+\fB\-a\fR
+and
+\fB\-d\fR
+options along with this option\&. Also
+\fB\-\-no\-write\-bitmap\-index\fR
+(or the
+\fBrepack\&.writebitmaps\fR
+config option set to
+\fBfalse\fR) should be used otherwise writing bitmap index will fail, as it supposes a single packfile containing all the objects\&. See
+\fBgit-rev-list\fR(1)
+for valid
+\fB<filter\-spec>\fR
+forms\&.
+.RE
+.PP
+\-\-filter\-to=<dir>
+.RS 4
+Write the pack containing filtered out objects to the directory
+\fB<dir>\fR\&. Only useful with
+\fB\-\-filter\fR\&. This can be used for putting the pack on a separate object directory that is accessed through the Git alternates mechanism\&.
+\fBWARNING:\fR
+If the packfile containing the filtered out objects is not accessible, the repo can become corrupt as it might not be possible to access the objects in that packfile\&. See the
+\fBobjects\fR
+and
+\fBobjects/info/alternates\fR
+sections of
+\fBgitrepository-layout\fR(5)\&.
 .RE
 .PP
 \-b, \-\-write\-bitmap\-index

@@ -2,12 +2,12 @@
 .\"     Title: git-gc
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-04
+.\"      Date: 2023-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.325.g3a06386e31
+.\"    Source: Git 2.42.0.345.gaab89be2eb
 .\"  Language: English
 .\"
-.TH "GIT\-GC" "1" "2023\-10\-04" "Git 2\&.42\&.0\&.325\&.g3a0638" "Git Manual"
+.TH "GIT\-GC" "1" "2023\-10\-10" "Git 2\&.42\&.0\&.345\&.gaab89b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -303,6 +303,29 @@ gc\&.recentObjectsHook
 When considering whether or not to remove an object (either when generating a cruft pack or storing unreachable objects as loose), use the shell to execute the specified command(s)\&. Interpret their output as object IDs which Git will consider as "recent", regardless of their age\&. By treating their mtimes as "now", any objects (and their descendants) mentioned in the output will be kept regardless of their true age\&.
 .sp
 Output must contain exactly one hex object ID per line, and nothing else\&. Objects which cannot be found in the repository are ignored\&. Multiple hooks are supported, but all must exit successfully, else the operation (either generating a cruft pack or unpacking unreachable objects) will be halted\&.
+.RE
+.PP
+gc\&.repackFilter
+.RS 4
+When repacking, use the specified filter to move certain objects into a separate packfile\&. See the
+\fB\-\-filter=<filter\-spec>\fR
+option of
+\fBgit-repack\fR(1)\&.
+.RE
+.PP
+gc\&.repackFilterTo
+.RS 4
+When repacking and using a filter, see
+\fBgc\&.repackFilter\fR, the specified location will be used to create the packfile containing the filtered out objects\&.
+\fBWARNING:\fR
+The specified location should be accessible, using for example the Git alternates mechanism, otherwise the repo could be considered corrupt by Git as it migh not be able to access the objects in that packfile\&. See the
+\fB\-\-filter\-to=<dir>\fR
+option of
+\fBgit-repack\fR(1)
+and the
+\fBobjects/info/alternates\fR
+section of
+\fBgitrepository-layout\fR(5)\&.
 .RE
 .PP
 gc\&.rerereResolved
