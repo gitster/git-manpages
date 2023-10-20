@@ -2,12 +2,12 @@
 .\"     Title: git-worktree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-18
+.\"      Date: 2023-10-20
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.411.g813d9a9188
+.\"    Source: Git 2.42.0.424.gceadf0f3cf
 .\"  Language: English
 .\"
-.TH "GIT\-WORKTREE" "1" "2023\-10\-18" "Git 2\&.42\&.0\&.411\&.g813d9a" "Git Manual"
+.TH "GIT\-WORKTREE" "1" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -402,7 +402,7 @@ is enough to point to the former worktree\&.
 .sp
 When using multiple worktrees, some refs are shared between all worktrees, but others are specific to an individual worktree\&. One example is \fBHEAD\fR, which is different for each worktree\&. This section is about the sharing rules and how to access refs of one worktree from another\&.
 .sp
-In general, all pseudo refs are per\-worktree and all refs starting with \fBrefs/\fR are shared\&. Pseudo refs are ones like \fBHEAD\fR which are directly under \fB$GIT_DIR\fR instead of inside \fB$GIT_DIR/refs\fR\&. There are exceptions, however: refs inside \fBrefs/bisect\fR and \fBrefs/worktree\fR are not shared\&.
+In general, all pseudo refs are per\-worktree and all refs starting with \fBrefs/\fR are shared\&. Pseudo refs are ones like \fBHEAD\fR which are directly under \fB$GIT_DIR\fR instead of inside \fB$GIT_DIR/refs\fR\&. There are exceptions, however: refs inside \fBrefs/bisect\fR, \fBrefs/worktree\fR and \fBrefs/rewritten\fR are not shared\&.
 .sp
 Refs that are per\-worktree can still be accessed from another worktree via two special paths, \fBmain\-worktree\fR and \fBworktrees\fR\&. The former gives access to per\-worktree refs of the main worktree, while the latter to all linked worktrees\&.
 .sp
@@ -474,7 +474,7 @@ Each linked worktree has a private sub\-directory in the repository\(cqs \fB$GIT
 .sp
 Within a linked worktree, \fB$GIT_DIR\fR is set to point to this private directory (e\&.g\&. \fB/path/main/\&.git/worktrees/test\-next\fR in the example) and \fB$GIT_COMMON_DIR\fR is set to point back to the main worktree\(cqs \fB$GIT_DIR\fR (e\&.g\&. \fB/path/main/\&.git\fR)\&. These settings are made in a \fB\&.git\fR file located at the top directory of the linked worktree\&.
 .sp
-Path resolution via \fBgit rev\-parse \-\-git\-path\fR uses either \fB$GIT_DIR\fR or \fB$GIT_COMMON_DIR\fR depending on the path\&. For example, in the linked worktree \fBgit rev\-parse \-\-git\-path HEAD\fR returns \fB/path/main/\&.git/worktrees/test\-next/HEAD\fR (not \fB/path/other/test\-next/\&.git/HEAD\fR or \fB/path/main/\&.git/HEAD\fR) while \fBgit rev\-parse \-\-git\-path refs/heads/master\fR uses \fB$GIT_COMMON_DIR\fR and returns \fB/path/main/\&.git/refs/heads/master\fR, since refs are shared across all worktrees, except \fBrefs/bisect\fR and \fBrefs/worktree\fR\&.
+Path resolution via \fBgit rev\-parse \-\-git\-path\fR uses either \fB$GIT_DIR\fR or \fB$GIT_COMMON_DIR\fR depending on the path\&. For example, in the linked worktree \fBgit rev\-parse \-\-git\-path HEAD\fR returns \fB/path/main/\&.git/worktrees/test\-next/HEAD\fR (not \fB/path/other/test\-next/\&.git/HEAD\fR or \fB/path/main/\&.git/HEAD\fR) while \fBgit rev\-parse \-\-git\-path refs/heads/master\fR uses \fB$GIT_COMMON_DIR\fR and returns \fB/path/main/\&.git/refs/heads/master\fR, since refs are shared across all worktrees, except \fBrefs/bisect\fR, \fBrefs/worktree\fR and \fBrefs/rewritten\fR\&.
 .sp
 See \fBgitrepository-layout\fR(5) for more information\&. The rule of thumb is do not make any assumption about whether a path belongs to \fB$GIT_DIR\fR or \fB$GIT_COMMON_DIR\fR when you need to directly access something inside \fB$GIT_DIR\fR\&. Use \fBgit rev\-parse \-\-git\-path\fR to get the final path\&.
 .sp
