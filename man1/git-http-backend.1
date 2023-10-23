@@ -2,12 +2,12 @@
 .\"     Title: git-http-backend
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GIT\-HTTP\-BACKEND" "1" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GIT\-HTTP\-BACKEND" "1" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,7 +39,7 @@ git-http-backend \- Server side implementation of Git over HTTP
 .sp
 A simple CGI program to serve the contents of a Git repository to Git clients accessing the repository over http:// and https:// protocols\&. The program supports clients fetching using both the smart HTTP protocol and the backwards\-compatible dumb HTTP protocol, as well as clients pushing using the smart HTTP protocol\&. It also supports Git\(cqs more\-efficient "v2" protocol if properly configured; see the discussion of \fBGIT_PROTOCOL\fR in the ENVIRONMENT section below\&.
 .sp
-It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any Git directory that hasn\(cqt explicitly been marked for export this way (unless the \fBGIT_HTTP_EXPORT_ALL\fR environmental variable is set)\&.
+It verifies that the directory has the magic file "git\-daemon\-export\-ok", and it will refuse to export any Git directory that hasn\(cqt explicitly been marked for export this way (unless the \fBGIT_HTTP_EXPORT_ALL\fR environment variable is set)\&.
 .sp
 By default, only the \fBupload\-pack\fR service is enabled, which serves \fIgit fetch\-pack\fR and \fIgit ls\-remote\fR clients, which are invoked from \fIgit fetch\fR, \fIgit pull\fR, and \fIgit clone\fR\&. If the client is authenticated, the \fBreceive\-pack\fR service is enabled, which serves \fIgit send\-pack\fR clients, which is invoked from \fIgit push\fR\&.
 .SH "SERVICES"
@@ -48,7 +48,7 @@ These services can be enabled/disabled using the per\-repository configuration f
 .PP
 http\&.getanyfile
 .RS 4
-This serves Git clients older than version 1\&.6\&.6 that are unable to use the upload pack service\&. When enabled, clients are able to read any file within the repository, including objects that are no longer reachable from a branch but are still present\&. It is enabled by default, but a repository can disable it by setting this configuration item to
+This serves Git clients older than version 1\&.6\&.6 that are unable to use the upload pack service\&. When enabled, clients are able to read any file within the repository, including objects that are no longer reachable from a branch but are still present\&. It is enabled by default, but a repository can disable it by setting this configuration value to
 \fBfalse\fR\&.
 .RE
 .PP
@@ -58,7 +58,7 @@ This serves
 \fIgit fetch\-pack\fR
 and
 \fIgit ls\-remote\fR
-clients\&. It is enabled by default, but a repository can disable it by setting this configuration item to
+clients\&. It is enabled by default, but a repository can disable it by setting this configuration value to
 \fBfalse\fR\&.
 .RE
 .PP
@@ -409,9 +409,9 @@ QUERY_STRING
 REQUEST_METHOD
 .RE
 .sp
-The \fBGIT_HTTP_EXPORT_ALL\fR environmental variable may be passed to \fIgit\-http\-backend\fR to bypass the check for the "git\-daemon\-export\-ok" file in each repository before allowing export of that repository\&.
+The \fBGIT_HTTP_EXPORT_ALL\fR environment variable may be passed to \fIgit\-http\-backend\fR to bypass the check for the "git\-daemon\-export\-ok" file in each repository before allowing export of that repository\&.
 .sp
-The \fBGIT_HTTP_MAX_REQUEST_BUFFER\fR environment variable (or the \fBhttp\&.maxRequestBuffer\fR config variable) may be set to change the largest ref negotiation request that git will handle during a fetch; any fetch requiring a larger buffer will not succeed\&. This value should not normally need to be changed, but may be helpful if you are fetching from a repository with an extremely large number of refs\&. The value can be specified with a unit (e\&.g\&., \fB100M\fR for 100 megabytes)\&. The default is 10 megabytes\&.
+The \fBGIT_HTTP_MAX_REQUEST_BUFFER\fR environment variable (or the \fBhttp\&.maxRequestBuffer\fR config option) may be set to change the largest ref negotiation request that git will handle during a fetch; any fetch requiring a larger buffer will not succeed\&. This value should not normally need to be changed, but may be helpful if you are fetching from a repository with an extremely large number of refs\&. The value can be specified with a unit (e\&.g\&., \fB100M\fR for 100 megabytes)\&. The default is 10 megabytes\&.
 .sp
 Clients may probe for optional protocol capabilities (like the v2 protocol) using the \fBGit\-Protocol\fR HTTP header\&. In order to support these, the contents of that header must appear in the \fBGIT_PROTOCOL\fR environment variable\&. Most webservers will pass this header to the CGI via the \fBHTTP_GIT_PROTOCOL\fR variable, and \fBgit\-http\-backend\fR will automatically copy that to \fBGIT_PROTOCOL\fR\&. However, some webservers may be more selective about which headers they\(cqll pass, in which case they need to be configured explicitly (see the mention of \fBGit\-Protocol\fR in the Apache config from the earlier EXAMPLES section)\&.
 .sp

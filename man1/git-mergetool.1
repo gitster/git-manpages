@@ -2,12 +2,12 @@
 .\"     Title: git-mergetool
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GIT\-MERGETOOL" "1" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GIT\-MERGETOOL" "1" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,7 +39,7 @@ git-mergetool \- Run merge conflict resolution tools to resolve merge conflicts
 .sp
 Use \fBgit mergetool\fR to run one of several merge utilities to resolve merge conflicts\&. It is typically run after \fIgit merge\fR\&.
 .sp
-If one or more <file> parameters are given, the merge tool program will be run to resolve differences on each file (skipping those without conflicts)\&. Specifying a directory will include all unresolved files in that path\&. If no <file> names are specified, \fIgit mergetool\fR will run the merge tool program on every file with merge conflicts\&.
+If one or more <file> parameters are given, the merge tool program will be run to resolve differences in each file (skipping those without conflicts)\&. Specifying a directory will include all unresolved files in that path\&. If no <file> names are specified, \fIgit mergetool\fR will run the merge tool program on every file with merge conflicts\&.
 .SH "OPTIONS"
 .PP
 \-t <tool>, \-\-tool=<tool>
@@ -76,7 +76,7 @@ or
 \fB\-\-tool\fR
 option or the
 \fBmerge\&.tool\fR
-configuration variable) the configured command line will be invoked with
+configuration variable), the configured command line will be invoked with
 \fB$BASE\fR
 set to the name of a temporary file containing the common base for the merge, if available;
 \fB$LOCAL\fR
@@ -122,7 +122,7 @@ is invoked with the
 \fB\-g\fR
 or
 \fB\-\-gui\fR
-option the default merge tool will be read from the configured
+option, the default merge tool will be read from the configured
 \fBmerge\&.guitool\fR
 variable instead of
 \fBmerge\&.tool\fR\&. If
@@ -187,7 +187,7 @@ for the full description\&.
 .PP
 mergetool\&.<tool>\&.trustExitCode
 .RS 4
-For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful\&. If this is not set to true then the merge target file timestamp is checked and the merge assumed to have been successful if the file has been updated, otherwise the user is prompted to indicate the success of the merge\&.
+For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful\&. If this is not set to true then the merge target file timestamp is checked, and the merge is assumed to have been successful if the file has been updated; otherwise, the user is prompted to indicate the success of the merge\&.
 .RE
 .PP
 mergetool\&.meld\&.hasOutput
@@ -219,7 +219,7 @@ mergetool\&.meld\&.useAutoMerge
 .RS 4
 When the
 \fB\-\-auto\-merge\fR
-is given, meld will merge all non\-conflicting parts automatically, highlight the conflicting parts and wait for user decision\&. Setting
+is given, meld will merge all non\-conflicting parts automatically, highlight the conflicting parts, and wait for user decision\&. Setting
 \fBmergetool\&.meld\&.useAutoMerge\fR
 to
 \fBtrue\fR
@@ -241,12 +241,12 @@ altogether, and is the default value\&.
 .PP
 mergetool\&.vimdiff\&.layout
 .RS 4
-The vimdiff backend uses this variable to control how its split windows look like\&. Applies even if you are using Neovim (\fBnvim\fR) or gVim (\fBgvim\fR) as the merge tool\&. See BACKEND SPECIFIC HINTS section for details\&.
+The vimdiff backend uses this variable to control how its split windows appear\&. Applies even if you are using Neovim (\fBnvim\fR) or gVim (\fBgvim\fR) as the merge tool\&. See BACKEND SPECIFIC HINTS section for details\&.
 .RE
 .PP
 mergetool\&.hideResolved
 .RS 4
-During a merge Git will automatically resolve as many conflicts as possible and write the
+During a merge, Git will automatically resolve as many conflicts as possible and write the
 \fIMERGED\fR
 file containing conflict markers around any conflicts that it cannot resolve;
 \fILOCAL\fR
@@ -276,7 +276,7 @@ then this file is not preserved\&. Defaults to
 mergetool\&.keepTemporaries
 .RS 4
 When invoking a custom merge tool, Git uses a set of temporary files to pass to the tool\&. If the tool returns an error and this variable is set to
-\fBtrue\fR, then these temporary files will be preserved, otherwise they will be removed after the tool has exited\&. Defaults to
+\fBtrue\fR, then these temporary files will be preserved; otherwise, they will be removed after the tool has exited\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
@@ -323,7 +323,7 @@ to be used\&.
 .sp
 \fBgit mergetool\fR creates \fB*\&.orig\fR backup files while resolving merges\&. These are safe to remove once a file has been merged and its \fBgit mergetool\fR session has completed\&.
 .sp
-Setting the \fBmergetool\&.keepBackup\fR configuration variable to \fBfalse\fR causes \fBgit mergetool\fR to automatically remove the backup as files are successfully merged\&.
+Setting the \fBmergetool\&.keepBackup\fR configuration variable to \fBfalse\fR causes \fBgit mergetool\fR to automatically remove the backup files as files are successfully merged\&.
 .SH "BACKEND SPECIFIC HINTS"
 .SS "vimdiff"
 .sp
@@ -415,12 +415,12 @@ is used to "open a new horizontal split"
 .IP \(bu 2.3
 .\}
 \fB@\fR
-is used to indicate which is the file containing the final version after solving the conflicts\&. If not present,
+is used to indicate the file containing the final version after solving the conflicts\&. If not present,
 \fBMERGED\fR
 will be used by default\&.
 .RE
 .sp
-The precedence of the operators is this one (you can use parentheses to change it):
+The precedence of the operators is as follows (you can use parentheses to change it):
 .sp
 .if n \{\
 .RS 4
@@ -665,7 +665,7 @@ Same as the previous example, but adds a fourth tab with the same information as
 .RE
 .\}
 .sp
-Note how in the third tab definition we need to use parenthesis to make
+Note how in the third tab definition we need to use parentheses to make
 \fB,\fR
 have precedence over
 \fB/\fR\&.

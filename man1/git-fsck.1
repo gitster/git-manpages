@@ -2,12 +2,12 @@
 .\"     Title: git-fsck
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GIT\-FSCK" "1" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GIT\-FSCK" "1" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -49,7 +49,7 @@ An object to treat as the head of an unreachability trace\&.
 .sp
 If no objects are given,
 \fIgit fsck\fR
-defaults to using the index file, all SHA\-1 references in
+defaults to using the index file, all SHA\-1 references in the
 \fBrefs\fR
 namespace, and all reflogs (unless \-\-no\-reflogs is given) as heads\&.
 .RE
@@ -95,7 +95,7 @@ Check not just objects in GIT_OBJECT_DIRECTORY ($GIT_DIR/objects), but also the 
 .PP
 \-\-connectivity\-only
 .RS 4
-Check only the connectivity of reachable objects, making sure that any objects referenced by a reachable tag, commit, or tree is present\&. This speeds up the operation by avoiding reading blobs entirely (though it does still check that referenced blobs exist)\&. This will detect corruption in commits and trees, but not do any semantic checks (e\&.g\&., for format errors)\&. Corruption in blob objects will not be detected at all\&.
+Check only the connectivity of reachable objects, making sure that any objects referenced by a reachable tag, commit, or tree are present\&. This speeds up the operation by avoiding reading blobs entirely (though it does still check that referenced blobs exist)\&. This will detect corruption in commits and trees, but not do any semantic checks (e\&.g\&., for format errors)\&. Corruption in blob objects will not be detected at all\&.
 .sp
 Unreachable tags, commits, and trees will also be accessed to find the tips of dangling segments of history\&. Use
 \fB\-\-no\-dangling\fR
@@ -104,7 +104,7 @@ if you don\(cqt care about this output and want to speed it up further\&.
 .PP
 \-\-strict
 .RS 4
-Enable more strict checking, namely to catch a file mode recorded with g+w bit set, which was created by older versions of Git\&. Existing repositories, including the Linux kernel, Git itself, and sparse repository have old objects that triggers this check, but it is recommended to check new projects with this flag\&.
+Enable more strict checking, namely to catch a file mode recorded with g+w bit set, which was created by older versions of Git\&. Existing repositories, including the Linux kernel, Git itself, and sparse repository have old objects that trigger this check, but it is recommended to check new projects with this flag\&.
 .RE
 .PP
 \-\-verbose
@@ -153,19 +153,18 @@ The rest of the documentation discusses
 for brevity, but the same applies for the corresponding
 \fBreceive\&.fsck\&.*\fR
 and
-\fBfetch\&.<msg\-id>\&.*\fR\&. variables\&.
+\fBfetch\&.fsck\&.*\fR\&. variables\&.
 .sp
 Unlike variables like
 \fBcolor\&.ui\fR
 and
-\fBcore\&.editor\fR
-the
+\fBcore\&.editor\fR, the
 \fBreceive\&.fsck\&.<msg\-id>\fR
 and
 \fBfetch\&.fsck\&.<msg\-id>\fR
 variables will not fall back on the
 \fBfsck\&.<msg\-id>\fR
-configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances all three of them they must all set to the same values\&.
+configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances, all three of them must be set to the same values\&.
 .sp
 When
 \fBfsck\&.<msg\-id>\fR
@@ -192,7 +191,7 @@ and
 \fBfetch\&.fsck\&.<msg\-id>\fR
 will only cause git to warn\&.
 .sp
-See
+See the
 \fBFsck Messages\fR
 section of
 \fBgit-fsck\fR(1)
@@ -202,9 +201,9 @@ for supported values of
 .PP
 fsck\&.skipList
 .RS 4
-The path to a list of object names (i\&.e\&. one unabbreviated SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. On versions of Git 2\&.20 and later comments (\fI#\fR), empty lines, and any leading and trailing whitespace is ignored\&. Everything but a SHA\-1 per line will error out on older versions\&.
+The path to a list of object names (i\&.e\&. one unabbreviated SHA\-1 per line) that are known to be broken in a non\-fatal way and should be ignored\&. On versions of Git 2\&.20 and later, comments (\fI#\fR), empty lines, and any leading and trailing whitespace are ignored\&. Everything but a SHA\-1 per line will error out on older versions\&.
 .sp
-This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
+This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored, such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
 .sp
 Like
 \fBfsck\&.<msg\-id>\fR
@@ -224,9 +223,9 @@ and
 \fBfetch\&.fsck\&.skipList\fR
 variables will not fall back on the
 \fBfsck\&.skipList\fR
-configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances all three of them they must all set to the same values\&.
+configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances, all three of them must be set to the same values\&.
 .sp
-Older versions of Git (before 2\&.20) documented that the object names list should be sorted\&. This was never a requirement, the object names could appear in any order, but when reading the list we tracked whether the list was sorted for the purposes of an internal binary search implementation, which could save itself some work with an already sorted list\&. Unless you had a humongous list there was no reason to go out of your way to pre\-sort the list\&. After Git version 2\&.20 a hash implementation is used instead, so there\(cqs now no reason to pre\-sort the list\&.
+Older versions of Git (before 2\&.20) documented that the object names list should be sorted\&. This was never a requirement; the object names could appear in any order, but when reading the list we tracked whether the list was sorted for the purposes of an internal binary search implementation, which could save itself some work with an already sorted list\&. Unless you had a humongous list there was no reason to go out of your way to pre\-sort the list\&. After Git version 2\&.20 a hash implementation is used instead, so there\(cqs now no reason to pre\-sort the list\&.
 .RE
 .SH "DISCUSSION"
 .sp
@@ -508,7 +507,7 @@ line in tag object\&.
 .PP
 \fBmissingSpaceBeforeEmail\fR
 .RS 4
-(ERROR) Missing space before the email in author/committer line\&.
+(ERROR) Missing space before the email in an author/committer line\&.
 .RE
 .PP
 \fBmissingTag\fR
@@ -590,7 +589,7 @@ line in a tag object\&.
 .PP
 \fBzeroPaddedDate\fR
 .RS 4
-(ERROR) Found a zero padded date in an author/commiter line\&.
+(ERROR) Found a zero padded date in an author/committer line\&.
 .RE
 .PP
 \fBzeroPaddedFilemode\fR

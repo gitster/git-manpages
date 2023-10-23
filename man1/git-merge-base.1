@@ -2,12 +2,12 @@
 .\"     Title: git-merge-base
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE\-BASE" "1" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GIT\-MERGE\-BASE" "1" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -41,10 +41,10 @@ git-merge-base \- Find as good common ancestors as possible for a merge
 .sp
 .SH "DESCRIPTION"
 .sp
-\fIgit merge\-base\fR finds best common ancestor(s) between two commits to use in a three\-way merge\&. One common ancestor is \fIbetter\fR than another common ancestor if the latter is an ancestor of the former\&. A common ancestor that does not have any better common ancestor is a \fIbest common ancestor\fR, i\&.e\&. a \fImerge base\fR\&. Note that there can be more than one merge base for a pair of commits\&.
+\fIgit merge\-base\fR finds the best common ancestor(s) between two commits to use in a three\-way merge\&. One common ancestor is \fIbetter\fR than another common ancestor if the latter is an ancestor of the former\&. A common ancestor that does not have any better common ancestor is a \fIbest common ancestor\fR, i\&.e\&. a \fImerge base\fR\&. Note that there can be more than one merge base for a pair of commits\&.
 .SH "OPERATION MODES"
 .sp
-As the most common special case, specifying only two commits on the command line means computing the merge base between the given two commits\&.
+In the most common special case, specifying only two commits on the command line means computing the merge base between the given two commits\&.
 .sp
 More generally, among the two commits to compute the merge base from, one is specified by the first commit argument on the command line; the other commit is a (possibly hypothetical) commit that is a merge across all the remaining commits on the command line\&.
 .sp
@@ -69,7 +69,7 @@ Check if the first <commit> is an ancestor of the second <commit>, and exit with
 .PP
 \-\-fork\-point
 .RS 4
-Find the point at which a branch (or any history that leads to <commit>) forked from another branch (or any reference) <ref>\&. This does not just look for the common ancestor of the two commits, but also takes into account the reflog of <ref> to see if the history leading to <commit> forked from an earlier incarnation of the branch <ref> (see discussion on this mode below)\&.
+Find the point at which a branch (or any history that leads to <commit>) forked from another branch (or any reference) <ref>\&. This does not just look for the common ancestor of the two commits, but also takes into account the reflog of <ref> to see if the history leading to <commit> forked from an earlier incarnation of the branch <ref> (see discussion of this mode below)\&.
 .RE
 .SH "OPTIONS"
 .PP
@@ -97,7 +97,7 @@ For example, with this topology:
 .sp
 the merge base between \fIA\fR and \fIB\fR is \fI1\fR\&.
 .sp
-Given three commits \fIA\fR, \fIB\fR and \fIC\fR, \fBgit merge\-base A B C\fR will compute the merge base between \fIA\fR and a hypothetical commit \fIM\fR, which is a merge between \fIB\fR and \fIC\fR\&. For example, with this topology:
+Given three commits \fIA\fR, \fIB\fR, and \fIC\fR, \fBgit merge\-base A B C\fR will compute the merge base between \fIA\fR and a hypothetical commit \fIM\fR, which is a merge between \fIB\fR and \fIC\fR\&. For example, with this topology:
 .sp
 .if n \{\
 .RS 4
@@ -149,7 +149,7 @@ When the history involves criss\-cross merges, there can be more than one \fIbes
 .RE
 .\}
 .sp
-both \fI1\fR and \fI2\fR are merge\-bases of A and B\&. Neither one is better than the other (both are \fIbest\fR merge bases)\&. When the \fB\-\-all\fR option is not given, it is unspecified which best one is output\&.
+both \fI1\fR and \fI2\fR are merge bases of A and B\&. Neither one is better than the other (both are \fIbest\fR merge bases)\&. When the \fB\-\-all\fR option is not given, it is unspecified which best one is output\&.
 .sp
 A common idiom to check "fast\-forward\-ness" between two commits A and B is (or at least used to be) to compute the merge base between A and B, and check if it is the same as A, in which case, A is an ancestor of B\&. You will see this idiom used often in older scripts\&.
 .sp
@@ -233,7 +233,7 @@ $ git rebase \-\-onto origin/master $fork_point topic
 .RE
 .\}
 .sp
-will replay D0, D1 and D on top of B to create a new history of this shape:
+will replay D0, D1, and D on top of B to create a new history of this shape:
 .sp
 .if n \{\
 .RS 4

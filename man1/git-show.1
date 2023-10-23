@@ -2,12 +2,12 @@
 .\"     Title: git-show
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GIT\-SHOW" "1" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GIT\-SHOW" "1" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -121,7 +121,7 @@ and we are outputting in
 .PP
 \-\-expand\-tabs=<n>, \-\-expand\-tabs, \-\-no\-expand\-tabs
 .RS 4
-Perform a tab expansion (replace each tab with enough spaces to fill to the next display column that is multiple of
+Perform a tab expansion (replace each tab with enough spaces to fill to the next display column that is a multiple of
 \fI<n>\fR) in the log message before showing it in the output\&.
 \fB\-\-expand\-tabs\fR
 is a short\-hand for
@@ -166,7 +166,7 @@ argument, use the ref to find the notes to display\&. The ref can specify the fu
 \fBrefs/\fR
 and otherwise
 \fBrefs/notes/\fR
-is prefixed to form a full name of the ref\&.
+is prefixed to form the full name of the ref\&.
 .sp
 Multiple \-\-notes options can be combined to control which notes are being displayed\&. Examples: "\-\-notes=foo" will show only notes from "refs/notes/foo"; "\-\-notes=foo \-\-notes" will show both notes from "refs/notes/foo" and from the default notes ref(s)\&.
 .RE
@@ -1317,7 +1317,47 @@ that show the patch by default to squelch their output, or to cancel the effect 
 earlier on the command line in an alias\&.
 .RE
 .PP
-\-\-diff\-merges=(off|none|on|first\-parent|1|separate|m|combined|c|dense\-combined|cc|remerge|r), \-\-no\-diff\-merges
+\-m
+.RS 4
+Show diffs for merge commits in the default format\&. This is similar to
+\fI\-\-diff\-merges=on\fR, except
+\fB\-m\fR
+will produce no output unless
+\fB\-p\fR
+is given as well\&.
+.RE
+.PP
+\-c
+.RS 4
+Produce combined diff output for merge commits\&. Shortcut for
+\fI\-\-diff\-merges=combined \-p\fR\&.
+.RE
+.PP
+\-\-cc
+.RS 4
+Produce dense combined diff output for merge commits\&. Shortcut for
+\fI\-\-diff\-merges=dense\-combined \-p\fR\&.
+.RE
+.PP
+\-\-dd
+.RS 4
+Produce diff with respect to first parent for both merge and regular commits\&. Shortcut for
+\fI\-\-diff\-merges=first\-parent \-p\fR\&.
+.RE
+.PP
+\-\-remerge\-diff
+.RS 4
+Produce remerge\-diff output for merge commits\&. Shortcut for
+\fI\-\-diff\-merges=remerge \-p\fR\&.
+.RE
+.PP
+\-\-no\-diff\-merges
+.RS 4
+Synonym for
+\fI\-\-diff\-merges=off\fR\&.
+.RE
+.PP
+\-\-diff\-merges=<format>
 .RS 4
 Specify diff format to be used for merge commits\&. Default is
 \fBdense\-combined\fR
@@ -1326,57 +1366,51 @@ unless
 is in use, in which case
 \fBfirst\-parent\fR
 is the default\&.
+.sp
+The following formats are supported:
 .PP
-\-\-diff\-merges=(off|none), \-\-no\-diff\-merges
+off, none
 .RS 4
 Disable output of diffs for merge commits\&. Useful to override implied value\&.
 .RE
 .PP
-\-\-diff\-merges=on, \-\-diff\-merges=m, \-m
+on, m
 .RS 4
-This option makes diff output for merge commits to be shown in the default format\&.
-\fB\-m\fR
-will produce the output only if
-\fB\-p\fR
-is given as well\&. The default format could be changed using
+Make diff output for merge commits to be shown in the default format\&. The default format could be changed using
 \fBlog\&.diffMerges\fR
-configuration parameter, which default value is
+configuration variable, whose default value is
 \fBseparate\fR\&.
 .RE
 .PP
-\-\-diff\-merges=first\-parent, \-\-diff\-merges=1
+first\-parent, 1
 .RS 4
-This option makes merge commits show the full diff with respect to the first parent only\&.
+Show full diff with respect to first parent\&. This is the same format as
+\fB\-\-patch\fR
+produces for non\-merge commits\&.
 .RE
 .PP
-\-\-diff\-merges=separate
+separate
 .RS 4
-This makes merge commits show the full diff with respect to each of the parents\&. Separate log entry and diff is generated for each parent\&.
+Show full diff with respect to each of parents\&. Separate log entry and diff is generated for each parent\&.
 .RE
 .PP
-\-\-diff\-merges=remerge, \-\-diff\-merges=r, \-\-remerge\-diff
+combined, c
 .RS 4
-With this option, two\-parent merge commits are remerged to create a temporary tree object \(em potentially containing files with conflict markers and such\&. A diff is then shown between that temporary tree and the actual merge commit\&.
+Show differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time\&. Furthermore, it lists only files which were modified from all parents\&.
+.RE
+.PP
+dense\-combined, cc
+.RS 4
+Further compress output produced by
+\fB\-\-diff\-merges=combined\fR
+by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
+.RE
+.PP
+remerge, r
+.RS 4
+Remerge two\-parent merge commits to create a temporary tree object\(empotentially containing files with conflict markers and such\&. A diff is then shown between that temporary tree and the actual merge commit\&.
 .sp
 The output emitted when this option is used is subject to change, and so is its interaction with other options (unless explicitly documented)\&.
-.RE
-.PP
-\-\-diff\-merges=combined, \-\-diff\-merges=c, \-c
-.RS 4
-With this option, diff output for a merge commit shows the differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time\&. Furthermore, it lists only files which were modified from all parents\&.
-\fB\-c\fR
-implies
-\fB\-p\fR\&.
-.RE
-.PP
-\-\-diff\-merges=dense\-combined, \-\-diff\-merges=cc, \-\-cc
-.RS 4
-With this option the output produced by
-\fB\-\-diff\-merges=combined\fR
-is further compressed by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
-\fB\-\-cc\fR
-implies
-\fB\-p\fR\&.
 .RE
 .RE
 .PP
@@ -2136,7 +2170,7 @@ Patterns have the same syntax and semantics as patterns used for fnmatch(3) with
 .RS 4
 Discard the files before the named <file> from the output (i\&.e\&.
 \fIskip to\fR), or move them to the end of the output (i\&.e\&.
-\fIrotate to\fR)\&. These were invented primarily for use of the
+\fIrotate to\fR)\&. These options were invented primarily for the use of the
 \fBgit difftool\fR
 command, and may not be very useful otherwise\&.
 .RE
@@ -2290,7 +2324,7 @@ What the \-p option produces is slightly different from the traditional diff for
 .sp -1
 .IP "  1." 4.2
 .\}
-It is preceded with a "git diff" header that looks like this:
+It is preceded by a "git diff" header that looks like this:
 .sp
 .if n \{\
 .RS 4
@@ -2316,11 +2350,11 @@ or
 \fBb/\fR
 filenames\&.
 .sp
-When rename/copy is involved,
+When a rename/copy is involved,
 \fBfile1\fR
 and
 \fBfile2\fR
-show the name of the source file of the rename/copy and the name of the file that rename/copy produces, respectively\&.
+show the name of the source file of the rename/copy and the name of the file that the rename/copy produces, respectively\&.
 .RE
 .sp
 .RS 4
@@ -2420,11 +2454,11 @@ rename to a
 .\}
 Hunk headers mention the name of the function to which the hunk applies\&. See "Defining a custom hunk\-header" in
 \fBgitattributes\fR(5)
-for details of how to tailor to this to specific languages\&.
+for details of how to tailor this to specific languages\&.
 .RE
 .SH "COMBINED DIFF FORMAT"
 .sp
-Any diff\-generating command can take the \fB\-c\fR or \fB\-\-cc\fR option to produce a \fIcombined diff\fR when showing a merge\&. This is the default format when showing merges with \fBgit-diff\fR(1) or \fBgit-show\fR(1)\&. Note also that you can give suitable \fB\-\-diff\-merges\fR option to any of these commands to force generation of diffs in specific format\&.
+Any diff\-generating command can take the \fB\-c\fR or \fB\-\-cc\fR option to produce a \fIcombined diff\fR when showing a merge\&. This is the default format when showing merges with \fBgit-diff\fR(1) or \fBgit-show\fR(1)\&. Note also that you can give suitable \fB\-\-diff\-merges\fR option to any of these commands to force generation of diffs in a specific format\&.
 .sp
 A "combined diff" format looks like this:
 .sp
@@ -2474,7 +2508,7 @@ index fabadb8,cc95eb0\&.\&.4866510
 .sp -1
 .IP "  1." 4.2
 .\}
-It is preceded with a "git diff" header, that looks like this (when the
+It is preceded by a "git diff" header, that looks like this (when the
 \fB\-c\fR
 option is used):
 .sp
@@ -2528,7 +2562,7 @@ deleted file mode <mode>,<mode>
 .sp
 The
 \fBmode <mode>,<mode>\&.\&.<mode>\fR
-line appears only if at least one of the <mode> is different from the rest\&. Extended headers with information about detected contents movement (renames and copying detection) are designed to work with diff of two <tree\-ish> and are not used by combined diff format\&.
+line appears only if at least one of the <mode> is different from the rest\&. Extended headers with information about detected content movement (renames and copying detection) are designed to work with the diff of two <tree\-ish> and are not used by combined diff format\&.
 .RE
 .sp
 .RS 4
@@ -2539,7 +2573,7 @@ line appears only if at least one of the <mode> is different from the rest\&. Ex
 .sp -1
 .IP "  3." 4.2
 .\}
-It is followed by two\-line from\-file/to\-file header
+It is followed by a two\-line from\-file/to\-file header:
 .sp
 .if n \{\
 .RS 4
@@ -2552,13 +2586,13 @@ It is followed by two\-line from\-file/to\-file header
 .RE
 .\}
 .sp
-Similar to two\-line header for traditional
+Similar to the two\-line header for the traditional
 \fIunified\fR
 diff format,
 \fB/dev/null\fR
 is used to signal created or deleted files\&.
 .sp
-However, if the \-\-combined\-all\-paths option is provided, instead of a two\-line from\-file/to\-file you get a N+1 line from\-file/to\-file header, where N is the number of parents in the merge commit
+However, if the \-\-combined\-all\-paths option is provided, instead of a two\-line from\-file/to\-file, you get an N+1 line from\-file/to\-file header, where N is the number of parents in the merge commit:
 .sp
 .if n \{\
 .RS 4
@@ -2608,7 +2642,7 @@ Unlike the traditional \fIunified\fR diff format, which shows two files A and B 
 .sp
 A \fB\-\fR character in the column N means that the line appears in fileN but it does not appear in the result\&. A \fB+\fR character in the column N means that the line appears in the result, and fileN does not have that line (in other words, the line was added, from the point of view of that parent)\&.
 .sp
-In the above example output, the function signature was changed from both files (hence two \fB\-\fR removals from both file1 and file2, plus \fB++\fR to mean one line that was added does not appear in either file1 or file2)\&. Also eight other lines are the same from file1 but do not appear in file2 (hence prefixed with \fB+\fR)\&.
+In the above example output, the function signature was changed from both files (hence two \fB\-\fR removals from both file1 and file2, plus \fB++\fR to mean one line that was added does not appear in either file1 or file2)\&. Also, eight other lines are the same from file1 but do not appear in file2 (hence prefixed with \fB+\fR)\&.
 .sp
 When shown by \fBgit diff\-tree \-c\fR, it compares the parents of a merge commit with the merge result (i\&.e\&. file1\&.\&.fileN are the parents)\&. When shown by \fBgit diff\-files \-c\fR, it compares the two unresolved merge parents with the working tree file (i\&.e\&. file1 is stage 2 aka "our version", file2 is stage 3 aka "their version")\&.
 .SH "EXAMPLES"
@@ -2616,7 +2650,7 @@ When shown by \fBgit diff\-tree \-c\fR, it compares the parents of a merge commi
 \fBgit show v1\&.0\&.0\fR
 .RS 4
 Shows the tag
-\fBv1\&.0\&.0\fR, along with the object the tags points at\&.
+\fBv1\&.0\&.0\fR, along with the object the tag points at\&.
 .RE
 .PP
 \fBgit show v1\&.0\&.0^{tree}\fR
@@ -2704,7 +2738,7 @@ Although we encourage that the commit log messages are encoded in UTF\-8, both t
 \fIgit commit\fR
 and
 \fIgit commit\-tree\fR
-issues a warning if the commit log message given to it does not look like a valid UTF\-8 string, unless you explicitly say your project uses a legacy encoding\&. The way to say this is to have
+issue a warning if the commit log message given to it does not look like a valid UTF\-8 string, unless you explicitly say your project uses a legacy encoding\&. The way to say this is to have
 \fBi18n\&.commitEncoding\fR
 in
 \fB\&.git/config\fR
@@ -2723,7 +2757,7 @@ file, like this:
 .sp
 Commit objects created with the above setting record the value of
 \fBi18n\&.commitEncoding\fR
-in its
+in their
 \fBencoding\fR
 header\&. This is to help other people who look at them later\&. Lack of this header implies that the commit log message is encoded in UTF\-8\&.
 .RE

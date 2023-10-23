@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-http
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-HTTP" "5" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GITPROTOCOL\-HTTP" "5" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -58,7 +58,7 @@ Within this documentation the placeholder \fB$GIT_URL\fR will stand for the http
 .sp
 Servers SHOULD handle all requests to locations matching \fB$GIT_URL\fR, as both the "smart" and "dumb" HTTP protocols used by Git operate by appending additional path components onto the end of the user supplied \fB$GIT_URL\fR string\&.
 .sp
-An example of a dumb client requesting for a loose object:
+An example of a dumb client requesting a loose object:
 .sp
 .if n \{\
 .RS 4
@@ -457,7 +457,7 @@ C: Place any object seen into set \fBadvertised\fR\&.
 .sp
 C: Build an empty set, \fBcommon\fR, to hold the objects that are later determined to be on both ends\&.
 .sp
-C: Build a set, \fBwant\fR, of the objects from \fBadvertised\fR the client wants to fetch, based on what it saw during ref discovery\&.
+C: Build a set, \fBwant\fR, of the objects from \fBadvertised\fR that the client wants to fetch, based on what it saw during ref discovery\&.
 .sp
 C: Start a queue, \fBc_pending\fR, ordered by commit time (popping newest first)\&. Add all client refs\&. When a commit is popped from the queue its parents SHOULD be automatically inserted back\&. Commits MUST only enter the queue once\&.
 .sp
@@ -514,7 +514,7 @@ The stream is terminated by a pkt\-line flush (\fB0000\fR)\&.
 .sp
 A single "want" or "have" command MUST have one hex formatted object name as its value\&. Multiple object names MUST be sent by sending multiple commands\&. Object names MUST be given using the object format negotiated through the \fBobject\-format\fR capability (default SHA\-1)\&.
 .sp
-The \fBhave\fR list is created by popping the first 32 commits from \fBc_pending\fR\&. Less can be supplied if \fBc_pending\fR empties\&.
+The \fBhave\fR list is created by popping the first 32 commits from \fBc_pending\fR\&. Fewer can be supplied if \fBc_pending\fR empties\&.
 .sp
 If the client has sent 256 "have" commits and has not yet received one of those back from \fBs_common\fR, or the client has emptied \fBc_pending\fR it SHOULD include a "done" command to let the server know it won\(cqt proceed:
 .sp

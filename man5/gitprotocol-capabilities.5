@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-capabilities
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-CAPABILITIES" "5" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GITPROTOCOL\-CAPABILITIES" "5" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -59,7 +59,7 @@ On the very first line of the initial server response of either receive\-pack an
 .sp
 Client will then send a space separated list of capabilities it wants to be in effect\&. The client MUST NOT ask for capabilities the server did not say it supports\&.
 .sp
-Server MUST diagnose and abort if capabilities it does not understand was sent\&. Server MUST NOT ignore capabilities that client requested and server advertised\&. As a consequence of these rules, server MUST NOT advertise capabilities it does not understand\&.
+Server MUST diagnose and abort if capabilities it does not understand were sent\&. Server MUST NOT ignore capabilities that client requested and server advertised\&. As a consequence of these rules, server MUST NOT advertise capabilities it does not understand\&.
 .sp
 The \fIatomic\fR, \fIreport\-status\fR, \fIreport\-status\-v2\fR, \fIdelete\-refs\fR, \fIquiet\fR, and \fIpush\-cert\fR capabilities are sent and recognized by the receive\-pack (push to server) process\&.
 .sp
@@ -72,7 +72,7 @@ The \fImulti_ack\fR capability allows the server to return "ACK obj\-id continue
 .sp
 By sending this early, the server can potentially head off the client from walking any further down that particular branch of the client\(cqs repository history\&. The client may still need to walk down other branches, sending have lines for those, until the server has a complete cut across the DAG, or the client has said "done"\&.
 .sp
-Without multi_ack, a client sends have lines in \-\-date\-order until the server has found a common base\&. That means the client will send have lines that are already known by the server to be common, because they overlap in time with another branch that the server hasn\(cqt found a common base on yet\&.
+Without multi_ack, a client sends have lines in \-\-date\-order until the server has found a common base\&. That means the client will send have lines that are already known by the server to be common, because they overlap in time with another branch on which the server hasn\(cqt found a common base yet\&.
 .sp
 For example suppose the client has commits in caps that the server doesn\(cqt and the server has commits in lower case that the client doesn\(cqt, as in the following diagram:
 .sp
@@ -96,7 +96,7 @@ If the client wants x,y and starts out by saying have F,S, the server doesn\(cqt
 Without multi_ack the client would have sent that c\-b\-a chain anyway, interleaved with S\-R\-Q\&.
 .SH "MULTI_ACK_DETAILED"
 .sp
-This is an extension of multi_ack that permits client to better understand the server\(cqs in\-memory state\&. See \fBgitprotocol-pack\fR(5), section "Packfile Negotiation" for more information\&.
+This is an extension of multi_ack that permits the client to better understand the server\(cqs in\-memory state\&. See \fBgitprotocol-pack\fR(5), section "Packfile Negotiation" for more information\&.
 .SH "NO\-DONE"
 .sp
 This capability should only be used with the smart HTTP protocol\&. If multi_ack_detailed and no\-done are both present, then the sender is free to immediately send a pack following its first "ACK obj\-id ready" message\&.
@@ -113,7 +113,7 @@ Receive\-pack, on the other hand, is assumed by default to be able to handle thi
 The reasons for this asymmetry are historical\&. The receive\-pack program did not exist until after the invention of thin packs, so historically the reference implementation of receive\-pack always understood thin packs\&. Adding \fIno\-thin\fR later allowed receive\-pack to disable the feature in a backwards\-compatible manner\&.
 .SH "SIDE\-BAND, SIDE\-BAND\-64K"
 .sp
-This capability means that server can send, and client understand multiplexed progress reports and error info interleaved with the packfile itself\&.
+This capability means that the server can send, and the client can understand, multiplexed progress reports and error info interleaved with the packfile itself\&.
 .sp
 These two options are mutually exclusive\&. A modern client always favors \fIside\-band\-64k\fR\&.
 .sp
@@ -137,10 +137,10 @@ The "side\-band\-64k" capability came about as a way for newer clients that can 
 .sp
 Further, with side\-band and its up to 1000\-byte messages, it\(cqs actually 999 bytes of payload and 1 byte for the stream code\&. With side\-band\-64k, same deal, you have up to 65519 bytes of data and 1 byte for the stream code\&.
 .sp
-The client MUST send only maximum of one of "side\-band" and "side\- band\-64k"\&. Server MUST diagnose it as an error if client requests both\&.
+The client MUST send only one of "side\-band" and "side\- band\-64k"\&. The server MUST diagnose it as an error if client requests both\&.
 .SH "OFS\-DELTA"
 .sp
-Server can send, and client understand PACKv2 with delta referring to its base by position in pack rather than by an obj\-id\&. That is, they can send/read OBJ_OFS_DELTA (aka type 6) in a packfile\&.
+The server can send, and the client can understand, PACKv2 with delta referring to its base by position in pack rather than by an obj\-id\&. That is, they can send/read OBJ_OFS_DELTA (aka type 6) in a packfile\&.
 .SH "AGENT"
 .sp
 The server may optionally send a capability of the form \fBagent=X\fR to notify the client that the server is running version \fBX\fR\&. The client may optionally return its own agent string by responding with an \fBagent=Y\fR capability (but it MUST NOT do so if the server did not mention the agent capability)\&. The \fBX\fR and \fBY\fR strings may contain any printable ASCII characters except space (i\&.e\&., the byte range 32 < x < 127), and are typically of the form "package/version" (e\&.g\&., "git/1\&.8\&.3\&.1")\&. The agent strings are purely informative for statistics and debugging purposes, and MUST NOT be used to programmatically assume the presence or absence of particular features\&.
@@ -172,14 +172,14 @@ This capability adds "deepen\-not" command to fetch\-pack/upload\-pack protocol 
 If this capability is requested by the client, the semantics of "deepen" command is changed\&. The "depth" argument is the depth from the current shallow boundary, instead of the depth from remote refs\&.
 .SH "NO\-PROGRESS"
 .sp
-The client was started with "git clone \-q" or something, and doesn\(cqt want that side band 2\&. Basically the client just says "I do not wish to receive stream 2 on sideband, so do not send it to me, and if you did, I will drop it on the floor anyway"\&. However, the sideband channel 3 is still used for error responses\&.
+The client was started with "git clone \-q" or something similar, and doesn\(cqt want that side band 2\&. Basically the client just says "I do not wish to receive stream 2 on sideband, so do not send it to me, and if you did, I will drop it on the floor anyway"\&. However, the sideband channel 3 is still used for error responses\&.
 .SH "INCLUDE\-TAG"
 .sp
 The \fIinclude\-tag\fR capability is about sending annotated tags if we are sending objects they point to\&. If we pack an object to the client, and a tag object points exactly at that object, we pack the tag object too\&. In general this allows a client to get all new annotated tags when it fetches a branch, in a single network connection\&.
 .sp
 Clients MAY always send include\-tag, hardcoding it into a request when the server advertises this capability\&. The decision for a client to request include\-tag only has to do with the client\(cqs desires for tag data, whether or not a server had advertised objects in the refs/tags/* namespace\&.
 .sp
-Servers MUST pack the tags if their referrant is packed and the client has requested include\-tags\&.
+Servers MUST pack the tags if their referent is packed and the client has requested include\-tags\&.
 .sp
 Clients MUST be prepared for the case where a server has ignored include\-tag and has not actually sent tags in the pack\&. In such cases the client SHOULD issue a subsequent fetch to acquire the tags that include\-tag would have otherwise given the client\&.
 .sp

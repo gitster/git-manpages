@@ -2,12 +2,12 @@
 .\"     Title: git-fsmonitor--daemon
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-10-20
+.\"      Date: 2023-10-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.42.0.424.gceadf0f3cf
+.\"    Source: Git 2.42.0.482.g2e8e77cbac
 .\"  Language: English
 .\"
-.TH "GIT\-FSMONITOR\-\-DAEMON" "1" "2023\-10\-20" "Git 2\&.42\&.0\&.424\&.gceadf0" "Git Manual"
+.TH "GIT\-FSMONITOR\-\-DAEMON" "1" "2023\-10\-23" "Git 2\&.42\&.0\&.482\&.g2e8e77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -77,11 +77,11 @@ For more information see the "File System Monitor" section in \fBgit-update-inde
 .sp
 The fsmonitor daemon does not currently know about submodules and does not know to filter out filesystem events that happen within a submodule\&. If fsmonitor daemon is watching a super repo and a file is modified within the working directory of a submodule, it will report the change (as happening against the super repo)\&. However, the client will properly ignore these extra events, so performance may be affected but it will not cause an incorrect result\&.
 .sp
-By default, the fsmonitor daemon refuses to work against network\-mounted repositories; this may be overridden by setting \fBfsmonitor\&.allowRemote\fR to \fBtrue\fR\&. Note, however, that the fsmonitor daemon is not guaranteed to work correctly with all network\-mounted repositories and such use is considered experimental\&.
+By default, the fsmonitor daemon refuses to work with network\-mounted repositories; this may be overridden by setting \fBfsmonitor\&.allowRemote\fR to \fBtrue\fR\&. Note, however, that the fsmonitor daemon is not guaranteed to work correctly with all network\-mounted repositories, so such use is considered experimental\&.
 .sp
 On Mac OS, the inter\-process communication (IPC) between various Git commands and the fsmonitor daemon is done via a Unix domain socket (UDS) \(em a special type of file \(em which is supported by native Mac OS filesystems, but not on network\-mounted filesystems, NTFS, or FAT32\&. Other filesystems may or may not have the needed support; the fsmonitor daemon is not guaranteed to work with these filesystems and such use is considered experimental\&.
 .sp
-By default, the socket is created in the \fB\&.git\fR directory, however, if the \fB\&.git\fR directory is on a network\-mounted filesystem, it will be instead be created at \fB$HOME/\&.git\-fsmonitor\-*\fR unless \fB$HOME\fR itself is on a network\-mounted filesystem in which case you must set the configuration variable \fBfsmonitor\&.socketDir\fR to the path of a directory on a Mac OS native filesystem in which to create the socket file\&.
+By default, the socket is created in the \fB\&.git\fR directory\&. However, if the \fB\&.git\fR directory is on a network\-mounted filesystem, it will instead be created at \fB$HOME/\&.git\-fsmonitor\-*\fR unless \fB$HOME\fR itself is on a network\-mounted filesystem, in which case you must set the configuration variable \fBfsmonitor\&.socketDir\fR to the path of a directory on a Mac OS native filesystem in which to create the socket file\&.
 .sp
 If none of the above directories (\fB\&.git\fR, \fB$HOME\fR, or \fBfsmonitor\&.socketDir\fR) is on a native Mac OS file filesystem the fsmonitor daemon will report an error that will cause the daemon and the currently running command to exit\&.
 .SH "CONFIGURATION"
@@ -90,7 +90,7 @@ Everything below this line in this section is selectively included from the \fBg
 .PP
 fsmonitor\&.allowRemote
 .RS 4
-By default, the fsmonitor daemon refuses to work against network\-mounted repositories\&. Setting
+By default, the fsmonitor daemon refuses to work with network\-mounted repositories\&. Setting
 \fBfsmonitor\&.allowRemote\fR
 to
 \fBtrue\fR
