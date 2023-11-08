@@ -2,12 +2,12 @@
 .\"     Title: git-show-ref
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-11-03
+.\"      Date: 2023-11-08
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0.rc0.23.g8be77c5de6
+.\"    Source: Git 2.43.0.rc1
 .\"  Language: English
 .\"
-.TH "GIT\-SHOW\-REF" "1" "2023\-11\-03" "Git 2\&.43\&.0\&.rc0\&.23\&.g8" "Git Manual"
+.TH "GIT\-SHOW\-REF" "1" "2023\-11\-08" "Git 2\&.43\&.0\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,10 +32,14 @@ git-show-ref \- List references in a local repository
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit show\-ref\fR [\-q | \-\-quiet] [\-\-verify] [\-\-head] [\-d | \-\-dereference]
+\fIgit show\-ref\fR [\-\-head] [\-d | \-\-dereference]
              [\-s | \-\-hash[=<n>]] [\-\-abbrev[=<n>]] [\-\-tags]
              [\-\-heads] [\-\-] [<pattern>\&...]
+\fIgit show\-ref\fR \-\-verify [\-q | \-\-quiet] [\-d | \-\-dereference]
+             [\-s | \-\-hash[=<n>]] [\-\-abbrev[=<n>]]
+             [\-\-] [<ref>\&...]
 \fIgit show\-ref\fR \-\-exclude\-existing[=<pattern>]
+\fIgit show\-ref\fR \-\-exists <ref>
 .fi
 .sp
 .SH "DESCRIPTION"
@@ -45,6 +49,8 @@ Displays references available in a local repository along with the associated co
 By default, shows the tags, heads, and remote refs\&.
 .sp
 The \fB\-\-exclude\-existing\fR form is a filter that does the inverse\&. It reads refs from stdin, one ref per line, and shows those that don\(cqt exist in the local repository\&.
+.sp
+The \fB\-\-exists\fR form can be used to check for the existence of a single references\&. This form does not verify whether the reference resolves to an actual object\&.
 .sp
 Use of this utility is encouraged in favor of directly accessing files under the \fB\&.git\fR directory\&.
 .SH "OPTIONS"
@@ -79,6 +85,11 @@ Enable stricter reference checking by requiring an exact ref path\&. Aside from 
 was not specified\&.
 .RE
 .PP
+\-\-exists
+.RS 4
+Check whether the given reference exists\&. Returns an exit code of 0 if it does, 2 if it is missing, and 1 in case looking up the reference failed with an error other than the reference being missing\&.
+.RE
+.PP
 \-\-abbrev[=<n>]
 .RS 4
 Abbreviate the object name\&. When using
@@ -90,8 +101,9 @@ would do\&.
 .PP
 \-q, \-\-quiet
 .RS 4
-Do not print any results to stdout\&. When combined with
-\fB\-\-verify\fR, this can be used to silently check if a reference exists\&.
+Do not print any results to stdout\&. Can be used with
+\fB\-\-verify\fR
+to silently check if a reference exists\&.
 .RE
 .PP
 \-\-exclude\-existing[=<pattern>]
