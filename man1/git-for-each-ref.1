@@ -2,12 +2,12 @@
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-11-20
+.\"      Date: 2023-12-09
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0
+.\"    Source: Git 2.43.0.76.g1a87c842ec
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "2023\-11\-20" "Git 2\&.43\&.0" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "2023\-12\-09" "Git 2\&.43\&.0\&.76\&.g1a87c84" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -77,20 +77,16 @@ is used\&. You may use the \-\-sort=<key> option multiple times, in which case t
 .RS 4
 A string that interpolates
 \fB%(fieldname)\fR
-from a ref being shown and the object it points at\&. If
-\fBfieldname\fR
-is prefixed with an asterisk (\fB*\fR) and the ref points at a tag object, use the value for the field in the object which the tag object refers to (instead of the field in the tag object)\&. When unspecified,
-\fB<format>\fR
-defaults to
-\fB%(objectname) SPC %(objecttype) TAB %(refname)\fR\&. It also interpolates
+from a ref being shown and the object it points at\&. In addition, the string literal
 \fB%%\fR
-to
-\fB%\fR, and
+renders as
+\fB%\fR
+and
 \fB%xx\fR
-where
+\- where
 \fBxx\fR
-are hex digits interpolates to character with hex code
-\fBxx\fR; for example
+are hex digits \- renders as the character with hex code
+\fBxx\fR\&. For example,
 \fB%00\fR
 interpolates to
 \fB\e0\fR
@@ -98,11 +94,16 @@ interpolates to
 \fB%09\fR
 to
 \fB\et\fR
-(TAB) and
+(TAB), and
 \fB%0a\fR
 to
 \fB\en\fR
 (LF)\&.
+.sp
+When unspecified,
+\fB<format>\fR
+defaults to
+\fB%(objectname) SPC %(objecttype) TAB %(refname)\fR\&.
 .RE
 .PP
 \-\-color[=<when>]
@@ -447,6 +448,8 @@ for details\&.
 In addition to the above, for commit and tag objects, the header field names (\fBtree\fR, \fBparent\fR, \fBobject\fR, \fBtype\fR, and \fBtag\fR) can be used to specify the value in the header field\&. Fields \fBtree\fR and \fBparent\fR can also be used with modifier \fB:short\fR and \fB:short=<length>\fR just like \fBobjectname\fR\&.
 .sp
 For commit and tag objects, the special \fBcreatordate\fR and \fBcreator\fR fields will correspond to the appropriate date or name\-email\-date tuple from the \fBcommitter\fR or \fBtagger\fR fields depending on the object type\&. These are intended for working on a mix of annotated and lightweight tags\&.
+.sp
+For tag objects, a \fBfieldname\fR prefixed with an asterisk (\fB*\fR) expands to the \fBfieldname\fR value of the peeled object, rather than that of the tag object itself\&.
 .sp
 Fields that have name\-email\-date tuple as its value (\fBauthor\fR, \fBcommitter\fR, and \fBtagger\fR) can be suffixed with \fBname\fR, \fBemail\fR, and \fBdate\fR to extract the named component\&. For email fields (\fBauthoremail\fR, \fBcommitteremail\fR and \fBtaggeremail\fR), \fB:trim\fR can be appended to get the email without angle brackets, and \fB:localpart\fR to get the part before the \fB@\fR symbol out of the trimmed email\&. In addition to these, the \fB:mailmap\fR option and the corresponding \fB:mailmap,trim\fR and \fB:mailmap,localpart\fR can be used (order does not matter) to get values of the name and email according to the \&.mailmap file or according to the file set in the mailmap\&.file or mailmap\&.blob configuration variable (see \fBgitmailmap\fR(5))\&.
 .sp

@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2023-11-20
+.\"      Date: 2023-12-09
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0
+.\"    Source: Git 2.43.0.76.g1a87c842ec
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "2023\-11\-20" "Git 2\&.43\&.0" "Git Manual"
+.TH "GIT\-REBASE" "1" "2023\-12\-09" "Git 2\&.43\&.0\&.76\&.g1a87c84" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -818,34 +818,32 @@ See also INCOMPATIBLE OPTIONS below\&.
 .PP
 \-\-autosquash, \-\-no\-autosquash
 .RS 4
-When the commit log message begins with "squash! \&..." or "fixup! \&..." or "amend! \&...", and there is already a commit in the todo list that matches the same
-\fB\&.\&.\&.\fR, automatically modify the todo list of
-\fBrebase \-i\fR, so that the commit marked for squashing comes right after the commit to be modified, and change the action of the moved commit from
+Automatically squash commits with specially formatted messages into previous commits being rebased\&. If a commit message starts with "squash! ", "fixup! " or "amend! ", the remainder of the subject line is taken as a commit specifier, which matches a previous commit if it matches the subject line or the hash of that commit\&. If no commit matches fully, matches of the specifier with the start of commit subjects are considered\&.
+.sp
+In the rebase todo list, the actions of squash, fixup and amend commits are changed from
 \fBpick\fR
 to
-\fBsquash\fR
-or
+\fBsquash\fR,
 \fBfixup\fR
 or
-\fBfixup \-C\fR
-respectively\&. A commit matches the
-\fB\&.\&.\&.\fR
-if the commit subject matches, or if the
-\fB\&.\&.\&.\fR
-refers to the commit\(cqs hash\&. As a fall\-back, partial matches of the commit subject work, too\&. The recommended way to create fixup/amend/squash commits is by using the
+\fBfixup \-C\fR, respectively, and they are moved right after the commit they modify\&. The
+\fB\-\-interactive\fR
+option can be used to review and edit the todo list before proceeding\&.
+.sp
+The recommended way to create commits with squash markers is by using the
+\fB\-\-squash\fR,
 \fB\-\-fixup\fR,
 \fB\-\-fixup=amend:\fR
 or
 \fB\-\-fixup=reword:\fR
-and
-\fB\-\-squash\fR
-options respectively of
-\fBgit-commit\fR(1)\&.
+options of
+\fBgit-commit\fR(1), which take the target commit as an argument and automatically fill in the subject line of the new commit from that\&.
 .sp
-If the
-\fB\-\-autosquash\fR
-option is enabled by default using the configuration variable
-\fBrebase\&.autoSquash\fR, this option can be used to override and disable this setting\&.
+Settting configuration variable
+\fBrebase\&.autoSquash\fR
+to true enables auto\-squashing by default for interactive rebase\&. The
+\fB\-\-no\-autosquash\fR
+option can be used to override that setting\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
@@ -2020,9 +2018,13 @@ Whether to show a diffstat of what changed upstream since the last rebase\&. Fal
 .PP
 rebase\&.autoSquash
 .RS 4
-If set to true enable
+If set to true, enable the
 \fB\-\-autosquash\fR
-option by default\&.
+option of
+\fBgit-rebase\fR(1)
+by default for interactive mode\&. This can be overridden with the
+\fB\-\-no\-autosquash\fR
+option\&.
 .RE
 .PP
 rebase\&.autoStash
