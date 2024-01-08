@@ -2,12 +2,12 @@
 .\"     Title: git-merge
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-01-02
+.\"      Date: 2024-01-08
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0.254.ga26002b628
+.\"    Source: Git 2.43.0.283.ga54a84b333
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "2024\-01\-02" "Git 2\&.43\&.0\&.254\&.ga26002" "Git Manual"
+.TH "GIT\-MERGE" "1" "2024\-01\-08" "Git 2\&.43\&.0\&.283\&.ga54a84" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,9 +42,9 @@ git-merge \- Join two or more development histories together
 .sp
 .SH "DESCRIPTION"
 .sp
-Incorporates changes from the named commits (since the time their histories diverged from the current branch) into the current branch\&. This command is used by \fIgit pull\fR to incorporate changes from another repository and can be used by hand to merge changes from one branch into another\&.
+Incorporates changes from the named commits (since the time their histories diverged from the current branch) into the current branch\&. This command is used by \fBgit pull\fR to incorporate changes from another repository and can be used by hand to merge changes from one branch into another\&.
 .sp
-Assume the following history exists and the current branch is "\fBmaster\fR":
+Assume the following history exists and the current branch is \fBmaster\fR:
 .sp
 .if n \{\
 .RS 4
@@ -59,7 +59,7 @@ Assume the following history exists and the current branch is "\fBmaster\fR":
 .\}
 .sp
 .sp
-Then "\fBgit merge topic\fR" will replay the changes made on the \fBtopic\fR branch since it diverged from \fBmaster\fR (i\&.e\&., \fBE\fR) until its current commit (\fBC\fR) on top of \fBmaster\fR, and record the result in a new commit along with the names of the two parent commits and a log message from the user describing the changes\&. Before the operation, \fBORIG_HEAD\fR is set to the tip of the current branch (\fBC\fR)\&.
+Then \fBgit merge topic\fR will replay the changes made on the \fBtopic\fR branch since it diverged from \fBmaster\fR (i\&.e\&., \fBE\fR) until its current commit (\fBC\fR) on top of \fBmaster\fR, and record the result in a new commit along with the names of the two parent commits and a log message from the user describing the changes\&. Before the operation, \fBORIG_HEAD\fR is set to the tip of the current branch (\fBC\fR)\&.
 .sp
 .if n \{\
 .RS 4
@@ -74,11 +74,11 @@ Then "\fBgit merge topic\fR" will replay the changes made on the \fBtopic\fR bra
 .\}
 .sp
 .sp
-The second syntax ("\fBgit merge \-\-abort\fR") can only be run after the merge has resulted in conflicts\&. \fIgit merge \-\-abort\fR will abort the merge process and try to reconstruct the pre\-merge state\&. However, if there were uncommitted changes when the merge started (and especially if those changes were further modified after the merge was started), \fIgit merge \-\-abort\fR will in some cases be unable to reconstruct the original (pre\-merge) changes\&. Therefore:
+A merge stops if there\(cqs a conflict that cannot be resolved automatically or if \fB\-\-no\-commit\fR was provided when initiating the merge\&. At that point you can run \fBgit merge \-\-abort\fR or \fBgit merge \-\-continue\fR\&.
 .sp
-\fBWarning\fR: Running \fIgit merge\fR with non\-trivial uncommitted changes is discouraged: while possible, it may leave you in a state that is hard to back out of in the case of a conflict\&.
+\fBgit merge \-\-abort\fR will abort the merge process and try to reconstruct the pre\-merge state\&. However, if there were uncommitted changes when the merge started (and especially if those changes were further modified after the merge was started), \fBgit merge \-\-abort\fR will in some cases be unable to reconstruct the original (pre\-merge) changes\&. Therefore:
 .sp
-The third syntax ("\fBgit merge \-\-continue\fR") can only be run after the merge has resulted in conflicts\&.
+\fBWarning\fR: Running \fBgit merge\fR with non\-trivial uncommitted changes is discouraged: while possible, it may leave you in a state that is hard to back out of in the case of a conflict\&.
 .SH "OPTIONS"
 .PP
 \-\-commit, \-\-no\-commit
@@ -264,9 +264,9 @@ If
 is specified, a shortlog of the commits being merged will be appended to the specified message\&.
 .sp
 The
-\fIgit fmt\-merge\-msg\fR
+\fBgit fmt\-merge\-msg\fR
 command can be used to give a good default for automated
-\fIgit merge\fR
+\fBgit merge\fR
 invocations\&. The automated message can include the branch description\&.
 .RE
 .PP
@@ -307,21 +307,21 @@ to abort\&.
 Abort the current conflict resolution process, and try to reconstruct the pre\-merge state\&. If an autostash entry is present, apply it to the worktree\&.
 .sp
 If there were uncommitted worktree changes present when the merge started,
-\fIgit merge \-\-abort\fR
+\fBgit merge \-\-abort\fR
 will in some cases be unable to reconstruct these changes\&. It is therefore recommended to always commit or stash your changes before running
-\fIgit merge\fR\&.
+\fBgit merge\fR\&.
 .sp
-\fIgit merge \-\-abort\fR
+\fBgit merge \-\-abort\fR
 is equivalent to
-\fIgit reset \-\-merge\fR
+\fBgit reset \-\-merge\fR
 when
 \fBMERGE_HEAD\fR
 is present unless
 \fBMERGE_AUTOSTASH\fR
 is also present in which case
-\fIgit merge \-\-abort\fR
+\fBgit merge \-\-abort\fR
 applies the stash entry to the worktree whereas
-\fIgit reset \-\-merge\fR
+\fBgit reset \-\-merge\fR
 will save the stashed changes in the stash list\&.
 .RE
 .PP
@@ -335,9 +335,9 @@ is present, the stash entry will be saved to the stash list\&.
 \-\-continue
 .RS 4
 After a
-\fIgit merge\fR
+\fBgit merge\fR
 stops due to conflicts you can conclude the merge by running
-\fIgit merge \-\-continue\fR
+\fBgit merge \-\-continue\fR
 (see "HOW TO RESOLVE CONFLICTS" section below)\&.
 .RE
 .PP
@@ -357,14 +357,14 @@ for merging are merged to the current branch\&.
 .RE
 .SH "PRE\-MERGE CHECKS"
 .sp
-Before applying outside changes, you should get your own work in good shape and committed locally, so it will not be clobbered if there are conflicts\&. See also \fBgit-stash\fR(1)\&. \fIgit pull\fR and \fIgit merge\fR will stop without doing anything when local uncommitted changes overlap with files that \fIgit pull\fR/\fIgit merge\fR may need to update\&.
+Before applying outside changes, you should get your own work in good shape and committed locally, so it will not be clobbered if there are conflicts\&. See also \fBgit-stash\fR(1)\&. \fBgit pull\fR and \fBgit merge\fR will stop without doing anything when local uncommitted changes overlap with files that \fBgit pull\fR/\fBgit merge\fR may need to update\&.
 .sp
-To avoid recording unrelated changes in the merge commit, \fIgit pull\fR and \fIgit merge\fR will also abort if there are any changes registered in the index relative to the \fBHEAD\fR commit\&. (Special narrow exceptions to this rule may exist depending on which merge strategy is in use, but generally, the index must match HEAD\&.)
+To avoid recording unrelated changes in the merge commit, \fBgit pull\fR and \fBgit merge\fR will also abort if there are any changes registered in the index relative to the \fBHEAD\fR commit\&. (Special narrow exceptions to this rule may exist depending on which merge strategy is in use, but generally, the index must match HEAD\&.)
 .sp
-If all named commits are already ancestors of \fBHEAD\fR, \fIgit merge\fR will exit early with the message "Already up to date\&."
+If all named commits are already ancestors of \fBHEAD\fR, \fBgit merge\fR will exit early with the message "Already up to date\&."
 .SH "FAST\-FORWARD MERGE"
 .sp
-Often the current branch head is an ancestor of the named commit\&. This is the most common case especially when invoked from \fIgit pull\fR: you are tracking an upstream repository, you have committed no local changes, and now you want to update to a newer upstream revision\&. In this case, a new commit is not needed to store the combined history; instead, the \fBHEAD\fR (along with the index) is updated to point at the named commit, without creating an extra merge commit\&.
+Often the current branch head is an ancestor of the named commit\&. This is the most common case especially when invoked from \fBgit pull\fR: you are tracking an upstream repository, you have committed no local changes, and now you want to update to a newer upstream revision\&. In this case, a new commit is not needed to store the combined history; instead, the \fBHEAD\fR (along with the index) is updated to point at the named commit, without creating an extra merge commit\&.
 .sp
 This behavior can be suppressed with the \fB\-\-no\-ff\fR option\&.
 .SH "TRUE MERGE"
@@ -508,7 +508,7 @@ The area where a pair of conflicting changes happened is marked with markers \fB
 .sp
 The default format does not show what the original said in the conflicting area\&. You cannot tell how many lines are deleted and replaced with Barbie\(cqs remark on your side\&. The only thing you can tell is that your side wants to say it is hard and you\(cqd prefer to go shopping, while the other side wants to claim it is easy\&.
 .sp
-An alternative style can be used by setting the "merge\&.conflictStyle" configuration variable to either "diff3" or "zdiff3"\&. In "diff3" style, the above conflict may look like this:
+An alternative style can be used by setting the \fBmerge\&.conflictStyle\fR configuration variable to either "diff3" or "zdiff3"\&. In "diff3" style, the above conflict may look like this:
 .sp
 .if n \{\
 .RS 4
@@ -588,13 +588,13 @@ can be used for this\&.
 .IP \(bu 2.3
 .\}
 Resolve the conflicts\&. Git will mark the conflicts in the working tree\&. Edit the files into shape and
-\fIgit add\fR
+\fBgit add\fR
 them to the index\&. Use
-\fIgit commit\fR
+\fBgit commit\fR
 or
-\fIgit merge \-\-continue\fR
+\fBgit merge \-\-continue\fR
 to seal the deal\&. The latter command checks whether there is a (interrupted) merge in progress before calling
-\fIgit commit\fR\&.
+\fBgit commit\fR\&.
 .RE
 .sp
 You can work through the conflict with a number of tools:
@@ -948,7 +948,7 @@ With the strategies that use 3\-way merge (including the default, \fIort\fR), if
 branch\&.<name>\&.mergeOptions
 .RS 4
 Sets default options for merging into branch <name>\&. The syntax and supported options are the same as those of
-\fIgit merge\fR, but option values containing whitespace characters are currently not supported\&.
+\fBgit merge\fR, but option values containing whitespace characters are currently not supported\&.
 .RE
 .sp
 Everything above this line in this section isn\(cqt included from the \fBgit-config\fR(1) documentation\&. The content that follows is the same as what\(cqs found there:
