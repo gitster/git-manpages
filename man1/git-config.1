@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-01-08
+.\"      Date: 2024-01-12
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0.283.ga54a84b333
+.\"    Source: Git 2.43.0.334.gd4dbce1db5
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-01\-08" "Git 2\&.43\&.0\&.283\&.ga54a84" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-01\-12" "Git 2\&.43\&.0\&.334\&.gd4dbce" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -7424,7 +7424,21 @@ Note that changing the compression level will not automatically recompress all e
 .PP
 pack\&.allowPackReuse
 .RS 4
-When true, and when reachability bitmaps are enabled, pack\-objects will try to send parts of the bitmapped packfile verbatim\&. This can reduce memory and CPU usage to serve fetches, but might result in sending a slightly larger pack\&. Defaults to true\&.
+When true or "single", and when reachability bitmaps are enabled, pack\-objects will try to send parts of the bitmapped packfile verbatim\&. When "multi", and when a multi\-pack reachability bitmap is available, pack\-objects will try to send parts of all packs in the MIDX\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+If only a single pack bitmap is available, and
+`pack\&.allowPackReuse` is set to "multi", reuse parts of just the
+bitmapped packfile\&. This can reduce memory and CPU usage to
+serve fetches, but might result in sending a slightly larger
+pack\&. Defaults to true\&.
+.fi
+.if n \{\
+.RE
+.\}
 .RE
 .PP
 pack\&.island
@@ -8080,7 +8094,7 @@ command in the todo list\&. Defaults to "ignore"\&.
 rebase\&.instructionFormat
 .RS 4
 A format string, as specified in
-\fBgit-log\fR(1), to be used for the todo list during an interactive rebase\&. The format will automatically have the long commit hash prepended to the format\&.
+\fBgit-log\fR(1), to be used for the todo list during an interactive rebase\&. The format will automatically have the commit hash prepended to the format\&.
 .RE
 .PP
 rebase\&.abbreviateCommands

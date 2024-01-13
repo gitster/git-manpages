@@ -2,12 +2,12 @@
 .\"     Title: gitformat-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-01-08
+.\"      Date: 2024-01-12
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0.283.ga54a84b333
+.\"    Source: Git 2.43.0.334.gd4dbce1db5
 .\"  Language: English
 .\"
-.TH "GITFORMAT\-PACK" "5" "2024\-01\-08" "Git 2\&.43\&.0\&.283\&.ga54a84" "Git Manual"
+.TH "GITFORMAT\-PACK" "5" "2024\-01\-12" "Git 2\&.43\&.0\&.334\&.gd4dbce" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -903,6 +903,23 @@ Packfile Names (ID: {\*(AqP\*(Aq, \*(AqN\*(Aq, \*(AqA\*(Aq, \*(AqM\*(Aq})
 .RS 4
 .\}
 .nf
+Bitmapped Packfiles (ID: {\*(AqB\*(Aq, \*(AqT\*(Aq, \*(AqM\*(Aq, \*(AqP\*(Aq})
+    Stores a table of two 4\-byte unsigned integers in network order\&.
+    Each table entry corresponds to a single pack (in the order that
+    they appear above in the `PNAM` chunk)\&. The values for each table
+    entry are as follows:
+    \- The first bit position (in pseudo\-pack order, see below) to
+      contain an object from that pack\&.
+    \- The number of bits whose objects are selected from that pack\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
 OID Fanout (ID: {\*(AqO\*(Aq, \*(AqI\*(Aq, \*(AqD\*(Aq, \*(AqF\*(Aq})
     The ith entry, F[i], stores the number of OIDs with first
     byte at most i\&. Thus F[255] stores the total
@@ -1059,6 +1076,113 @@ exactly when
 In short, a MIDX\(cqs pseudo\-pack is the de\-duplicated concatenation of objects in packs stored by the MIDX, laid out in pack order, and the packs arranged in MIDX order (with the preferred pack coming first)\&.
 .sp
 The MIDX\(cqs reverse index is stored in the optional \fIRIDX\fR chunk within the MIDX itself\&.
+.SS "\fBBTMP\fR chunk"
+.sp
+The Bitmapped Packfiles (\fBBTMP\fR) chunk encodes additional information about the objects in the multi\-pack index\(cqs reachability bitmap\&. Recall that objects from the MIDX are arranged in "pseudo\-pack" order (see above) for reachability bitmaps\&.
+.sp
+From the example above, suppose we have packs "a", "b", and "c", with 10, 15, and 20 objects, respectively\&. In pseudo\-pack order, those would be arranged as follows:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+|a,0|a,1|\&.\&.\&.|a,9|b,0|b,1|\&.\&.\&.|b,14|c,0|c,1|\&.\&.\&.|c,19|
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+When working with single\-pack bitmaps (or, equivalently, multi\-pack reachability bitmaps with a preferred pack), \fBgit-pack-objects\fR(1) performs \(lqverbatim\(rq reuse, attempting to reuse chunks of the bitmapped or preferred packfile instead of adding objects to the packing list\&.
+.sp
+When a chunk of bytes is reused from an existing pack, any objects contained therein do not need to be added to the packing list, saving memory and CPU time\&. But a chunk from an existing packfile can only be reused when the following conditions are met:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The chunk contains only objects which were requested by the caller (i\&.e\&. does not contain any objects which the caller didn\(cqt ask for explicitly or implicitly)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+All objects stored in non\-thin packs as offset\- or reference\-deltas also include their base object in the resulting pack\&.
+.RE
+.sp
+The \fBBTMP\fR chunk encodes the necessary information in order to implement multi\-pack reuse over a set of packfiles as described above\&. Specifically, the \fBBTMP\fR chunk encodes three pieces of information (all 32\-bit unsigned integers in network byte\-order) for each packfile \fBp\fR that is stored in the MIDX, as follows:
+.PP
+\fBbitmap_pos\fR
+.RS 4
+The first bit position (in pseudo\-pack order) in the multi\-pack index\(cqs reachability bitmap occupied by an object from
+\fBp\fR\&.
+.RE
+.PP
+\fBbitmap_nr\fR
+.RS 4
+The number of bit positions (including the one at
+\fBbitmap_pos\fR) that encode objects from that pack
+\fBp\fR\&.
+.RE
+.sp
+For example, the \fBBTMP\fR chunk corresponding to the above example (with packs \(lqa\(rq, \(lqb\(rq, and \(lqc\(rq) would look like:
+.TS
+allbox tab(:);
+lt lt lt
+lt lt lt
+lt lt lt
+lt lt lt.
+T{
+.sp
+T}:T{
+.sp
+\fBbitmap_pos\fR
+T}:T{
+.sp
+\fBbitmap_nr\fR
+T}
+T{
+.sp
+packfile \(lqa\(rq
+T}:T{
+.sp
+\fB0\fR
+T}:T{
+.sp
+\fB10\fR
+T}
+T{
+.sp
+packfile \(lqb\(rq
+T}:T{
+.sp
+\fB10\fR
+T}:T{
+.sp
+\fB15\fR
+T}
+T{
+.sp
+packfile \(lqc\(rq
+T}:T{
+.sp
+\fB25\fR
+T}:T{
+.sp
+\fB20\fR
+T}
+.TE
+.sp 1
+.sp
+With this information in place, we can treat each packfile as individually reusable in the same fashion as verbatim pack reuse is performed on individual packs prior to the implementation of the \fBBTMP\fR chunk\&.
 .SH "CRUFT PACKS"
 .sp
 The cruft packs feature offer an alternative to Git\(cqs traditional mechanism of removing unreachable objects\&. This document provides an overview of Git\(cqs pruning mechanism, and how a cruft pack can be used instead to accomplish the same\&.
