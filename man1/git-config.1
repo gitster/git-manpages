@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-01-19
+.\"      Date: 2024-01-26
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0.386.ge02ecfcc53
+.\"    Source: Git 2.43.0.440.gb50a608ba2
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-01\-19" "Git 2\&.43\&.0\&.386\&.ge02ecf" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-01\-26" "Git 2\&.43\&.0\&.440\&.gb50a60" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1281,9 +1281,63 @@ variables default to
 \fItrue\fR, and you can tell Git that you do not need help by setting these to
 \fIfalse\fR:
 .PP
+addEmbeddedRepo
+.RS 4
+Advice on what to do when you\(cqve accidentally added one git repo inside of another\&.
+.RE
+.PP
+addEmptyPathspec
+.RS 4
+Advice shown if a user runs the add command without providing the pathspec parameter\&.
+.RE
+.PP
+addIgnoredFile
+.RS 4
+Advice shown if a user attempts to add an ignored file to the index\&.
+.RE
+.PP
+amWorkDir
+.RS 4
+Advice that shows the location of the patch file when
+\fBgit-am\fR(1)
+fails to apply it\&.
+.RE
+.PP
 ambiguousFetchRefspec
 .RS 4
 Advice shown when a fetch refspec for multiple remotes maps to the same remote\-tracking branch namespace and causes branch tracking set\-up to fail\&.
+.RE
+.PP
+checkoutAmbiguousRemoteBranchName
+.RS 4
+Advice shown when the argument to
+\fBgit-checkout\fR(1)
+and
+\fBgit-switch\fR(1)
+ambiguously resolves to a remote tracking branch on more than one remote in situations where an unambiguous argument would have otherwise caused a remote\-tracking branch to be checked out\&. See the
+\fBcheckout\&.defaultRemote\fR
+configuration variable for how to set a given remote to be used by default in some situations where this advice would be printed\&.
+.RE
+.PP
+commitBeforeMerge
+.RS 4
+Advice shown when
+\fBgit-merge\fR(1)
+refuses to merge to avoid overwriting local changes\&.
+.RE
+.PP
+detachedHead
+.RS 4
+Advice shown when you used
+\fBgit-switch\fR(1)
+or
+\fBgit-checkout\fR(1)
+to move to the detached HEAD state, to instruct how to create a local branch after the fact\&.
+.RE
+.PP
+diverging
+.RS 4
+Advice shown when a fast\-forward is not possible\&.
 .RE
 .PP
 fetchShowForcedUpdates
@@ -1293,35 +1347,24 @@ Advice shown when
 takes a long time to calculate forced updates after ref updates, or to warn that the check is disabled\&.
 .RE
 .PP
-pushUpdateRejected
+forceDeleteBranch
 .RS 4
-Set this variable to
-\fIfalse\fR
-if you want to disable
-\fIpushNonFFCurrent\fR,
-\fIpushNonFFMatching\fR,
-\fIpushAlreadyExists\fR,
-\fIpushFetchFirst\fR,
-\fIpushNeedsForce\fR, and
-\fIpushRefNeedsUpdate\fR
-simultaneously\&.
+Advice shown when a user tries to delete a not fully merged branch without the force option set\&.
 .RE
 .PP
-pushNonFFCurrent
+ignoredHook
 .RS 4
-Advice shown when
-\fBgit-push\fR(1)
-fails due to a non\-fast\-forward update to the current branch\&.
+Advice shown if a hook is ignored because the hook is not set as executable\&.
 .RE
 .PP
-pushNonFFMatching
+implicitIdentity
 .RS 4
-Advice shown when you ran
-\fBgit-push\fR(1)
-and pushed
-\fImatching refs\fR
-explicitly (i\&.e\&. you used
-\fI:\fR, or specified a refspec that isn\(cqt your current branch) and it resulted in a non\-fast\-forward error\&.
+Advice on how to set your identity configuration when your information is guessed from the system username and domain name\&.
+.RE
+.PP
+nestedTag
+.RS 4
+Advice shown if a user attempts to recursively tag a tag object\&.
 .RE
 .PP
 pushAlreadyExists
@@ -1345,11 +1388,21 @@ Shown when
 rejects an update that tries to overwrite a remote ref that points at an object that is not a commit\-ish, or make the remote ref point at an object that is not a commit\-ish\&.
 .RE
 .PP
-pushUnqualifiedRefname
+pushNonFFCurrent
 .RS 4
-Shown when
+Advice shown when
 \fBgit-push\fR(1)
-gives up trying to guess based on the source and destination refs what remote ref namespace the source belongs in, but where we can still suggest that the user push to either refs/heads/* or refs/tags/* based on the type of the source object\&.
+fails due to a non\-fast\-forward update to the current branch\&.
+.RE
+.PP
+pushNonFFMatching
+.RS 4
+Advice shown when you ran
+\fBgit-push\fR(1)
+and pushed
+\fImatching refs\fR
+explicitly (i\&.e\&. you used
+\fI:\fR, or specified a refspec that isn\(cqt your current branch) and it resulted in a non\-fast\-forward error\&.
 .RE
 .PP
 pushRefNeedsUpdate
@@ -1357,6 +1410,52 @@ pushRefNeedsUpdate
 Shown when
 \fBgit-push\fR(1)
 rejects a forced update of a branch when its remote\-tracking ref has updates that we do not have locally\&.
+.RE
+.PP
+pushUnqualifiedRefname
+.RS 4
+Shown when
+\fBgit-push\fR(1)
+gives up trying to guess based on the source and destination refs what remote ref namespace the source belongs in, but where we can still suggest that the user push to either refs/heads/* or refs/tags/* based on the type of the source object\&.
+.RE
+.PP
+pushUpdateRejected
+.RS 4
+Set this variable to
+\fIfalse\fR
+if you want to disable
+\fIpushNonFFCurrent\fR,
+\fIpushNonFFMatching\fR,
+\fIpushAlreadyExists\fR,
+\fIpushFetchFirst\fR,
+\fIpushNeedsForce\fR, and
+\fIpushRefNeedsUpdate\fR
+simultaneously\&.
+.RE
+.PP
+resetNoRefresh
+.RS 4
+Advice to consider using the
+\fB\-\-no\-refresh\fR
+option to
+\fBgit-reset\fR(1)
+when the command takes more than 2 seconds to refresh the index after reset\&.
+.RE
+.PP
+resolveConflict
+.RS 4
+Advice shown by various commands when conflicts prevent the operation from being performed\&.
+.RE
+.PP
+rmHints
+.RS 4
+In case of failure in the output of
+\fBgit-rm\fR(1), show directions on how to proceed from the current state\&.
+.RE
+.PP
+sequencerInUse
+.RS 4
+Advice shown when a sequencer command is already in progress\&.
 .RE
 .PP
 skippedCherryPicks
@@ -1397,99 +1496,6 @@ option to
 when the command takes more than 2 seconds to enumerate untracked files\&.
 .RE
 .PP
-commitBeforeMerge
-.RS 4
-Advice shown when
-\fBgit-merge\fR(1)
-refuses to merge to avoid overwriting local changes\&.
-.RE
-.PP
-resetNoRefresh
-.RS 4
-Advice to consider using the
-\fB\-\-no\-refresh\fR
-option to
-\fBgit-reset\fR(1)
-when the command takes more than 2 seconds to refresh the index after reset\&.
-.RE
-.PP
-resolveConflict
-.RS 4
-Advice shown by various commands when conflicts prevent the operation from being performed\&.
-.RE
-.PP
-sequencerInUse
-.RS 4
-Advice shown when a sequencer command is already in progress\&.
-.RE
-.PP
-implicitIdentity
-.RS 4
-Advice on how to set your identity configuration when your information is guessed from the system username and domain name\&.
-.RE
-.PP
-detachedHead
-.RS 4
-Advice shown when you used
-\fBgit-switch\fR(1)
-or
-\fBgit-checkout\fR(1)
-to move to the detached HEAD state, to instruct how to create a local branch after the fact\&.
-.RE
-.PP
-suggestDetachingHead
-.RS 4
-Advice shown when
-\fBgit-switch\fR(1)
-refuses to detach HEAD without the explicit
-\fB\-\-detach\fR
-option\&.
-.RE
-.PP
-checkoutAmbiguousRemoteBranchName
-.RS 4
-Advice shown when the argument to
-\fBgit-checkout\fR(1)
-and
-\fBgit-switch\fR(1)
-ambiguously resolves to a remote tracking branch on more than one remote in situations where an unambiguous argument would have otherwise caused a remote\-tracking branch to be checked out\&. See the
-\fBcheckout\&.defaultRemote\fR
-configuration variable for how to set a given remote to be used by default in some situations where this advice would be printed\&.
-.RE
-.PP
-amWorkDir
-.RS 4
-Advice that shows the location of the patch file when
-\fBgit-am\fR(1)
-fails to apply it\&.
-.RE
-.PP
-rmHints
-.RS 4
-In case of failure in the output of
-\fBgit-rm\fR(1), show directions on how to proceed from the current state\&.
-.RE
-.PP
-addEmbeddedRepo
-.RS 4
-Advice on what to do when you\(cqve accidentally added one git repo inside of another\&.
-.RE
-.PP
-ignoredHook
-.RS 4
-Advice shown if a hook is ignored because the hook is not set as executable\&.
-.RE
-.PP
-waitingForEditor
-.RS 4
-Print a message to the terminal whenever Git is waiting for editor input from the user\&.
-.RE
-.PP
-nestedTag
-.RS 4
-Advice shown if a user attempts to recursively tag a tag object\&.
-.RE
-.PP
 submoduleAlternateErrorStrategyDie
 .RS 4
 Advice shown when a submodule\&.alternateErrorStrategy option configured to "die" causes a fatal error\&.
@@ -1502,14 +1508,13 @@ Advice shown when a user runs a submodule command that fails because
 was not run\&.
 .RE
 .PP
-addIgnoredFile
+suggestDetachingHead
 .RS 4
-Advice shown if a user attempts to add an ignored file to the index\&.
-.RE
-.PP
-addEmptyPathspec
-.RS 4
-Advice shown if a user runs the add command without providing the pathspec parameter\&.
+Advice shown when
+\fBgit-switch\fR(1)
+refuses to detach HEAD without the explicit
+\fB\-\-detach\fR
+option\&.
 .RE
 .PP
 updateSparsePath
@@ -1521,9 +1526,9 @@ or
 is asked to update index entries outside the current sparse checkout\&.
 .RE
 .PP
-diverging
+waitingForEditor
 .RS 4
-Advice shown when a fast\-forward is not possible\&.
+Print a message to the terminal whenever Git is waiting for editor input from the user\&.
 .RE
 .PP
 worktreeAddOrphan
