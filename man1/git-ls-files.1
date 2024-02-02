@@ -2,12 +2,12 @@
 .\"     Title: git-ls-files
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-01-30
+.\"      Date: 2024-02-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0.493.gbc7ee2e5e1
+.\"    Source: Git 2.43.0.522.g2a540e432f
 .\"  Language: English
 .\"
-.TH "GIT\-LS\-FILES" "1" "2024\-01\-30" "Git 2\&.43\&.0\&.493\&.gbc7ee2" "Git Manual"
+.TH "GIT\-LS\-FILES" "1" "2024\-02\-02" "Git 2\&.43\&.0\&.522\&.g2a540e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -146,7 +146,9 @@ Read exclude patterns from <file>; 1 per line\&.
 .PP
 \-\-exclude\-per\-directory=<file>
 .RS 4
-Read additional exclude patterns that apply only to the directory and its subdirectories in <file>\&. Deprecated; use \-\-exclude\-standard instead\&.
+Read additional exclude patterns that apply only to the directory and its subdirectories in <file>\&. If you are trying to emulate the way Porcelain commands work, using the
+\fB\-\-exclude\-standard\fR
+option instead is easier and more thorough\&.
 .RE
 .PP
 \-\-exclude\-standard
@@ -411,7 +413,7 @@ The pathname of the file which is recorded in the index\&.
 .sp
 \fIgit ls\-files\fR can use a list of "exclude patterns" when traversing the directory tree and finding files to show when the flags \-\-others or \-\-ignored are specified\&. \fBgitignore\fR(5) specifies the format of exclude patterns\&.
 .sp
-Generally, you should just use \-\-exclude\-standard, but for historical reasons the exclude patterns can be specified from the following places, in order:
+These exclude patterns can be specified from the following places, in order:
 .sp
 .RS 4
 .ie n \{\
@@ -450,6 +452,38 @@ examines, normally
 .RE
 .sp
 A pattern specified on the command line with \-\-exclude or read from the file specified with \-\-exclude\-from is relative to the top of the directory tree\&. A pattern read from a file specified by \-\-exclude\-per\-directory is relative to the directory that the pattern file appears in\&.
+.sp
+Generally, you should be able to use \fB\-\-exclude\-standard\fR when you want the exclude rules applied the same way as what Porcelain commands do\&. To emulate what \fB\-\-exclude\-standard\fR specifies, you can give \fB\-\-exclude\-per\-directory=\&.gitignore\fR, and then specify:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+The file specified by the
+\fBcore\&.excludesfile\fR
+configuration variable, if exists, or the
+\fB$XDG_CONFIG_HOME/git/ignore\fR
+file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+The
+\fB$GIT_DIR/info/exclude\fR
+file\&.
+.RE
+.sp
+via the \fB\-\-exclude\-from=\fR option\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-read-tree\fR(1), \fBgitignore\fR(5)
