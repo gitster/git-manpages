@@ -2,12 +2,12 @@
 .\"     Title: git-index-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-02-06
+.\"      Date: 2024-02-08
 .\"    Manual: Git Manual
-.\"    Source: Git 2.43.0.561.g235986be82
+.\"    Source: Git 2.43.0.581.g5216f8f5c4
 .\"  Language: English
 .\"
-.TH "GIT\-INDEX\-PACK" "1" "2024\-02\-06" "Git 2\&.43\&.0\&.561\&.g235986" "Git Manual"
+.TH "GIT\-INDEX\-PACK" "1" "2024\-02\-08" "Git 2\&.43\&.0\&.581\&.g5216f8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -98,9 +98,19 @@ message can later be searched for within all \&.keep files to locate any which h
 This is intended to be used by the test suite only\&. It allows to force the version for the generated pack index, and to force 64\-bit index entries on objects located above the given offset\&.
 .RE
 .PP
-\-\-strict
+\-\-strict[=<msg\-id>=<severity>\&...]
 .RS 4
-Die, if the pack contains broken objects or links\&.
+Die, if the pack contains broken objects or links\&. An optional comma\-separated list of
+\fB<msg\-id>=<severity>\fR
+can be passed to change the severity of some possible issues, e\&.g\&.,
+\fB\-\-strict="missingEmail=ignore,badTagName=error"\fR\&. See the entry for the
+\fBfsck\&.<msg\-id>\fR
+configuration options in
+\fBgit-fsck\fR(1)
+for more information on the possible values of
+\fB<msg\-id>\fR
+and
+\fB<severity>\fR\&.
 .RE
 .PP
 \-\-progress\-title
@@ -117,11 +127,22 @@ is specified\&.
 Die if the pack contains broken links\&. For internal use only\&.
 .RE
 .PP
-\-\-fsck\-objects
+\-\-fsck\-objects[=<msg\-id>=<severity>\&...]
 .RS 4
-For internal use only\&.
+Die if the pack contains broken objects, but unlike
+\fB\-\-strict\fR, don\(cqt choke on broken links\&. If the pack contains a tree pointing to a \&.gitmodules blob that does not exist, prints the hash of that blob (for the caller to check) after the hash that goes into the name of the pack/idx file (see "Notes")\&.
 .sp
-Die if the pack contains broken objects\&. If the pack contains a tree pointing to a \&.gitmodules blob that does not exist, prints the hash of that blob (for the caller to check) after the hash that goes into the name of the pack/idx file (see "Notes")\&.
+An optional comma\-separated list of
+\fB<msg\-id>=<severity>\fR
+can be passed to change the severity of some possible issues, e\&.g\&.,
+\fB\-\-fsck\-objects="missingEmail=ignore,badTagName=ignore"\fR\&. See the entry for the
+\fBfsck\&.<msg\-id>\fR
+configuration options in
+\fBgit-fsck\fR(1)
+for more information on the possible values of
+\fB<msg\-id>\fR
+and
+\fB<severity>\fR\&.
 .RE
 .PP
 \-\-threads=<n>
