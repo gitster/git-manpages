@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-03-07
+.\"      Date: 2024-03-11
 .\"    Manual: Git Manual
-.\"    Source: Git 2.44.0.165.ge09f1254c5
+.\"    Source: Git 2.44.0.191.g945115026a
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-03\-07" "Git 2\&.44\&.0\&.165\&.ge09f12" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-03\-11" "Git 2\&.44\&.0\&.191\&.g945115" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1273,6 +1273,24 @@ Note that this list is non\-comprehensive and not necessarily complete\&. For co
 .sp
 Other git\-related tools may and do use their own variables\&. When inventing new variables for use in your own tool, make sure their names do not conflict with those that are used by Git itself and other popular tools, and describe them in your documentation\&.
 .PP
+add\&.ignoreErrors, add\&.ignore\-errors (deprecated)
+.RS 4
+Tells
+\fIgit add\fR
+to continue adding files when some files cannot be added due to indexing errors\&. Equivalent to the
+\fB\-\-ignore\-errors\fR
+option of
+\fBgit-add\fR(1)\&.
+\fBadd\&.ignore\-errors\fR
+is deprecated, as it does not follow the usual naming convention for configuration variables\&.
+.RE
+.PP
+add\&.interactive\&.useBuiltin
+.RS 4
+Unused configuration variable\&. Used in Git versions v2\&.25\&.0 to v2\&.36\&.0 to enable the built\-in version of
+\fBgit-add\fR(1)\*(Aqs interactive mode, which then became the default in Git versions v2\&.37\&.0 to v2\&.39\&.0\&.
+.RE
+.PP
 advice\&.*
 .RS 4
 These variables control various optional help messages designed to aid new users\&. When left unconfigured, Git will give the message alongside instructions on how to squelch it\&. You can tell Git that you do not need the help message by setting these to
@@ -1539,6 +1557,95 @@ Advice shown when a user tries to create a worktree from an invalid reference, t
 .RE
 .RE
 .PP
+alias\&.*
+.RS 4
+Command aliases for the
+\fBgit\fR(1)
+command wrapper \- e\&.g\&. after defining
+\fBalias\&.last = cat\-file commit HEAD\fR, the invocation
+\fBgit last\fR
+is equivalent to
+\fBgit cat\-file commit HEAD\fR\&. To avoid confusion and troubles with script usage, aliases that hide existing Git commands are ignored\&. Arguments are split by spaces, the usual shell quoting and escaping are supported\&. A quote pair or a backslash can be used to quote them\&.
+.sp
+Note that the first word of an alias does not necessarily have to be a command\&. It can be a command\-line option that will be passed into the invocation of
+\fBgit\fR\&. In particular, this is useful when used with
+\fB\-c\fR
+to pass in one\-time configurations or
+\fB\-p\fR
+to force pagination\&. For example,
+\fBloud\-rebase = \-c commit\&.verbose=true rebase\fR
+can be defined such that running
+\fBgit loud\-rebase\fR
+would be equivalent to
+\fBgit \-c commit\&.verbose=true rebase\fR\&. Also,
+\fBps = \-p status\fR
+would be a helpful alias since
+\fBgit ps\fR
+would paginate the output of
+\fBgit status\fR
+where the original command does not\&.
+.sp
+If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command\&. For example, defining
+\fBalias\&.new = !gitk \-\-all \-\-not ORIG_HEAD\fR, the invocation
+\fBgit new\fR
+is equivalent to running the shell command
+\fBgitk \-\-all \-\-not ORIG_HEAD\fR\&. Note that shell commands will be executed from the top\-level directory of a repository, which may not necessarily be the current directory\&.
+\fBGIT_PREFIX\fR
+is set as returned by running
+\fBgit rev\-parse \-\-show\-prefix\fR
+from the original current directory\&. See
+\fBgit-rev-parse\fR(1)\&.
+.RE
+.PP
+am\&.keepcr
+.RS 4
+If true, git\-am will call git\-mailsplit for patches in mbox format with parameter
+\fB\-\-keep\-cr\fR\&. In this case git\-mailsplit will not remove
+\fB\er\fR
+from lines ending with
+\fB\er\en\fR\&. Can be overridden by giving
+\fB\-\-no\-keep\-cr\fR
+from the command line\&. See
+\fBgit-am\fR(1),
+\fBgit-mailsplit\fR(1)\&.
+.RE
+.PP
+am\&.threeWay
+.RS 4
+By default,
+\fBgit am\fR
+will fail if the patch does not apply cleanly\&. When set to true, this setting tells
+\fBgit am\fR
+to fall back on 3\-way merge if the patch records the identity of blobs it is supposed to apply to and we have those blobs available locally (equivalent to giving the
+\fB\-\-3way\fR
+option from the command line)\&. Defaults to
+\fBfalse\fR\&. See
+\fBgit-am\fR(1)\&.
+.RE
+.PP
+apply\&.ignoreWhitespace
+.RS 4
+When set to
+\fIchange\fR, tells
+\fIgit apply\fR
+to ignore changes in whitespace, in the same way as the
+\fB\-\-ignore\-space\-change\fR
+option\&. When set to one of: no, none, never, false, it tells
+\fIgit apply\fR
+to respect all whitespace differences\&. See
+\fBgit-apply\fR(1)\&.
+.RE
+.PP
+apply\&.whitespace
+.RS 4
+Tells
+\fIgit apply\fR
+how to handle whitespace, in the same way as the
+\fB\-\-whitespace\fR
+option\&. See
+\fBgit-apply\fR(1)\&.
+.RE
+.PP
 attr\&.tree
 .RS 4
 A reference to a tree in the repository from which to read attributes, instead of the
@@ -1549,6 +1656,967 @@ file in the working tree\&. In a bare repository, this defaults to
 environment variable or
 \fB\-\-attr\-source\fR
 command line option are used, this configuration variable has no effect\&.
+.RE
+.PP
+blame\&.blankBoundary
+.RS 4
+Show blank commit object name for boundary commits in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
+.RE
+.PP
+blame\&.coloring
+.RS 4
+This determines the coloring scheme to be applied to blame output\&. It can be
+\fIrepeatedLines\fR,
+\fIhighlightRecent\fR, or
+\fInone\fR
+which is the default\&.
+.RE
+.PP
+blame\&.date
+.RS 4
+Specifies the format used to output dates in
+\fBgit-blame\fR(1)\&. If unset the iso format is used\&. For supported values, see the discussion of the
+\fB\-\-date\fR
+option at
+\fBgit-log\fR(1)\&.
+.RE
+.PP
+blame\&.showEmail
+.RS 4
+Show the author email instead of author name in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
+.RE
+.PP
+blame\&.showRoot
+.RS 4
+Do not treat root commits as boundaries in
+\fBgit-blame\fR(1)\&. This option defaults to false\&.
+.RE
+.PP
+blame\&.ignoreRevsFile
+.RS 4
+Ignore revisions listed in the file, one unabbreviated object name per line, in
+\fBgit-blame\fR(1)\&. Whitespace and comments beginning with
+\fB#\fR
+are ignored\&. This option may be repeated multiple times\&. Empty file names will reset the list of ignored revisions\&. This option will be handled before the command line option
+\fB\-\-ignore\-revs\-file\fR\&.
+.RE
+.PP
+blame\&.markUnblamableLines
+.RS 4
+Mark lines that were changed by an ignored revision that we could not attribute to another commit with a
+\fI*\fR
+in the output of
+\fBgit-blame\fR(1)\&.
+.RE
+.PP
+blame\&.markIgnoredLines
+.RS 4
+Mark lines that were changed by an ignored revision that we attributed to another commit with a
+\fI?\fR
+in the output of
+\fBgit-blame\fR(1)\&.
+.RE
+.PP
+branch\&.autoSetupMerge
+.RS 4
+Tells
+\fIgit branch\fR,
+\fIgit switch\fR
+and
+\fIgit checkout\fR
+to set up new branches so that
+\fBgit-pull\fR(1)
+will appropriately merge from the starting point branch\&. Note that even if this option is not set, this behavior can be chosen per\-branch using the
+\fB\-\-track\fR
+and
+\fB\-\-no\-track\fR
+options\&. The valid settings are:
+\fBfalse\fR \(em no automatic setup is done;
+\fBtrue\fR \(em automatic setup is done when the starting point is a remote\-tracking branch;
+\fBalways\fR \(em  automatic setup is done when the starting point is either a local branch or remote\-tracking branch;
+\fBinherit\fR \(em if the starting point has a tracking configuration, it is copied to the new branch;
+\fBsimple\fR \(em automatic setup is done only when the starting point is a remote\-tracking branch and the new branch has the same name as the remote branch\&. This option defaults to true\&.
+.RE
+.PP
+branch\&.autoSetupRebase
+.RS 4
+When a new branch is created with
+\fIgit branch\fR,
+\fIgit switch\fR
+or
+\fIgit checkout\fR
+that tracks another branch, this variable tells Git to set up pull to rebase instead of merge (see "branch\&.<name>\&.rebase")\&. When
+\fBnever\fR, rebase is never automatically set to true\&. When
+\fBlocal\fR, rebase is set to true for tracked branches of other local branches\&. When
+\fBremote\fR, rebase is set to true for tracked branches of remote\-tracking branches\&. When
+\fBalways\fR, rebase will be set to true for all tracking branches\&. See "branch\&.autoSetupMerge" for details on how to set up a branch to track another branch\&. This option defaults to never\&.
+.RE
+.PP
+branch\&.sort
+.RS 4
+This variable controls the sort ordering of branches when displayed by
+\fBgit-branch\fR(1)\&. Without the "\-\-sort=<value>" option provided, the value of this variable will be used as the default\&. See
+\fBgit-for-each-ref\fR(1)
+field names for valid values\&.
+.RE
+.PP
+branch\&.<name>\&.remote
+.RS 4
+When on branch <name>, it tells
+\fIgit fetch\fR
+and
+\fIgit push\fR
+which remote to fetch from or push to\&. The remote to push to may be overridden with
+\fBremote\&.pushDefault\fR
+(for all branches)\&. The remote to push to, for the current branch, may be further overridden by
+\fBbranch\&.<name>\&.pushRemote\fR\&. If no remote is configured, or if you are not on any branch and there is more than one remote defined in the repository, it defaults to
+\fBorigin\fR
+for fetching and
+\fBremote\&.pushDefault\fR
+for pushing\&. Additionally,
+\fB\&.\fR
+(a period) is the current local repository (a dot\-repository), see
+\fBbranch\&.<name>\&.merge\fR\*(Aqs final note below\&.
+.RE
+.PP
+branch\&.<name>\&.pushRemote
+.RS 4
+When on branch <name>, it overrides
+\fBbranch\&.<name>\&.remote\fR
+for pushing\&. It also overrides
+\fBremote\&.pushDefault\fR
+for pushing from branch <name>\&. When you pull from one place (e\&.g\&. your upstream) and push to another place (e\&.g\&. your own publishing repository), you would want to set
+\fBremote\&.pushDefault\fR
+to specify the remote to push to for all branches, and use this option to override it for a specific branch\&.
+.RE
+.PP
+branch\&.<name>\&.merge
+.RS 4
+Defines, together with branch\&.<name>\&.remote, the upstream branch for the given branch\&. It tells
+\fIgit fetch\fR/\fIgit pull\fR/\fIgit rebase\fR
+which branch to merge and can also affect
+\fIgit push\fR
+(see push\&.default)\&. When in branch <name>, it tells
+\fIgit fetch\fR
+the default refspec to be marked for merging in FETCH_HEAD\&. The value is handled like the remote part of a refspec, and must match a ref which is fetched from the remote given by "branch\&.<name>\&.remote"\&. The merge information is used by
+\fIgit pull\fR
+(which first calls
+\fIgit fetch\fR) to lookup the default branch for merging\&. Without this option,
+\fIgit pull\fR
+defaults to merge the first refspec fetched\&. Specify multiple values to get an octopus merge\&. If you wish to setup
+\fIgit pull\fR
+so that it merges into <name> from another branch in the local repository, you can point branch\&.<name>\&.merge to the desired branch, and use the relative path setting
+\fB\&.\fR
+(a period) for branch\&.<name>\&.remote\&.
+.RE
+.PP
+branch\&.<name>\&.mergeOptions
+.RS 4
+Sets default options for merging into branch <name>\&. The syntax and supported options are the same as those of
+\fBgit-merge\fR(1), but option values containing whitespace characters are currently not supported\&.
+.RE
+.PP
+branch\&.<name>\&.rebase
+.RS 4
+When true, rebase the branch <name> on top of the fetched branch, instead of merging the default branch from the default remote when "git pull" is run\&. See "pull\&.rebase" for doing this in a non branch\-specific manner\&.
+.sp
+When
+\fBmerges\fR
+(or just
+\fIm\fR), pass the
+\fB\-\-rebase\-merges\fR
+option to
+\fIgit rebase\fR
+so that the local merge commits are included in the rebase (see
+\fBgit-rebase\fR(1)
+for details)\&.
+.sp
+When the value is
+\fBinteractive\fR
+(or just
+\fIi\fR), the rebase is run in interactive mode\&.
+.sp
+\fBNOTE\fR: this is a possibly dangerous operation; do
+\fBnot\fR
+use it unless you understand the implications (see
+\fBgit-rebase\fR(1)
+for details)\&.
+.RE
+.PP
+branch\&.<name>\&.description
+.RS 4
+Branch description, can be edited with
+\fBgit branch \-\-edit\-description\fR\&. Branch description is automatically added to the format\-patch cover letter or request\-pull summary\&.
+.RE
+.PP
+browser\&.<tool>\&.cmd
+.RS 4
+Specify the command to invoke the specified browser\&. The specified command is evaluated in shell with the URLs passed as arguments\&. (See
+\fBgit-web--browse\fR(1)\&.)
+.RE
+.PP
+browser\&.<tool>\&.path
+.RS 4
+Override the path for the given tool that may be used to browse HTML help (see
+\fB\-w\fR
+option in
+\fBgit-help\fR(1)) or a working repository in gitweb (see
+\fBgit-instaweb\fR(1))\&.
+.RE
+.PP
+bundle\&.*
+.RS 4
+The
+\fBbundle\&.*\fR
+keys may appear in a bundle list file found via the
+\fBgit clone \-\-bundle\-uri\fR
+option\&. These keys currently have no effect if placed in a repository config file, though this will change in the future\&. See
+\m[blue]\fBthe bundle URI design document\fR\m[]\&\s-2\u[1]\d\s+2
+for more details\&.
+.RE
+.PP
+bundle\&.version
+.RS 4
+This integer value advertises the version of the bundle list format used by the bundle list\&. Currently, the only accepted value is
+\fB1\fR\&.
+.RE
+.PP
+bundle\&.mode
+.RS 4
+This string value should be either
+\fBall\fR
+or
+\fBany\fR\&. This value describes whether all of the advertised bundles are required to unbundle a complete understanding of the bundled information (\fBall\fR) or if any one of the listed bundle URIs is sufficient (\fBany\fR)\&.
+.RE
+.PP
+bundle\&.heuristic
+.RS 4
+If this string\-valued key exists, then the bundle list is designed to work well with incremental
+\fBgit fetch\fR
+commands\&. The heuristic signals that there are additional keys available for each bundle that help determine which subset of bundles the client should download\&. The only value currently understood is
+\fBcreationToken\fR\&.
+.RE
+.PP
+bundle\&.<id>\&.*
+.RS 4
+The
+\fBbundle\&.<id>\&.*\fR
+keys are used to describe a single item in the bundle list, grouped under
+\fB<id>\fR
+for identification purposes\&.
+.RE
+.PP
+bundle\&.<id>\&.uri
+.RS 4
+This string value defines the URI by which Git can reach the contents of this
+\fB<id>\fR\&. This URI may be a bundle file or another bundle list\&.
+.RE
+.PP
+checkout\&.defaultRemote
+.RS 4
+When you run
+\fBgit checkout <something>\fR
+or
+\fBgit switch <something>\fR
+and only have one remote, it may implicitly fall back on checking out and tracking e\&.g\&.
+\fBorigin/<something>\fR\&. This stops working as soon as you have more than one remote with a
+\fB<something>\fR
+reference\&. This setting allows for setting the name of a preferred remote that should always win when it comes to disambiguation\&. The typical use\-case is to set this to
+\fBorigin\fR\&.
+.sp
+Currently this is used by
+\fBgit-switch\fR(1)
+and
+\fBgit-checkout\fR(1)
+when
+\fBgit checkout <something>\fR
+or
+\fBgit switch <something>\fR
+will checkout the
+\fB<something>\fR
+branch on another remote, and by
+\fBgit-worktree\fR(1)
+when
+\fBgit worktree add\fR
+refers to a remote branch\&. This setting might be used for other checkout\-like commands or functionality in the future\&.
+.RE
+.PP
+checkout\&.guess
+.RS 4
+Provides the default value for the
+\fB\-\-guess\fR
+or
+\fB\-\-no\-guess\fR
+option in
+\fBgit checkout\fR
+and
+\fBgit switch\fR\&. See
+\fBgit-switch\fR(1)
+and
+\fBgit-checkout\fR(1)\&.
+.RE
+.PP
+checkout\&.workers
+.RS 4
+The number of parallel workers to use when updating the working tree\&. The default is one, i\&.e\&. sequential execution\&. If set to a value less than one, Git will use as many workers as the number of logical cores available\&. This setting and
+\fBcheckout\&.thresholdForParallelism\fR
+affect all commands that perform checkout\&. E\&.g\&. checkout, clone, reset, sparse\-checkout, etc\&.
+.sp
+Note: Parallel checkout usually delivers better performance for repositories located on SSDs or over NFS\&. For repositories on spinning disks and/or machines with a small number of cores, the default sequential checkout often performs better\&. The size and compression level of a repository might also influence how well the parallel version performs\&.
+.RE
+.PP
+checkout\&.thresholdForParallelism
+.RS 4
+When running parallel checkout with a small number of files, the cost of subprocess spawning and inter\-process communication might outweigh the parallelization gains\&. This setting allows you to define the minimum number of files for which parallel checkout should be attempted\&. The default is 100\&.
+.RE
+.PP
+clean\&.requireForce
+.RS 4
+A boolean to make git\-clean do nothing unless given \-f, \-i, or \-n\&. Defaults to true\&.
+.RE
+.PP
+clone\&.defaultRemoteName
+.RS 4
+The name of the remote to create when cloning a repository\&. Defaults to
+\fBorigin\fR, and can be overridden by passing the
+\fB\-\-origin\fR
+command\-line option to
+\fBgit-clone\fR(1)\&.
+.RE
+.PP
+clone\&.rejectShallow
+.RS 4
+Reject cloning a repository if it is a shallow one; this can be overridden by passing the
+\fB\-\-reject\-shallow\fR
+option on the command line\&. See
+\fBgit-clone\fR(1)
+.RE
+.PP
+clone\&.filterSubmodules
+.RS 4
+If a partial clone filter is provided (see
+\fB\-\-filter\fR
+in
+\fBgit-rev-list\fR(1)) and
+\fB\-\-recurse\-submodules\fR
+is used, also apply the filter to submodules\&.
+.RE
+.PP
+color\&.advice
+.RS 4
+A boolean to enable/disable color in hints (e\&.g\&. when a push failed, see
+\fBadvice\&.*\fR
+for a list)\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.advice\&.hint
+.RS 4
+Use customized color for hints\&.
+.RE
+.PP
+color\&.blame\&.highlightRecent
+.RS 4
+Specify the line annotation color for
+\fBgit blame \-\-color\-by\-age\fR
+depending upon the age of the line\&.
+.sp
+This setting should be set to a comma\-separated list of color and date settings, starting and ending with a color, the dates should be set from oldest to newest\&. The metadata will be colored with the specified colors if the line was introduced before the given timestamp, overwriting older timestamped colors\&.
+.sp
+Instead of an absolute timestamp relative timestamps work as well, e\&.g\&.
+\fB2\&.weeks\&.ago\fR
+is valid to address anything older than 2 weeks\&.
+.sp
+It defaults to
+\fBblue,12 month ago,white,1 month ago,red\fR, which colors everything older than one year blue, recent changes between one month and one year old are kept white, and lines introduced within the last month are colored red\&.
+.RE
+.PP
+color\&.blame\&.repeatedLines
+.RS 4
+Use the specified color to colorize line annotations for
+\fBgit blame \-\-color\-lines\fR, if they come from the same commit as the preceding line\&. Defaults to cyan\&.
+.RE
+.PP
+color\&.branch
+.RS 4
+A boolean to enable/disable color in the output of
+\fBgit-branch\fR(1)\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the output is to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.branch\&.<slot>
+.RS 4
+Use customized color for branch coloration\&.
+\fB<slot>\fR
+is one of
+\fBcurrent\fR
+(the current branch),
+\fBlocal\fR
+(a local branch),
+\fBremote\fR
+(a remote\-tracking branch in refs/remotes/),
+\fBupstream\fR
+(upstream tracking branch),
+\fBplain\fR
+(other refs)\&.
+.RE
+.PP
+color\&.diff
+.RS 4
+Whether to use ANSI escape sequences to add color to patches\&. If this is set to
+\fBalways\fR,
+\fBgit-diff\fR(1),
+\fBgit-log\fR(1), and
+\fBgit-show\fR(1)
+will use color for all patches\&. If it is set to
+\fBtrue\fR
+or
+\fBauto\fR, those commands will only use color when output is to the terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.sp
+This does not affect
+\fBgit-format-patch\fR(1)
+or the
+\fIgit\-diff\-*\fR
+plumbing commands\&. Can be overridden on the command line with the
+\fB\-\-color[=<when>]\fR
+option\&.
+.RE
+.PP
+color\&.diff\&.<slot>
+.RS 4
+Use customized color for diff colorization\&.
+\fB<slot>\fR
+specifies which part of the patch to use the specified color, and is one of
+\fBcontext\fR
+(context text \-
+\fBplain\fR
+is a historical synonym),
+\fBmeta\fR
+(metainformation),
+\fBfrag\fR
+(hunk header),
+\fIfunc\fR
+(function in hunk header),
+\fBold\fR
+(removed lines),
+\fBnew\fR
+(added lines),
+\fBcommit\fR
+(commit headers),
+\fBwhitespace\fR
+(highlighting whitespace errors),
+\fBoldMoved\fR
+(deleted lines),
+\fBnewMoved\fR
+(added lines),
+\fBoldMovedDimmed\fR,
+\fBoldMovedAlternative\fR,
+\fBoldMovedAlternativeDimmed\fR,
+\fBnewMovedDimmed\fR,
+\fBnewMovedAlternative\fR
+\fBnewMovedAlternativeDimmed\fR
+(See the
+\fI<mode>\fR
+setting of
+\fI\-\-color\-moved\fR
+in
+\fBgit-diff\fR(1)
+for details),
+\fBcontextDimmed\fR,
+\fBoldDimmed\fR,
+\fBnewDimmed\fR,
+\fBcontextBold\fR,
+\fBoldBold\fR, and
+\fBnewBold\fR
+(see
+\fBgit-range-diff\fR(1)
+for details)\&.
+.RE
+.PP
+color\&.decorate\&.<slot>
+.RS 4
+Use customized color for
+\fIgit log \-\-decorate\fR
+output\&.
+\fB<slot>\fR
+is one of
+\fBbranch\fR,
+\fBremoteBranch\fR,
+\fBtag\fR,
+\fBstash\fR
+or
+\fBHEAD\fR
+for local branches, remote\-tracking branches, tags, stash and HEAD, respectively and
+\fBgrafted\fR
+for grafted commits\&.
+.RE
+.PP
+color\&.grep
+.RS 4
+When set to
+\fBalways\fR, always highlight matches\&. When
+\fBfalse\fR
+(or
+\fBnever\fR), never\&. When set to
+\fBtrue\fR
+or
+\fBauto\fR, use color only when the output is written to the terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.grep\&.<slot>
+.RS 4
+Use customized color for grep colorization\&.
+\fB<slot>\fR
+specifies which part of the line to use the specified color, and is one of
+.PP
+\fBcontext\fR
+.RS 4
+non\-matching text in context lines (when using
+\fB\-A\fR,
+\fB\-B\fR, or
+\fB\-C\fR)
+.RE
+.PP
+\fBfilename\fR
+.RS 4
+filename prefix (when not using
+\fB\-h\fR)
+.RE
+.PP
+\fBfunction\fR
+.RS 4
+function name lines (when using
+\fB\-p\fR)
+.RE
+.PP
+\fBlineNumber\fR
+.RS 4
+line number prefix (when using
+\fB\-n\fR)
+.RE
+.PP
+\fBcolumn\fR
+.RS 4
+column number prefix (when using
+\fB\-\-column\fR)
+.RE
+.PP
+\fBmatch\fR
+.RS 4
+matching text (same as setting
+\fBmatchContext\fR
+and
+\fBmatchSelected\fR)
+.RE
+.PP
+\fBmatchContext\fR
+.RS 4
+matching text in context lines
+.RE
+.PP
+\fBmatchSelected\fR
+.RS 4
+matching text in selected lines\&. Also, used to customize the following
+\fBgit-log\fR(1)
+subcommands:
+\fB\-\-grep\fR,
+\fB\-\-author\fR, and
+\fB\-\-committer\fR\&.
+.RE
+.PP
+\fBselected\fR
+.RS 4
+non\-matching text in selected lines\&. Also, used to customize the following
+\fBgit-log\fR(1)
+subcommands:
+\fB\-\-grep\fR,
+\fB\-\-author\fR
+and
+\fB\-\-committer\fR\&.
+.RE
+.PP
+\fBseparator\fR
+.RS 4
+separators between fields on a line (\fB:\fR,
+\fB\-\fR, and
+\fB=\fR) and between hunks (\fB\-\-\fR)
+.RE
+.RE
+.PP
+color\&.interactive
+.RS 4
+When set to
+\fBalways\fR, always use colors for interactive prompts and displays (such as those used by "git\-add \-\-interactive" and "git\-clean \-\-interactive")\&. When false (or
+\fBnever\fR), never\&. When set to
+\fBtrue\fR
+or
+\fBauto\fR, use colors only when the output is to the terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.interactive\&.<slot>
+.RS 4
+Use customized color for
+\fIgit add \-\-interactive\fR
+and
+\fIgit clean \-\-interactive\fR
+output\&.
+\fB<slot>\fR
+may be
+\fBprompt\fR,
+\fBheader\fR,
+\fBhelp\fR
+or
+\fBerror\fR, for four distinct types of normal output from interactive commands\&.
+.RE
+.PP
+color\&.pager
+.RS 4
+A boolean to specify whether
+\fBauto\fR
+color modes should colorize output going to the pager\&. Defaults to true; set this to false if your pager does not understand ANSI color codes\&.
+.RE
+.PP
+color\&.push
+.RS 4
+A boolean to enable/disable color in push errors\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.push\&.error
+.RS 4
+Use customized color for push errors\&.
+.RE
+.PP
+color\&.remote
+.RS 4
+If set, keywords at the start of the line are highlighted\&. The keywords are "error", "warning", "hint" and "success", and are matched case\-insensitively\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR)\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.remote\&.<slot>
+.RS 4
+Use customized color for each remote keyword\&.
+\fB<slot>\fR
+may be
+\fBhint\fR,
+\fBwarning\fR,
+\fBsuccess\fR
+or
+\fBerror\fR
+which match the corresponding keyword\&.
+.RE
+.PP
+color\&.showBranch
+.RS 4
+A boolean to enable/disable color in the output of
+\fBgit-show-branch\fR(1)\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the output is to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.status
+.RS 4
+A boolean to enable/disable color in the output of
+\fBgit-status\fR(1)\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the output is to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.status\&.<slot>
+.RS 4
+Use customized color for status colorization\&.
+\fB<slot>\fR
+is one of
+\fBheader\fR
+(the header text of the status message),
+\fBadded\fR
+or
+\fBupdated\fR
+(files which are added but not committed),
+\fBchanged\fR
+(files which are changed but not added in the index),
+\fBuntracked\fR
+(files which are not tracked by Git),
+\fBbranch\fR
+(the current branch),
+\fBnobranch\fR
+(the color the
+\fIno branch\fR
+warning is shown in, defaulting to red),
+\fBlocalBranch\fR
+or
+\fBremoteBranch\fR
+(the local and remote branch names, respectively, when branch and tracking information is displayed in the status short\-format), or
+\fBunmerged\fR
+(files which have unmerged changes)\&.
+.RE
+.PP
+color\&.transport
+.RS 4
+A boolean to enable/disable color when pushes are rejected\&. May be set to
+\fBalways\fR,
+\fBfalse\fR
+(or
+\fBnever\fR) or
+\fBauto\fR
+(or
+\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
+\fBcolor\&.ui\fR
+is used (\fBauto\fR
+by default)\&.
+.RE
+.PP
+color\&.transport\&.rejected
+.RS 4
+Use customized color when a push was rejected\&.
+.RE
+.PP
+color\&.ui
+.RS 4
+This variable determines the default value for variables such as
+\fBcolor\&.diff\fR
+and
+\fBcolor\&.grep\fR
+that control the use of color per command family\&. Its scope will expand as more commands learn configuration to set a default for the
+\fB\-\-color\fR
+option\&. Set it to
+\fBfalse\fR
+or
+\fBnever\fR
+if you prefer Git commands not to use color unless enabled explicitly with some other configuration or the
+\fB\-\-color\fR
+option\&. Set it to
+\fBalways\fR
+if you want all output not intended for machine consumption to use color, to
+\fBtrue\fR
+or
+\fBauto\fR
+(this is the default since Git 1\&.8\&.4) if you want such output to use color when written to the terminal\&.
+.RE
+.PP
+column\&.ui
+.RS 4
+Specify whether supported commands should output in columns\&. This variable consists of a list of tokens separated by spaces or commas:
+.sp
+These options control when the feature should be enabled (defaults to
+\fInever\fR):
+.PP
+\fBalways\fR
+.RS 4
+always show in columns
+.RE
+.PP
+\fBnever\fR
+.RS 4
+never show in columns
+.RE
+.PP
+\fBauto\fR
+.RS 4
+show in columns if the output is to the terminal
+.RE
+.sp
+These options control layout (defaults to
+\fIcolumn\fR)\&. Setting any of these implies
+\fIalways\fR
+if none of
+\fIalways\fR,
+\fInever\fR, or
+\fIauto\fR
+are specified\&.
+.PP
+\fBcolumn\fR
+.RS 4
+fill columns before rows
+.RE
+.PP
+\fBrow\fR
+.RS 4
+fill rows before columns
+.RE
+.PP
+\fBplain\fR
+.RS 4
+show in one column
+.RE
+.sp
+Finally, these options can be combined with a layout option (defaults to
+\fInodense\fR):
+.PP
+\fBdense\fR
+.RS 4
+make unequal size columns to utilize more space
+.RE
+.PP
+\fBnodense\fR
+.RS 4
+make equal size columns
+.RE
+.RE
+.PP
+column\&.branch
+.RS 4
+Specify whether to output branch listing in
+\fBgit branch\fR
+in columns\&. See
+\fBcolumn\&.ui\fR
+for details\&.
+.RE
+.PP
+column\&.clean
+.RS 4
+Specify the layout when listing items in
+\fBgit clean \-i\fR, which always shows files and directories in columns\&. See
+\fBcolumn\&.ui\fR
+for details\&.
+.RE
+.PP
+column\&.status
+.RS 4
+Specify whether to output untracked files in
+\fBgit status\fR
+in columns\&. See
+\fBcolumn\&.ui\fR
+for details\&.
+.RE
+.PP
+column\&.tag
+.RS 4
+Specify whether to output tag listings in
+\fBgit tag\fR
+in columns\&. See
+\fBcolumn\&.ui\fR
+for details\&.
+.RE
+.PP
+commit\&.cleanup
+.RS 4
+This setting overrides the default of the
+\fB\-\-cleanup\fR
+option in
+\fBgit commit\fR\&. See
+\fBgit-commit\fR(1)
+for details\&. Changing the default can be useful when you always want to keep lines that begin with the comment character
+\fB#\fR
+in your log message, in which case you would do
+\fBgit config commit\&.cleanup whitespace\fR
+(note that you will have to remove the help lines that begin with
+\fB#\fR
+in the commit log template yourself, if you do this)\&.
+.RE
+.PP
+commit\&.gpgSign
+.RS 4
+A boolean to specify whether all commits should be GPG signed\&. Use of this option when doing operations such as rebase can result in a large number of commits being signed\&. It may be convenient to use an agent to avoid typing your GPG passphrase several times\&.
+.RE
+.PP
+commit\&.status
+.RS 4
+A boolean to enable/disable inclusion of status information in the commit message template when using an editor to prepare the commit message\&. Defaults to true\&.
+.RE
+.PP
+commit\&.template
+.RS 4
+Specify the pathname of a file to use as the template for new commit messages\&.
+.RE
+.PP
+commit\&.verbose
+.RS 4
+A boolean or int to specify the level of verbosity with
+\fBgit commit\fR\&. See
+\fBgit-commit\fR(1)\&.
+.RE
+.PP
+commitGraph\&.generationVersion
+.RS 4
+Specifies the type of generation number version to use when writing or reading the commit\-graph file\&. If version 1 is specified, then the corrected commit dates will not be written or read\&. Defaults to 2\&.
+.RE
+.PP
+commitGraph\&.maxNewFilters
+.RS 4
+Specifies the default value for the
+\fB\-\-max\-new\-filters\fR
+option of
+\fBgit commit\-graph write\fR
+(c\&.f\&.,
+\fBgit-commit-graph\fR(1))\&.
+.RE
+.PP
+commitGraph\&.readChangedPaths
+.RS 4
+If true, then git will use the changed\-path Bloom filters in the commit\-graph file (if it exists, and they are present)\&. Defaults to true\&. See
+\fBgit-commit-graph\fR(1)
+for more information\&.
+.RE
+.PP
+completion\&.commands
+.RS 4
+This is only used by git\-completion\&.bash to add or remove commands from the list of completed commands\&. Normally only porcelain commands and a few select others are completed\&. You can add more commands, separated by space, in this variable\&. Prefixing the command with
+\fI\-\fR
+will remove it from the existing list\&.
 .RE
 .PP
 core\&.fileMode
@@ -2655,1067 +3723,6 @@ core\&.maxTreeDepth
 The maximum depth Git is willing to recurse while traversing a tree (e\&.g\&., "a/b/cde/f" has a depth of 4)\&. This is a fail\-safe to allow Git to abort cleanly, and should not generally need to be adjusted\&. The default is 4096\&.
 .RE
 .PP
-add\&.ignoreErrors, add\&.ignore\-errors (deprecated)
-.RS 4
-Tells
-\fIgit add\fR
-to continue adding files when some files cannot be added due to indexing errors\&. Equivalent to the
-\fB\-\-ignore\-errors\fR
-option of
-\fBgit-add\fR(1)\&.
-\fBadd\&.ignore\-errors\fR
-is deprecated, as it does not follow the usual naming convention for configuration variables\&.
-.RE
-.PP
-add\&.interactive\&.useBuiltin
-.RS 4
-Unused configuration variable\&. Used in Git versions v2\&.25\&.0 to v2\&.36\&.0 to enable the built\-in version of
-\fBgit-add\fR(1)\*(Aqs interactive mode, which then became the default in Git versions v2\&.37\&.0 to v2\&.39\&.0\&.
-.RE
-.PP
-alias\&.*
-.RS 4
-Command aliases for the
-\fBgit\fR(1)
-command wrapper \- e\&.g\&. after defining
-\fBalias\&.last = cat\-file commit HEAD\fR, the invocation
-\fBgit last\fR
-is equivalent to
-\fBgit cat\-file commit HEAD\fR\&. To avoid confusion and troubles with script usage, aliases that hide existing Git commands are ignored\&. Arguments are split by spaces, the usual shell quoting and escaping are supported\&. A quote pair or a backslash can be used to quote them\&.
-.sp
-Note that the first word of an alias does not necessarily have to be a command\&. It can be a command\-line option that will be passed into the invocation of
-\fBgit\fR\&. In particular, this is useful when used with
-\fB\-c\fR
-to pass in one\-time configurations or
-\fB\-p\fR
-to force pagination\&. For example,
-\fBloud\-rebase = \-c commit\&.verbose=true rebase\fR
-can be defined such that running
-\fBgit loud\-rebase\fR
-would be equivalent to
-\fBgit \-c commit\&.verbose=true rebase\fR\&. Also,
-\fBps = \-p status\fR
-would be a helpful alias since
-\fBgit ps\fR
-would paginate the output of
-\fBgit status\fR
-where the original command does not\&.
-.sp
-If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command\&. For example, defining
-\fBalias\&.new = !gitk \-\-all \-\-not ORIG_HEAD\fR, the invocation
-\fBgit new\fR
-is equivalent to running the shell command
-\fBgitk \-\-all \-\-not ORIG_HEAD\fR\&. Note that shell commands will be executed from the top\-level directory of a repository, which may not necessarily be the current directory\&.
-\fBGIT_PREFIX\fR
-is set as returned by running
-\fBgit rev\-parse \-\-show\-prefix\fR
-from the original current directory\&. See
-\fBgit-rev-parse\fR(1)\&.
-.RE
-.PP
-am\&.keepcr
-.RS 4
-If true, git\-am will call git\-mailsplit for patches in mbox format with parameter
-\fB\-\-keep\-cr\fR\&. In this case git\-mailsplit will not remove
-\fB\er\fR
-from lines ending with
-\fB\er\en\fR\&. Can be overridden by giving
-\fB\-\-no\-keep\-cr\fR
-from the command line\&. See
-\fBgit-am\fR(1),
-\fBgit-mailsplit\fR(1)\&.
-.RE
-.PP
-am\&.threeWay
-.RS 4
-By default,
-\fBgit am\fR
-will fail if the patch does not apply cleanly\&. When set to true, this setting tells
-\fBgit am\fR
-to fall back on 3\-way merge if the patch records the identity of blobs it is supposed to apply to and we have those blobs available locally (equivalent to giving the
-\fB\-\-3way\fR
-option from the command line)\&. Defaults to
-\fBfalse\fR\&. See
-\fBgit-am\fR(1)\&.
-.RE
-.PP
-apply\&.ignoreWhitespace
-.RS 4
-When set to
-\fIchange\fR, tells
-\fIgit apply\fR
-to ignore changes in whitespace, in the same way as the
-\fB\-\-ignore\-space\-change\fR
-option\&. When set to one of: no, none, never, false, it tells
-\fIgit apply\fR
-to respect all whitespace differences\&. See
-\fBgit-apply\fR(1)\&.
-.RE
-.PP
-apply\&.whitespace
-.RS 4
-Tells
-\fIgit apply\fR
-how to handle whitespace, in the same way as the
-\fB\-\-whitespace\fR
-option\&. See
-\fBgit-apply\fR(1)\&.
-.RE
-.PP
-blame\&.blankBoundary
-.RS 4
-Show blank commit object name for boundary commits in
-\fBgit-blame\fR(1)\&. This option defaults to false\&.
-.RE
-.PP
-blame\&.coloring
-.RS 4
-This determines the coloring scheme to be applied to blame output\&. It can be
-\fIrepeatedLines\fR,
-\fIhighlightRecent\fR, or
-\fInone\fR
-which is the default\&.
-.RE
-.PP
-blame\&.date
-.RS 4
-Specifies the format used to output dates in
-\fBgit-blame\fR(1)\&. If unset the iso format is used\&. For supported values, see the discussion of the
-\fB\-\-date\fR
-option at
-\fBgit-log\fR(1)\&.
-.RE
-.PP
-blame\&.showEmail
-.RS 4
-Show the author email instead of author name in
-\fBgit-blame\fR(1)\&. This option defaults to false\&.
-.RE
-.PP
-blame\&.showRoot
-.RS 4
-Do not treat root commits as boundaries in
-\fBgit-blame\fR(1)\&. This option defaults to false\&.
-.RE
-.PP
-blame\&.ignoreRevsFile
-.RS 4
-Ignore revisions listed in the file, one unabbreviated object name per line, in
-\fBgit-blame\fR(1)\&. Whitespace and comments beginning with
-\fB#\fR
-are ignored\&. This option may be repeated multiple times\&. Empty file names will reset the list of ignored revisions\&. This option will be handled before the command line option
-\fB\-\-ignore\-revs\-file\fR\&.
-.RE
-.PP
-blame\&.markUnblamableLines
-.RS 4
-Mark lines that were changed by an ignored revision that we could not attribute to another commit with a
-\fI*\fR
-in the output of
-\fBgit-blame\fR(1)\&.
-.RE
-.PP
-blame\&.markIgnoredLines
-.RS 4
-Mark lines that were changed by an ignored revision that we attributed to another commit with a
-\fI?\fR
-in the output of
-\fBgit-blame\fR(1)\&.
-.RE
-.PP
-branch\&.autoSetupMerge
-.RS 4
-Tells
-\fIgit branch\fR,
-\fIgit switch\fR
-and
-\fIgit checkout\fR
-to set up new branches so that
-\fBgit-pull\fR(1)
-will appropriately merge from the starting point branch\&. Note that even if this option is not set, this behavior can be chosen per\-branch using the
-\fB\-\-track\fR
-and
-\fB\-\-no\-track\fR
-options\&. The valid settings are:
-\fBfalse\fR \(em no automatic setup is done;
-\fBtrue\fR \(em automatic setup is done when the starting point is a remote\-tracking branch;
-\fBalways\fR \(em  automatic setup is done when the starting point is either a local branch or remote\-tracking branch;
-\fBinherit\fR \(em if the starting point has a tracking configuration, it is copied to the new branch;
-\fBsimple\fR \(em automatic setup is done only when the starting point is a remote\-tracking branch and the new branch has the same name as the remote branch\&. This option defaults to true\&.
-.RE
-.PP
-branch\&.autoSetupRebase
-.RS 4
-When a new branch is created with
-\fIgit branch\fR,
-\fIgit switch\fR
-or
-\fIgit checkout\fR
-that tracks another branch, this variable tells Git to set up pull to rebase instead of merge (see "branch\&.<name>\&.rebase")\&. When
-\fBnever\fR, rebase is never automatically set to true\&. When
-\fBlocal\fR, rebase is set to true for tracked branches of other local branches\&. When
-\fBremote\fR, rebase is set to true for tracked branches of remote\-tracking branches\&. When
-\fBalways\fR, rebase will be set to true for all tracking branches\&. See "branch\&.autoSetupMerge" for details on how to set up a branch to track another branch\&. This option defaults to never\&.
-.RE
-.PP
-branch\&.sort
-.RS 4
-This variable controls the sort ordering of branches when displayed by
-\fBgit-branch\fR(1)\&. Without the "\-\-sort=<value>" option provided, the value of this variable will be used as the default\&. See
-\fBgit-for-each-ref\fR(1)
-field names for valid values\&.
-.RE
-.PP
-branch\&.<name>\&.remote
-.RS 4
-When on branch <name>, it tells
-\fIgit fetch\fR
-and
-\fIgit push\fR
-which remote to fetch from or push to\&. The remote to push to may be overridden with
-\fBremote\&.pushDefault\fR
-(for all branches)\&. The remote to push to, for the current branch, may be further overridden by
-\fBbranch\&.<name>\&.pushRemote\fR\&. If no remote is configured, or if you are not on any branch and there is more than one remote defined in the repository, it defaults to
-\fBorigin\fR
-for fetching and
-\fBremote\&.pushDefault\fR
-for pushing\&. Additionally,
-\fB\&.\fR
-(a period) is the current local repository (a dot\-repository), see
-\fBbranch\&.<name>\&.merge\fR\*(Aqs final note below\&.
-.RE
-.PP
-branch\&.<name>\&.pushRemote
-.RS 4
-When on branch <name>, it overrides
-\fBbranch\&.<name>\&.remote\fR
-for pushing\&. It also overrides
-\fBremote\&.pushDefault\fR
-for pushing from branch <name>\&. When you pull from one place (e\&.g\&. your upstream) and push to another place (e\&.g\&. your own publishing repository), you would want to set
-\fBremote\&.pushDefault\fR
-to specify the remote to push to for all branches, and use this option to override it for a specific branch\&.
-.RE
-.PP
-branch\&.<name>\&.merge
-.RS 4
-Defines, together with branch\&.<name>\&.remote, the upstream branch for the given branch\&. It tells
-\fIgit fetch\fR/\fIgit pull\fR/\fIgit rebase\fR
-which branch to merge and can also affect
-\fIgit push\fR
-(see push\&.default)\&. When in branch <name>, it tells
-\fIgit fetch\fR
-the default refspec to be marked for merging in FETCH_HEAD\&. The value is handled like the remote part of a refspec, and must match a ref which is fetched from the remote given by "branch\&.<name>\&.remote"\&. The merge information is used by
-\fIgit pull\fR
-(which first calls
-\fIgit fetch\fR) to lookup the default branch for merging\&. Without this option,
-\fIgit pull\fR
-defaults to merge the first refspec fetched\&. Specify multiple values to get an octopus merge\&. If you wish to setup
-\fIgit pull\fR
-so that it merges into <name> from another branch in the local repository, you can point branch\&.<name>\&.merge to the desired branch, and use the relative path setting
-\fB\&.\fR
-(a period) for branch\&.<name>\&.remote\&.
-.RE
-.PP
-branch\&.<name>\&.mergeOptions
-.RS 4
-Sets default options for merging into branch <name>\&. The syntax and supported options are the same as those of
-\fBgit-merge\fR(1), but option values containing whitespace characters are currently not supported\&.
-.RE
-.PP
-branch\&.<name>\&.rebase
-.RS 4
-When true, rebase the branch <name> on top of the fetched branch, instead of merging the default branch from the default remote when "git pull" is run\&. See "pull\&.rebase" for doing this in a non branch\-specific manner\&.
-.sp
-When
-\fBmerges\fR
-(or just
-\fIm\fR), pass the
-\fB\-\-rebase\-merges\fR
-option to
-\fIgit rebase\fR
-so that the local merge commits are included in the rebase (see
-\fBgit-rebase\fR(1)
-for details)\&.
-.sp
-When the value is
-\fBinteractive\fR
-(or just
-\fIi\fR), the rebase is run in interactive mode\&.
-.sp
-\fBNOTE\fR: this is a possibly dangerous operation; do
-\fBnot\fR
-use it unless you understand the implications (see
-\fBgit-rebase\fR(1)
-for details)\&.
-.RE
-.PP
-branch\&.<name>\&.description
-.RS 4
-Branch description, can be edited with
-\fBgit branch \-\-edit\-description\fR\&. Branch description is automatically added to the format\-patch cover letter or request\-pull summary\&.
-.RE
-.PP
-browser\&.<tool>\&.cmd
-.RS 4
-Specify the command to invoke the specified browser\&. The specified command is evaluated in shell with the URLs passed as arguments\&. (See
-\fBgit-web--browse\fR(1)\&.)
-.RE
-.PP
-browser\&.<tool>\&.path
-.RS 4
-Override the path for the given tool that may be used to browse HTML help (see
-\fB\-w\fR
-option in
-\fBgit-help\fR(1)) or a working repository in gitweb (see
-\fBgit-instaweb\fR(1))\&.
-.RE
-.PP
-bundle\&.*
-.RS 4
-The
-\fBbundle\&.*\fR
-keys may appear in a bundle list file found via the
-\fBgit clone \-\-bundle\-uri\fR
-option\&. These keys currently have no effect if placed in a repository config file, though this will change in the future\&. See
-\m[blue]\fBthe bundle URI design document\fR\m[]\&\s-2\u[1]\d\s+2
-for more details\&.
-.RE
-.PP
-bundle\&.version
-.RS 4
-This integer value advertises the version of the bundle list format used by the bundle list\&. Currently, the only accepted value is
-\fB1\fR\&.
-.RE
-.PP
-bundle\&.mode
-.RS 4
-This string value should be either
-\fBall\fR
-or
-\fBany\fR\&. This value describes whether all of the advertised bundles are required to unbundle a complete understanding of the bundled information (\fBall\fR) or if any one of the listed bundle URIs is sufficient (\fBany\fR)\&.
-.RE
-.PP
-bundle\&.heuristic
-.RS 4
-If this string\-valued key exists, then the bundle list is designed to work well with incremental
-\fBgit fetch\fR
-commands\&. The heuristic signals that there are additional keys available for each bundle that help determine which subset of bundles the client should download\&. The only value currently understood is
-\fBcreationToken\fR\&.
-.RE
-.PP
-bundle\&.<id>\&.*
-.RS 4
-The
-\fBbundle\&.<id>\&.*\fR
-keys are used to describe a single item in the bundle list, grouped under
-\fB<id>\fR
-for identification purposes\&.
-.RE
-.PP
-bundle\&.<id>\&.uri
-.RS 4
-This string value defines the URI by which Git can reach the contents of this
-\fB<id>\fR\&. This URI may be a bundle file or another bundle list\&.
-.RE
-.PP
-checkout\&.defaultRemote
-.RS 4
-When you run
-\fBgit checkout <something>\fR
-or
-\fBgit switch <something>\fR
-and only have one remote, it may implicitly fall back on checking out and tracking e\&.g\&.
-\fBorigin/<something>\fR\&. This stops working as soon as you have more than one remote with a
-\fB<something>\fR
-reference\&. This setting allows for setting the name of a preferred remote that should always win when it comes to disambiguation\&. The typical use\-case is to set this to
-\fBorigin\fR\&.
-.sp
-Currently this is used by
-\fBgit-switch\fR(1)
-and
-\fBgit-checkout\fR(1)
-when
-\fBgit checkout <something>\fR
-or
-\fBgit switch <something>\fR
-will checkout the
-\fB<something>\fR
-branch on another remote, and by
-\fBgit-worktree\fR(1)
-when
-\fBgit worktree add\fR
-refers to a remote branch\&. This setting might be used for other checkout\-like commands or functionality in the future\&.
-.RE
-.PP
-checkout\&.guess
-.RS 4
-Provides the default value for the
-\fB\-\-guess\fR
-or
-\fB\-\-no\-guess\fR
-option in
-\fBgit checkout\fR
-and
-\fBgit switch\fR\&. See
-\fBgit-switch\fR(1)
-and
-\fBgit-checkout\fR(1)\&.
-.RE
-.PP
-checkout\&.workers
-.RS 4
-The number of parallel workers to use when updating the working tree\&. The default is one, i\&.e\&. sequential execution\&. If set to a value less than one, Git will use as many workers as the number of logical cores available\&. This setting and
-\fBcheckout\&.thresholdForParallelism\fR
-affect all commands that perform checkout\&. E\&.g\&. checkout, clone, reset, sparse\-checkout, etc\&.
-.sp
-Note: Parallel checkout usually delivers better performance for repositories located on SSDs or over NFS\&. For repositories on spinning disks and/or machines with a small number of cores, the default sequential checkout often performs better\&. The size and compression level of a repository might also influence how well the parallel version performs\&.
-.RE
-.PP
-checkout\&.thresholdForParallelism
-.RS 4
-When running parallel checkout with a small number of files, the cost of subprocess spawning and inter\-process communication might outweigh the parallelization gains\&. This setting allows you to define the minimum number of files for which parallel checkout should be attempted\&. The default is 100\&.
-.RE
-.PP
-clean\&.requireForce
-.RS 4
-A boolean to make git\-clean do nothing unless given \-f, \-i, or \-n\&. Defaults to true\&.
-.RE
-.PP
-clone\&.defaultRemoteName
-.RS 4
-The name of the remote to create when cloning a repository\&. Defaults to
-\fBorigin\fR, and can be overridden by passing the
-\fB\-\-origin\fR
-command\-line option to
-\fBgit-clone\fR(1)\&.
-.RE
-.PP
-clone\&.rejectShallow
-.RS 4
-Reject cloning a repository if it is a shallow one; this can be overridden by passing the
-\fB\-\-reject\-shallow\fR
-option on the command line\&. See
-\fBgit-clone\fR(1)
-.RE
-.PP
-clone\&.filterSubmodules
-.RS 4
-If a partial clone filter is provided (see
-\fB\-\-filter\fR
-in
-\fBgit-rev-list\fR(1)) and
-\fB\-\-recurse\-submodules\fR
-is used, also apply the filter to submodules\&.
-.RE
-.PP
-color\&.advice
-.RS 4
-A boolean to enable/disable color in hints (e\&.g\&. when a push failed, see
-\fBadvice\&.*\fR
-for a list)\&. May be set to
-\fBalways\fR,
-\fBfalse\fR
-(or
-\fBnever\fR) or
-\fBauto\fR
-(or
-\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.advice\&.hint
-.RS 4
-Use customized color for hints\&.
-.RE
-.PP
-color\&.blame\&.highlightRecent
-.RS 4
-Specify the line annotation color for
-\fBgit blame \-\-color\-by\-age\fR
-depending upon the age of the line\&.
-.sp
-This setting should be set to a comma\-separated list of color and date settings, starting and ending with a color, the dates should be set from oldest to newest\&. The metadata will be colored with the specified colors if the line was introduced before the given timestamp, overwriting older timestamped colors\&.
-.sp
-Instead of an absolute timestamp relative timestamps work as well, e\&.g\&.
-\fB2\&.weeks\&.ago\fR
-is valid to address anything older than 2 weeks\&.
-.sp
-It defaults to
-\fBblue,12 month ago,white,1 month ago,red\fR, which colors everything older than one year blue, recent changes between one month and one year old are kept white, and lines introduced within the last month are colored red\&.
-.RE
-.PP
-color\&.blame\&.repeatedLines
-.RS 4
-Use the specified color to colorize line annotations for
-\fBgit blame \-\-color\-lines\fR, if they come from the same commit as the preceding line\&. Defaults to cyan\&.
-.RE
-.PP
-color\&.branch
-.RS 4
-A boolean to enable/disable color in the output of
-\fBgit-branch\fR(1)\&. May be set to
-\fBalways\fR,
-\fBfalse\fR
-(or
-\fBnever\fR) or
-\fBauto\fR
-(or
-\fBtrue\fR), in which case colors are used only when the output is to a terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.branch\&.<slot>
-.RS 4
-Use customized color for branch coloration\&.
-\fB<slot>\fR
-is one of
-\fBcurrent\fR
-(the current branch),
-\fBlocal\fR
-(a local branch),
-\fBremote\fR
-(a remote\-tracking branch in refs/remotes/),
-\fBupstream\fR
-(upstream tracking branch),
-\fBplain\fR
-(other refs)\&.
-.RE
-.PP
-color\&.diff
-.RS 4
-Whether to use ANSI escape sequences to add color to patches\&. If this is set to
-\fBalways\fR,
-\fBgit-diff\fR(1),
-\fBgit-log\fR(1), and
-\fBgit-show\fR(1)
-will use color for all patches\&. If it is set to
-\fBtrue\fR
-or
-\fBauto\fR, those commands will only use color when output is to the terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.sp
-This does not affect
-\fBgit-format-patch\fR(1)
-or the
-\fIgit\-diff\-*\fR
-plumbing commands\&. Can be overridden on the command line with the
-\fB\-\-color[=<when>]\fR
-option\&.
-.RE
-.PP
-color\&.diff\&.<slot>
-.RS 4
-Use customized color for diff colorization\&.
-\fB<slot>\fR
-specifies which part of the patch to use the specified color, and is one of
-\fBcontext\fR
-(context text \-
-\fBplain\fR
-is a historical synonym),
-\fBmeta\fR
-(metainformation),
-\fBfrag\fR
-(hunk header),
-\fIfunc\fR
-(function in hunk header),
-\fBold\fR
-(removed lines),
-\fBnew\fR
-(added lines),
-\fBcommit\fR
-(commit headers),
-\fBwhitespace\fR
-(highlighting whitespace errors),
-\fBoldMoved\fR
-(deleted lines),
-\fBnewMoved\fR
-(added lines),
-\fBoldMovedDimmed\fR,
-\fBoldMovedAlternative\fR,
-\fBoldMovedAlternativeDimmed\fR,
-\fBnewMovedDimmed\fR,
-\fBnewMovedAlternative\fR
-\fBnewMovedAlternativeDimmed\fR
-(See the
-\fI<mode>\fR
-setting of
-\fI\-\-color\-moved\fR
-in
-\fBgit-diff\fR(1)
-for details),
-\fBcontextDimmed\fR,
-\fBoldDimmed\fR,
-\fBnewDimmed\fR,
-\fBcontextBold\fR,
-\fBoldBold\fR, and
-\fBnewBold\fR
-(see
-\fBgit-range-diff\fR(1)
-for details)\&.
-.RE
-.PP
-color\&.decorate\&.<slot>
-.RS 4
-Use customized color for
-\fIgit log \-\-decorate\fR
-output\&.
-\fB<slot>\fR
-is one of
-\fBbranch\fR,
-\fBremoteBranch\fR,
-\fBtag\fR,
-\fBstash\fR
-or
-\fBHEAD\fR
-for local branches, remote\-tracking branches, tags, stash and HEAD, respectively and
-\fBgrafted\fR
-for grafted commits\&.
-.RE
-.PP
-color\&.grep
-.RS 4
-When set to
-\fBalways\fR, always highlight matches\&. When
-\fBfalse\fR
-(or
-\fBnever\fR), never\&. When set to
-\fBtrue\fR
-or
-\fBauto\fR, use color only when the output is written to the terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.grep\&.<slot>
-.RS 4
-Use customized color for grep colorization\&.
-\fB<slot>\fR
-specifies which part of the line to use the specified color, and is one of
-.PP
-\fBcontext\fR
-.RS 4
-non\-matching text in context lines (when using
-\fB\-A\fR,
-\fB\-B\fR, or
-\fB\-C\fR)
-.RE
-.PP
-\fBfilename\fR
-.RS 4
-filename prefix (when not using
-\fB\-h\fR)
-.RE
-.PP
-\fBfunction\fR
-.RS 4
-function name lines (when using
-\fB\-p\fR)
-.RE
-.PP
-\fBlineNumber\fR
-.RS 4
-line number prefix (when using
-\fB\-n\fR)
-.RE
-.PP
-\fBcolumn\fR
-.RS 4
-column number prefix (when using
-\fB\-\-column\fR)
-.RE
-.PP
-\fBmatch\fR
-.RS 4
-matching text (same as setting
-\fBmatchContext\fR
-and
-\fBmatchSelected\fR)
-.RE
-.PP
-\fBmatchContext\fR
-.RS 4
-matching text in context lines
-.RE
-.PP
-\fBmatchSelected\fR
-.RS 4
-matching text in selected lines\&. Also, used to customize the following
-\fBgit-log\fR(1)
-subcommands:
-\fB\-\-grep\fR,
-\fB\-\-author\fR, and
-\fB\-\-committer\fR\&.
-.RE
-.PP
-\fBselected\fR
-.RS 4
-non\-matching text in selected lines\&. Also, used to customize the following
-\fBgit-log\fR(1)
-subcommands:
-\fB\-\-grep\fR,
-\fB\-\-author\fR
-and
-\fB\-\-committer\fR\&.
-.RE
-.PP
-\fBseparator\fR
-.RS 4
-separators between fields on a line (\fB:\fR,
-\fB\-\fR, and
-\fB=\fR) and between hunks (\fB\-\-\fR)
-.RE
-.RE
-.PP
-color\&.interactive
-.RS 4
-When set to
-\fBalways\fR, always use colors for interactive prompts and displays (such as those used by "git\-add \-\-interactive" and "git\-clean \-\-interactive")\&. When false (or
-\fBnever\fR), never\&. When set to
-\fBtrue\fR
-or
-\fBauto\fR, use colors only when the output is to the terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.interactive\&.<slot>
-.RS 4
-Use customized color for
-\fIgit add \-\-interactive\fR
-and
-\fIgit clean \-\-interactive\fR
-output\&.
-\fB<slot>\fR
-may be
-\fBprompt\fR,
-\fBheader\fR,
-\fBhelp\fR
-or
-\fBerror\fR, for four distinct types of normal output from interactive commands\&.
-.RE
-.PP
-color\&.pager
-.RS 4
-A boolean to specify whether
-\fBauto\fR
-color modes should colorize output going to the pager\&. Defaults to true; set this to false if your pager does not understand ANSI color codes\&.
-.RE
-.PP
-color\&.push
-.RS 4
-A boolean to enable/disable color in push errors\&. May be set to
-\fBalways\fR,
-\fBfalse\fR
-(or
-\fBnever\fR) or
-\fBauto\fR
-(or
-\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.push\&.error
-.RS 4
-Use customized color for push errors\&.
-.RE
-.PP
-color\&.remote
-.RS 4
-If set, keywords at the start of the line are highlighted\&. The keywords are "error", "warning", "hint" and "success", and are matched case\-insensitively\&. May be set to
-\fBalways\fR,
-\fBfalse\fR
-(or
-\fBnever\fR) or
-\fBauto\fR
-(or
-\fBtrue\fR)\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.remote\&.<slot>
-.RS 4
-Use customized color for each remote keyword\&.
-\fB<slot>\fR
-may be
-\fBhint\fR,
-\fBwarning\fR,
-\fBsuccess\fR
-or
-\fBerror\fR
-which match the corresponding keyword\&.
-.RE
-.PP
-color\&.showBranch
-.RS 4
-A boolean to enable/disable color in the output of
-\fBgit-show-branch\fR(1)\&. May be set to
-\fBalways\fR,
-\fBfalse\fR
-(or
-\fBnever\fR) or
-\fBauto\fR
-(or
-\fBtrue\fR), in which case colors are used only when the output is to a terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.status
-.RS 4
-A boolean to enable/disable color in the output of
-\fBgit-status\fR(1)\&. May be set to
-\fBalways\fR,
-\fBfalse\fR
-(or
-\fBnever\fR) or
-\fBauto\fR
-(or
-\fBtrue\fR), in which case colors are used only when the output is to a terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.status\&.<slot>
-.RS 4
-Use customized color for status colorization\&.
-\fB<slot>\fR
-is one of
-\fBheader\fR
-(the header text of the status message),
-\fBadded\fR
-or
-\fBupdated\fR
-(files which are added but not committed),
-\fBchanged\fR
-(files which are changed but not added in the index),
-\fBuntracked\fR
-(files which are not tracked by Git),
-\fBbranch\fR
-(the current branch),
-\fBnobranch\fR
-(the color the
-\fIno branch\fR
-warning is shown in, defaulting to red),
-\fBlocalBranch\fR
-or
-\fBremoteBranch\fR
-(the local and remote branch names, respectively, when branch and tracking information is displayed in the status short\-format), or
-\fBunmerged\fR
-(files which have unmerged changes)\&.
-.RE
-.PP
-color\&.transport
-.RS 4
-A boolean to enable/disable color when pushes are rejected\&. May be set to
-\fBalways\fR,
-\fBfalse\fR
-(or
-\fBnever\fR) or
-\fBauto\fR
-(or
-\fBtrue\fR), in which case colors are used only when the error output goes to a terminal\&. If unset, then the value of
-\fBcolor\&.ui\fR
-is used (\fBauto\fR
-by default)\&.
-.RE
-.PP
-color\&.transport\&.rejected
-.RS 4
-Use customized color when a push was rejected\&.
-.RE
-.PP
-color\&.ui
-.RS 4
-This variable determines the default value for variables such as
-\fBcolor\&.diff\fR
-and
-\fBcolor\&.grep\fR
-that control the use of color per command family\&. Its scope will expand as more commands learn configuration to set a default for the
-\fB\-\-color\fR
-option\&. Set it to
-\fBfalse\fR
-or
-\fBnever\fR
-if you prefer Git commands not to use color unless enabled explicitly with some other configuration or the
-\fB\-\-color\fR
-option\&. Set it to
-\fBalways\fR
-if you want all output not intended for machine consumption to use color, to
-\fBtrue\fR
-or
-\fBauto\fR
-(this is the default since Git 1\&.8\&.4) if you want such output to use color when written to the terminal\&.
-.RE
-.PP
-column\&.ui
-.RS 4
-Specify whether supported commands should output in columns\&. This variable consists of a list of tokens separated by spaces or commas:
-.sp
-These options control when the feature should be enabled (defaults to
-\fInever\fR):
-.PP
-\fBalways\fR
-.RS 4
-always show in columns
-.RE
-.PP
-\fBnever\fR
-.RS 4
-never show in columns
-.RE
-.PP
-\fBauto\fR
-.RS 4
-show in columns if the output is to the terminal
-.RE
-.sp
-These options control layout (defaults to
-\fIcolumn\fR)\&. Setting any of these implies
-\fIalways\fR
-if none of
-\fIalways\fR,
-\fInever\fR, or
-\fIauto\fR
-are specified\&.
-.PP
-\fBcolumn\fR
-.RS 4
-fill columns before rows
-.RE
-.PP
-\fBrow\fR
-.RS 4
-fill rows before columns
-.RE
-.PP
-\fBplain\fR
-.RS 4
-show in one column
-.RE
-.sp
-Finally, these options can be combined with a layout option (defaults to
-\fInodense\fR):
-.PP
-\fBdense\fR
-.RS 4
-make unequal size columns to utilize more space
-.RE
-.PP
-\fBnodense\fR
-.RS 4
-make equal size columns
-.RE
-.RE
-.PP
-column\&.branch
-.RS 4
-Specify whether to output branch listing in
-\fBgit branch\fR
-in columns\&. See
-\fBcolumn\&.ui\fR
-for details\&.
-.RE
-.PP
-column\&.clean
-.RS 4
-Specify the layout when listing items in
-\fBgit clean \-i\fR, which always shows files and directories in columns\&. See
-\fBcolumn\&.ui\fR
-for details\&.
-.RE
-.PP
-column\&.status
-.RS 4
-Specify whether to output untracked files in
-\fBgit status\fR
-in columns\&. See
-\fBcolumn\&.ui\fR
-for details\&.
-.RE
-.PP
-column\&.tag
-.RS 4
-Specify whether to output tag listings in
-\fBgit tag\fR
-in columns\&. See
-\fBcolumn\&.ui\fR
-for details\&.
-.RE
-.PP
-commit\&.cleanup
-.RS 4
-This setting overrides the default of the
-\fB\-\-cleanup\fR
-option in
-\fBgit commit\fR\&. See
-\fBgit-commit\fR(1)
-for details\&. Changing the default can be useful when you always want to keep lines that begin with the comment character
-\fB#\fR
-in your log message, in which case you would do
-\fBgit config commit\&.cleanup whitespace\fR
-(note that you will have to remove the help lines that begin with
-\fB#\fR
-in the commit log template yourself, if you do this)\&.
-.RE
-.PP
-commit\&.gpgSign
-.RS 4
-A boolean to specify whether all commits should be GPG signed\&. Use of this option when doing operations such as rebase can result in a large number of commits being signed\&. It may be convenient to use an agent to avoid typing your GPG passphrase several times\&.
-.RE
-.PP
-commit\&.status
-.RS 4
-A boolean to enable/disable inclusion of status information in the commit message template when using an editor to prepare the commit message\&. Defaults to true\&.
-.RE
-.PP
-commit\&.template
-.RS 4
-Specify the pathname of a file to use as the template for new commit messages\&.
-.RE
-.PP
-commit\&.verbose
-.RS 4
-A boolean or int to specify the level of verbosity with
-\fBgit commit\fR\&. See
-\fBgit-commit\fR(1)\&.
-.RE
-.PP
-commitGraph\&.generationVersion
-.RS 4
-Specifies the type of generation number version to use when writing or reading the commit\-graph file\&. If version 1 is specified, then the corrected commit dates will not be written or read\&. Defaults to 2\&.
-.RE
-.PP
-commitGraph\&.maxNewFilters
-.RS 4
-Specifies the default value for the
-\fB\-\-max\-new\-filters\fR
-option of
-\fBgit commit\-graph write\fR
-(c\&.f\&.,
-\fBgit-commit-graph\fR(1))\&.
-.RE
-.PP
-commitGraph\&.readChangedPaths
-.RS 4
-If true, then git will use the changed\-path Bloom filters in the commit\-graph file (if it exists, and they are present)\&. Defaults to true\&. See
-\fBgit-commit-graph\fR(1)
-for more information\&.
-.RE
-.PP
 credential\&.helper
 .RS 4
 Specify an external helper to be called when a username or password credential is needed; the helper may consult external storage to avoid prompting the user for the credentials\&. This is normally the name of a credential helper with possible arguments, but may also be an absolute path with arguments or, if preceded by
@@ -3754,13 +3761,6 @@ Tell git\-credential\-cache\(emdaemon to ignore SIGHUP, instead of quitting\&.
 credentialStore\&.lockTimeoutMS
 .RS 4
 The length of time, in milliseconds, for git\-credential\-store to retry when trying to lock the credentials file\&. A value of 0 means not to retry at all; \-1 means to try indefinitely\&. Default is 1000 (i\&.e\&., retry for 1s)\&.
-.RE
-.PP
-completion\&.commands
-.RS 4
-This is only used by git\-completion\&.bash to add or remove commands from the list of completed commands\&. Normally only porcelain commands and a few select others are completed\&. You can add more commands, separated by space, in this variable\&. Prefixing the command with
-\fI\-\fR
-will remove it from the existing list\&.
 .RE
 .PP
 diff\&.autoRefreshIndex
@@ -4704,6 +4704,20 @@ The creation token values are chosen by the provider serving the specific bundle
 value before fetching\&.
 .RE
 .PP
+filter\&.<driver>\&.clean
+.RS 4
+The command which is used to convert the content of a worktree file to a blob upon checkin\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
+filter\&.<driver>\&.smudge
+.RS 4
+The command which is used to convert the content of a blob object to a worktree file upon checkout\&. See
+\fBgitattributes\fR(5)
+for details\&.
+.RE
+.PP
 format\&.attach
 .RS 4
 Enable multipart/mixed attachments as the default for
@@ -4906,20 +4920,6 @@ option used by
 \fBformat\-patch\fR)\&. Note that by setting this, the receiver of any patches you generate will have to apply them using the
 \fB\-p0\fR
 option\&.
-.RE
-.PP
-filter\&.<driver>\&.clean
-.RS 4
-The command which is used to convert the content of a worktree file to a blob upon checkin\&. See
-\fBgitattributes\fR(5)
-for details\&.
-.RE
-.PP
-filter\&.<driver>\&.smudge
-.RS 4
-The command which is used to convert the content of a blob object to a worktree file upon checkout\&. See
-\fBgitattributes\fR(5)
-for details\&.
 .RE
 .PP
 fsck\&.<msg\-id>
@@ -5362,69 +5362,6 @@ See
 for description\&.
 .RE
 .PP
-grep\&.lineNumber
-.RS 4
-If set to true, enable
-\fB\-n\fR
-option by default\&.
-.RE
-.PP
-grep\&.column
-.RS 4
-If set to true, enable the
-\fB\-\-column\fR
-option by default\&.
-.RE
-.PP
-grep\&.patternType
-.RS 4
-Set the default matching behavior\&. Using a value of
-\fIbasic\fR,
-\fIextended\fR,
-\fIfixed\fR, or
-\fIperl\fR
-will enable the
-\fB\-\-basic\-regexp\fR,
-\fB\-\-extended\-regexp\fR,
-\fB\-\-fixed\-strings\fR, or
-\fB\-\-perl\-regexp\fR
-option accordingly, while the value
-\fIdefault\fR
-will use the
-\fBgrep\&.extendedRegexp\fR
-option to choose between
-\fIbasic\fR
-and
-\fIextended\fR\&.
-.RE
-.PP
-grep\&.extendedRegexp
-.RS 4
-If set to true, enable
-\fB\-\-extended\-regexp\fR
-option by default\&. This option is ignored when the
-\fBgrep\&.patternType\fR
-option is set to a value other than
-\fIdefault\fR\&.
-.RE
-.PP
-grep\&.threads
-.RS 4
-Number of grep worker threads to use\&. If unset (or set to 0), Git will use as many threads as the number of logical cores available\&.
-.RE
-.PP
-grep\&.fullName
-.RS 4
-If set to true, enable
-\fB\-\-full\-name\fR
-option by default\&.
-.RE
-.PP
-grep\&.fallbackToNoIndex
-.RS 4
-If set to true, fall back to git grep \-\-no\-index if git grep is executed outside of a git repository\&. Defaults to false\&.
-.RE
-.PP
 gpg\&.program
 .RS 4
 Use this custom program instead of "\fBgpg\fR" found on
@@ -5554,6 +5491,69 @@ Using a SSH CA key with the cert\-authority option (see ssh\-keygen(1) "CERTIFIC
 gpg\&.ssh\&.revocationFile
 .RS 4
 Either a SSH KRL or a list of revoked public keys (without the principal prefix)\&. See ssh\-keygen(1) for details\&. If a public key is found in this file then it will always be treated as having trust level "never" and signatures will show as invalid\&.
+.RE
+.PP
+grep\&.lineNumber
+.RS 4
+If set to true, enable
+\fB\-n\fR
+option by default\&.
+.RE
+.PP
+grep\&.column
+.RS 4
+If set to true, enable the
+\fB\-\-column\fR
+option by default\&.
+.RE
+.PP
+grep\&.patternType
+.RS 4
+Set the default matching behavior\&. Using a value of
+\fIbasic\fR,
+\fIextended\fR,
+\fIfixed\fR, or
+\fIperl\fR
+will enable the
+\fB\-\-basic\-regexp\fR,
+\fB\-\-extended\-regexp\fR,
+\fB\-\-fixed\-strings\fR, or
+\fB\-\-perl\-regexp\fR
+option accordingly, while the value
+\fIdefault\fR
+will use the
+\fBgrep\&.extendedRegexp\fR
+option to choose between
+\fIbasic\fR
+and
+\fIextended\fR\&.
+.RE
+.PP
+grep\&.extendedRegexp
+.RS 4
+If set to true, enable
+\fB\-\-extended\-regexp\fR
+option by default\&. This option is ignored when the
+\fBgrep\&.patternType\fR
+option is set to a value other than
+\fIdefault\fR\&.
+.RE
+.PP
+grep\&.threads
+.RS 4
+Number of grep worker threads to use\&. If unset (or set to 0), Git will use as many threads as the number of logical cores available\&.
+.RE
+.PP
+grep\&.fullName
+.RS 4
+If set to true, enable
+\fB\-\-full\-name\fR
+option by default\&.
+.RE
+.PP
+grep\&.fallbackToNoIndex
+.RS 4
+If set to true, fall back to git grep \-\-no\-index if git grep is executed outside of a git repository\&. Defaults to false\&.
 .RE
 .PP
 gui\&.commitMsgWidth
@@ -9028,6 +9028,36 @@ Except for the
 variant, command\-line parameters are likely to change as git gains new features\&.
 .RE
 .PP
+stash\&.showIncludeUntracked
+.RS 4
+If this is set to true, the
+\fBgit stash show\fR
+command will show the untracked files of a stash entry\&. Defaults to false\&. See the description of the
+\fIshow\fR
+command in
+\fBgit-stash\fR(1)\&.
+.RE
+.PP
+stash\&.showPatch
+.RS 4
+If this is set to true, the
+\fBgit stash show\fR
+command without an option will show the stash entry in patch form\&. Defaults to false\&. See the description of the
+\fIshow\fR
+command in
+\fBgit-stash\fR(1)\&.
+.RE
+.PP
+stash\&.showStat
+.RS 4
+If this is set to true, the
+\fBgit stash show\fR
+command without an option will show a diffstat of the stash entry\&. Defaults to true\&. See the description of the
+\fIshow\fR
+command in
+\fBgit-stash\fR(1)\&.
+.RE
+.PP
 status\&.relativePaths
 .RS 4
 By default,
@@ -9158,36 +9188,6 @@ or only for those submodules where
 \fBsubmodule\&.<name>\&.ignore=all\fR\&. The only exception to that rule is that status and commit will show staged submodule changes\&. To also view the summary for ignored submodules you can either use the \-\-ignore\-submodules=dirty command\-line option or the
 \fIgit submodule summary\fR
 command, which shows a similar output but does not honor these settings\&.
-.RE
-.PP
-stash\&.showIncludeUntracked
-.RS 4
-If this is set to true, the
-\fBgit stash show\fR
-command will show the untracked files of a stash entry\&. Defaults to false\&. See the description of the
-\fIshow\fR
-command in
-\fBgit-stash\fR(1)\&.
-.RE
-.PP
-stash\&.showPatch
-.RS 4
-If this is set to true, the
-\fBgit stash show\fR
-command without an option will show the stash entry in patch form\&. Defaults to false\&. See the description of the
-\fIshow\fR
-command in
-\fBgit-stash\fR(1)\&.
-.RE
-.PP
-stash\&.showStat
-.RS 4
-If this is set to true, the
-\fBgit stash show\fR
-command without an option will show a diffstat of the stash entry\&. Defaults to true\&. See the description of the
-\fIshow\fR
-command in
-\fBgit-stash\fR(1)\&.
 .RE
 .PP
 submodule\&.<name>\&.url
