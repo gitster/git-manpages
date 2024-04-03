@@ -2,12 +2,12 @@
 .\"     Title: git-cherry-pick
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-04-01
+.\"      Date: 2024-04-03
 .\"    Manual: Git Manual
-.\"    Source: Git 2.44.0.448.gc2cbfbd2e2
+.\"    Source: Git 2.44.0.478.g7774cfed62
 .\"  Language: English
 .\"
-.TH "GIT\-CHERRY\-PICK" "1" "2024\-04\-01" "Git 2\&.44\&.0\&.448\&.gc2cbfb" "Git Manual"
+.TH "GIT\-CHERRY\-PICK" "1" "2024\-04\-03" "Git 2\&.44\&.0\&.478\&.g7774cf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -196,8 +196,8 @@ If the current HEAD is the same as the parent of the cherry\-pick\(cqed commit, 
 .RS 4
 By default, cherry\-picking an empty commit will fail, indicating that an explicit invocation of
 \fBgit commit \-\-allow\-empty\fR
-is required\&. This option overrides that behavior, allowing empty commits to be preserved automatically in a cherry\-pick\&. Note that when "\-\-ff" is in effect, empty commits that meet the "fast\-forward" requirement will be kept even without this option\&. Note also, that use of this option only keeps commits that were initially empty (i\&.e\&. the commit recorded the same tree as its parent)\&. Commits which are made empty due to a previous commit are dropped\&. To force the inclusion of those commits use
-\fB\-\-keep\-redundant\-commits\fR\&.
+is required\&. This option overrides that behavior, allowing empty commits to be preserved automatically in a cherry\-pick\&. Note that when "\-\-ff" is in effect, empty commits that meet the "fast\-forward" requirement will be kept even without this option\&. Note also, that use of this option only keeps commits that were initially empty (i\&.e\&. the commit recorded the same tree as its parent)\&. Commits which are made empty due to a previous commit will cause the cherry\-pick to fail\&. To force the inclusion of those commits, use
+\fB\-\-empty=keep\fR\&.
 .RE
 .PP
 \-\-allow\-empty\-message
@@ -205,12 +205,41 @@ is required\&. This option overrides that behavior, allowing empty commits to be
 By default, cherry\-picking a commit with an empty message will fail\&. This option overrides that behavior, allowing commits with empty messages to be cherry picked\&.
 .RE
 .PP
+\-\-empty=(drop|keep|stop)
+.RS 4
+How to handle commits being cherry\-picked that are redundant with changes already in the current history\&.
+.PP
+\fBdrop\fR
+.RS 4
+The commit will be dropped\&.
+.RE
+.PP
+\fBkeep\fR
+.RS 4
+The commit will be kept\&. Implies
+\fB\-\-allow\-empty\fR\&.
+.RE
+.PP
+\fBstop\fR
+.RS 4
+The cherry\-pick will stop when the commit is applied, allowing you to examine the commit\&. This is the default behavior\&.
+.RE
+.sp
+Note that
+\fB\-\-empty=drop\fR
+and
+\fB\-\-empty=stop\fR
+only specify how to handle a commit that was not initially empty, but rather became empty due to a previous commit\&. Commits that were initially empty will still cause the cherry\-pick to fail unless one of
+\fB\-\-empty=keep\fR
+or
+\fB\-\-allow\-empty\fR
+are specified\&.
+.RE
+.PP
 \-\-keep\-redundant\-commits
 .RS 4
-If a commit being cherry picked duplicates a commit already in the current history, it will become empty\&. By default these redundant commits cause
-\fBcherry\-pick\fR
-to stop so the user can examine the commit\&. This option overrides that behavior and creates an empty commit object\&. Implies
-\fB\-\-allow\-empty\fR\&.
+Deprecated synonym for
+\fB\-\-empty=keep\fR\&.
 .RE
 .PP
 \-\-strategy=<strategy>

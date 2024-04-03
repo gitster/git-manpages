@@ -2,12 +2,12 @@
 .\"     Title: git-grep
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-04-01
+.\"      Date: 2024-04-03
 .\"    Manual: Git Manual
-.\"    Source: Git 2.44.0.448.gc2cbfbd2e2
+.\"    Source: Git 2.44.0.478.g7774cfed62
 .\"  Language: English
 .\"
-.TH "GIT\-GREP" "1" "2024\-04\-01" "Git 2\&.44\&.0\&.448\&.gc2cbfb" "Git Manual"
+.TH "GIT\-GREP" "1" "2024\-04\-03" "Git 2\&.44\&.0\&.478\&.g7774cf" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -51,7 +51,7 @@ git-grep \- Print lines matching a pattern
            [\-f <file>] [\-e] <pattern>
            [\-\-and|\-\-or|\-\-not|(|)|\-e <pattern>\&...]
            [\-\-recurse\-submodules] [\-\-parent\-basename <basename>]
-           [ [\-\-[no\-]exclude\-standard] [\-\-cached | \-\-no\-index | \-\-untracked] | <tree>\&...]
+           [ [\-\-[no\-]exclude\-standard] [\-\-cached | \-\-untracked | \-\-no\-index] | <tree>\&...]
            [\-\-] [<pathspec>\&...]
 .fi
 .sp
@@ -65,14 +65,31 @@ Look for specified patterns in the tracked files in the work tree, blobs registe
 Instead of searching tracked files in the working tree, search blobs registered in the index file\&.
 .RE
 .PP
-\-\-no\-index
-.RS 4
-Search files in the current directory that is not managed by Git\&.
-.RE
-.PP
 \-\-untracked
 .RS 4
 In addition to searching in the tracked files in the working tree, search also in untracked files\&.
+.RE
+.PP
+\-\-no\-index
+.RS 4
+Search files in the current directory that is not managed by Git, or by ignoring that the current directory is managed by Git\&. This is rather similar to running the regular
+\fBgrep(1)\fR
+utility with its
+\fB\-r\fR
+option specified, but with some additional benefits, such as using pathspec patterns to limit paths; see the
+\fIpathspec\fR
+entry in
+\fBgitglossary\fR(7)
+for more information\&.
+.sp
+This option cannot be used together with
+\fB\-\-cached\fR
+or
+\fB\-\-untracked\fR\&. See also
+\fBgrep\&.fallbackToNoIndex\fR
+in
+\fICONFIGURATION\fR
+below\&.
 .RE
 .PP
 \-\-no\-exclude\-standard
@@ -93,9 +110,14 @@ mechanism\&. Only useful when searching files in the current directory with
 .PP
 \-\-recurse\-submodules
 .RS 4
-Recursively search in each submodule that is active and checked out in the repository\&. When used in combination with the <tree> option the prefix of all submodule output will be the name of the parent project\(cqs <tree> object\&. This option has no effect if
+Recursively search in each submodule that is active and checked out in the repository\&. When used in combination with the
+\fI<tree>\fR
+option the prefix of all submodule output will be the name of the parent project\(cqs
+\fI<tree>\fR
+object\&. This option cannot be used together with
+\fB\-\-untracked\fR, and it has no effect if
 \fB\-\-no\-index\fR
-is given\&.
+is specified\&.
 .RE
 .PP
 \-a, \-\-text
@@ -217,7 +239,9 @@ in
 .PP
 \-z, \-\-null
 .RS 4
-Use \e0 as the delimiter for pathnames in the output, and print them verbatim\&. Without this option, pathnames with "unusual" characters are quoted as explained for the configuration variable core\&.quotePath (see
+Use \e0 as the delimiter for pathnames in the output, and print them verbatim\&. Without this option, pathnames with "unusual" characters are quoted as explained for the configuration variable
+\fBcore\&.quotePath\fR
+(see
 \fBgit-config\fR(1))\&.
 .RE
 .PP
@@ -304,7 +328,11 @@ option, the search stops after the specified number of non\-matches\&. A value o
 .PP
 \-\-threads <num>
 .RS 4
-Number of grep worker threads to use\&. See
+Number of
+\fBgrep\fR
+worker threads to use\&. See
+\fINOTES ON THREADS\fR
+and
 \fBgrep\&.threads\fR
 in
 \fICONFIGURATION\fR
@@ -413,9 +441,9 @@ Looks for
 .RE
 .SH "NOTES ON THREADS"
 .sp
-The \fB\-\-threads\fR option (and the grep\&.threads configuration) will be ignored when \fB\-\-open\-files\-in\-pager\fR is used, forcing a single\-threaded execution\&.
+The \fB\-\-threads\fR option (and the \fBgrep\&.threads\fR configuration) will be ignored when \fB\-\-open\-files\-in\-pager\fR is used, forcing a single\-threaded execution\&.
 .sp
-When grepping the object store (with \fB\-\-cached\fR or giving tree objects), running with multiple threads might perform slower than single threaded if \fB\-\-textconv\fR is given and there are too many text conversions\&. So if you experience low performance in this case, it might be desirable to use \fB\-\-threads=1\fR\&.
+When grepping the object store (with \fB\-\-cached\fR or giving tree objects), running with multiple threads might perform slower than single\-threaded if \fB\-\-textconv\fR is given and there are too many text conversions\&. Thus, if low performance is experienced in this case, it might be desirable to use \fB\-\-threads=1\fR\&.
 .SH "CONFIGURATION"
 .sp
 Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
@@ -480,7 +508,11 @@ option by default\&.
 .PP
 grep\&.fallbackToNoIndex
 .RS 4
-If set to true, fall back to git grep \-\-no\-index if git grep is executed outside of a git repository\&. Defaults to false\&.
+If set to true, fall back to
+\fBgit grep \-\-no\-index\fR
+if
+\fBgit grep\fR
+is executed outside of a git repository\&. Defaults to false\&.
 .RE
 .SH "GIT"
 .sp
