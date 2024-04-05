@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-04-03
+.\"      Date: 2024-04-05
 .\"    Manual: Git Manual
-.\"    Source: Git 2.44.0.478.g7774cfed62
+.\"    Source: Git 2.44.0.501.g19981daefd
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-04\-03" "Git 2\&.44\&.0\&.478\&.g7774cf" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-04\-05" "Git 2\&.44\&.0\&.501\&.g19981d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,9 +32,9 @@ git-config \- Get and set repository or global options
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-fixed\-value] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] <name> [<value> [<value\-pattern>]]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] \-\-add <name> <value>
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-fixed\-value] \-\-replace\-all <name> <value> [<value\-pattern>]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-comment=<message>] [\-\-fixed\-value] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] <name> [<value> [<value\-pattern>]]
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-comment=<message>] \-\-add <name> <value>
+\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-comment=<message>] [\-\-fixed\-value] \-\-replace\-all <name> <value> [<value\-pattern>]
 \fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] \-\-get <name> [<value\-pattern>]
 \fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] \-\-get\-all <name> [<value\-pattern>]
 \fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] [\-\-name\-only] \-\-get\-regexp <name\-regex> [<value\-pattern>]
@@ -159,6 +159,28 @@ as the
 \fBvalue\-pattern\fR
 in
 \fB\-\-replace\-all\fR\&.
+.RE
+.PP
+\-\-comment <message>
+.RS 4
+Append a comment at the end of new or modified lines\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+If _<message>_ begins with one or more whitespaces followed
+by "#", it is used as\-is\&.  If it begins with "#", a space is
+prepended before it is used\&.  Otherwise, a string " # " (a
+space followed by a hash followed by a space) is prepended
+to it\&.  And the resulting string is placed immediately after
+the value defined for the variable\&.  The _<message>_ must
+not contain linefeed characters (no multi\-line comments are
+permitted)\&.
+.fi
+.if n \{\
+.RE
+.\}
 .RE
 .PP
 \-\-get
@@ -3214,18 +3236,43 @@ is not set\&. See
 \fBgit-var\fR(1)\&.
 .RE
 .PP
-core\&.commentChar
+core\&.commentChar, core\&.commentString
 .RS 4
 Commands such as
 \fBcommit\fR
 and
 \fBtag\fR
-that let you edit messages consider a line that begins with this ASCII character commented, and removes them after the editor returns (default
+that let you edit messages consider a line that begins with this character commented, and removes them after the editor returns (default
 \fI#\fR)\&.
 .sp
 If set to "auto",
 \fBgit\-commit\fR
 would select a character that is not the beginning character of any line in existing commit messages\&.
+.sp
+Note that these two variables are aliases of each other, and in modern versions of Git you are free to use a string (e\&.g\&.,
+\fB//\fR
+or
+\fB⁑⁕⁑\fR) with
+\fBcommentChar\fR\&. Versions of Git prior to v2\&.45\&.0 will ignore
+\fBcommentString\fR
+but will reject a value of
+\fBcommentChar\fR
+that consists of more than a single ASCII byte\&. If you plan to use your config with older and newer versions of Git, you may want to specify both:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[core]
+# single character for older versions
+commentChar = "#"
+# string for newer versions (which will override commentChar
+# because it comes later in the file)
+commentString = "//"
+.fi
+.if n \{\
+.RE
+.\}
 .RE
 .PP
 core\&.filesRefLockTimeout
