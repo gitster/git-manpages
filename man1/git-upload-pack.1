@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 2024-05-13
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.0.145.g3e4a232f6e
+.\"    Source: Git 2.45.1.145.g83f1add914
 .\"  Language: English
 .\"
-.TH "GIT\-UPLOAD\-PACK" "1" "2024\-05\-13" "Git 2\&.45\&.0\&.145\&.g3e4a23" "Git Manual"
+.TH "GIT\-UPLOAD\-PACK" "1" "2024\-05\-13" "Git 2\&.45\&.1\&.145\&.g83f1ad" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -83,6 +83,47 @@ The repository to sync from\&.
 Internal variable used for handshaking the wire protocol\&. Server admins may need to configure some transports to allow this variable to be passed\&. See the discussion in
 \fBgit\fR(1)\&.
 .RE
+.PP
+\fBGIT_NO_LAZY_FETCH\fR
+.RS 4
+When cloning or fetching from a partial repository (i\&.e\&., one itself cloned with
+\fB\-\-filter\fR), the server\-side
+\fBupload\-pack\fR
+may need to fetch extra objects from its upstream in order to complete the request\&. By default,
+\fBupload\-pack\fR
+will refuse to perform such a lazy fetch, because
+\fBgit fetch\fR
+may run arbitrary commands specified in configuration and hooks of the source repository (and
+\fBupload\-pack\fR
+tries to be safe to run even in untrusted
+\fB\&.git\fR
+directories)\&.
+.sp
+This is implemented by having
+\fBupload\-pack\fR
+internally set the
+\fBGIT_NO_LAZY_FETCH\fR
+variable to
+\fB1\fR\&. If you want to override it (because you are fetching from a partial clone, and you are sure you trust it), you can explicitly set
+\fBGIT_NO_LAZY_FETCH\fR
+to
+\fB0\fR\&.
+.RE
+.SH "SECURITY"
+.sp
+Most Git commands should not be run in an untrusted \fB\&.git\fR directory (see the section \fBSECURITY\fR in \fBgit\fR(1))\&. \fBupload\-pack\fR tries to avoid any dangerous configuration options or hooks from the repository it\(cqs serving, making it safe to clone an untrusted directory and run commands on the resulting clone\&.
+.sp
+For an extra level of safety, you may be able to run \fBupload\-pack\fR as an alternate user\&. The details will be platform dependent, but on many systems you can run:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git clone \-\-no\-local \-\-upload\-pack=\*(Aqsudo \-u nobody git\-upload\-pack\*(Aq \&.\&.\&.
+.fi
+.if n \{\
+.RE
+.\}
 .SH "SEE ALSO"
 .sp
 \fBgitnamespaces\fR(7)

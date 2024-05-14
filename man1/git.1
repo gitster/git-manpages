@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 2024-05-13
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.0.145.g3e4a232f6e
+.\"    Source: Git 2.45.1.145.g83f1add914
 .\"  Language: English
 .\"
-.TH "GIT" "1" "2024\-05\-13" "Git 2\&.45\&.0\&.145\&.g3e4a23" "Git Manual"
+.TH "GIT" "1" "2024\-05\-13" "Git 2\&.45\&.1\&.145\&.g83f1ad" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2117,6 +2117,15 @@ Named pointers called refs mark interesting points in history\&. A ref may conta
 The index file is initialized with a list of all paths and, for each path, a blob object and a set of attributes\&. The blob object represents the contents of the file as of the head of the current branch\&. The attributes (last modified time, size, etc\&.) are taken from the corresponding file in the working tree\&. Subsequent changes to the working tree can be found by comparing these attributes\&. The index may be updated with new content, and new commits may be created from the content stored in the index\&.
 .sp
 The index is also capable of storing multiple entries (called "stages") for a given pathname\&. These stages are used to hold the various unmerged version of a file when a merge is in progress\&.
+.SH "SECURITY"
+.sp
+Some configuration options and hook files may cause Git to run arbitrary shell commands\&. Because configuration and hooks are not copied using \fBgit clone\fR, it is generally safe to clone remote repositories with untrusted content, inspect them with \fBgit log\fR, and so on\&.
+.sp
+However, it is not safe to run Git commands in a \fB\&.git\fR directory (or the working tree that surrounds it) when that \fB\&.git\fR directory itself comes from an untrusted source\&. The commands in its config and hooks are executed in the usual way\&.
+.sp
+By default, Git will refuse to run when the repository is owned by someone other than the user running the command\&. See the entry for \fBsafe\&.directory\fR in \fBgit-config\fR(1)\&. While this can help protect you in a multi\-user environment, note that you can also acquire untrusted repositories that are owned by you (for example, if you extract a zip file or tarball from an untrusted source)\&. In such cases, you\(cqd need to "sanitize" the untrusted repository first\&.
+.sp
+If you have an untrusted \fB\&.git\fR directory, you should first clone it with \fBgit clone \-\-no\-local\fR to obtain a clean copy\&. Git does restrict the set of options and hooks that will be run by \fBupload\-pack\fR, which handles the server side of a clone or fetch, but beware that the surface area for attack against \fBupload\-pack\fR is large, so this does carry some risk\&. The safest thing is to serve the repository as an unprivileged user (either via \fBgit-daemon\fR(1), ssh, or using other tools to change user ids)\&. See the discussion in the \fBSECURITY\fR section of \fBgit-upload-pack\fR(1)\&.
 .SH "FURTHER DOCUMENTATION"
 .sp
 See the references in the "description" section to get started using Git\&. The following is probably more detail than necessary for a first\-time user\&.
