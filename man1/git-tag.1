@@ -2,12 +2,12 @@
 .\"     Title: git-tag
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-05-13
+.\"      Date: 2024-05-16
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.1.145.g83f1add914
+.\"    Source: Git 2.45.1.204.gd8ab1d464d
 .\"  Language: English
 .\"
-.TH "GIT\-TAG" "1" "2024\-05\-13" "Git 2\&.45\&.1\&.145\&.g83f1ad" "Git Manual"
+.TH "GIT\-TAG" "1" "2024\-05\-16" "Git 2\&.45\&.1\&.204\&.gd8ab1d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,6 +33,7 @@ git-tag \- Create, list, delete or verify a tag object signed with GPG
 .sp
 .nf
 \fIgit tag\fR [\-a | \-s | \-u <key\-id>] [\-f] [\-m <msg> | \-F <file>] [\-e]
+        [(\-\-trailer <token>[(=|:)<value>])\&...]
         <tagname> [<commit> | <object>]
 \fIgit tag\fR \-d <tagname>\&...
 \fIgit tag\fR [\-n[<num>]] \-l [\-\-contains <commit>] [\-\-no\-contains <commit>]
@@ -50,7 +51,7 @@ Unless \fB\-f\fR is given, the named tag must not yet exist\&.
 .sp
 If one of \fB\-a\fR, \fB\-s\fR, or \fB\-u <key\-id>\fR is passed, the command creates a \fItag\fR object, and requires a tag message\&. Unless \fB\-m <msg>\fR or \fB\-F <file>\fR is given, an editor is started for the user to type in the tag message\&.
 .sp
-If \fB\-m <msg>\fR or \fB\-F <file>\fR is given and \fB\-a\fR, \fB\-s\fR, and \fB\-u <key\-id>\fR are absent, \fB\-a\fR is implied\&.
+If \fB\-m <msg>\fR or \fB\-F <file>\fR or \fB\-\-trailer <token>[=<value>]\fR is given and \fB\-a\fR, \fB\-s\fR, and \fB\-u <key\-id>\fR are absent, \fB\-a\fR is implied\&.
 .sp
 Otherwise, a tag reference that points directly at the given object (i\&.e\&., a lightweight tag) is created\&.
 .sp
@@ -232,6 +233,18 @@ if none of
 \fB\-s\fR, or
 \fB\-u <key\-id>\fR
 is given\&.
+.RE
+.PP
+\-\-trailer <token>[(=|:)<value>]
+.RS 4
+Specify a (<token>, <value>) pair that should be applied as a trailer\&. (e\&.g\&.
+\fBgit tag \-\-trailer "Custom\-Key: value"\fR
+will add a "Custom\-Key" trailer to the tag message\&.) The
+\fBtrailer\&.*\fR
+configuration variables (\fBgit-interpret-trailers\fR(1)) can be used to define if a duplicated trailer is omitted, where in the run of trailers each trailer would appear, and other details\&. The trailers can be extracted in
+\fBgit tag \-\-list\fR, using
+\fB\-\-format="%(trailers)"\fR
+placeholder\&.
 .RE
 .PP
 \-e, \-\-edit

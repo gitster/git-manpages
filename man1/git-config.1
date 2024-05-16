@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-05-13
+.\"      Date: 2024-05-16
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.1.145.g83f1add914
+.\"    Source: Git 2.45.1.204.gd8ab1d464d
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-05\-13" "Git 2\&.45\&.1\&.145\&.g83f1ad" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-05\-16" "Git 2\&.45\&.1\&.204\&.gd8ab1d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,28 +32,21 @@ git-config \- Get and set repository or global options
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-comment=<message>] [\-\-fixed\-value] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] <name> [<value> [<value\-pattern>]]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-comment=<message>] \-\-add <name> <value>
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-comment=<message>] [\-\-fixed\-value] \-\-replace\-all <name> <value> [<value\-pattern>]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] \-\-get <name> [<value\-pattern>]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] \-\-get\-all <name> [<value\-pattern>]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-fixed\-value] [\-\-name\-only] \-\-get\-regexp <name\-regex> [<value\-pattern>]
-\fIgit config\fR [<file\-option>] [\-\-type=<type>] [\-z|\-\-null] \-\-get\-urlmatch <name> <URL>
-\fIgit config\fR [<file\-option>] [\-\-fixed\-value] \-\-unset <name> [<value\-pattern>]
-\fIgit config\fR [<file\-option>] [\-\-fixed\-value] \-\-unset\-all <name> [<value\-pattern>]
-\fIgit config\fR [<file\-option>] \-\-rename\-section <old\-name> <new\-name>
-\fIgit config\fR [<file\-option>] \-\-remove\-section <name>
-\fIgit config\fR [<file\-option>] [\-\-show\-origin] [\-\-show\-scope] [\-z|\-\-null] [\-\-name\-only] \-l | \-\-list
-\fIgit config\fR [<file\-option>] \-\-get\-color <name> [<default>]
+\fIgit config list\fR [<file\-option>] [<display\-option>] [\-\-includes]
+\fIgit config get\fR [<file\-option>] [<display\-option>] [\-\-includes] [\-\-all] [\-\-regexp=<regexp>] [\-\-value=<value>] [\-\-fixed\-value] [\-\-default=<default>] <name>
+\fIgit config set\fR [<file\-option>] [\-\-type=<type>] [\-\-all] [\-\-value=<value>] [\-\-fixed\-value] <name> <value>
+\fIgit config unset\fR [<file\-option>] [\-\-all] [\-\-value=<value>] [\-\-fixed\-value] <name> <value>
+\fIgit config rename\-section\fR [<file\-option>] <old\-name> <new\-name>
+\fIgit config remove\-section\fR [<file\-option>] <name>
+\fIgit config edit\fR [<file\-option>]
 \fIgit config\fR [<file\-option>] \-\-get\-colorbool <name> [<stdout\-is\-tty>]
-\fIgit config\fR [<file\-option>] \-e | \-\-edit
 .fi
 .sp
 .SH "DESCRIPTION"
 .sp
 You can query/set/replace/unset options with this command\&. The name is actually the section and the key separated by a dot, and the value will be escaped\&.
 .sp
-Multiple lines can be added to an option by using the \fB\-\-add\fR option\&. If you want to update or unset an option which can occur on multiple lines, a \fBvalue\-pattern\fR (which is an extended regular expression, unless the \fB\-\-fixed\-value\fR option is given) needs to be given\&. Only the existing values that match the pattern are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the pattern, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq), but note that this only works when the \fB\-\-fixed\-value\fR option is not in use\&.
+Multiple lines can be added to an option by using the \fB\-\-append\fR option\&. If you want to update or unset an option which can occur on multiple lines, a \fBvalue\-pattern\fR (which is an extended regular expression, unless the \fB\-\-fixed\-value\fR option is given) needs to be given\&. Only the existing values that match the pattern are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the pattern, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq), but note that this only works when the \fB\-\-fixed\-value\fR option is not in use\&.
 .sp
 The \fB\-\-type=<type>\fR option instructs \fIgit config\fR to ensure that incoming and outgoing values are canonicalize\-able under the given <type>\&. If no \fB\-\-type=<type>\fR is given, no canonicalization will be performed\&. Callers may unset an existing \fB\-\-type\fR specifier with \fB\-\-no\-type\fR\&.
 .sp
@@ -143,6 +136,58 @@ you try to use an invalid regexp (ret=6)\&.
 On success, the command returns the exit code 0\&.
 .sp
 A list of all available configuration variables can be obtained using the \fBgit help \-\-config\fR command\&.
+.SH "COMMANDS"
+.PP
+list
+.RS 4
+List all variables set in config file, along with their values\&.
+.RE
+.PP
+get
+.RS 4
+Emits the value of the specified key\&. If key is present multiple times in the configuration, emits the last value\&. If
+\fB\-\-all\fR
+is specified, emits all values associated with key\&. Returns error code 1 if key is not present\&.
+.RE
+.PP
+set
+.RS 4
+Set value for one or more config options\&. By default, this command refuses to write multi\-valued config options\&. Passing
+\fB\-\-all\fR
+will replace all multi\-valued config options with the new value, whereas
+\fB\-\-value=\fR
+will replace all config options whose values match the given pattern\&.
+.RE
+.PP
+unset
+.RS 4
+Unset value for one or more config options\&. By default, this command refuses to unset multi\-valued keys\&. Passing
+\fB\-\-all\fR
+will unset all multi\-valued config options, whereas
+\fB\-\-value\fR
+will unset all config options whose values match the given pattern\&.
+.RE
+.PP
+rename\-section
+.RS 4
+Rename the given section to a new name\&.
+.RE
+.PP
+remove\-section
+.RS 4
+Remove the given section from the configuration file\&.
+.RE
+.PP
+edit
+.RS 4
+Opens an editor to modify the specified config file; either
+\fB\-\-system\fR,
+\fB\-\-global\fR,
+\fB\-\-local\fR
+(default),
+\fB\-\-worktree\fR, or
+\fB\-\-file <config\-file>\fR\&.
+.RE
 .SH "OPTIONS"
 .PP
 \-\-replace\-all
@@ -151,14 +196,12 @@ Default behavior is to replace at most one line\&. This replaces all lines match
 \fBvalue\-pattern\fR)\&.
 .RE
 .PP
-\-\-add
+\-\-append
 .RS 4
 Adds a new line to the option without altering any existing values\&. This is the same as providing
-\fI^$\fR
-as the
-\fBvalue\-pattern\fR
+\fI\-\-value=^$\fR
 in
-\fB\-\-replace\-all\fR\&.
+\fBset\fR\&.
 .RE
 .PP
 \-\-comment <message>
@@ -183,22 +226,19 @@ permitted)\&.
 .\}
 .RE
 .PP
-\-\-get
+\-\-all
 .RS 4
-Get the value for a given key (optionally filtered by a regex matching the value)\&. Returns error code 1 if the key was not found and the last value if multiple key values were found\&.
+With
+\fBget\fR, return all values for a multi\-valued key\&.
 .RE
 .PP
-\-\-get\-all
+\-\-\-regexp
 .RS 4
-Like get, but returns all values for a multi\-valued key\&.
+With
+\fBget\fR, interpret the name as a regular expression\&. Regular expression matching is currently case\-sensitive and done against a canonicalized version of the key in which section and variable names are lowercased, but subsection names are not\&.
 .RE
 .PP
-\-\-get\-regexp
-.RS 4
-Like \-\-get\-all, but interprets the name as a regular expression and writes out the key names\&. Regular expression matching is currently case\-sensitive and done against a canonicalized version of the key in which section and variable names are lowercased, but subsection names are not\&.
-.RE
-.PP
-\-\-get\-urlmatch <name> <URL>
+\-\-url=<URL>
 .RS 4
 When given a two\-part <name> as <section>\&.<key>, the value for <section>\&.<URL>\&.<key> whose <URL> part matches the best to the given URL is returned (if no such key exists, the value for <section>\&.<key> is used as a fallback)\&. When given just the <section> as name, do so for all the keys in the section and list them\&. Returns error code 1 if no value is found\&.
 .RE
@@ -296,31 +336,6 @@ to read values from the file
 in the master branch\&. See "SPECIFYING REVISIONS" section in
 \fBgitrevisions\fR(7)
 for a more complete list of ways to spell blob names\&.
-.RE
-.PP
-\-\-remove\-section
-.RS 4
-Remove the given section from the configuration file\&.
-.RE
-.PP
-\-\-rename\-section
-.RS 4
-Rename the given section to a new name\&.
-.RE
-.PP
-\-\-unset
-.RS 4
-Remove the line matching the key from config file\&.
-.RE
-.PP
-\-\-unset\-all
-.RS 4
-Remove all lines matching the key from config file\&.
-.RE
-.PP
-\-l, \-\-list
-.RS 4
-List all variables set in config file, along with their values\&.
 .RE
 .PP
 \-\-fixed\-value
@@ -451,9 +466,9 @@ For all options that output values and/or keys, always end values with the null 
 \-\-name\-only
 .RS 4
 Output only the names of config variables for
-\fB\-\-list\fR
+\fBlist\fR
 or
-\fB\-\-get\-regexp\fR\&.
+\fBget\fR\&.
 .RE
 .PP
 \-\-show\-origin
@@ -484,36 +499,6 @@ is undefined, the command uses
 as fallback\&.
 .RE
 .PP
-\-\-get\-color <name> [<default>]
-.RS 4
-Find the color configured for
-\fBname\fR
-(e\&.g\&.
-\fBcolor\&.diff\&.new\fR) and output it as the ANSI color escape sequence to the standard output\&. The optional
-\fBdefault\fR
-parameter is used instead, if there is no color configured for
-\fBname\fR\&.
-.sp
-\fB\-\-type=color [\-\-default=<default>]\fR
-is preferred over
-\fB\-\-get\-color\fR
-(but note that
-\fB\-\-get\-color\fR
-will omit the trailing newline printed by
-\fB\-\-type=color\fR)\&.
-.RE
-.PP
-\-e, \-\-edit
-.RS 4
-Opens an editor to modify the specified config file; either
-\fB\-\-system\fR,
-\fB\-\-global\fR,
-\fB\-\-local\fR
-(default),
-\fB\-\-worktree\fR, or
-\fB\-\-file <config\-file>\fR\&.
-.RE
-.PP
 \-\-[no\-]includes
 .RS 4
 Respect
@@ -530,11 +515,98 @@ when searching all config files\&.
 \-\-default <value>
 .RS 4
 When using
-\fB\-\-get\fR, and the requested variable is not found, behave as if <value> were the value assigned to that variable\&.
+\fBget\fR, and the requested variable is not found, behave as if <value> were the value assigned to that variable\&.
+.RE
+.SH "DEPRECATED MODES"
+.sp
+The following modes have been deprecated in favor of subcommands\&. It is recommended to migrate to the new syntax\&.
+.PP
+\fIgit config <name>\fR
+.RS 4
+Replaced by
+\fBgit config get <name>\fR\&.
+.RE
+.PP
+\fIgit config <name> <value> [<value\-pattern>]\fR
+.RS 4
+Replaced by
+\fBgit config set [\-\-value=<pattern>] <name> <value>\fR\&.
+.RE
+.PP
+\-l, \-\-list
+.RS 4
+Replaced by
+\fBgit config list\fR\&.
+.RE
+.PP
+\-\-get <name> [<value\-pattern>]
+.RS 4
+Replaced by
+\fBgit config get [\-\-value=<pattern>] <name>\fR\&.
+.RE
+.PP
+\-\-get\-all <name> [<value\-pattern>]
+.RS 4
+Replaced by
+\fBgit config get [\-\-value=<pattern>] \-\-all \-\-show\-names <name>\fR\&.
+.RE
+.PP
+\-\-get\-regexp <name\-regexp>
+.RS 4
+Replaced by
+\fBgit config get \-\-all \-\-show\-names \-\-regexp <name\-regexp>\fR\&.
+.RE
+.PP
+\-\-get\-urlmatch <name> <URL>
+.RS 4
+Replaced by
+\fBgit config get \-\-all \-\-show\-names \-\-url=<URL> <name>\fR\&.
+.RE
+.PP
+\-\-get\-color <name> [<default>]
+.RS 4
+Replaced by
+\fBgit config get \-\-type=color [\-\-default=<default>] <name>\fR\&.
+.RE
+.PP
+\-\-add <name> <value>
+.RS 4
+Replaced by
+\fBgit config set \-\-append <name> <value>\fR\&.
+.RE
+.PP
+\-\-unset <name> [<value\-pattern>]
+.RS 4
+Replaced by
+\fBgit config unset [\-\-value=<pattern>] <name>\fR\&.
+.RE
+.PP
+\-\-unset\-all <name> [<value\-pattern>]
+.RS 4
+Replaced by
+\fBgit config unset [\-\-value=<pattern>] \-\-all <name>\fR\&.
+.RE
+.PP
+\-\-rename\-section <old\-name> <new\-name>
+.RS 4
+Replaced by
+\fBgit config rename\-section <old\-name> <new\-name>\fR\&.
+.RE
+.PP
+\-\-remove\-section <name>
+.RS 4
+Replaced by
+\fBgit config remove\-section <name>\fR\&.
+.RE
+.PP
+\-e, \-\-edit
+.RS 4
+Replaced by
+\fBgit config edit\fR\&.
 .RE
 .SH "CONFIGURATION"
 .sp
-\fBpager\&.config\fR is only respected when listing configuration, i\&.e\&., when using \fB\-\-list\fR or any of the \fB\-\-get\-*\fR which may return multiple results\&. The default is to use a pager\&.
+\fBpager\&.config\fR is only respected when listing configuration, i\&.e\&., when using \fBlist\fR or \fBget\fR which may return multiple results\&. The default is to use a pager\&.
 .SH "FILES"
 .sp
 By default, \fIgit config\fR will read configuration options from multiple files:
@@ -569,7 +641,7 @@ Options will be read from all of these files that are available\&. If the global
 .sp
 The files are read in the order given above, with last value found taking precedence over values read earlier\&. When multiple values are taken then all values of a key from all files will be used\&.
 .sp
-By default, options are only written to the repository specific configuration file\&. Note that this also affects options like \fB\-\-replace\-all\fR and \fB\-\-unset\fR\&. \fB\fIgit config\fR\fR\fB will only ever change one file at a time\fR\&.
+By default, options are only written to the repository specific configuration file\&. Note that this also affects options like \fBset\fR and \fBunset\fR\&. \fB\fIgit config\fR\fR\fB will only ever change one file at a time\fR\&.
 .sp
 You can limit which configuration sources are read from or written to by specifying the path of a file with the \fB\-\-file\fR option, or by specifying a configuration scope with \fB\-\-system\fR, \fB\-\-global\fR, \fB\-\-local\fR, or \fB\-\-worktree\fR\&. For more, see the section called \(lqOPTIONS\(rq above\&.
 .SH "SCOPES"
@@ -704,7 +776,7 @@ you can set the filemode to true with
 .RS 4
 .\}
 .nf
-% git config core\&.filemode true
+% git config set core\&.filemode true
 .fi
 .if n \{\
 .RE
@@ -717,7 +789,7 @@ The hypothetical proxy command entries actually have a postfix to discern what U
 .RS 4
 .\}
 .nf
-% git config core\&.gitproxy \*(Aq"ssh" for kernel\&.org\*(Aq \*(Aqfor kernel\&.org$\*(Aq
+% git config set \-\-value=\*(Aqfor kernel\&.org$\*(Aq core\&.gitproxy \*(Aq"ssh" for kernel\&.org\*(Aq
 .fi
 .if n \{\
 .RE
@@ -732,7 +804,7 @@ To delete the entry for renames, do
 .RS 4
 .\}
 .nf
-% git config \-\-unset diff\&.renames
+% git config unset diff\&.renames
 .fi
 .if n \{\
 .RE
@@ -747,20 +819,7 @@ To query the value for a given key, do
 .RS 4
 .\}
 .nf
-% git config \-\-get core\&.filemode
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.sp
-or
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-% git config core\&.filemode
+% git config get core\&.filemode
 .fi
 .if n \{\
 .RE
@@ -773,7 +832,7 @@ or, to query a multivar:
 .RS 4
 .\}
 .nf
-% git config \-\-get core\&.gitproxy "for kernel\&.org$"
+% git config get \-\-value="for kernel\&.org$" core\&.gitproxy
 .fi
 .if n \{\
 .RE
@@ -786,7 +845,7 @@ If you want to know all the values for a multivar, do:
 .RS 4
 .\}
 .nf
-% git config \-\-get\-all core\&.gitproxy
+% git config get \-\-all \-\-show\-names core\&.gitproxy
 .fi
 .if n \{\
 .RE
@@ -799,7 +858,7 @@ If you like to live dangerously, you can replace \fBall\fR core\&.gitproxy by a 
 .RS 4
 .\}
 .nf
-% git config \-\-replace\-all core\&.gitproxy ssh
+% git config set \-\-all core\&.gitproxy ssh
 .fi
 .if n \{\
 .RE
@@ -812,7 +871,7 @@ However, if you really only want to replace the line for the default proxy, i\&.
 .RS 4
 .\}
 .nf
-% git config core\&.gitproxy ssh \*(Aq! for \*(Aq
+% git config set \-\-value=\*(Aq! for \*(Aq core\&.gitproxy ssh
 .fi
 .if n \{\
 .RE
@@ -825,7 +884,7 @@ To actually match only values with an exclamation mark, you have to
 .RS 4
 .\}
 .nf
-% git config section\&.key value \*(Aq[!]\*(Aq
+% git config set \-\-value=\*(Aq[!]\*(Aq section\&.key value
 .fi
 .if n \{\
 .RE
@@ -838,7 +897,7 @@ To add a new proxy, without altering any of the existing ones, use
 .RS 4
 .\}
 .nf
-% git config \-\-add core\&.gitproxy \*(Aq"proxy\-command" for example\&.com\*(Aq
+% git config set \-\-append core\&.gitproxy \*(Aq"proxy\-command" for example\&.com\*(Aq
 .fi
 .if n \{\
 .RE
@@ -852,8 +911,8 @@ An example to use customized color from the configuration in your script:
 .\}
 .nf
 #!/bin/sh
-WS=$(git config \-\-get\-color color\&.diff\&.whitespace "blue reverse")
-RESET=$(git config \-\-get\-color "" "reset")
+WS=$(git config get \-\-type=color \-\-default="blue reverse" color\&.diff\&.whitespace)
+RESET=$(git config get \-\-type=color \-\-default="reset" "")
 echo "${WS}your whitespace color or blue reverse${RESET}"
 .fi
 .if n \{\
@@ -867,11 +926,11 @@ For URLs in \fBhttps://weak\&.example\&.com\fR, \fBhttp\&.sslVerify\fR is set to
 .RS 4
 .\}
 .nf
-% git config \-\-type=bool \-\-get\-urlmatch http\&.sslverify https://good\&.example\&.com
+% git config get \-\-type=bool \-\-url=https://good\&.example\&.com http\&.sslverify
 true
-% git config \-\-type=bool \-\-get\-urlmatch http\&.sslverify https://weak\&.example\&.com
+% git config get \-\-type=bool \-\-url=https://weak\&.example\&.com http\&.sslverify
 false
-% git config \-\-get\-urlmatch http https://weak\&.example\&.com
+% git config get \-\-url=https://weak\&.example\&.com http
 http\&.cookieFile /tmp/cookie\&.txt
 http\&.sslverify false
 .fi
