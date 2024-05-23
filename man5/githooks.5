@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-05-16
+.\"      Date: 2024-05-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.1.204.gd8ab1d464d
+.\"    Source: Git 2.45.1.246.gb9cfe4845c
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "2024\-05\-16" "Git 2\&.45\&.1\&.204\&.gd8ab1d" "Git Manual"
+.TH "GITHOOKS" "5" "2024\-05\-23" "Git 2\&.45\&.1\&.246\&.gb9cfe4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -339,7 +339,7 @@ When enabled, the default \fIpost\-update\fR hook runs \fBgit update\-server\-in
 Both standard output and standard error output are forwarded to \fBgit send\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
 .SS "reference\-transaction"
 .sp
-This hook is invoked by any Git command that performs reference updates\&. It executes whenever a reference transaction is prepared, committed or aborted and may thus get called multiple times\&. The hook does not cover symbolic references (but that may change in the future)\&.
+This hook is invoked by any Git command that performs reference updates\&. It executes whenever a reference transaction is prepared, committed or aborted and may thus get called multiple times\&. The hook also supports symbolic reference updates\&.
 .sp
 The hook takes exactly one argument, which is the current state the given reference transaction is in:
 .sp
@@ -382,13 +382,15 @@ For each reference update that was added to the transaction, the hook receives o
 .RS 4
 .\}
 .nf
-<old\-oid> SP <new\-oid> SP <ref\-name> LF
+<old\-value> SP <new\-value> SP <ref\-name> LF
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-where \fB<old\-oid>\fR is the old object name passed into the reference transaction, \fB<new\-oid>\fR is the new object name to be stored in the ref and \fB<ref\-name>\fR is the full name of the ref\&. When force updating the reference regardless of its current value or when the reference is to be created anew, \fB<old\-oid>\fR is the all\-zeroes object name\&. To distinguish these cases, you can inspect the current value of \fB<ref\-name>\fR via \fBgit rev\-parse\fR\&.
+where \fB<old\-value>\fR is the old object name passed into the reference transaction, \fB<new\-value>\fR is the new object name to be stored in the ref and \fB<ref\-name>\fR is the full name of the ref\&. When force updating the reference regardless of its current value or when the reference is to be created anew, \fB<old\-value>\fR is the all\-zeroes object name\&. To distinguish these cases, you can inspect the current value of \fB<ref\-name>\fR via \fBgit rev\-parse\fR\&.
+.sp
+For symbolic reference updates the \fB<old_value>\fR and \fB<new\-value>\fR fields could denote references instead of objects\&. A reference will be denoted with a \fIref:\fR prefix, like \fBref:<ref\-target>\fR\&.
 .sp
 The exit status of the hook is ignored for any state except for the "prepared" state\&. In the "prepared" state, a non\-zero exit status will cause the transaction to be aborted\&. The hook will not be called with "aborted" state in that case\&.
 .SS "push\-to\-checkout"
