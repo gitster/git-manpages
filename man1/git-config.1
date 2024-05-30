@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-05-28
+.\"      Date: 2024-05-30
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.1.313.g3a57aa566a
+.\"    Source: Git 2.45.1.410.g58bac47f8e
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-05\-28" "Git 2\&.45\&.1\&.313\&.g3a57aa" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-05\-30" "Git 2\&.45\&.1\&.410\&.g58bac4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -8573,6 +8573,53 @@ If set to true, git\-receive\-pack will run git\-update\-server\-info after rece
 receive\&.shallowUpdate
 .RS 4
 If set to true, \&.git/shallow can be updated when new refs require new shallow roots\&. Otherwise those refs are rejected\&.
+.RE
+.PP
+reftable\&.blockSize
+.RS 4
+The size in bytes used by the reftable backend when writing blocks\&. The block size is determined by the writer, and does not have to be a power of 2\&. The block size must be larger than the longest reference name or log entry used in the repository, as references cannot span blocks\&.
+.sp
+Powers of two that are friendly to the virtual memory system or filesystem (such as 4kB or 8kB) are recommended\&. Larger sizes (64kB) can yield better compression, with a possible increased cost incurred by readers during access\&.
+.sp
+The largest block size is
+\fB16777215\fR
+bytes (15\&.99 MiB)\&. The default value is
+\fB4096\fR
+bytes (4kB)\&. A value of
+\fB0\fR
+will use the default value\&.
+.RE
+.PP
+reftable\&.restartInterval
+.RS 4
+The interval at which to create restart points\&. The reftable backend determines the restart points at file creation\&. Every 16 may be more suitable for smaller block sizes (4k or 8k), every 64 for larger block sizes (64k)\&.
+.sp
+More frequent restart points reduces prefix compression and increases space consumed by the restart table, both of which increase file size\&.
+.sp
+Less frequent restart points makes prefix compression more effective, decreasing overall file size, with increased penalties for readers walking through more records after the binary search step\&.
+.sp
+A maximum of
+\fB65535\fR
+restart points per block is supported\&.
+.sp
+The default value is to create restart points every 16 records\&. A value of
+\fB0\fR
+will use the default value\&.
+.RE
+.PP
+reftable\&.indexObjects
+.RS 4
+Whether the reftable backend shall write object blocks\&. Object blocks are a reverse mapping of object ID to the references pointing to them\&.
+.sp
+The default value is
+\fBtrue\fR\&.
+.RE
+.PP
+reftable\&.geometricFactor
+.RS 4
+Whenever the reftable backend appends a new table to the stack, it performs auto compaction to ensure that there is only a handful of tables\&. The backend does this by ensuring that tables form a geometric sequence regarding the respective sizes of each table\&.
+.sp
+By default, the geometric sequence uses a factor of 2, meaning that for any table, the next\-biggest table must at least be twice as big\&. A maximum factor of 256 is supported\&.
 .RE
 .PP
 remote\&.pushDefault
