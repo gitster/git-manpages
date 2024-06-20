@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-06-17
+.\"      Date: 2024-06-20
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.2.561.g66ac6e4bcd
+.\"    Source: Git 2.45.2.606.g9005149a4a
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-06\-17" "Git 2\&.45\&.2\&.561\&.g66ac6e" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-06\-20" "Git 2\&.45\&.2\&.606\&.g900514" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1542,6 +1542,11 @@ if you want to disable
 \fBpushNeedsForce\fR, and
 \fBpushRefNeedsUpdate\fR
 simultaneously\&.
+.RE
+.PP
+rebaseTodoError
+.RS 4
+Shown when there is an error after editing the rebase todo list\&.
 .RE
 .PP
 refSyntax
@@ -4058,6 +4063,14 @@ If this config variable is set, diff generation is not performed using the inter
 instead\&.
 .RE
 .PP
+diff\&.trustExitCode
+.RS 4
+If this boolean value is set to true then the
+\fBdiff\&.external\fR
+command is expected to return exit code 0 if it considers the input files to be equal or 1 if it considers them to be different, like
+\fBdiff(1)\fR\&. If it is set to false, which is the default, then the command is expected to return exit code 0 regardless of equality\&. Any other exit code causes Git to report a fatal error\&.
+.RE
+.PP
 diff\&.ignoreSubmodules
 .RS 4
 Sets the default value of \-\-ignore\-submodules\&. Note that this affects only
@@ -4198,6 +4211,14 @@ diff\&.<driver>\&.command
 The custom diff driver command\&. See
 \fBgitattributes\fR(5)
 for details\&.
+.RE
+.PP
+diff\&.<driver>\&.trustExitCode
+.RS 4
+If this boolean value is set to true then the
+\fBdiff\&.<driver>\&.command\fR
+command is expected to return exit code 0 if it considers the input files to be equal or 1 if it considers them to be different, like
+\fBdiff(1)\fR\&. If it is set to false, which is the default, then the command is expected to return exit code 0 regardless of equality\&. Any other exit code causes Git to report a fatal error\&.
 .RE
 .PP
 diff\&.<driver>\&.xfuncname
@@ -6792,7 +6813,7 @@ The port number to bind the gitweb httpd to\&. See
 .PP
 interactive\&.singleKey
 .RS 4
-In interactive commands, allow the user to provide one\-letter input with a single key (i\&.e\&., without hitting enter)\&. Currently this is used by the
+When set to true, allow the user to provide one\-letter input with a single key (i\&.e\&., without hitting the Enter key) in interactive commands\&. This is currently used by the
 \fB\-\-patch\fR
 mode of
 \fBgit-add\fR(1),
