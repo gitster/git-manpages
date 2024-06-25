@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-06-20
+.\"      Date: 2024-06-24
 .\"    Manual: Git Manual
-.\"    Source: Git 2.45.2.606.g9005149a4a
+.\"    Source: Git 2.45.2.648.g1e1586e4ed
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024\-06\-20" "Git 2\&.45\&.2\&.606\&.g900514" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024\-06\-24" "Git 2\&.45\&.2\&.648\&.g1e1586" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1372,12 +1372,6 @@ option of
 is deprecated, as it does not follow the usual naming convention for configuration variables\&.
 .RE
 .PP
-add\&.interactive\&.useBuiltin
-.RS 4
-Unused configuration variable\&. Used in Git versions v2\&.25\&.0 to v2\&.36\&.0 to enable the built\-in version of
-\fBgit-add\fR(1)\*(Aqs interactive mode, which then became the default in Git versions v2\&.37\&.0 to v2\&.39\&.0\&.
-.RE
-.PP
 advice\&.*
 .RS 4
 These variables control various optional help messages designed to aid new users\&. When left unconfigured, Git will give the message alongside instructions on how to squelch it\&. You can tell Git that you do not need the help message by setting these to
@@ -1828,12 +1822,111 @@ attr\&.tree
 .RS 4
 A reference to a tree in the repository from which to read attributes, instead of the
 \fB\&.gitattributes\fR
-file in the working tree\&. In a bare repository, this defaults to
-\fBHEAD:\&.gitattributes\fR\&. If the value does not resolve to a valid tree object, an empty tree is used instead\&. When the
+file in the working tree\&. If the value does not resolve to a valid tree object, an empty tree is used instead\&. When the
 \fBGIT_ATTR_SOURCE\fR
 environment variable or
 \fB\-\-attr\-source\fR
 command line option are used, this configuration variable has no effect\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+The configuration options in \fBbitmapPseudoMerge\&.*\fR are considered EXPERIMENTAL and may be subject to change or be removed entirely in the future\&. For more information about the pseudo\-merge bitmap feature, see the "Pseudo\-merge bitmaps" section of \fBgitpacking\fR(7)\&.
+.sp .5v
+.RE
+.PP
+bitmapPseudoMerge\&.<name>\&.pattern
+.RS 4
+Regular expression used to match reference names\&. Commits pointed to by references matching this pattern (and meeting the below criteria, like
+\fBbitmapPseudoMerge\&.<name>\&.sampleRate\fR
+and
+\fBbitmapPseudoMerge\&.<name>\&.threshold\fR) will be considered for inclusion in a pseudo\-merge bitmap\&.
+.sp
+Commits are grouped into pseudo\-merge groups based on whether or not any reference(s) that point at a given commit match the pattern, which is an extended regular expression\&.
+.sp
+Within a pseudo\-merge group, commits may be further grouped into sub\-groups based on the capture groups in the pattern\&. These sub\-groupings are formed from the regular expressions by concatenating any capture groups from the regular expression, with a
+\fI\-\fR
+dash in between\&.
+.sp
+For example, if the pattern is
+\fBrefs/tags/\fR, then all tags (provided they meet the below criteria) will be considered candidates for the same pseudo\-merge group\&. However, if the pattern is instead
+\fBrefs/remotes/([0\-9])+/tags/\fR, then tags from different remotes will be grouped into separate pseudo\-merge groups, based on the remote number\&.
+.RE
+.PP
+bitmapPseudoMerge\&.<name>\&.decay
+.RS 4
+Determines the rate at which consecutive pseudo\-merge bitmap groups decrease in size\&. Must be non\-negative\&. This parameter can be thought of as
+\fBk\fR
+in the function
+\fBf(n) = C * n^\-k\fR, where
+\fBf(n)\fR
+is the size of the `n`th group\&.
+.sp
+Setting the decay rate equal to
+\fB0\fR
+will cause all groups to be the same size\&. Setting the decay rate equal to
+\fB1\fR
+will cause the
+\fBn`th group to be `1/n\fR
+the size of the initial group\&. Higher values of the decay rate cause consecutive groups to shrink at an increasing rate\&. The default is
+\fB1\fR\&.
+.sp
+If all groups are the same size, it is possible that groups containing newer commits will be able to be used less often than earlier groups, since it is more likely that the references pointing at newer commits will be updated more often than a reference pointing at an old commit\&.
+.RE
+.PP
+bitmapPseudoMerge\&.<name>\&.sampleRate
+.RS 4
+Determines the proportion of non\-bitmapped commits (among reference tips) which are selected for inclusion in an unstable pseudo\-merge bitmap\&. Must be between
+\fB0\fR
+and
+\fB1\fR
+(inclusive)\&. The default is
+\fB1\fR\&.
+.RE
+.PP
+bitmapPseudoMerge\&.<name>\&.threshold
+.RS 4
+Determines the minimum age of non\-bitmapped commits (among reference tips, as above) which are candidates for inclusion in an unstable pseudo\-merge bitmap\&. The default is
+\fB1\&.week\&.ago\fR\&.
+.RE
+.PP
+bitmapPseudoMerge\&.<name>\&.maxMerges
+.RS 4
+Determines the maximum number of pseudo\-merge commits among which commits may be distributed\&.
+.sp
+For pseudo\-merge groups whose pattern does not contain any capture groups, this setting is applied for all commits matching the regular expression\&. For patterns that have one or more capture groups, this setting is applied for each distinct capture group\&.
+.sp
+For example, if your capture group is
+\fBrefs/tags/\fR, then this setting will distribute all tags into a maximum of
+\fBmaxMerges\fR
+pseudo\-merge commits\&. However, if your capture group is, say,
+\fBrefs/remotes/([0\-9]+)/tags/\fR, then this setting will be applied to each remote\(cqs set of tags individually\&.
+.sp
+Must be non\-negative\&. The default value is 64\&.
+.RE
+.PP
+bitmapPseudoMerge\&.<name>\&.stableThreshold
+.RS 4
+Determines the minimum age of commits (among reference tips, as above, however stable commits are still considered candidates even when they have been covered by a bitmap) which are candidates for a stable a pseudo\-merge bitmap\&. The default is
+\fB1\&.month\&.ago\fR\&.
+.sp
+Setting this threshold to a smaller value (e\&.g\&., 1\&.week\&.ago) will cause more stable groups to be generated (which impose a one\-time generation cost) but those groups will likely become stale over time\&. Using a larger value incurs the opposite penalty (fewer stable groups which are more useful)\&.
+.RE
+.PP
+bitmapPseudoMerge\&.<name>\&.stableSize
+.RS 4
+Determines the size (in number of commits) of a stable psuedo\-merge bitmap\&. The default is
+\fB512\fR\&.
 .RE
 .PP
 blame\&.blankBoundary
