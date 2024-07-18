@@ -2,12 +2,12 @@
 .\"     Title: gitpacking
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-17
+.\"      Date: 2024-07-18
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0.rc0.106.g1c4a234a1c
+.\"    Source: Git 2.46.0.rc1
 .\"  Language: English
 .\"
-.TH "GITPACKING" "7" "2024\-07\-17" "Git 2\&.46\&.0\&.rc0\&.106\&.g" "Git Manual"
+.TH "GITPACKING" "7" "2024\-07\-18" "Git 2\&.46\&.0\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -200,22 +200,23 @@ Determines the size (in number of commits) of a stable psuedo\-merge bitmap\&. T
 .RE
 .SS "Examples"
 .sp
-Suppose that you have a repository with a large number of references, and you want a bare\-bones configuration of pseudo\-merge bitmaps that will enhance bitmap coverage of the \fBrefs/\fR namespace\&. You may start wiht a configuration like so:
+Suppose that you have a repository with a large number of references, and you want a bare\-bones configuration of pseudo\-merge bitmaps that will enhance bitmap coverage of the \fBrefs/\fR namespace\&. You may start with a configuration like so:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
 [bitmapPseudoMerge "all"]
-    pattern = "refs/"
-    threshold = now
-    stableThreshold = never
-    sampleRate = 100
-    maxMerges = 64
+        pattern = "refs/"
+        threshold = now
+        stableThreshold = never
+        sampleRate = 100
+        maxMerges = 64
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 This will create pseudo\-merge bitmaps for all references, regardless of their age, and group them into 64 pseudo\-merge commits\&.
 .sp
@@ -226,11 +227,12 @@ If you wanted to separate tags from branches when generating pseudo\-merge commi
 .\}
 .nf
 [bitmapPseudoMerge "all"]
-    pattern = "refs/(heads/tags)/"
+        pattern = "refs/(heads/tags)/"
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 Suppose instead that you are working in a fork\-network repository, with each fork specified by some numeric ID, and whose refs reside in \fBrefs/virtual/NNN/\fR (where \fBNNN\fR is the numeric ID corresponding to some fork) in the network\&. In this instance, you may instead write something like:
 .sp
@@ -239,15 +241,16 @@ Suppose instead that you are working in a fork\-network repository, with each fo
 .\}
 .nf
 [bitmapPseudoMerge "all"]
-    pattern = "refs/virtual/([0\-9]+)/(heads|tags)/"
-    threshold = now
-    stableThreshold = never
-    sampleRate = 100
-    maxMerges = 64
+        pattern = "refs/virtual/([0\-9]+)/(heads|tags)/"
+        threshold = now
+        stableThreshold = never
+        sampleRate = 100
+        maxMerges = 64
 .fi
 .if n \{\
 .RE
 .\}
+.sp
 .sp
 Which would generate pseudo\-merge group identifiers like "1234\-heads", and "5678\-tags" (for branches in fork "1234", and tags in remote "5678", respectively)\&.
 .SH "SEE ALSO"
