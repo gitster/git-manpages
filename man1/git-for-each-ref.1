@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,20 +33,19 @@ git-for-each-ref \- Output information on each ref
 .sp
 .nf
 \fIgit for\-each\-ref\fR [\-\-count=<count>] [\-\-shell|\-\-perl|\-\-python|\-\-tcl]
-                   [(\-\-sort=<key>)\&...] [\-\-format=<format>]
-                   [\-\-include\-root\-refs] [ \-\-stdin | <pattern>\&... ]
+                   [(\-\-sort=<key>)\&...\:] [\-\-format=<format>]
+                   [\-\-include\-root\-refs] [ \-\-stdin | <pattern>\&...\: ]
                    [\-\-points\-at=<object>]
                    [\-\-merged[=<object>]] [\-\-no\-merged[=<object>]]
                    [\-\-contains[=<object>]] [\-\-no\-contains[=<object>]]
-                   [\-\-exclude=<pattern> \&...]
+                   [\-\-exclude=<pattern> \&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Iterate over all refs that match \fB<pattern>\fR and show them according to the given \fB<format>\fR, after sorting them according to the given set of \fB<key>\fR\&. If \fB<count>\fR is given, stop after showing that many refs\&. The interpolated values in \fB<format>\fR can optionally be quoted as string literals in the specified host language allowing their direct evaluation in that language\&.
 .SH "OPTIONS"
 .PP
-<pattern>\&...
+<pattern>\&...\:
 .RS 4
 If one or more patterns are given, only refs are shown that match against at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash\&.
 .RE
@@ -255,7 +254,9 @@ This expands to the object name of the delta base for the given object, if it is
 .PP
 upstream
 .RS 4
-The name of a local ref which can be considered \(lqupstream\(rq from the displayed ref\&. Respects
+The name of a local ref which can be considered
+\(lqupstream\(rq
+from the displayed ref\&. Respects
 \fB:short\fR,
 \fB:lstrip\fR
 and
@@ -322,7 +323,7 @@ Change output color\&. Followed by
 .PP
 align
 .RS 4
-Left\-, middle\-, or right\-align the content between %(align:\&...) and %(end)\&. The "align:" is followed by
+Left\-, middle\-, or right\-align the content between %(align:\&...\:) and %(end)\&. The "align:" is followed by
 \fBwidth=<width>\fR
 and
 \fBposition=<position>\fR
@@ -333,16 +334,16 @@ is either left, right or middle, default being left and
 is the total length of the content with alignment\&. For brevity, the "width=" and/or "position=" prefixes may be omitted, and bare <width> and <position> used instead\&. For instance,
 \fB%(align:<width>,<position>)\fR\&. If the contents length is more than the width then no alignment is performed\&. If used with
 \fB\-\-quote\fR
-everything in between %(align:\&...) and %(end) is quoted, but if nested then only the topmost level performs quoting\&.
+everything in between %(align:\&...\:) and %(end) is quoted, but if nested then only the topmost level performs quoting\&.
 .RE
 .PP
 if
 .RS 4
-Used as %(if)\&...%(then)\&...%(end) or %(if)\&...%(then)\&...%(else)\&...%(end)\&. If there is an atom with value or string literal after the %(if) then everything after the %(then) is printed, else if the %(else) atom is used, then everything after %(else) is printed\&. We ignore space when evaluating the string before %(then), this is useful when we use the %(HEAD) atom which prints either "*" or " " and we want to apply the
+Used as %(if)\&...\:%(then)\&...\:%(end) or %(if)\&...\:%(then)\&...\:%(else)\&...\:%(end)\&. If there is an atom with value or string literal after the %(if) then everything after the %(then) is printed, else if the %(else) atom is used, then everything after %(else) is printed\&. We ignore space when evaluating the string before %(then), this is useful when we use the %(HEAD) atom which prints either "*" or " " and we want to apply the
 \fIif\fR
 condition only on the
 \fIHEAD\fR
-ref\&. Append ":equals=<string>" or ":notequals=<string>" to compare the value between the %(if:\&...) and %(then) atoms with the given string\&.
+ref\&. Append ":equals=<string>" or ":notequals=<string>" to compare the value between the %(if:\&...\:) and %(then) atoms with the given string\&.
 .RE
 .PP
 symref
@@ -539,7 +540,6 @@ Ref: %(*refname)
 .RE
 .\}
 .sp
-.sp
 A simple example showing the use of shell eval on the output, demonstrating the use of \-\-shell\&. List the prefixes of all heads:
 .sp
 .if n \{\
@@ -558,7 +558,6 @@ done
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 A bit more elaborate report on tags, demonstrating that the format may be an entire script:
 .sp
@@ -618,8 +617,7 @@ eval "$eval"
 .RE
 .\}
 .sp
-.sp
-An example to show the usage of %(if)\&...%(then)\&...%(else)\&...%(end)\&. This prefixes the current branch with a star\&.
+An example to show the usage of %(if)\&...\:%(then)\&...\:%(else)\&...\:%(end)\&. This prefixes the current branch with a star\&.
 .sp
 .if n \{\
 .RS 4
@@ -631,8 +629,7 @@ git for\-each\-ref \-\-format="%(if)%(HEAD)%(then)* %(else)  %(end)%(refname:sho
 .RE
 .\}
 .sp
-.sp
-An example to show the usage of %(if)\&...%(then)\&...%(end)\&. This prints the authorname, if present\&.
+An example to show the usage of %(if)\&...\:%(then)\&...\:%(end)\&. This prints the authorname, if present\&.
 .sp
 .if n \{\
 .RS 4
@@ -643,7 +640,6 @@ git for\-each\-ref \-\-format="%(refname)%(if)%(authorname)%(then) Authored by: 
 .if n \{\
 .RE
 .\}
-.sp
 .SH "CAVEATS"
 .sp
 Note that the sizes of objects on disk are reported accurately, but care should be taken in drawing conclusions about which refs or objects are responsible for disk usage\&. The size of a packed non\-delta object may be much larger than the size of objects which delta against it, but the choice of which object is the base and which is the delta is arbitrary and is subject to change during a repack\&.

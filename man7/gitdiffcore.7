@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gitdiffcore
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GITDIFFCORE" "7" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GITDIFFCORE" "7" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,6 @@ gitdiffcore \- Tweaking diff output
 .nf
 \fIgit diff\fR *
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 The diff commands \fIgit diff\-index\fR, \fIgit diff\-files\fR, and \fIgit diff\-tree\fR can be told to manipulate differences they find in unconventional ways before showing \fIdiff\fR output\&. The manipulation is collectively called "diffcore transformation"\&. This short note describes what they are and how to use them to produce \fIdiff\fR output that is easier to understand than the conventional kind\&.
@@ -96,7 +95,6 @@ The pathspecs are used to limit the world diff operates in\&. They remove the fi
 .RE
 .\}
 .sp
-.sp
 but the command invocation was \fBgit diff\-files myfile\fR, then the junkfile entry would be removed from the list because only "myfile" is under consideration\&.
 .sp
 The result of comparison is passed from these commands to what is internally called "diffcore", in a format similar to what is output when the \-p option is not used\&. E\&.g\&.
@@ -113,7 +111,6 @@ unmerged       :000000 000000 0000000\&.\&.\&. 0000000\&.\&.\&. U file6
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The diffcore mechanism is fed a list of such comparison results (each of which is called "filepair", although at this point each of them talks about a single file), and transforms such a list into another list\&. There are currently 5 such transformations:
 .sp
@@ -198,7 +195,6 @@ The second transformation in the chain is diffcore\-break, and is controlled by 
 .RE
 .\}
 .sp
-.sp
 and if it detects that the file "file0" is completely rewritten, it changes it to:
 .sp
 .if n \{\
@@ -212,8 +208,7 @@ and if it detects that the file "file0" is completely rewritten, it changes it t
 .RE
 .\}
 .sp
-.sp
-For the purpose of breaking a filepair, diffcore\-break examines the extent of changes between the contents of the files before and after modification (i\&.e\&. the contents that have "bcd1234\&..." and "0123456\&..." as their SHA\-1 content ID, in the above example)\&. The amount of deletion of original contents and insertion of new material are added together, and if it exceeds the "break score", the filepair is broken into two\&. The break score defaults to 50% of the size of the smaller of the original and the result (i\&.e\&. if the edit shrinks the file, the size of the result is used; if the edit lengthens the file, the size of the original is used), and can be customized by giving a number after "\-B" option (e\&.g\&. "\-B75" to tell it to use 75%)\&.
+For the purpose of breaking a filepair, diffcore\-break examines the extent of changes between the contents of the files before and after modification (i\&.e\&. the contents that have "bcd1234\&...\:" and "0123456\&...\:" as their SHA\-1 content ID, in the above example)\&. The amount of deletion of original contents and insertion of new material are added together, and if it exceeds the "break score", the filepair is broken into two\&. The break score defaults to 50% of the size of the smaller of the original and the result (i\&.e\&. if the edit shrinks the file, the size of the result is used; if the edit lengthens the file, the size of the original is used), and can be customized by giving a number after "\-B" option (e\&.g\&. "\-B75" to tell it to use 75%)\&.
 .SH "DIFFCORE\-RENAME: FOR DETECTING RENAMES AND COPIES"
 .sp
 This transformation is used to detect renames and copies, and is controlled by the \-M option (to detect renames) and the \-C option (to detect copies as well) to the \fIgit diff\-*\fR commands\&. If the input contained these filepairs:
@@ -229,7 +224,6 @@ This transformation is used to detect renames and copies, and is controlled by t
 .RE
 .\}
 .sp
-.sp
 and the contents of the deleted file fileX is similar enough to the contents of the created file file0, then rename detection merges these filepairs and creates:
 .sp
 .if n \{\
@@ -241,7 +235,6 @@ and the contents of the deleted file fileX is similar enough to the contents of 
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 When the "\-C" option is used, the original contents of modified files, and deleted files (and also unmodified files, if the "\-\-find\-copies\-harder" option is used) are considered as candidates of the source files in rename/copy operation\&. If the input were like these filepairs, that talk about a modified file fileY and a newly created file file0:
 .sp
@@ -256,7 +249,6 @@ When the "\-C" option is used, the original contents of modified files, and dele
 .RE
 .\}
 .sp
-.sp
 the original contents of fileY and the resulting contents of file0 are compared, and if they are similar enough, they are changed to:
 .sp
 .if n \{\
@@ -269,7 +261,6 @@ the original contents of fileY and the resulting contents of file0 are compared,
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 In both rename and copy detection, the same "extent of changes" algorithm used in diffcore\-break is used to determine if two files are "similar enough", and can be customized to use a similarity score different from the default of 50% by giving a number after the "\-M" or "\-C" option (e\&.g\&. "\-M8" to tell it to use 8/10 = 80%)\&.
 .sp
@@ -338,7 +329,6 @@ t
 .if n \{\
 .RE
 .\}
-.sp
 .SH "DIFFCORE\-ROTATE: FOR CHANGING AT WHICH PATH OUTPUT STARTS"
 .sp
 This transformation takes one pathname, and rotates the set of filepairs so that the filepair for the given pathname comes first, optionally discarding the paths that come before it\&. This is used to implement the \fB\-\-skip\-to\fR and the \fB\-\-rotate\-to\fR options\&. It is an error when the specified pathname is not in the set of filepairs, but it is not useful to error out when used with "git log" family of commands, because it is unreasonable to expect that a given path would be modified by each and every commit shown by the "git log" command\&. For this reason, when used with "git log", the filepair that sorts the same as, or the first one that sorts after, the given pathname is where the output starts\&.

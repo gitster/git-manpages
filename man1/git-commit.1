@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-commit
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-COMMIT" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-COMMIT" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,15 +33,14 @@ git-commit \- Record changes to the repository
 .sp
 .nf
 \fIgit commit\fR [\-a | \-\-interactive | \-\-patch] [\-s] [\-v] [\-u<mode>] [\-\-amend]
-           [\-\-dry\-run] [(\-c | \-C | \-\-squash) <commit> | \-\-fixup [(amend|reword):]<commit>)]
+           [\-\-dry\-run] [(\-c | \-C | \-\-squash) <commit> | \-\-fixup [(amend|reword):]<commit>]
            [\-F <file> | \-m <msg>] [\-\-reset\-author] [\-\-allow\-empty]
            [\-\-allow\-empty\-message] [\-\-no\-verify] [\-e] [\-\-author=<author>]
            [\-\-date=<date>] [\-\-cleanup=<mode>] [\-\-[no\-]status]
            [\-i | \-o] [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]]
-           [(\-\-trailer <token>[(=|:)<value>])\&...] [\-S[<keyid>]]
-           [\-\-] [<pathspec>\&...]
+           [(\-\-trailer <token>[(=|:)<value>])\&...\:] [\-S[<keyid>]]
+           [\-\-] [<pathspec>\&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Create a new commit containing the current contents of the index and the given log message describing the changes\&. The new commit is a direct child of HEAD, usually the tip of the current branch, and the branch is updated to point to it (unless no branch is associated with the working tree, in which case HEAD is "detached" as described in \fBgit-checkout\fR(1))\&.
@@ -114,7 +113,9 @@ command to automatically "add" changes from all known files (i\&.e\&. all files 
 .\}
 by using the \-\-interactive or \-\-patch switches with the
 \fIcommit\fR
-command to decide one by one which files or hunks should be part of the commit in addition to contents in the index, before finalizing the operation\&. See the \(lqInteractive Mode\(rq section of
+command to decide one by one which files or hunks should be part of the commit in addition to contents in the index, before finalizing the operation\&. See the
+\(lqInteractive Mode\(rq
+section of
 \fBgit-add\fR(1)
 to learn how to operate these modes\&.
 .RE
@@ -607,7 +608,7 @@ configuration variable, and earlier
 Do not interpret any more arguments as options\&.
 .RE
 .PP
-<pathspec>\&...
+<pathspec>\&...\:
 .RS 4
 When pathspec is given on the command line, commit the contents of the files that match the pathspec without recording the changes already added to the index\&. The contents of these files are also staged for the next commit on top of what have been staged before\&.
 .sp
@@ -633,7 +634,6 @@ $ git commit
 .RE
 .\}
 .sp
-.sp
 Instead of staging files after each individual change, you can tell \fBgit commit\fR to notice the changes to the files whose contents are tracked in your working tree and do corresponding \fBgit add\fR and \fBgit rm\fR for you\&. That is, this example does the same as the earlier example if there is no other change in your working tree:
 .sp
 .if n \{\
@@ -647,7 +647,6 @@ $ git commit \-a
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The command \fBgit commit \-a\fR first looks at your working tree, notices that you have modified hello\&.c and removed goodbye\&.c, and performs necessary \fBgit add\fR and \fBgit rm\fR for you\&.
 .sp
@@ -666,7 +665,6 @@ $ git commit Makefile
 .RE
 .\}
 .sp
-.sp
 This makes a commit that records the modification to \fBMakefile\fR\&. The changes staged for \fBhello\&.c\fR and \fBhello\&.h\fR are not included in the resulting commit\&. However, their changes are not lost \(em they are still staged and merely held back\&. After the above sequence, if you do:
 .sp
 .if n \{\
@@ -678,7 +676,6 @@ $ git commit
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 this second commit would record the changes to \fBhello\&.c\fR and \fBhello\&.h\fR as expected\&.
 .sp
@@ -697,7 +694,6 @@ $ git add hello\&.c
 .RE
 .\}
 .sp
-.sp
 After resolving conflicts and staging the result, \fBgit ls\-files \-u\fR would stop mentioning the conflicted path\&. When you are done, run \fBgit commit\fR to finally record the merge:
 .sp
 .if n \{\
@@ -709,7 +705,6 @@ $ git commit
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 As with the case to record your own changes, you can use \fB\-a\fR option to save typing\&. One difference is that during a merge resolution, you cannot use \fBgit commit\fR with pathnames to alter the order the changes are committed, because the merge should be recorded as a single commit\&. In fact, the command refuses to run when given pathnames (but see \fB\-i\fR option)\&.
 .SH "COMMIT INFORMATION"

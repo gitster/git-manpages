@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-range-diff
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-RANGE\-DIFF" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-RANGE\-DIFF" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,10 +35,9 @@ git-range-diff \- Compare two commit ranges (e\&.g\&. two versions of a branch)
 \fIgit range\-diff\fR [\-\-color=[<when>]] [\-\-no\-color] [<diff\-options>]
         [\-\-no\-dual\-color] [\-\-creation\-factor=<factor>]
         [\-\-left\-only | \-\-right\-only]
-        ( <range1> <range2> | <rev1>\&...<rev2> | <base> <rev1> <rev2> )
-        [[\-\-] <path>\&...]
+        ( <range1> <range2> | <rev1>\&...\:<rev2> | <base> <rev1> <rev2> )
+        [[\-\-] <path>\&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 This command shows the differences between two versions of a patch series, or more generally, two commit ranges (ignoring merge commits)\&.
@@ -97,7 +96,9 @@ for more details\&.
 .PP
 \-\-no\-dual\-color
 .RS 4
-When the commit diffs differ, \(oqgit range\-diff` recreates the original diffs\(cq coloring, and adds outer \-/+ diff markers with the
+When the commit diffs differ,
+\fBgit range\-diff\fR
+recreates the original diffs\*(Aq coloring, and adds outer \-/+ diff markers with the
 \fBbackground\fR
 being red/green to make it easier to see e\&.g\&. when there was a change in what exact lines were added\&.
 .sp
@@ -164,7 +165,7 @@ is considered an older version of
 \fB<range2>\fR\&.
 .RE
 .PP
-<rev1>\&...<rev2>
+<rev1>\&...\:<rev2>
 .RS 4
 Equivalent to passing
 \fB<rev2>\&.\&.<rev1>\fR
@@ -208,7 +209,6 @@ $ git range\-diff @{u} @{1} @
 .RE
 .\}
 .sp
-.sp
 A typical output of \fBgit range\-diff\fR would look like this:
 .sp
 .if n \{\
@@ -236,7 +236,6 @@ A typical output of \fBgit range\-diff\fR would look like this:
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 In this example, there are 3 old and 3 new commits, where the developer removed the 3rd, added a new one before the first two, and modified the commit message of the 2nd commit as well as its diff\&.
 .sp
@@ -269,7 +268,6 @@ Example: Let commits \fB1\-\-2\fR be the first iteration of a patch series and \
 .RE
 .\}
 .sp
-.sp
 We are looking for a "best" explanation of the new series in terms of the old one\&. We can represent an "explanation" as an edge in the graph:
 .sp
 .if n \{\
@@ -285,7 +283,6 @@ We are looking for a "best" explanation of the new series in terms of the old on
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 This explanation comes for "free" because there was no change\&. Similarly \fBC\fR could be explained using \fB1\fR, but that comes at some cost c>0 because of the modification:
 .sp
@@ -304,8 +301,7 @@ This explanation comes for "free" because there was no change\&. Similarly \fBC\
 .RE
 .\}
 .sp
-.sp
-In mathematical terms, what we are looking for is some sort of a minimum cost bipartite matching; \(oq1` is matched to \fBC\fR at some cost, etc\&. The underlying graph is in fact a complete bipartite graph; the cost we associate with every edge is the size of the diff between the two commits\(cq patches\&. To explain also new commits, we introduce dummy nodes on both sides:
+In mathematical terms, what we are looking for is some sort of a minimum cost bipartite matching; \fB1\fR is matched to \fBC\fR at some cost, etc\&. The underlying graph is in fact a complete bipartite graph; the cost we associate with every edge is the size of the diff between the two commits\*(Aq patches\&. To explain also new commits, we introduce dummy nodes on both sides:
 .sp
 .if n \{\
 .RS 4
@@ -324,7 +320,6 @@ In mathematical terms, what we are looking for is some sort of a minimum cost bi
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The cost of an edge \fBo\-\-C\fR is the size of \fBC\fR\*(Aqs diff, modified by a fudge factor that should be smaller than 100%\&. The cost of an edge \fBo\-\-o\fR is free\&. The fudge factor is necessary because even if \fB1\fR and \fBC\fR have nothing in common, they may still share a few empty lines and such, possibly making the assignment \fB1\-\-C\fR, \fBo\-\-o\fR slightly cheaper than \fB1\-\-o\fR, \fBo\-\-C\fR even if \fB1\fR and \fBC\fR have nothing in common\&. With the fudge factor we require a much larger common part to consider patches as corresponding\&.
 .sp
@@ -347,7 +342,6 @@ The overall time needed to compute this algorithm is the time needed to compute 
 .if n \{\
 .RE
 .\}
-.sp
 .SH "SEE ALSO"
 .sp
 \fBgit-log\fR(1)

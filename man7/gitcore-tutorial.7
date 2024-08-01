@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gitcore-tutorial
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GITCORE\-TUTORIAL" "7" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GITCORE\-TUTORIAL" "7" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -77,7 +77,6 @@ $ git init
 .RE
 .\}
 .sp
-.sp
 to which Git will reply
 .sp
 .if n \{\
@@ -89,7 +88,6 @@ Initialized empty Git repository in \&.git/
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which is just Git\(cqs way of saying that you haven\(cqt been doing anything strange, and that it will have created a local \fB\&.git\fR directory setup for your new project\&. You will now have a \fB\&.git\fR directory, and you can inspect that with \fIls\fR\&. For your new empty project, it should show you three entries, among other things:
 .sp
@@ -199,7 +197,6 @@ $ echo "Silly example" >example
 .RE
 .\}
 .sp
-.sp
 you have now created two files in your working tree (aka \fIworking directory\fR), but to actually check in your hard work, you will have to go through two steps:
 .sp
 .RS 4
@@ -241,7 +238,6 @@ $ git update\-index \-\-add hello example
 .RE
 .\}
 .sp
-.sp
 and you have now told Git to track those two files\&.
 .sp
 In fact, as you did that, if you now look into your object directory, you\(cqll notice that Git will have added two new objects to the object database\&. If you did exactly the steps above, you should now be able to do
@@ -256,7 +252,6 @@ $ ls \&.git/objects/??/*
 .RE
 .\}
 .sp
-.sp
 and see two files:
 .sp
 .if n \{\
@@ -269,7 +264,6 @@ and see two files:
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which correspond with the objects with names of \fB557db\&.\&.\&.\fR and \fBf24c7\&.\&.\&.\fR respectively\&.
 .sp
@@ -285,7 +279,6 @@ $ git cat\-file \-t 557db03de997c86a4a028e1ebd3a1ceb225be238
 .RE
 .\}
 .sp
-.sp
 where the \fB\-t\fR tells \fIgit cat\-file\fR to tell you what the "type" of the object is\&. Git will tell you that you have a "blob" object (i\&.e\&., just a regular file), and you can see the contents with
 .sp
 .if n \{\
@@ -297,7 +290,6 @@ $ git cat\-file blob 557db03
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which will print out "Hello World"\&. The object \fB557db03\fR is nothing more than the contents of your file \fBhello\fR\&.
 .if n \{\
@@ -351,7 +343,6 @@ $ echo "It\*(Aqs a new day for git" >>hello
 .RE
 .\}
 .sp
-.sp
 and you can now, since you told Git about the previous state of \fBhello\fR, ask Git what has changed in the tree compared to your old index, using the \fIgit diff\-files\fR command:
 .sp
 .if n \{\
@@ -363,7 +354,6 @@ $ git diff\-files
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Oops\&. That wasn\(cqt very readable\&. It just spit out its own internal version of a \fIdiff\fR, but that internal version really just tells you that it has noticed that "hello" has been modified, and that the old object contents it had have been replaced with something else\&.
 .sp
@@ -385,7 +375,6 @@ index 557db03\&.\&.263414f 100644
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 i\&.e\&. the diff of the change we caused by adding another line to \fBhello\fR\&.
 .sp
@@ -409,7 +398,6 @@ index 557db03\&.\&.263414f 100644
 .if n \{\
 .RE
 .\}
-.sp
 .SH "COMMITTING GIT STATE"
 .sp
 Now, we want to go to the next stage in Git, which is to take the files that Git knows about in the index, and commit them as a real tree\&. We do that in two phases: creating a \fItree\fR object, and committing that \fItree\fR object as a \fIcommit\fR object together with an explanation of what the tree was all about, along with information of how we came to that state\&.
@@ -426,7 +414,6 @@ $ git write\-tree
 .RE
 .\}
 .sp
-.sp
 and this will just output the name of the resulting tree, in this case (if you have done exactly as I\(cqve described) it should be
 .sp
 .if n \{\
@@ -438,7 +425,6 @@ and this will just output the name of the resulting tree, in this case (if you h
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which is another incomprehensible object name\&. Again, if you want to, you can use \fBgit cat\-file \-t 8988d\&.\&.\&.\fR to see that this time the object is not a "blob" object, but a "tree" object (you can also use \fBgit cat\-file\fR to actually output the raw object contents, but you\(cqll see mainly a binary mess, so that\(cqs less interesting)\&.
 .sp
@@ -459,7 +445,6 @@ $ git update\-ref HEAD $commit
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 In this case this creates a totally new commit that is not related to anything else\&. Normally you do this only \fBonce\fR for a project ever, and all later commits will be parented on top of an earlier commit\&.
 .sp
@@ -486,7 +471,6 @@ $ git diff\-index \-p HEAD
 .RE
 .\}
 .sp
-.sp
 (where \fB\-p\fR has the same meaning as it did in \fIgit diff\-files\fR), and it will show us the same difference, but for a totally different reason\&. Now we\(cqre comparing the working tree not against the index file, but against the tree we just wrote\&. It just so happens that those two are obviously the same, so we get the same result\&.
 .sp
 Again, because this is a common operation, you can also just shorthand it with
@@ -500,7 +484,6 @@ $ git diff HEAD
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which ends up doing the above for you\&.
 .sp
@@ -536,7 +519,6 @@ $ git update\-index hello
 .RE
 .\}
 .sp
-.sp
 (note how we didn\(cqt need the \fB\-\-add\fR flag this time, since Git knew about the file already)\&.
 .sp
 Note what happens to the different \fIgit diff\-*\fR versions here\&. After we\(cqve updated \fBhello\fR in the index, \fBgit diff\-files \-p\fR now shows no differences, but \fBgit diff\-index \-p HEAD\fR still \fBdoes\fR show that the current state is different from the state we committed\&. In fact, now \fIgit diff\-index\fR shows the same difference whether we use the \fB\-\-cached\fR flag or not, since now the index is coherent with the working tree\&.
@@ -552,7 +534,6 @@ $ git commit
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which starts an editor for you to write the commit message and tells you a bit about what you have done\&.
 .sp
@@ -574,7 +555,6 @@ $ git diff\-tree \-p HEAD
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 (again, \fB\-p\fR means to show the difference as a human\-readable patch), and it will show what the last commit (in \fBHEAD\fR) actually changed\&.
 .if n \{\
@@ -650,7 +630,6 @@ $ git tag my\-first\-tag
 .RE
 .\}
 .sp
-.sp
 which just writes the current \fBHEAD\fR into the \fB\&.git/refs/tags/my\-first\-tag\fR file, after which point you can then use this symbolic name for that particular state\&. You can, for example, do
 .sp
 .if n \{\
@@ -662,7 +641,6 @@ $ git diff my\-first\-tag
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 to diff your current state against that tag which at this point will obviously be an empty diff, but if you continue to develop and commit stuff, you can use your tag as an "anchor\-point" to see what has changed since you tagged it\&.
 .sp
@@ -677,7 +655,6 @@ $ git tag \-s <tagname>
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which will sign the current \fBHEAD\fR (but you can also give it another argument that specifies the thing to tag, e\&.g\&., you could have tagged the current \fBmybranch\fR point by using \fBgit tag <tagname> mybranch\fR)\&.
 .sp
@@ -772,7 +749,6 @@ $ git update\-index \-\-refresh
 .RE
 .\}
 .sp
-.sp
 which will force a total index re\-build from the tree pointed to by \fBHEAD\fR\&. It resets the index contents to \fBHEAD\fR, and then the \fIgit update\-index\fR makes sure to match up all index entries with the checked\-out files\&. If the original repository had uncommitted changes in its working tree, \fBgit update\-index \-\-refresh\fR notices them and tells you they need to be updated\&.
 .sp
 The above can also be written as simply
@@ -786,7 +762,6 @@ $ git reset
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 and in fact a lot of the common Git command combinations can be scripted with the \fBgit xyz\fR interfaces\&. You can learn things by just looking at what the various git scripts do\&. For example, \fBgit reset\fR used to be the above two lines implemented in \fIgit reset\fR, but some things like \fIgit status\fR and \fIgit commit\fR are slightly more complex scripts around the basic Git commands\&.
 .sp
@@ -806,7 +781,6 @@ $ rsync \-rL rsync://rsync\&.kernel\&.org/pub/scm/git/git\&.git/ \&.git
 .RE
 .\}
 .sp
-.sp
 followed by
 .sp
 .if n \{\
@@ -819,7 +793,6 @@ $ git read\-tree HEAD
 .RE
 .\}
 .sp
-.sp
 to populate the index\&. However, now you have populated the index, and you have all the Git internal files, but you will notice that you don\(cqt actually have any of the working tree files to work on\&. To get those, you\(cqd check them out with
 .sp
 .if n \{\
@@ -831,7 +804,6 @@ $ git checkout\-index \-u \-a
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 where the \fB\-u\fR flag means that you want the checkout to keep the index up to date (so that you don\(cqt have to refresh it afterward), and the \fB\-a\fR flag means "check out all files" (if you have a stale copy or an older version of a checked out tree you may also need to add the \fB\-f\fR flag first, to tell \fIgit checkout\-index\fR to \fBforce\fR overwriting of any old files)\&.
 .sp
@@ -848,7 +820,6 @@ $ git checkout
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which will end up doing all of the above for you\&.
 .sp
@@ -870,7 +841,6 @@ $ git switch \-c mybranch
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 will create a new branch based at the current \fBHEAD\fR position, and switch to it\&.
 .if n \{\
@@ -898,7 +868,6 @@ $ git switch \-c mybranch earlier\-commit
 .RE
 .\}
 .sp
-.sp
 and it would create the new branch \fBmybranch\fR at the earlier commit, and check out the state at that time\&.
 .sp .5v
 .RE
@@ -915,7 +884,6 @@ $ git switch master
 .RE
 .\}
 .sp
-.sp
 (or any other branch\-name, for that matter) and if you forget which branch you happen to be on, a simple
 .sp
 .if n \{\
@@ -928,7 +896,6 @@ $ cat \&.git/HEAD
 .RE
 .\}
 .sp
-.sp
 will tell you where it\(cqs pointing\&. To get the list of branches you have, you can say
 .sp
 .if n \{\
@@ -940,7 +907,6 @@ $ git branch
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which used to be nothing more than a simple script around \fBls \&.git/refs/heads\fR\&. There will be an asterisk in front of the branch you are currently on\&.
 .sp
@@ -955,7 +921,6 @@ $ git branch <branchname> [startingpoint]
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which will simply \fIcreate\fR the branch, but will not do anything further\&. You can then later \(em once you decide that you want to actually develop on that branch \(em switch to that branch with a regular \fIgit switch\fR with the branchname as the argument\&.
 .SH "MERGING TWO BRANCHES"
@@ -974,7 +939,6 @@ $ git commit \-m "Some work\&." \-i hello
 .RE
 .\}
 .sp
-.sp
 Here, we just added another line to \fBhello\fR, and we used a shorthand for doing both \fBgit update\-index hello\fR and \fBgit commit\fR by just giving the filename directly to \fBgit commit\fR, with an \fB\-i\fR flag (it tells Git to \fIinclude\fR that file in addition to what you have done to the index file so far when making the commit)\&. The \fB\-m\fR flag is to give the commit log message from the command line\&.
 .sp
 Now, to make it a bit more interesting, let\(cqs assume that somebody else does some work in the original branch, and simulate that by going back to the master branch, and editing the same file differently there:
@@ -988,7 +952,6 @@ $ git switch master
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Here, take a moment to look at the contents of \fBhello\fR, and notice how they don\(cqt contain the work we just did in \fBmybranch\fR \(em because that work hasn\(cqt happened in the \fBmaster\fR branch at all\&. Then do
 .sp
@@ -1004,7 +967,6 @@ $ git commit \-m "Some fun\&." \-i hello example
 .RE
 .\}
 .sp
-.sp
 since the master branch is obviously in a much better mood\&.
 .sp
 Now, you\(cqve got two branches, and you decide that you want to merge the work done\&. Before we do that, let\(cqs introduce a cool graphical tool that helps you view what\(cqs going on:
@@ -1019,7 +981,6 @@ $ gitk \-\-all
 .RE
 .\}
 .sp
-.sp
 will show you graphically both of your branches (that\(cqs what the \fB\-\-all\fR means: normally it will just show you your current \fBHEAD\fR) and their histories\&. You can also see exactly how they came to be from a common source\&.
 .sp
 Anyway, let\(cqs exit \fIgitk\fR (\fB^Q\fR or the File menu), and decide that we want to merge the work we did on the \fBmybranch\fR branch into the \fBmaster\fR branch (which is currently our \fBHEAD\fR too)\&. To do that, there\(cqs a nice script called \fIgit merge\fR, which wants to know which branches you want to resolve and what the merge is all about:
@@ -1033,7 +994,6 @@ $ git merge \-m "Merge work in mybranch" mybranch
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 where the first argument is going to be used as the commit message if the merge can be resolved automatically\&.
 .sp
@@ -1050,7 +1010,6 @@ Now, in this case we\(cqve intentionally created a situation where the merge wil
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 It tells you that it did an "Automatic merge", which failed due to conflicts in \fBhello\fR\&.
 .sp
@@ -1069,7 +1028,6 @@ Work, work, work
 .RE
 .\}
 .sp
-.sp
 and once you\(cqre happy with your manual merge, just do a
 .sp
 .if n \{\
@@ -1081,7 +1039,6 @@ $ git commit \-i hello
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 which will very loudly warn you that you\(cqre now committing a merge (which is correct, so never mind), and you can write a small merge message about your adventures in \fIgit merge\fR\-land\&.
 .sp
@@ -1104,7 +1061,6 @@ $ git show\-branch \-\-topo\-order \-\-more=1 master mybranch
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The first two lines indicate that it is showing the two branches with the titles of their top\-of\-the\-tree commits, you are currently on \fBmaster\fR branch (notice the asterisk \fB*\fR character), and the first column for the later output lines is used to show commits contained in the \fBmaster\fR branch, and the second column for the \fBmybranch\fR branch\&. Three commits are shown along with their titles\&. All of them have non blank characters in the first column (\fB*\fR shows an ordinary commit on the current branch, \fB\-\fR is a merge commit), which means they are now part of the \fBmaster\fR branch\&. Only the "Some work" commit has the plus \fB+\fR character in the second column, because \fBmybranch\fR has not been merged to incorporate these commits from the master branch\&. The string inside brackets before the commit log message is a short name you can use to name the commit\&. In the above example, \fImaster\fR and \fImybranch\fR are branch heads\&. \fImaster^\fR is the first parent of \fImaster\fR branch head\&. Please see \fBgitrevisions\fR(7) if you want to see more complex cases\&.
 .if n \{\
@@ -1153,7 +1109,6 @@ $ git merge \-m "Merge upstream changes\&." master
 .RE
 .\}
 .sp
-.sp
 This outputs something like this (the actual commit object names would be different)
 .sp
 .if n \{\
@@ -1169,7 +1124,6 @@ Fast\-forward (no commit created; \-m option ignored)
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Because your branch did not contain anything more than what had already been merged into the \fBmaster\fR branch, the merge operation did not actually do a merge\&. Instead, it just updated the top of the tree of your branch to that of the \fBmaster\fR branch\&. This is often called \fIfast\-forward\fR merge\&.
 .sp
@@ -1188,7 +1142,6 @@ $ git show\-branch master mybranch
 .if n \{\
 .RE
 .\}
-.sp
 .SH "MERGING EXTERNAL WORK"
 .sp
 It\(cqs usually much more common that you merge with somebody else than merging with your own branches, so it\(cqs worth pointing out that Git makes that very easy too, and in fact, it\(cqs not that different from doing a \fIgit merge\fR\&. In fact, a remote merge ends up being nothing more than "fetch the work from a remote repository into a temporary tag" followed by a \fIgit merge\fR\&.
@@ -1204,7 +1157,6 @@ $ git fetch <remote\-repository>
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 One of the following transports can be used to name the repository to download from:
 .PP
@@ -1270,7 +1222,6 @@ $ git pull <remote\-repository>
 .RE
 .\}
 .sp
-.sp
 and optionally give a branch\-name for the remote end as a second argument\&.
 .if n \{\
 .sp
@@ -1300,7 +1251,6 @@ $ git config remote\&.linus\&.url https://git\&.kernel\&.org/pub/scm/git/git\&.g
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 and use the "linus" keyword with \fIgit pull\fR instead of the full URL\&.
 .sp
@@ -1373,7 +1323,6 @@ $ git show\-branch \-\-more=2 master mybranch
 .RE
 .\}
 .sp
-.sp
 Remember, before running \fIgit merge\fR, our \fBmaster\fR head was at "Some fun\&." commit, while our \fBmybranch\fR head was at "Some work\&." commit\&.
 .sp
 .if n \{\
@@ -1387,7 +1336,6 @@ $ git reset \-\-hard master^
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 After rewinding, the commit structure should look like this:
 .sp
@@ -1407,7 +1355,6 @@ $ git show\-branch
 .RE
 .\}
 .sp
-.sp
 Now we are ready to experiment with the merge by hand\&.
 .sp
 \fBgit merge\fR command, when merging two branches, uses 3\-way merge algorithm\&. First, it finds the common ancestor between them\&. The command it uses is \fIgit merge\-base\fR:
@@ -1422,7 +1369,6 @@ $ mb=$(git merge\-base HEAD mybranch)
 .RE
 .\}
 .sp
-.sp
 The command writes the commit object name of the common ancestor to the standard output, so we captured its output to a variable, because we will be using it in the next step\&. By the way, the common ancestor commit is the "Initial commit" commit in this case\&. You can tell it by:
 .sp
 .if n \{\
@@ -1436,7 +1382,6 @@ my\-first\-tag
 .RE
 .\}
 .sp
-.sp
 After finding out a common ancestor commit, the second step is this:
 .sp
 .if n \{\
@@ -1448,7 +1393,6 @@ $ git read\-tree \-m \-u $mb HEAD mybranch
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 This is the same \fIgit read\-tree\fR command we have already seen, but it takes three trees, unlike previous examples\&. This reads the contents of each tree into different \fIstage\fR in the index file (the first tree goes to stage 1, the second to stage 2, etc\&.)\&. After reading three trees into three stages, the paths that are the same in all three stages are \fIcollapsed\fR into stage 0\&. Also paths that are the same in two of three stages are collapsed into stage 0, taking the SHA\-1 from either stage 2 or stage 3, whichever is different from stage 1 (i\&.e\&. only one side changed from the common ancestor)\&.
 .sp
@@ -1468,7 +1412,6 @@ $ git ls\-files \-\-stage
 .RE
 .\}
 .sp
-.sp
 In our example of only two files, we did not have unchanged files so only \fIexample\fR resulted in collapsing\&. But in real\-life large projects, when only a small number of files change in one commit, this \fIcollapsing\fR tends to trivially merge most of the paths fairly quickly, leaving only a handful of real changes in non\-zero stages\&.
 .sp
 To look at only non\-zero stages, use \fB\-\-unmerged\fR flag:
@@ -1486,7 +1429,6 @@ $ git ls\-files \-\-unmerged
 .RE
 .\}
 .sp
-.sp
 The next step of merging is to merge these three versions of the file, using 3\-way merge\&. This is done by giving \fIgit merge\-one\-file\fR command as one of the arguments to \fIgit merge\-index\fR command:
 .sp
 .if n \{\
@@ -1501,7 +1443,6 @@ fatal: merge program failed
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 \fIgit merge\-one\-file\fR script is called with parameters to describe those three versions, and is responsible to leave the merge results in the working tree\&. It is a fairly straightforward shell script, and eventually calls \fImerge\fR program from RCS suite to perform a file\-level 3\-way merge\&. In this case, \fImerge\fR detects conflicts, and the merge result with conflict marks is left in the working tree\&.\&. This can be seen if you run \fBls\-files \-\-stage\fR again at this point:
 .sp
@@ -1518,7 +1459,6 @@ $ git ls\-files \-\-stage
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 This is the state of the index file and the working file after \fIgit merge\fR returns control back to you, leaving the conflicting merge for you to resolve\&. Notice that the path \fBhello\fR is still unmerged, and what you see with \fIgit diff\fR at this point is differences since stage 2 (i\&.e\&. your version)\&.
 .SH "PUBLISHING YOUR WORK"
@@ -1575,7 +1515,6 @@ $ mkdir my\-git\&.git
 .RE
 .\}
 .sp
-.sp
 Then, make that directory into a Git repository by running \fIgit init\fR, but this time, since its name is not the usual \fB\&.git\fR, we do things slightly differently:
 .sp
 .if n \{\
@@ -1587,7 +1526,6 @@ $ GIT_DIR=my\-git\&.git git init
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Make sure this directory is available for others you want your changes to be pulled via the transport of your choice\&. Also you need to make sure that you have the \fIgit\-receive\-pack\fR program on the \fB$PATH\fR\&.
 .if n \{\
@@ -1635,7 +1573,6 @@ $ git push <public\-host>:/path/to/my\-git\&.git master
 .RE
 .\}
 .sp
-.sp
 This synchronizes your public repository to match the named branch head (i\&.e\&. \fBmaster\fR in this case) and objects reachable from them in your current repository\&.
 .sp
 As a real example, this is how I update my public Git repository\&. Kernel\&.org mirror network takes care of the propagation to other publicly visible machines:
@@ -1649,7 +1586,6 @@ $ git push master\&.kernel\&.org:/pub/scm/git/git\&.git/
 .if n \{\
 .RE
 .\}
-.sp
 .SH "PACKING YOUR REPOSITORY"
 .sp
 Earlier, we saw that one file under \fB\&.git/objects/??/\fR directory is stored for each Git object you create\&. This representation is efficient to create atomically and safely, but not so convenient to transport over the network\&. Since Git objects are immutable once they are created, there is a way to optimize the storage by "packing them together"\&. The command
@@ -1663,7 +1599,6 @@ $ git repack
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 will do it for you\&. If you followed the tutorial examples, you would have accumulated about 17 objects in \fB\&.git/objects/??/\fR directories by now\&. \fIgit repack\fR tells you how many objects it packed, and stores the packed file in the \fB\&.git/objects/pack\fR directory\&.
 .if n \{\
@@ -1696,7 +1631,6 @@ $ git prune\-packed
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 would remove them for you\&.
 .sp
@@ -2015,7 +1949,6 @@ $ git show\-branch
 .RE
 .\}
 .sp
-.sp
 Both fixes are tested well, and at this point, you want to merge in both of them\&. You could merge in \fIdiff\-fix\fR first and then \fIcommit\-fix\fR next, like this:
 .sp
 .if n \{\
@@ -2028,7 +1961,6 @@ $ git merge \-m "Merge fix in commit\-fix" commit\-fix
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Which would result in:
 .sp
@@ -2053,7 +1985,6 @@ $ git show\-branch
 .RE
 .\}
 .sp
-.sp
 However, there is no particular reason to merge in one branch first and the other next, when what you have are a set of truly independent changes (if the order mattered, then they are not independent by definition)\&. You could instead merge those two branches into the current branch at once\&. First let\(cqs undo what we just did and start over\&. We would want to get the master branch before these two merges by resetting it to \fImaster~2\fR:
 .sp
 .if n \{\
@@ -2065,7 +1996,6 @@ $ git reset \-\-hard master~2
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 You can make sure \fBgit show\-branch\fR matches the state before those two \fIgit merge\fR you just did\&. Then, instead of running two \fIgit merge\fR commands in a row, you would merge these two branch heads (this is known as \fImaking an Octopus\fR):
 .sp
@@ -2089,7 +2019,6 @@ $ git show\-branch
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Note that you should not do Octopus just because you can\&. An octopus is a valid thing to do and often makes it easier to view the commit history if you are merging more than two independent changes at the same time\&. However, if you have merge conflicts with any of the branches you are merging in and need to hand resolve, that is an indication that the development happened in those branches were not independent after all, and you should merge two at a time, documenting how you resolved the conflicts, and the reason why you preferred changes made in one side over the other\&. Otherwise it would make the project history harder to follow, not easier\&.
 .SH "SEE ALSO"

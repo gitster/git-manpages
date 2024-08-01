@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-rm
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-RM" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-RM" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,15 +34,14 @@ git-rm \- Remove files from the working tree and from the index
 .nf
 \fIgit rm\fR [\-f | \-\-force] [\-n] [\-r] [\-\-cached] [\-\-ignore\-unmatch]
           [\-\-quiet] [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]]
-          [\-\-] [<pathspec>\&...]
+          [\-\-] [<pathspec>\&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Remove files matching pathspec from the index, or from the working tree and the index\&. \fBgit rm\fR will not remove a file from just your working directory\&. (There is no option to remove a file only from the working tree and yet keep it in the index; use \fB/bin/rm\fR if you want to do that\&.) The files being removed have to be identical to the tip of the branch, and no updates to their contents can be staged in the index, though that default behavior can be overridden with the \fB\-f\fR option\&. When \fB\-\-cached\fR is given, the staged content has to match either the tip of the branch or the file on disk, allowing the file to be removed from just the index\&. When sparse\-checkouts are in use (see \fBgit-sparse-checkout\fR(1)), \fBgit rm\fR will only remove paths within the sparse\-checkout patterns\&.
 .SH "OPTIONS"
 .PP
-<pathspec>\&...
+<pathspec>\&...\:
 .RS 4
 Files to remove\&. A leading directory name (e\&.g\&.
 \fBdir\fR
@@ -161,7 +160,6 @@ git ls\-files \-z | xargs \-0 rm \-f
 .RE
 .\}
 .sp
-.sp
 and then untar the new code in the working tree\&. Alternately you could \fIrsync\fR the changes into the working tree\&.
 .sp
 After that, the easiest way to record all removals, additions, and modifications in the working tree is:
@@ -175,7 +173,6 @@ git add \-A
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 See \fBgit-add\fR(1)\&.
 .SS "Other ways"
@@ -191,7 +188,6 @@ git diff \-\-name\-only \-\-diff\-filter=D \-z | xargs \-0 git rm \-\-cached
 .if n \{\
 .RE
 .\}
-.sp
 .SH "SUBMODULES"
 .sp
 Only submodules using a gitfile (which means they were cloned with a Git version 1\&.7\&.8 or newer) will be removed from the work tree, as their repository lives inside the \&.git directory of the superproject\&. If a submodule (or one of those nested inside it) still uses a \&.git directory, \fBgit rm\fR will move the submodules git directory into the superprojects git directory to protect the submodule\(cqs history\&. If it exists the submodule\&.<name> section in the \fBgitmodules\fR(5) file will also be removed and that file will be staged (unless \-\-cached or \-n are used)\&.

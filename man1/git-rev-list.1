@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,9 +32,8 @@ git-rev-list \- Lists commit objects in reverse chronological order
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit rev\-list\fR [<options>] <commit>\&... [\-\-] [<path>\&...]
+\fIgit rev\-list\fR [<options>] <commit>\&...\: [\-\-] [<path>\&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 List commits that are reachable by following the \fBparent\fR links from the given commit(s), but exclude commits that are reachable from the one(s) given with a \fI^\fR in front of them\&. The output is given in reverse chronological order by default\&.
@@ -53,7 +52,6 @@ $ git rev\-list foo bar ^baz
 .RE
 .\}
 .sp
-.sp
 means "list all the commits which are reachable from \fIfoo\fR or \fIbar\fR, but not from \fIbaz\fR"\&.
 .sp
 A special notation "\fI<commit1>\fR\&.\&.\fI<commit2>\fR" can be used as a short\-hand for "^\fI<commit1>\fR \fI<commit2>\fR"\&. For example, either of the following may be used interchangeably:
@@ -69,8 +67,7 @@ $ git rev\-list HEAD ^origin
 .RE
 .\}
 .sp
-.sp
-Another special notation is "\fI<commit1>\fR\&...\fI<commit2>\fR" which is useful for merges\&. The resulting set of commits is the symmetric difference between the two operands\&. The following two commands are equivalent:
+Another special notation is "\fI<commit1>\fR\&...\:\fI<commit2>\fR" which is useful for merges\&. The resulting set of commits is the symmetric difference between the two operands\&. The following two commands are equivalent:
 .sp
 .if n \{\
 .RS 4
@@ -82,7 +79,6 @@ $ git rev\-list A\&.\&.\&.B
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 \fIrev\-list\fR is an essential Git command, since it provides the ability to build and traverse commit ancestry graphs\&. For this reason, it has a lot of different options that enable it to be used by commands as different as \fIgit bisect\fR and \fIgit repack\fR\&.
 .SH "OPTIONS"
@@ -443,7 +439,9 @@ rather than omitting them, and inequivalent ones with
 .PP
 \-\-cherry\-pick
 .RS 4
-Omit any commit that introduces the same change as another commit on the \(lqother side\(rq when the set of commits are limited with symmetric difference\&.
+Omit any commit that introduces the same change as another commit on the
+\(lqother side\(rq
+when the set of commits are limited with symmetric difference\&.
 .sp
 For example, if you have two branches,
 \fBA\fR
@@ -452,7 +450,9 @@ and
 \fB\-\-left\-right\fR
 (see the example below in the description of the
 \fB\-\-left\-right\fR
-option)\&. However, it shows the commits that were cherry\-picked from the other branch (for example, \(lq3rd on b\(rq may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
+option)\&. However, it shows the commits that were cherry\-picked from the other branch (for example,
+\(lq3rd on b\(rq
+may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
 .RE
 .PP
 \-\-left\-only, \-\-right\-only
@@ -682,7 +682,6 @@ In the following, we will always refer to the same example history to illustrate
 .RE
 .\}
 .sp
-.sp
 The horizontal line of history A\-\-\-Q is taken to be the first parent of each merge\&. The commits are:
 .sp
 .RS 4
@@ -696,9 +695,11 @@ The horizontal line of history A\-\-\-Q is taken to be the first parent of each 
 \fBI\fR
 is the initial commit, in which
 \fBfoo\fR
-exists with contents \(lqasdf\(rq, and a file
+exists with contents
+\(lqasdf\(rq, and a file
 \fBquux\fR
-exists with contents \(lqquux\(rq\&. Initial commits are compared to an empty tree, so
+exists with contents
+\(lqquux\(rq\&. Initial commits are compared to an empty tree, so
 \fBI\fR
 is !TREESAME\&.
 .RE
@@ -714,7 +715,8 @@ is !TREESAME\&.
 In
 \fBA\fR,
 \fBfoo\fR
-contains just \(lqfoo\(rq\&.
+contains just
+\(lqfoo\(rq\&.
 .RE
 .sp
 .RS 4
@@ -744,7 +746,8 @@ is trivial and hence TREESAME to all parents\&.
 does not change
 \fBfoo\fR, but its merge
 \fBN\fR
-changes it to \(lqfoobar\(rq, so it is not TREESAME to any parent\&.
+changes it to
+\(lqfoobar\(rq, so it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -758,13 +761,15 @@ changes it to \(lqfoobar\(rq, so it is not TREESAME to any parent\&.
 \fBD\fR
 sets
 \fBfoo\fR
-to \(lqbaz\(rq\&. Its merge
+to
+\(lqbaz\(rq\&. Its merge
 \fBO\fR
 combines the strings from
 \fBN\fR
 and
 \fBD\fR
-to \(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
+to
+\(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -778,9 +783,11 @@ to \(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
 \fBE\fR
 changes
 \fBquux\fR
-to \(lqxyzzy\(rq, and its merge
+to
+\(lqxyzzy\(rq, and its merge
 \fBP\fR
-combines the strings to \(lqquux xyzzy\(rq\&.
+combines the strings to
+\(lqquux xyzzy\(rq\&.
 \fBP\fR
 is TREESAME to
 \fBO\fR, but not to
@@ -1088,10 +1095,8 @@ computes the set of commits that are ancestors of
 \fBD\fR\&. This is useful to see what happened to the history leading to
 \fBM\fR
 since
-\fBD\fR, in the sense that \(lqwhat does
-\fBM\fR
-have that did not exist in
-\fBD\fR\(rq\&. The result in this example would be all the commits, except
+\fBD\fR, in the sense that
+\(lqwhat does \fBM\fR have that did not exist in \fBD\fR\(rq\&. The result in this example would be all the commits, except
 \fBA\fR
 and
 \fBB\fR
@@ -1170,7 +1175,6 @@ would result in
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new example history\&.
@@ -1192,7 +1196,6 @@ A common problem users face when looking at simplified history is that a commit 
 .RE
 .\}
 .sp
-.sp
 For this example, suppose \fBI\fR created \fBfile\&.txt\fR which was modified by \fBA\fR, \fBB\fR, and \fBX\fR in different ways\&. The single\-parent commits \fBC\fR, \fBZ\fR, and \fBY\fR do not change \fBfile\&.txt\fR\&. The merge commit \fBM\fR was created by resolving the merge conflict to include both changes from \fBA\fR and \fBB\fR and hence is not TREESAME to either\&. The merge commit \fBR\fR, however, was created by ignoring the contents of \fBfile\&.txt\fR at \fBM\fR and taking only the contents of \fBfile\&.txt\fR at \fBX\fR\&. Hence, \fBR\fR is TREESAME to \fBX\fR but not \fBM\fR\&. Finally, the natural merge resolution to create \fBN\fR is to take the contents of \fBfile\&.txt\fR at \fBR\fR, so \fBN\fR is TREESAME to \fBR\fR but not \fBC\fR\&. The merge commits \fBO\fR and \fBP\fR are TREESAME to their first parents, but not to their second parents, \fBZ\fR and \fBY\fR respectively\&.
 .sp
 When using the default mode, \fBN\fR and \fBR\fR both have a TREESAME parent, so those edges are walked and the others are ignored\&. The resulting history graph is:
@@ -1206,7 +1209,6 @@ When using the default mode, \fBN\fR and \fBR\fR both have a TREESAME parent, so
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover the commits \fBA\fR and \fBB\fR and the merge \fBM\fR, but also will reveal the merge commits \fBO\fR and \fBP\fR\&. With parent rewriting, the resulting graph is:
 .sp
@@ -1224,7 +1226,6 @@ When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover t
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Here, the merge commits \fBO\fR and \fBP\fR contribute extra noise, as they did not actually contribute a change to \fBfile\&.txt\fR\&. They only merged a topic that was based on an older version of \fBfile\&.txt\fR\&. This is a common issue in repositories using a workflow where many contributors work in parallel and merge their topic branches along a single trunk: many unrelated merges appear in the \fB\-\-full\-history\fR results\&.
 .sp
@@ -1244,7 +1245,6 @@ When using the \fB\-\-simplify\-merges\fR option, the commits \fBO\fR and \fBP\f
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 In this view, we see all of the important single\-parent changes from \fBA\fR, \fBB\fR, and \fBX\fR\&. We also see the carefully\-resolved merge \fBM\fR and the not\-so\-carefully\-resolved merge \fBR\fR\&. This is usually enough information to determine why the commits \fBA\fR and \fBB\fR "disappeared" from history in the default view\&. However, there are a few issues with this approach\&.
 .sp
@@ -1446,10 +1446,8 @@ These options are mostly targeted for packing of Git repositories\&.
 .RS 4
 Print the object IDs of any object referenced by the listed commits\&.
 \fB\-\-objects foo ^bar\fR
-thus means \(lqsend me all object IDs which I need to download if I have the commit object
-\fIbar\fR
-but not
-\fIfoo\fR\(rq\&. See also
+thus means
+\(lqsend me all object IDs which I need to download if I have the commit object \fIbar\fR but not \fIfoo\fR\(rq\&. See also
 \fB\-\-object\-names\fR
 below\&.
 .RE
@@ -1462,9 +1460,13 @@ Print tree and blob ids in order of the commits\&. The tree and blob ids are pri
 \-\-objects\-edge
 .RS 4
 Similar to
-\fB\-\-objects\fR, but also print the IDs of excluded commits prefixed with a \(lq\-\(rq character\&. This is used by
+\fB\-\-objects\fR, but also print the IDs of excluded commits prefixed with a
+\(lq\-\(rq
+character\&. This is used by
 \fBgit-pack-objects\fR(1)
-to build a \(lqthin\(rq pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic\&.
+to build a
+\(lqthin\(rq
+pack, which records objects in deltified form based on objects contained in these excluded commits to reduce network traffic\&.
 .RE
 .PP
 \-\-objects\-edge\-aggressive
@@ -1472,7 +1474,9 @@ to build a \(lqthin\(rq pack, which records objects in deltified form based on o
 Similar to
 \fB\-\-objects\-edge\fR, but it tries harder to find excluded commits at the cost of increased time\&. This is used instead of
 \fB\-\-objects\-edge\fR
-to build \(lqthin\(rq packs for shallow repositories\&.
+to build
+\(lqthin\(rq
+packs for shallow repositories\&.
 .RE
 .PP
 \-\-indexed\-objects
@@ -1542,7 +1546,7 @@ Multiple
 flags can be specified to combine filters\&. Only objects which are accepted by every filter are included\&.
 .sp
 The form
-\fI\-\-filter=combine:<filter1>+<filter2>+\&...<filterN>\fR
+\fI\-\-filter=combine:<filter1>+<filter2>+\&...\:<filterN>\fR
 can also be used to combined several filters, but this is harder than just repeating the
 \fI\-\-filter\fR
 flag and is usually not necessary\&. Filters are joined by
@@ -1579,7 +1583,9 @@ Filter the list of explicitly provided objects, which would otherwise always be 
 \-\-filter\-print\-omitted
 .RS 4
 Only useful with
-\fB\-\-filter=\fR; prints a list of the objects omitted by the filter\&. Object IDs are prefixed with a \(lq~\(rq character\&.
+\fB\-\-filter=\fR; prints a list of the objects omitted by the filter\&. Object IDs are prefixed with a
+\(lq~\(rq
+character\&.
 .RE
 .PP
 \-\-missing=<missing\-action>
@@ -1602,7 +1608,9 @@ is like
 The form
 \fI\-\-missing=print\fR
 is like
-\fIallow\-any\fR, but will also print a list of the missing objects\&. Object IDs are prefixed with a \(lq?\(rq character\&.
+\fIallow\-any\fR, but will also print a list of the missing objects\&. Object IDs are prefixed with a
+\(lq?\(rq
+character\&.
 .sp
 If some tips passed to the traversal are missing, they will be considered as missing too, and the traversal will ignore them\&. In case we cannot get their Object ID though, an error will be raised\&.
 .RE
@@ -1736,7 +1744,8 @@ is appended to the format (e\&.g\&.,
 \fBiso\-local\fR), the user\(cqs local time zone is used instead\&.
 .sp
 \fB\-\-date=relative\fR
-shows dates relative to the current time, e\&.g\&. \(lq2 hours ago\(rq\&. The
+shows dates relative to the current time, e\&.g\&.
+\(lq2 hours ago\(rq\&. The
 \fB\-local\fR
 option has no effect for
 \fB\-\-date=relative\fR\&.
@@ -1851,14 +1860,14 @@ Overrides a previous
 .PP
 \-\-parents
 .RS 4
-Print also the parents of the commit (in the form "commit parent\&...")\&. Also enables parent rewriting, see
+Print also the parents of the commit (in the form "commit parent\&...\:")\&. Also enables parent rewriting, see
 \fIHistory Simplification\fR
 above\&.
 .RE
 .PP
 \-\-children
 .RS 4
-Print also the children of the commit (in the form "commit child\&...")\&. Also enables parent rewriting, see
+Print also the children of the commit (in the form "commit child\&...\:")\&. Also enables parent rewriting, see
 \fIHistory Simplification\fR
 above\&.
 .RE
@@ -1911,7 +1920,6 @@ you would get an output like this:
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .PP
 \-\-graph
@@ -2327,7 +2335,7 @@ switch color to blue
 reset color
 .RE
 .PP
-\fI%C(\&...)\fR
+\fI%C(\&...\:)\fR
 .RS 4
 color specification, as described under Values in the "CONFIGURATION FILE" section of
 \fBgit-config\fR(1)\&. By default, colors are shown only when enabled for log output (by
@@ -2679,11 +2687,13 @@ string may be followed by a colon and zero or more comma\-separated options\&. O
 .\}
 \fItag=<value>\fR: Shown before tag names\&. Defaults to "\fBtag:\fR\ \&"\&.
 .RE
+.RE
+.RE
 .sp
 For example, to produce decorations with no wrapping or tag annotations, and spaces as separators:
 .sp
++
 \fB%(decorate:prefix=,suffix=,tag=,separator= )\fR
-.RE
 .PP
 \fI%(describe[:<options>])\fR
 .RS 4
@@ -2964,7 +2974,6 @@ above\&.
 .RE
 .RE
 .RE
-.RE
 .if n \{\
 .sp
 .\}
@@ -3039,7 +3048,6 @@ $ git log \-2 \-\-pretty=%h 4da45bef
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .SH "EXAMPLES"
 .sp
@@ -3062,7 +3070,6 @@ git rev\-list HEAD
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3084,7 +3091,6 @@ git rev\-list @{upstream}\&.\&.HEAD
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3107,7 +3113,6 @@ git rev\-list \-\-format=medium HEAD
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3131,7 +3136,6 @@ git diff\-tree \-\-stdin \-\-format=medium \-p
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3155,7 +3159,6 @@ git rev\-list HEAD \-\- Documentation/
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3177,7 +3180,6 @@ git rev\-list \-\-author=you@example\&.com \-\-since=1\&.year\&.ago \-\-all
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3199,7 +3201,6 @@ git rev\-list \-\-objects HEAD
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3230,7 +3231,6 @@ git count\-objects \-v
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3258,7 +3258,6 @@ sort \-n
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -3282,7 +3281,6 @@ git rev\-list \-\-disk\-usage \-\-objects \-\-remotes=$suspect \-\-not \-\-remot
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .SH "GIT"
 .sp

@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gittutorial-2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GITTUTORIAL\-2" "7" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GITTUTORIAL\-2" "7" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,12 +34,11 @@ gittutorial-2 \- A tutorial introduction to Git: part two
 .nf
 git *
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 You should work through \fBgittutorial\fR(7) before reading this tutorial\&.
 .sp
-The goal of this tutorial is to introduce two fundamental pieces of Git\(cqs architecture\(emthe object database and the index file\(emand to provide the reader with everything necessary to understand the rest of the Git documentation\&.
+The goal of this tutorial is to introduce two fundamental pieces of Git\(cqs architecture\(em\:the object database and the index file\(em\:and to provide the reader with everything necessary to understand the rest of the Git documentation\&.
 .SH "THE GIT OBJECT DATABASE"
 .sp
 Let\(cqs start a new project and create a small amount of history:
@@ -67,7 +66,6 @@ $ git commit \-a \-m "add emphasis"
 .RE
 .\}
 .sp
-.sp
 What are the 7 digits of hex that Git responded to the commit with?
 .sp
 We saw in part one of the tutorial that commits have names like this\&. It turns out that every object in the Git history is stored under a 40\-digit hex name\&. That name is the SHA\-1 hash of the object\(cqs contents; among other things, this ensures that Git will never store the same data twice (since identical data is given an identical SHA\-1 name), and that the contents of a Git object will never change (since that would change the object\(cqs name as well)\&. The 7 char hex strings here are simply the abbreviation of such 40 character long strings\&. Abbreviations can be used everywhere where the 40 character strings can be used, so long as they are unambiguous\&.
@@ -93,7 +91,6 @@ initial commit
 .RE
 .\}
 .sp
-.sp
 A tree can refer to one or more "blob" objects, each corresponding to a file\&. In addition, a tree can also refer to other tree objects, thus creating a directory hierarchy\&. You can examine the contents of any tree using ls\-tree (remember that a long enough initial portion of the SHA\-1 will also work):
 .sp
 .if n \{\
@@ -106,7 +103,6 @@ $ git ls\-tree 92b8b694
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Thus we see that this tree has one file in it\&. The SHA\-1 hash is a reference to that file\(cqs data:
 .sp
@@ -121,7 +117,6 @@ blob
 .RE
 .\}
 .sp
-.sp
 A "blob" is just file data, which we can also examine with cat\-file:
 .sp
 .if n \{\
@@ -134,7 +129,6 @@ hello world
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Note that this is the old file data; so the object that Git named in its response to the initial tree was a tree with a snapshot of the directory state that was recorded by the first commit\&.
 .sp
@@ -165,7 +159,6 @@ $ find \&.git/objects/
 .RE
 .\}
 .sp
-.sp
 and the contents of these files is just the compressed data plus a header identifying their length and their type\&. The type is either a blob, a tree, a commit, or a tag\&.
 .sp
 The simplest commit to find is the HEAD commit, which we can find from \&.git/HEAD:
@@ -180,7 +173,6 @@ ref: refs/heads/master
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 As you can see, this tells us which branch we\(cqre currently on, and it tells us this by naming a file under the \&.git directory, which itself contains a SHA\-1 name referring to a commit object, which we can examine with cat\-file:
 .sp
@@ -204,7 +196,6 @@ add emphasis
 .RE
 .\}
 .sp
-.sp
 The "tree" object here refers to the new state of the tree:
 .sp
 .if n \{\
@@ -219,7 +210,6 @@ hello world!
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 and the "parent" object refers to the previous commit:
 .sp
@@ -237,7 +227,6 @@ initial commit
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The tree object is the tree we examined first, and this commit is unusual in that it lacks any parent\&.
 .sp
@@ -302,7 +291,7 @@ References to commit objects at the head of each branch are stored in files unde
 The name of the current branch is stored in \&.git/HEAD\&.
 .RE
 .sp
-Note, by the way, that lots of commands take a tree as an argument\&. But as we can see above, a tree can be referred to in many different ways\(emby the SHA\-1 name for that tree, by the name of a commit that refers to the tree, by the name of a branch whose head refers to that tree, etc\&.\-\-and most such commands can accept any of these names\&.
+Note, by the way, that lots of commands take a tree as an argument\&. But as we can see above, a tree can be referred to in many different ways\(em\:by the SHA\-1 name for that tree, by the name of a commit that refers to the tree, by the name of a branch whose head refers to that tree, etc\&.\-\-and most such commands can accept any of these names\&.
 .sp
 In command synopses, the word "tree\-ish" is sometimes used to designate such an argument\&.
 .SH "THE INDEX FILE"
@@ -323,7 +312,6 @@ $ echo "hello world, again" >>file\&.txt
 .RE
 .\}
 .sp
-.sp
 but this time instead of immediately making the commit, let\(cqs take an intermediate step, and ask for diffs along the way to keep track of what\(cqs happening:
 .sp
 .if n \{\
@@ -342,7 +330,6 @@ $ git diff
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The last diff is empty, but no new commits have been made, and the head still doesn\(cqt contain the new line:
 .sp
@@ -363,7 +350,6 @@ index a042389\&.\&.513feba 100644
 .RE
 .\}
 .sp
-.sp
 So \fIgit diff\fR is comparing against something other than the head\&. The thing that it\(cqs comparing against is actually the index file, which is stored in \&.git/index in a binary format, but whose contents we can examine with ls\-files:
 .sp
 .if n \{\
@@ -381,7 +367,6 @@ hello world, again
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 So what our \fIgit add\fR did was store a new blob and then put a reference to it in the index file\&. If we modify the file again, we\(cqll see that the new modifications are reflected in the \fIgit diff\fR output:
 .sp
@@ -402,7 +387,6 @@ index 513feba\&.\&.ba3da7b 100644
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 With the right arguments, \fIgit diff\fR can also show us the difference between the working directory and the last commit, or between the index and the last commit:
 .sp
@@ -432,7 +416,6 @@ index a042389\&.\&.513feba 100644
 .RE
 .\}
 .sp
-.sp
 At any time, we can create a new commit using \fIgit commit\fR (without the "\-a" option), and verify that the state committed only includes the changes stored in the index file, not the additional change that is still only in our working tree:
 .sp
 .if n \{\
@@ -454,7 +437,6 @@ index 513feba\&.\&.ba3da7b 100644
 .RE
 .\}
 .sp
-.sp
 So by default \fIgit commit\fR uses the index to create the commit, not the working tree; the "\-a" option to commit tells it to first update the index with all changes in the working tree\&.
 .sp
 Finally, it\(cqs worth looking at the effect of \fIgit add\fR on the index file:
@@ -470,7 +452,6 @@ $ git add closing\&.txt
 .RE
 .\}
 .sp
-.sp
 The effect of the \fIgit add\fR was to add one entry to the index file:
 .sp
 .if n \{\
@@ -485,7 +466,6 @@ $ git ls\-files \-\-stage
 .RE
 .\}
 .sp
-.sp
 And, as you can see with cat\-file, this new entry refers to the current contents of the file:
 .sp
 .if n \{\
@@ -498,7 +478,6 @@ goodbye, world
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The "status" command is a useful way to get a quick summary of the situation:
 .sp
@@ -522,7 +501,6 @@ Changes not staged for commit:
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Since the current state of closing\&.txt is cached in the index file, it is listed as "Changes to be committed"\&. Since file\&.txt has changes in the working directory that aren\(cqt reflected in the index, it is marked "changed but not updated"\&. At this point, running "git commit" would create a commit that added closing\&.txt (with its new contents), but that didn\(cqt modify file\&.txt\&.
 .sp

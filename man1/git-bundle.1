@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-bundle
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-BUNDLE" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,10 +35,9 @@ git-bundle \- Move objects and refs by archive
 \fIgit bundle\fR create [\-q | \-\-quiet | \-\-progress]
                     [\-\-version=<version>] <file> <git\-rev\-list\-args>
 \fIgit bundle\fR verify [\-q | \-\-quiet] <file>
-\fIgit bundle\fR list\-heads <file> [<refname>\&...]
-\fIgit bundle\fR unbundle [\-\-progress] <file> [<refname>\&...]
+\fIgit bundle\fR list\-heads <file> [<refname>\&...\:]
+\fIgit bundle\fR unbundle [\-\-progress] <file> [<refname>\&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Create, unpack, and manipulate "bundle" files\&. Bundles are used for the "offline" transfer of Git objects without an active "server" sitting on the other side of the network connection\&.
@@ -118,7 +117,7 @@ and
 causes the current master reference to be packaged along with all objects added since its 10th ancestor commit\&. There is no explicit limit to the number of references and objects that may be packaged\&.
 .RE
 .PP
-[<refname>\&...]
+[<refname>\&...\:]
 .RS 4
 A list of references used to limit the references reported as available\&. This is principally of use to
 \fIgit fetch\fR, which expects to receive only those references asked for and not necessarily everything in the pack (in this case,
@@ -164,7 +163,6 @@ $ (echo master; echo next) | git bundle create master\-and\-next\&.bundle \-\-st
 .RE
 .\}
 .sp
-.sp
 And so are these (and the same but omitted \fB\-\-stdin\fR examples):
 .sp
 .if n \{\
@@ -177,7 +175,6 @@ $ git bundle create recent\-updates\&.bundle master~10\&.\&.master next~5\&.\&.n
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 A revision name or a range whose right\-hand\-side cannot be resolved to a reference is not accepted:
 .sp
@@ -193,7 +190,6 @@ fatal: Refusing to create empty bundle\&.
 .if n \{\
 .RE
 .\}
-.sp
 .SH "OBJECT PREREQUISITES"
 .sp
 When creating bundles it is possible to create a self\-contained bundle that can be unbundled in a repository with no common history, as well as providing negative revisions to exclude objects needed in the earlier parts of the history\&.
@@ -210,7 +206,6 @@ $ git bundle create full\&.bundle new
 .RE
 .\}
 .sp
-.sp
 A revision range such as \fBold\&.\&.new\fR will produce a bundle file that will require the revision \fBold\fR (and any objects reachable from it) to exist for the bundle to be "unbundle"\-able:
 .sp
 .if n \{\
@@ -222,7 +217,6 @@ $ git bundle create full\&.bundle old\&.\&.new
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 A self\-contained bundle without any prerequisites can be extracted into anywhere, even into an empty repository, or be cloned from (i\&.e\&., \fBnew\fR, but not \fBold\&.\&.new\fR)\&.
 .sp
@@ -249,7 +243,6 @@ machineA$ git tag \-f lastR2bundle master
 .RE
 .\}
 .sp
-.sp
 Then you transfer file\&.bundle to the target machine B\&. Because this bundle does not require any existing object to be extracted, you can create a new repository on machine B by cloning from it:
 .sp
 .if n \{\
@@ -261,7 +254,6 @@ machineB$ git clone \-b master /home/me/tmp/file\&.bundle R2
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 This will define a remote called "origin" in the resulting repository that lets you fetch and pull from the bundle\&. The $GIT_DIR/config file in R2 will have an entry like this:
 .sp
@@ -276,7 +268,6 @@ This will define a remote called "origin" in the resulting repository that lets 
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 To update the resulting mine\&.git repository, you can fetch or pull after replacing the bundle stored at /home/me/tmp/file\&.bundle with incremental updates\&.
 .sp
@@ -294,7 +285,6 @@ machineA$ git tag \-f lastR2bundle master
 .RE
 .\}
 .sp
-.sp
 You then transfer the bundle to the other machine to replace /home/me/tmp/file\&.bundle, and pull from it\&.
 .sp
 .if n \{\
@@ -307,7 +297,6 @@ machineB$ git pull
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 If you know up to what commit the intended recipient repository should have the necessary objects, you can use that knowledge to specify the prerequisites, giving a cut\-off point to limit the revisions and objects that go in the resulting bundle\&. The previous example used the lastR2bundle tag for this purpose, but you can use any other options that you would give to the \fBgit-log\fR(1) command\&. Here are more examples:
 .sp
@@ -323,7 +312,6 @@ $ git bundle create mybundle v1\&.0\&.0\&.\&.master
 .RE
 .\}
 .sp
-.sp
 You can use a prerequisite based on time:
 .sp
 .if n \{\
@@ -335,7 +323,6 @@ $ git bundle create mybundle \-\-since=10\&.days master
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 You can use the number of commits:
 .sp
@@ -349,7 +336,6 @@ $ git bundle create mybundle \-10 master
 .RE
 .\}
 .sp
-.sp
 You can run \fBgit\-bundle verify\fR to see if you can extract from a bundle that was created with a prerequisite:
 .sp
 .if n \{\
@@ -361,7 +347,6 @@ $ git bundle verify mybundle
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 This will list what commits you must have in order to extract from the bundle and will error out if you do not have them\&.
 .sp
@@ -377,7 +362,6 @@ $ git fetch mybundle master:localRef
 .RE
 .\}
 .sp
-.sp
 You can also see what references it offers:
 .sp
 .if n \{\
@@ -389,7 +373,6 @@ $ git ls\-remote mybundle
 .if n \{\
 .RE
 .\}
-.sp
 .SH "FILE FORMAT"
 .sp
 See \fBgitformat-bundle\fR(5)\&.

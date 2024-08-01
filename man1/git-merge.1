@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-merge
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-MERGE" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,10 +36,9 @@ git-merge \- Join two or more development histories together
         [\-\-no\-verify] [\-s <strategy>] [\-X <strategy\-option>] [\-S[<keyid>]]
         [\-\-[no\-]allow\-unrelated\-histories]
         [\-\-[no\-]rerere\-autoupdate] [\-m <msg>] [\-F <file>]
-        [\-\-into\-name <branch>] [<commit>\&...]
+        [\-\-into\-name <branch>] [<commit>\&...\:]
 \fIgit merge\fR (\-\-continue | \-\-abort | \-\-quit)
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Incorporates changes from the named commits (since the time their histories diverged from the current branch) into the current branch\&. This command is used by \fBgit pull\fR to incorporate changes from another repository and can be used by hand to merge changes from one branch into another\&.
@@ -58,7 +57,6 @@ Assume the following history exists and the current branch is \fBmaster\fR:
 .RE
 .\}
 .sp
-.sp
 Then \fBgit merge topic\fR will replay the changes made on the \fBtopic\fR branch since it diverged from \fBmaster\fR (i\&.e\&., \fBE\fR) until its current commit (\fBC\fR) on top of \fBmaster\fR, and record the result in a new commit along with the names of the two parent commits and a log message from the user describing the changes\&. Before the operation, \fBORIG_HEAD\fR is set to the tip of the current branch (\fBC\fR)\&.
 .sp
 .if n \{\
@@ -72,7 +70,6 @@ Then \fBgit merge topic\fR will replay the changes made on the \fBtopic\fR branc
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 A merge stops if there\(cqs a conflict that cannot be resolved automatically or if \fB\-\-no\-commit\fR was provided when initiating the merge\&. At that point you can run \fBgit merge \-\-abort\fR or \fBgit merge \-\-continue\fR\&.
 .sp
@@ -341,7 +338,7 @@ stops due to conflicts you can conclude the merge by running
 (see "HOW TO RESOLVE CONFLICTS" section below)\&.
 .RE
 .PP
-<commit>\&...
+<commit>\&...\:
 .RS 4
 Commits, usually other branch heads, to merge into our branch\&. Specifying more than one commit will create a merge with more than two parents (affectionately called an Octopus merge)\&.
 .sp
@@ -477,7 +474,6 @@ git merge \-\-ff\-only v1\&.2\&.3
 .if n \{\
 .RE
 .\}
-.sp
 .SH "HOW CONFLICTS ARE PRESENTED"
 .sp
 During a merge, the working tree files are updated to reflect the result of the merge\&. Among the changes made to the common ancestor\(cqs version, non\-overlapping ones (that is, you changed an area of the file while the other side left that area intact, or vice versa) are incorporated in the final result verbatim\&. When both sides made changes to the same area, however, Git cannot randomly pick one side over the other, and asks you to resolve it by leaving what both sides did to that area\&.
@@ -502,7 +498,6 @@ And here is another line that is cleanly resolved or unmodified\&.
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The area where a pair of conflicting changes happened is marked with markers \fB<<<<<<<\fR, \fB=======\fR, and \fB>>>>>>>\fR\&. The part before the \fB=======\fR is typically your side, and the part afterwards is typically their side\&.
 .sp
@@ -533,7 +528,6 @@ And here is another line that is cleanly resolved or unmodified\&.
 .RE
 .\}
 .sp
-.sp
 while in "zdiff3" style, it may look like this:
 .sp
 .if n \{\
@@ -557,7 +551,6 @@ And here is another line that is cleanly resolved or unmodified\&.
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 In addition to the \fB<<<<<<<\fR, \fB=======\fR, and \fB>>>>>>>\fR markers, it uses another \fB|||||||\fR marker that is followed by the original text\&. You can tell that the original just stated a fact, and your side simply gave in to that statement and gave up, while the other side tried to have a more positive attitude\&. You can sometimes come up with a better resolution by viewing the original\&.
 .SH "HOW TO RESOLVE CONFLICTS"
@@ -693,7 +686,6 @@ $ git merge fixes enhancements
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -719,7 +711,6 @@ $ git merge \-s ours obsolete
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4

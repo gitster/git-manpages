@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-stash
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-STASH" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-STASH" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -41,24 +41,23 @@ git-stash \- Stash the changes in a dirty working directory away
 \fIgit stash\fR [push [\-p | \-\-patch] [\-S | \-\-staged] [\-k | \-\-[no\-]keep\-index] [\-q | \-\-quiet]
              [\-u | \-\-include\-untracked] [\-a | \-\-all] [(\-m | \-\-message) <message>]
              [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]]
-             [\-\-] [<pathspec>\&...]]
+             [\-\-] [<pathspec>\&...\:]]
 \fIgit stash\fR save [\-p | \-\-patch] [\-S | \-\-staged] [\-k | \-\-[no\-]keep\-index] [\-q | \-\-quiet]
              [\-u | \-\-include\-untracked] [\-a | \-\-all] [<message>]
 \fIgit stash\fR clear
 \fIgit stash\fR create [<message>]
 \fIgit stash\fR store [(\-m | \-\-message) <message>] [\-q | \-\-quiet] <commit>
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Use \fBgit stash\fR when you want to record the current state of the working directory and the index, but want to go back to a clean working directory\&. The command saves your local modifications away and reverts the working directory to match the \fBHEAD\fR commit\&.
 .sp
-The modifications stashed away by this command can be listed with \fBgit stash list\fR, inspected with \fBgit stash show\fR, and restored (potentially on top of a different commit) with \fBgit stash apply\fR\&. Calling \fBgit stash\fR without any arguments is equivalent to \fBgit stash push\fR\&. A stash is by default listed as "WIP on \fIbranchname\fR \&...", but you can give a more descriptive message on the command line when you create one\&.
+The modifications stashed away by this command can be listed with \fBgit stash list\fR, inspected with \fBgit stash show\fR, and restored (potentially on top of a different commit) with \fBgit stash apply\fR\&. Calling \fBgit stash\fR without any arguments is equivalent to \fBgit stash push\fR\&. A stash is by default listed as "WIP on \fIbranchname\fR \&...\:", but you can give a more descriptive message on the command line when you create one\&.
 .sp
 The latest stash you created is stored in \fBrefs/stash\fR; older stashes are found in the reflog of this reference and can be named using the usual reflog syntax (e\&.g\&. \fBstash@{0}\fR is the most recently created stash, \fBstash@{1}\fR is the one before it, \fBstash@{2\&.hours\&.ago}\fR is also possible)\&. Stashes may also be referenced by specifying just the stash index (e\&.g\&. the integer \fBn\fR is equivalent to \fBstash@{n}\fR)\&.
 .SH "COMMANDS"
 .PP
-push [\-p|\-\-patch] [\-S|\-\-staged] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [(\-m|\-\-message) <message>] [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]] [\-\-] [<pathspec>\&...]
+push [\-p|\-\-patch] [\-S|\-\-staged] [\-k|\-\-[no\-]keep\-index] [\-u|\-\-include\-untracked] [\-a|\-\-all] [\-q|\-\-quiet] [(\-m|\-\-message) <message>] [\-\-pathspec\-from\-file=<file> [\-\-pathspec\-file\-nul]] [\-\-] [<pathspec>\&...\:]
 .RS 4
 Save your local modifications to a new
 \fIstash entry\fR
@@ -259,7 +258,9 @@ and
 \fBsave\fR
 commands\&.
 .sp
-Interactively select hunks from the diff between HEAD and the working tree to be stashed\&. The stash entry is constructed such that its index state is the same as the index state of your repository, and its worktree contains only the changes you selected interactively\&. The selected changes are then rolled back from your worktree\&. See the \(lqInteractive Mode\(rq section of
+Interactively select hunks from the diff between HEAD and the working tree to be stashed\&. The stash entry is constructed such that its index state is the same as the index state of your repository, and its worktree contains only the changes you selected interactively\&. The selected changes are then rolled back from your worktree\&. See the
+\(lqInteractive Mode\(rq
+section of
 \fBgit-add\fR(1)
 to learn how to operate the
 \fB\-\-patch\fR
@@ -344,7 +345,7 @@ command\&.
 Separates pathspec from options for disambiguation purposes\&.
 .RE
 .PP
-<pathspec>\&...
+<pathspec>\&...\:
 .RS 4
 This option is only valid for
 \fBpush\fR
@@ -417,7 +418,6 @@ $ git stash pop
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .PP
 Interrupted workflow
@@ -460,7 +460,6 @@ $ git stash pop
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .PP
 Testing partial commits
@@ -486,7 +485,6 @@ $ git commit foo \-m \*(AqRemaining parts\*(Aq
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .PP
 Saving unrelated changes for future use
@@ -510,7 +508,6 @@ $ git stash pop                 # to finish work on the saved changes
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .PP
 Recovering stash entries that were cleared/dropped erroneously
@@ -528,7 +525,6 @@ xargs git log \-\-merges \-\-no\-walk \-\-grep=WIP
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .SH "CONFIGURATION"
 .sp

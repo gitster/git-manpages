@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-update-index
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,7 +35,7 @@ git-update-index \- Register file contents in the working tree to the index
 \fIgit update\-index\fR
              [\-\-add] [\-\-remove | \-\-force\-remove] [\-\-replace]
              [\-\-refresh] [\-q] [\-\-unmerged] [\-\-ignore\-missing]
-             [(\-\-cacheinfo <mode>,<object>,<file>)\&...]
+             [(\-\-cacheinfo <mode>,<object>,<file>)\&...\:]
              [\-\-chmod=(+|\-)x]
              [\-\-[no\-]assume\-unchanged]
              [\-\-[no\-]skip\-worktree]
@@ -50,9 +50,8 @@ git-update-index \- Register file contents in the working tree to the index
              [\-z] [\-\-stdin] [\-\-index\-version <n>]
              [\-\-show\-index\-version]
              [\-\-verbose]
-             [\-\-] [<file>\&...]
+             [\-\-] [<file>\&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Modifies the index\&. Each file mentioned is updated into the index and any \fIunmerged\fR or \fIneeds updating\fR state is cleared\&.
@@ -313,7 +312,6 @@ $ git update\-index \-\-add \-\-cacheinfo <mode>,<sha1>,<path>
 .RE
 .\}
 .sp
-.sp
 \fB\-\-info\-only\fR is used to register files without placing them in the object database\&. This is useful for status\-only repositories\&.
 .sp
 Both \fB\-\-cacheinfo\fR and \fB\-\-info\-only\fR behave similarly: the index is updated but the object database isn\(cqt\&. \fB\-\-cacheinfo\fR is useful when the object is in the database but the file isn\(cqt available locally\&. \fB\-\-info\-only\fR is useful when the file is available, but you do not wish to update the object database\&.
@@ -380,7 +378,6 @@ $ git ls\-files \-s
 .RE
 .\}
 .sp
-.sp
 you can feed the following input to \fB\-\-index\-info\fR:
 .sp
 .if n \{\
@@ -396,7 +393,6 @@ $ git update\-index \-\-index\-info
 .RE
 .\}
 .sp
-.sp
 The first line of the input feeds 0 as the mode to remove the path; the SHA\-1 does not matter as long as it is well formatted\&. Then the second and third line feeds stage 1 and stage 2 entries for that path\&. After the above, we would end up with this:
 .sp
 .if n \{\
@@ -410,7 +406,6 @@ $ git ls\-files \-s
 .if n \{\
 .RE
 .\}
-.sp
 .SH "USING \(lqASSUME UNCHANGED\(rq BIT"
 .sp
 Many operations in Git depend on your filesystem to have an efficient \fBlstat(2)\fR implementation, so that \fBst_mtime\fR information for working tree files can be cheaply checked to see if the file contents have changed from the version recorded in the index file\&. Unfortunately, some filesystems have inefficient \fBlstat(2)\fR\&. If your filesystem is one of them, you can set "assume unchanged" bit to paths you have not changed to cause Git not to do this check\&. Note that setting this bit on a path does not mean Git will check the contents of the file to see if it has changed \(em it makes Git to omit any checking and assume it has \fBnot\fR changed\&. When you make changes to working tree files, you have to explicitly tell Git about it by dropping "assume unchanged" bit, either before or after you modify them\&.
@@ -433,8 +428,6 @@ $ git checkout\-index \-n \-f \-a && git update\-index \-\-ignore\-missing \-\-r
 .if n \{\
 .RE
 .\}
-.sp
-
 .PP
 On an inefficient filesystem with \fBcore\&.ignorestat\fR set
 .RS 4
@@ -460,7 +453,6 @@ M foo\&.c
 .if n \{\
 .RE
 .\}
-.sp
 .TS
 tab(:);
 r lw(\n(.lu*75u/100u).
@@ -540,7 +532,6 @@ $ git \-c core\&.untrackedCache=false status
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 This bug has also been shown to affect non\-symlink cases of replacing a directory with a file when it comes to the internal structures of the untracked cache, but no case has been reported where this resulted in wrong "git status" output\&.
 .sp

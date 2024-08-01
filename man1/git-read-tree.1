@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-read-tree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,7 +36,6 @@ git-read-tree \- Reads tree information into the index
                 [\-u | \-i]] [\-\-index\-output=<file>] [\-\-no\-sparse\-checkout]
                 (\-\-empty | <tree\-ish1> [<tree\-ish2> [<tree\-ish3>]])
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Reads the tree information given by <tree\-ish> into the index, but does not actually \fBupdate\fR any of the files it "caches"\&. (see: \fBgit-checkout-index\fR(1))
@@ -272,7 +271,6 @@ $ git read\-tree \-m <tree1> <tree2> <tree3>
 .RE
 .\}
 .sp
-.sp
 and you will end up with an index with all of the <tree1> entries in "stage1", all of the <tree2> entries in "stage2" and all of the <tree3> entries in "stage3"\&. When performing a merge of another branch into the current branch, we use the common ancestor tree as <tree1>, the current branch head as <tree2>, and the other branch head as <tree3>\&.
 .sp
 Furthermore, \fIgit read\-tree\fR has special\-case logic that says: if you see a file that matches in all respects in the following states, it "collapses" back to "stage0":
@@ -402,7 +400,6 @@ $ git checkout\-index \-f \-u \-a $JC
 .RE
 .\}
 .sp
-.sp
 You do random edits, without running \fIgit update\-index\fR\&. And then you notice that the tip of your "upstream" tree has advanced since you pulled from him:
 .sp
 .if n \{\
@@ -415,7 +412,6 @@ $ LT=`git rev\-parse FETCH_HEAD`
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Your work tree is still based on your HEAD ($JC), but you have some edits since\&. Three\-way merge makes sure that you have not added or modified index entries since $JC, and if you haven\(cqt, then does the right thing\&. So with the following sequence:
 .sp
@@ -432,7 +428,6 @@ $ echo "Merge with Linus" | \e
 .RE
 .\}
 .sp
-.sp
 what you would commit is a pure merge between $JC and $LT without your work\-in\-progress changes, and your work tree would be updated to the result of the merge\&.
 .sp
 However, if you have local changes in the working tree that would be overwritten by this merge, \fIgit read\-tree\fR will refuse to run to prevent your changes from being lost\&.
@@ -444,7 +439,7 @@ Note: The skip\-worktree capabilities in \fBgit-update-index\fR(1) and \fBread\-
 .sp
 "Sparse checkout" allows populating the working directory sparsely\&. It uses the skip\-worktree bit (see \fBgit-update-index\fR(1)) to tell Git whether a file in the working directory is worth looking at\&.
 .sp
-\fIgit read\-tree\fR and other merge\-based commands (\fIgit merge\fR, \fIgit checkout\fR\&...) can help maintaining the skip\-worktree bitmap and working directory update\&. \fB$GIT_DIR/info/sparse\-checkout\fR is used to define the skip\-worktree reference bitmap\&. When \fIgit read\-tree\fR needs to update the working directory, it resets the skip\-worktree bit in the index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, or the entry corresponds to a file present in the working tree, then skip\-worktree will not be set on that entry\&. Otherwise, skip\-worktree will be set\&.
+\fIgit read\-tree\fR and other merge\-based commands (\fIgit merge\fR, \fIgit checkout\fR\&...\:) can help maintaining the skip\-worktree bitmap and working directory update\&. \fB$GIT_DIR/info/sparse\-checkout\fR is used to define the skip\-worktree reference bitmap\&. When \fIgit read\-tree\fR needs to update the working directory, it resets the skip\-worktree bit in the index based on this file, which uses the same syntax as \&.gitignore files\&. If an entry matches a pattern in this file, or the entry corresponds to a file present in the working tree, then skip\-worktree will not be set on that entry\&. Otherwise, skip\-worktree will be set\&.
 .sp
 Then it compares the new skip\-worktree value with the previous one\&. If skip\-worktree turns from set to unset, it will add the corresponding file back\&. If it turns from unset to set, that file will be removed\&.
 .sp
@@ -461,7 +456,6 @@ While \fB$GIT_DIR/info/sparse\-checkout\fR is usually used to specify what files
 .RE
 .\}
 .sp
-.sp
 Another tricky thing is fully repopulating the working directory when you no longer want sparse checkout\&. You cannot just disable "sparse checkout" because skip\-worktree bits are still in the index and your working directory is still sparsely populated\&. You should re\-populate the working directory with the \fB$GIT_DIR/info/sparse\-checkout\fR file content as follows:
 .sp
 .if n \{\
@@ -473,7 +467,6 @@ Another tricky thing is fully repopulating the working directory when you no lon
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Then you can disable sparse checkout\&. Sparse checkout support in \fIgit read\-tree\fR and similar commands is disabled by default\&. You need to turn \fBcore\&.sparseCheckout\fR on in order to have sparse checkout support\&.
 .SH "SEE ALSO"

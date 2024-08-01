@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-LOG" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,9 +32,8 @@ git-log \- Show commit logs
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit log\fR [<options>] [<revision\-range>] [[\-\-] <path>\&...]
+\fIgit log\fR [<options>] [<revision\-range>] [[\-\-] <path>\&...\:]
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Shows the commit logs\&.
@@ -55,7 +54,6 @@ $ git log foo bar ^baz
 .RE
 .\}
 .sp
-.sp
 means "list all the commits which are reachable from \fIfoo\fR or \fIbar\fR, but not from \fIbaz\fR"\&.
 .sp
 A special notation "\fI<commit1>\fR\&.\&.\fI<commit2>\fR" can be used as a short\-hand for "^\fI<commit1>\fR \fI<commit2>\fR"\&. For example, either of the following may be used interchangeably:
@@ -71,8 +69,7 @@ $ git log HEAD ^origin
 .RE
 .\}
 .sp
-.sp
-Another special notation is "\fI<commit1>\fR\&...\fI<commit2>\fR" which is useful for merges\&. The resulting set of commits is the symmetric difference between the two operands\&. The following two commands are equivalent:
+Another special notation is "\fI<commit1>\fR\&...\:\fI<commit2>\fR" which is useful for merges\&. The resulting set of commits is the symmetric difference between the two operands\&. The following two commands are equivalent:
 .sp
 .if n \{\
 .RS 4
@@ -84,7 +81,6 @@ $ git log A\&.\&.\&.B
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 The command takes options applicable to the \fBgit-rev-list\fR(1) command to control what is shown and how, and options applicable to the \fBgit-diff\fR(1) command to control how the changes each commit introduces are shown\&.
 .SH "OPTIONS"
@@ -165,7 +161,7 @@ Use mailmap file to map author and committer names and email addresses to canoni
 .RS 4
 Without this flag,
 \fBgit log \-p <path>\&.\&.\&.\fR
-shows commits that touch the specified paths, and diffs about the same specified paths\&. With this, the full diff is shown for commits that touch the specified paths; this means that "<path>\&..." limits only commits, and doesn\(cqt limit diff for those commits\&.
+shows commits that touch the specified paths, and diffs about the same specified paths\&. With this, the full diff is shown for commits that touch the specified paths; this means that "<path>\&...\:" limits only commits, and doesn\(cqt limit diff for those commits\&.
 .sp
 Note that this affects all diff\-based output types, e\&.g\&. those produced by
 \fB\-\-stat\fR, etc\&.
@@ -173,7 +169,9 @@ Note that this affects all diff\-based output types, e\&.g\&. those produced by
 .PP
 \-\-log\-size
 .RS 4
-Include a line \(lqlog size <number>\(rq in the output for each commit, where <number> is the length of that commit\(cqs message in bytes\&. Intended to speed up tools that read log messages from
+Include a line
+\(lqlog size <number>\(rq
+in the output for each commit, where <number> is the length of that commit\(cqs message in bytes\&. Intended to speed up tools that read log messages from
 \fBgit log\fR
 output by allowing them to allocate space in advance\&.
 .RE
@@ -295,7 +293,7 @@ section of
 \fBgitrevisions\fR(7)\&.
 .RE
 .PP
-[\-\-] <path>\&...
+[\-\-] <path>\&...\:
 .RS 4
 Show only commits that are enough to explain how the files that match the specified paths came to be\&. See
 \fIHistory Simplification\fR
@@ -658,7 +656,9 @@ rather than omitting them, and inequivalent ones with
 .PP
 \-\-cherry\-pick
 .RS 4
-Omit any commit that introduces the same change as another commit on the \(lqother side\(rq when the set of commits are limited with symmetric difference\&.
+Omit any commit that introduces the same change as another commit on the
+\(lqother side\(rq
+when the set of commits are limited with symmetric difference\&.
 .sp
 For example, if you have two branches,
 \fBA\fR
@@ -667,7 +667,9 @@ and
 \fB\-\-left\-right\fR
 (see the example below in the description of the
 \fB\-\-left\-right\fR
-option)\&. However, it shows the commits that were cherry\-picked from the other branch (for example, \(lq3rd on b\(rq may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
+option)\&. However, it shows the commits that were cherry\-picked from the other branch (for example,
+\(lq3rd on b\(rq
+may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
 .RE
 .PP
 \-\-left\-only, \-\-right\-only
@@ -884,7 +886,6 @@ In the following, we will always refer to the same example history to illustrate
 .RE
 .\}
 .sp
-.sp
 The horizontal line of history A\-\-\-Q is taken to be the first parent of each merge\&. The commits are:
 .sp
 .RS 4
@@ -898,9 +899,11 @@ The horizontal line of history A\-\-\-Q is taken to be the first parent of each 
 \fBI\fR
 is the initial commit, in which
 \fBfoo\fR
-exists with contents \(lqasdf\(rq, and a file
+exists with contents
+\(lqasdf\(rq, and a file
 \fBquux\fR
-exists with contents \(lqquux\(rq\&. Initial commits are compared to an empty tree, so
+exists with contents
+\(lqquux\(rq\&. Initial commits are compared to an empty tree, so
 \fBI\fR
 is !TREESAME\&.
 .RE
@@ -916,7 +919,8 @@ is !TREESAME\&.
 In
 \fBA\fR,
 \fBfoo\fR
-contains just \(lqfoo\(rq\&.
+contains just
+\(lqfoo\(rq\&.
 .RE
 .sp
 .RS 4
@@ -946,7 +950,8 @@ is trivial and hence TREESAME to all parents\&.
 does not change
 \fBfoo\fR, but its merge
 \fBN\fR
-changes it to \(lqfoobar\(rq, so it is not TREESAME to any parent\&.
+changes it to
+\(lqfoobar\(rq, so it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -960,13 +965,15 @@ changes it to \(lqfoobar\(rq, so it is not TREESAME to any parent\&.
 \fBD\fR
 sets
 \fBfoo\fR
-to \(lqbaz\(rq\&. Its merge
+to
+\(lqbaz\(rq\&. Its merge
 \fBO\fR
 combines the strings from
 \fBN\fR
 and
 \fBD\fR
-to \(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
+to
+\(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -980,9 +987,11 @@ to \(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
 \fBE\fR
 changes
 \fBquux\fR
-to \(lqxyzzy\(rq, and its merge
+to
+\(lqxyzzy\(rq, and its merge
 \fBP\fR
-combines the strings to \(lqquux xyzzy\(rq\&.
+combines the strings to
+\(lqquux xyzzy\(rq\&.
 \fBP\fR
 is TREESAME to
 \fBO\fR, but not to
@@ -1290,10 +1299,8 @@ computes the set of commits that are ancestors of
 \fBD\fR\&. This is useful to see what happened to the history leading to
 \fBM\fR
 since
-\fBD\fR, in the sense that \(lqwhat does
-\fBM\fR
-have that did not exist in
-\fBD\fR\(rq\&. The result in this example would be all the commits, except
+\fBD\fR, in the sense that
+\(lqwhat does \fBM\fR have that did not exist in \fBD\fR\(rq\&. The result in this example would be all the commits, except
 \fBA\fR
 and
 \fBB\fR
@@ -1372,7 +1379,6 @@ would result in
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 Before discussing another option, \fB\-\-show\-pulls\fR, we need to create a new example history\&.
@@ -1394,7 +1400,6 @@ A common problem users face when looking at simplified history is that a commit 
 .RE
 .\}
 .sp
-.sp
 For this example, suppose \fBI\fR created \fBfile\&.txt\fR which was modified by \fBA\fR, \fBB\fR, and \fBX\fR in different ways\&. The single\-parent commits \fBC\fR, \fBZ\fR, and \fBY\fR do not change \fBfile\&.txt\fR\&. The merge commit \fBM\fR was created by resolving the merge conflict to include both changes from \fBA\fR and \fBB\fR and hence is not TREESAME to either\&. The merge commit \fBR\fR, however, was created by ignoring the contents of \fBfile\&.txt\fR at \fBM\fR and taking only the contents of \fBfile\&.txt\fR at \fBX\fR\&. Hence, \fBR\fR is TREESAME to \fBX\fR but not \fBM\fR\&. Finally, the natural merge resolution to create \fBN\fR is to take the contents of \fBfile\&.txt\fR at \fBR\fR, so \fBN\fR is TREESAME to \fBR\fR but not \fBC\fR\&. The merge commits \fBO\fR and \fBP\fR are TREESAME to their first parents, but not to their second parents, \fBZ\fR and \fBY\fR respectively\&.
 .sp
 When using the default mode, \fBN\fR and \fBR\fR both have a TREESAME parent, so those edges are walked and the others are ignored\&. The resulting history graph is:
@@ -1408,7 +1413,6 @@ When using the default mode, \fBN\fR and \fBR\fR both have a TREESAME parent, so
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover the commits \fBA\fR and \fBB\fR and the merge \fBM\fR, but also will reveal the merge commits \fBO\fR and \fBP\fR\&. With parent rewriting, the resulting graph is:
 .sp
@@ -1426,7 +1430,6 @@ When using \fB\-\-full\-history\fR, Git walks every edge\&. This will discover t
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Here, the merge commits \fBO\fR and \fBP\fR contribute extra noise, as they did not actually contribute a change to \fBfile\&.txt\fR\&. They only merged a topic that was based on an older version of \fBfile\&.txt\fR\&. This is a common issue in repositories using a workflow where many contributors work in parallel and merge their topic branches along a single trunk: many unrelated merges appear in the \fB\-\-full\-history\fR results\&.
 .sp
@@ -1446,7 +1449,6 @@ When using the \fB\-\-simplify\-merges\fR option, the commits \fBO\fR and \fBP\f
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 In this view, we see all of the important single\-parent changes from \fBA\fR, \fBB\fR, and \fBX\fR\&. We also see the carefully\-resolved merge \fBM\fR and the not\-so\-carefully\-resolved merge \fBR\fR\&. This is usually enough information to determine why the commits \fBA\fR and \fBB\fR "disappeared" from history in the default view\&. However, there are a few issues with this approach\&.
 .sp
@@ -1745,7 +1747,8 @@ is appended to the format (e\&.g\&.,
 \fBiso\-local\fR), the user\(cqs local time zone is used instead\&.
 .sp
 \fB\-\-date=relative\fR
-shows dates relative to the current time, e\&.g\&. \(lq2 hours ago\(rq\&. The
+shows dates relative to the current time, e\&.g\&.
+\(lq2 hours ago\(rq\&. The
 \fB\-local\fR
 option has no effect for
 \fB\-\-date=relative\fR\&.
@@ -1844,14 +1847,14 @@ is the default format, and is based on ctime(3) output\&. It shows a single line
 .PP
 \-\-parents
 .RS 4
-Print also the parents of the commit (in the form "commit parent\&...")\&. Also enables parent rewriting, see
+Print also the parents of the commit (in the form "commit parent\&...\:")\&. Also enables parent rewriting, see
 \fIHistory Simplification\fR
 above\&.
 .RE
 .PP
 \-\-children
 .RS 4
-Print also the children of the commit (in the form "commit child\&...")\&. Also enables parent rewriting, see
+Print also the children of the commit (in the form "commit child\&...\:")\&. Also enables parent rewriting, see
 \fIHistory Simplification\fR
 above\&.
 .RE
@@ -1899,7 +1902,6 @@ you would get an output like this:
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .PP
 \-\-graph
@@ -2308,7 +2310,7 @@ switch color to blue
 reset color
 .RE
 .PP
-\fI%C(\&...)\fR
+\fI%C(\&...\:)\fR
 .RS 4
 color specification, as described under Values in the "CONFIGURATION FILE" section of
 \fBgit-config\fR(1)\&. By default, colors are shown only when enabled for log output (by
@@ -2660,11 +2662,13 @@ string may be followed by a colon and zero or more comma\-separated options\&. O
 .\}
 \fItag=<value>\fR: Shown before tag names\&. Defaults to "\fBtag:\fR\ \&"\&.
 .RE
+.RE
+.RE
 .sp
 For example, to produce decorations with no wrapping or tag annotations, and spaces as separators:
 .sp
++
 \fB%(decorate:prefix=,suffix=,tag=,separator= )\fR
-.RE
 .PP
 \fI%(describe[:<options>])\fR
 .RS 4
@@ -2950,7 +2954,6 @@ above\&.
 .RE
 .RE
 .RE
-.RE
 .if n \{\
 .sp
 .\}
@@ -3025,7 +3028,6 @@ $ git log \-2 \-\-pretty=%h 4da45bef
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .SH "DIFF FORMATTING"
 .sp
@@ -3091,9 +3093,7 @@ Synonym for
 .PP
 \-\-diff\-merges=<format>
 .RS 4
-Specify diff format to be used for merge commits\&. Default is
-\fBoff\fR
-unless
+Specify diff format to be used for merge commits\&. Default is `off` unless
 \fB\-\-first\-parent\fR
 is in use, in which case
 \fBfirst\-parent\fR
@@ -3140,7 +3140,7 @@ by omitting uninteresting hunks whose contents in the parents have only two vari
 .PP
 remerge, r
 .RS 4
-Remerge two\-parent merge commits to create a temporary tree object\(empotentially containing files with conflict markers and such\&. A diff is then shown between that temporary tree and the actual merge commit\&.
+Remerge two\-parent merge commits to create a temporary tree object\(em\:potentially containing files with conflict markers and such\&. A diff is then shown between that temporary tree and the actual merge commit\&.
 .sp
 The output emitted when this option is used is subject to change, and so is its interaction with other options (unless explicitly documented)\&.
 .RE
@@ -3309,7 +3309,7 @@ Output only the last line of the
 format containing total number of modified files, as well as number of added and deleted lines\&.
 .RE
 .PP
-\-X[<param1,param2,\&...>], \-\-dirstat[=<param1,param2,\&...>]
+\-X[<param1,param2,\&...\:>], \-\-dirstat[=<param1,param2,\&...\:>]
 .RS 4
 Output the distribution of relative amount of changes for each sub\-directory\&. The behavior of
 \fB\-\-dirstat\fR
@@ -3363,9 +3363,9 @@ Example: The following will count changed files, while ignoring directories with
 Synonym for \-\-dirstat=cumulative
 .RE
 .PP
-\-\-dirstat\-by\-file[=<param1,param2>\&...]
+\-\-dirstat\-by\-file[=<param1,param2>\&...\:]
 .RS 4
-Synonym for \-\-dirstat=files,<param1>,<param2>\&...
+Synonym for \-\-dirstat=files,<param1>,<param2>\&...\:
 .RE
 .PP
 \-\-summary
@@ -3760,9 +3760,9 @@ and
 options involve some preliminary steps that can detect subsets of renames/copies cheaply, followed by an exhaustive fallback portion that compares all remaining unpaired destinations to all relevant sources\&. (For renames, only remaining unpaired sources are relevant; for copies, all original sources are relevant\&.) For N sources and destinations, this exhaustive check is O(N^2)\&. This option prevents the exhaustive portion of rename/copy detection from running if the number of source/destination files involved exceeds the specified number\&. Defaults to diff\&.renameLimit\&. Note that a value of 0 is treated as unlimited\&.
 .RE
 .PP
-\-\-diff\-filter=[(A|C|D|M|R|T|U|X|B)\&...[*]]
+\-\-diff\-filter=[(A|C|D|M|R|T|U|X|B)\&...\:[*]]
 .RS 4
-Select only files that are Added (\fBA\fR), Copied (\fBC\fR), Deleted (\fBD\fR), Modified (\fBM\fR), Renamed (\fBR\fR), have their type (i\&.e\&. regular file, symlink, submodule, \&...) changed (\fBT\fR), are Unmerged (\fBU\fR), are Unknown (\fBX\fR), or have had their pairing Broken (\fBB\fR)\&. Any combination of the filter characters (including none) can be used\&. When
+Select only files that are Added (\fBA\fR), Copied (\fBC\fR), Deleted (\fBD\fR), Modified (\fBM\fR), Renamed (\fBR\fR), have their type (i\&.e\&. regular file, symlink, submodule, \&...\:) changed (\fBT\fR), are Unmerged (\fBU\fR), are Unknown (\fBX\fR), or have had their pairing Broken (\fBB\fR)\&. Any combination of the filter characters (including none) can be used\&. When
 \fB*\fR
 (All\-or\-none) is added to the combination, all paths are selected if there is any file that matches other criteria in the comparison; if there is no file that matches other criteria, nothing is selected\&.
 .sp
@@ -4235,8 +4235,6 @@ index fabadb8,cc95eb0\&.\&.4866510
 .RE
 .\}
 .sp
-
-.sp
 .RS 4
 .ie n \{\
 \h'-04' 1.\h'+01'\c
@@ -4375,7 +4373,7 @@ There are (number of parents + 1)
 characters in the chunk header for combined diff format\&.
 .RE
 .sp
-Unlike the traditional \fIunified\fR diff format, which shows two files A and B with a single column that has \fB\-\fR (minus \(em appears in A but removed in B), \fB+\fR (plus \(em missing in A but added to B), or \fB" "\fR (space \(em unchanged) prefix, this format compares two or more files file1, file2,\&... with one file X, and shows how X differs from each of fileN\&. One column for each of fileN is prepended to the output line to note how X\(cqs line is different from it\&.
+Unlike the traditional \fIunified\fR diff format, which shows two files A and B with a single column that has \fB\-\fR (minus \(em appears in A but removed in B), \fB+\fR (plus \(em missing in A but added to B), or \fB" "\fR (space \(em unchanged) prefix, this format compares two or more files file1, file2,\&...\: with one file X, and shows how X differs from each of fileN\&. One column for each of fileN is prepended to the output line to note how X\(cqs line is different from it\&.
 .sp
 A \fB\-\fR character in the column N means that the line appears in fileN but it does not appear in the result\&. A \fB+\fR character in the column N means that the line appears in the result, and fileN does not have that line (in other words, the line was added, from the point of view of that parent)\&.
 .sp
@@ -4436,7 +4434,9 @@ Shows all commits that are in local master but not in any remote repository mast
 .PP
 \fBgit log \-p \-m \-\-first\-parent\fR
 .RS 4
-Shows the history including change diffs, but only from the \(lqmain branch\(rq perspective, skipping commits that come from merged branches, and showing full diffs of changes introduced by the merges\&. This makes sense only when following a strict policy of merging all topic branches when staying on a single integration branch\&.
+Shows the history including change diffs, but only from the
+\(lqmain branch\(rq
+perspective, skipping commits that come from merged branches, and showing full diffs of changes introduced by the merges\&. This makes sense only when following a strict policy of merging all topic branches when staying on a single integration branch\&.
 .RE
 .PP
 \fBgit log \-L \*(Aq/int main/\*(Aq,/^}/:main\&.c\fR

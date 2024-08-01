@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: git-bisect
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GIT\-BISECT" "1" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GIT\-BISECT" "1" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,6 @@ git-bisect \- Use binary search to find the commit that introduced a bug
 .nf
 \fIgit bisect\fR <subcommand> <options>
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 The command takes various subcommands, and different options depending on the subcommand:
@@ -44,7 +43,7 @@ The command takes various subcommands, and different options depending on the su
 .\}
 .nf
 git bisect start [\-\-term\-(bad|new)=<term\-new> \-\-term\-(good|old)=<term\-old>]
-                 [\-\-no\-checkout] [\-\-first\-parent] [<bad> [<good>\&.\&.\&.]] [\-\-] [<pathspec>\&.\&.\&.]
+	  [\-\-no\-checkout] [\-\-first\-parent] [<bad> [<good>\&.\&.\&.]] [\-\-] [<pathspec>\&.\&.\&.]
 git bisect (bad|new|<term\-new>) [<rev>]
 git bisect (good|old|<term\-old>) [<rev>\&.\&.\&.]
 git bisect terms [\-\-term\-(good|old) | \-\-term\-(bad|new)]
@@ -79,7 +78,6 @@ $ git bisect good v2\&.6\&.13\-rc2    # v2\&.6\&.13\-rc2 is known to be good
 .RE
 .\}
 .sp
-.sp
 Once you have specified at least one bad and one good commit, \fBgit bisect\fR selects a commit in the middle of that range of history, checks it out, and outputs something similar to the following:
 .sp
 .if n \{\
@@ -91,7 +89,6 @@ Bisecting: 675 revisions left to test after this (roughly 10 steps)
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 You should now compile the checked\-out version and test it\&. If that version works correctly, type
 .sp
@@ -105,7 +102,6 @@ $ git bisect good
 .RE
 .\}
 .sp
-.sp
 If that version is broken, type
 .sp
 .if n \{\
@@ -118,7 +114,6 @@ $ git bisect bad
 .RE
 .\}
 .sp
-.sp
 Then \fBgit bisect\fR will respond with something like
 .sp
 .if n \{\
@@ -130,7 +125,6 @@ Bisecting: 337 revisions left to test after this (roughly 9 steps)
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Keep repeating the process: compile the tree, test it, and depending on whether it is good or bad run \fBgit bisect good\fR or \fBgit bisect bad\fR to ask for the next commit that needs testing\&.
 .sp
@@ -149,7 +143,6 @@ $ git bisect reset
 .RE
 .\}
 .sp
-.sp
 By default, this will return your tree to the commit that was checked out before \fBgit bisect start\fR\&. (A new \fBgit bisect start\fR will also do that, as it cleans up the old bisection state\&.)
 .sp
 With an optional argument, you can return to a different commit instead:
@@ -163,7 +156,6 @@ $ git bisect reset <commit>
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 For example, \fBgit bisect reset bisect/bad\fR will check out the first bad revision, while \fBgit bisect reset HEAD\fR will leave you on the current bisection commit and avoid switching commits at all\&.
 .SS "Alternate terms"
@@ -186,7 +178,6 @@ git bisect old [<rev>]
 .RE
 .\}
 .sp
-.sp
 to indicate that a commit was before the sought change, or
 .sp
 .if n \{\
@@ -198,7 +189,6 @@ git bisect new [<rev>\&.\&.\&.]
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 to indicate that it was after\&.
 .sp
@@ -214,10 +204,9 @@ git bisect terms
 .RE
 .\}
 .sp
-.sp
 You can get just the old term with \fBgit bisect terms \-\-term\-old\fR or \fBgit bisect terms \-\-term\-good\fR; \fBgit bisect terms \-\-term\-new\fR and \fBgit bisect terms \-\-term\-bad\fR can be used to learn how to call the commits more recent than the sought change\&.
 .sp
-If you would like to use your own terms instead of "bad"/"good" or "new"/"old", you can choose any names you like (except existing bisect subcommands like \fBreset\fR, \fBstart\fR, \&...) by starting the bisection using
+If you would like to use your own terms instead of "bad"/"good" or "new"/"old", you can choose any names you like (except existing bisect subcommands like \fBreset\fR, \fBstart\fR, \&...\:) by starting the bisection using
 .sp
 .if n \{\
 .RS 4
@@ -228,7 +217,6 @@ git bisect start \-\-term\-old <term\-old> \-\-term\-new <term\-new>
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 For example, if you are looking for a commit that introduced a performance regression, you might use
 .sp
@@ -242,7 +230,6 @@ git bisect start \-\-term\-old fast \-\-term\-new slow
 .RE
 .\}
 .sp
-.sp
 Or if you are looking for the commit that fixed a bug, you might use
 .sp
 .if n \{\
@@ -254,7 +241,6 @@ git bisect start \-\-term\-new fixed \-\-term\-old broken
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Then, use \fBgit bisect <term\-old>\fR and \fBgit bisect <term\-new>\fR instead of \fBgit bisect good\fR and \fBgit bisect bad\fR to mark commits\&.
 .SS "Bisect visualize/view"
@@ -271,7 +257,6 @@ $ git bisect visualize
 .RE
 .\}
 .sp
-.sp
 Git detects a graphical environment through various environment variables: \fBDISPLAY\fR, which is set in X Window System environments on Unix systems\&. \fBSESSIONNAME\fR, which is set under Cygwin in interactive desktop sessions\&. \fBMSYSTEM\fR, which is set under Msys2 and Git for Windows\&. \fBSECURITYSESSIONID\fR, which may be set on macOS in interactive desktop sessions\&.
 .sp
 If none of these environment variables is set, \fIgit log\fR is used instead\&. You can also give command\-line options such as \fB\-p\fR and \fB\-\-stat\fR\&.
@@ -285,7 +270,6 @@ $ git bisect visualize \-\-stat
 .if n \{\
 .RE
 .\}
-.sp
 .SS "Bisect log and bisect replay"
 .sp
 After having marked revisions as good or bad, issue the following command to show what has been done so far:
@@ -300,7 +284,6 @@ $ git bisect log
 .RE
 .\}
 .sp
-.sp
 If you discover that you made a mistake in specifying the status of a revision, you can save the output of this command to a file, edit it to remove the incorrect entries, and then issue the following commands to return to a corrected state:
 .sp
 .if n \{\
@@ -313,7 +296,6 @@ $ git bisect replay that\-file
 .if n \{\
 .RE
 .\}
-.sp
 .SS "Avoiding testing a commit"
 .sp
 If, in the middle of a bisect session, you know that the suggested revision is not a good one to test (e\&.g\&. it fails to build and you know that the failure does not have anything to do with the bug you are chasing), you can manually select a nearby commit and test that one instead\&.
@@ -334,7 +316,6 @@ $ git reset \-\-hard HEAD~3               # try 3 revisions before what
 .RE
 .\}
 .sp
-.sp
 Then compile and test the chosen revision, and afterwards mark the revision as good or bad in the usual manner\&.
 .SS "Bisect skip"
 .sp
@@ -350,7 +331,6 @@ $ git bisect skip                 # Current version cannot be tested
 .RE
 .\}
 .sp
-.sp
 However, if you skip a commit adjacent to the one you are looking for, Git will be unable to tell exactly which of those commits was the first bad one\&.
 .sp
 You can also skip a range of commits, instead of just one commit, using range notation\&. For example:
@@ -365,7 +345,6 @@ $ git bisect skip v2\&.5\&.\&.v2\&.6
 .RE
 .\}
 .sp
-.sp
 This tells the bisect process that no commit after \fBv2\&.5\fR, up to and including \fBv2\&.6\fR, should be tested\&.
 .sp
 Note that if you also want to skip the first commit of the range you would issue the command:
@@ -379,7 +358,6 @@ $ git bisect skip v2\&.5 v2\&.5\&.\&.v2\&.6
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 This tells the bisect process that the commits between \fBv2\&.5\fR and \fBv2\&.6\fR (inclusive) should be skipped\&.
 .SS "Cutting down bisection by giving more parameters to bisect start"
@@ -396,7 +374,6 @@ $ git bisect start \-\- arch/i386 include/asm\-i386
 .RE
 .\}
 .sp
-.sp
 If you know beforehand more than one good commit, you can narrow the bisect space down by specifying all of the good commits immediately after the bad commit when issuing the \fBbisect start\fR command:
 .sp
 .if n \{\
@@ -410,7 +387,6 @@ $ git bisect start v2\&.6\&.20\-rc6 v2\&.6\&.20\-rc4 v2\&.6\&.20\-rc1 \-\-
 .if n \{\
 .RE
 .\}
-.sp
 .SS "Bisect run"
 .sp
 If you have a script that can tell if the current source code is good or bad, you can bisect by issuing the command:
@@ -425,12 +401,11 @@ $ git bisect run my_script arguments
 .RE
 .\}
 .sp
-.sp
 Note that the script (\fBmy_script\fR in the above example) should exit with code 0 if the current source code is good/old, and exit with a code between 1 and 127 (inclusive), except 125, if the current source code is bad/new\&.
 .sp
 Any other exit code will abort the bisect process\&. It should be noted that a program that terminates via \fBexit(\-1)\fR leaves $? = 255, (see the exit(3) manual page), as the value is chopped with \fB& 0377\fR\&.
 .sp
-The special exit code 125 should be used when the current source code cannot be tested\&. If the script exits with this code, the current revision will be skipped (see \fBgit bisect skip\fR above)\&. 125 was chosen as the highest sensible value to use for this purpose, because 126 and 127 are used by POSIX shells to signal specific error status (127 is for command not found, 126 is for command found but not executable\(emthese details do not matter, as they are normal errors in the script, as far as \fBbisect run\fR is concerned)\&.
+The special exit code 125 should be used when the current source code cannot be tested\&. If the script exits with this code, the current revision will be skipped (see \fBgit bisect skip\fR above)\&. 125 was chosen as the highest sensible value to use for this purpose, because 126 and 127 are used by POSIX shells to signal specific error status (127 is for command not found, 126 is for command found but not executable\(em\:these details do not matter, as they are normal errors in the script, as far as \fBbisect run\fR is concerned)\&.
 .sp
 You may often find that during a bisect session you want to have temporary modifications (e\&.g\&. s/#define DEBUG 0/#define DEBUG 1/ in a header file, or "revision that does not have this commit needs this patch applied to work around another problem this bisection is not interested in") applied to the revision being tested\&.
 .sp
@@ -481,7 +456,6 @@ $ git bisect reset                   # quit the bisect session
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -505,7 +479,6 @@ $ git bisect reset                   # quit the bisect session
 .if n \{\
 .RE
 .\}
-.sp
 .RE
 .sp
 .RS 4
@@ -695,7 +668,6 @@ $ git bisect broken HEAD~10
 .if n \{\
 .RE
 .\}
-.sp
 .SS "Getting help"
 .sp
 Use \fBgit bisect\fR to get a short usage description, and \fBgit bisect help\fR or \fBgit bisect \-h\fR to get a long usage description\&.

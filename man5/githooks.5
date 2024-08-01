@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GITHOOKS" "5" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -53,7 +53,6 @@ foreign_desc=$(unset $(git rev\-parse \-\-local\-env\-vars); git \-C \&.\&./fore
 .RE
 .\}
 .sp
-.sp
 Hooks can get their arguments via the environment, command\-line arguments, and stdin\&. See the documentation for each hook below for details\&.
 .sp
 \fBgit init\fR may copy hooks to the new repository, depending on its configuration\&. See the "TEMPLATE DIRECTORY" section in \fBgit-init\fR(1) for details\&. When the rest of this document refers to "default hooks" it\(cqs talking about the default template shipped with Git\&.
@@ -89,7 +88,7 @@ The default \fIpre\-commit\fR hook, when enabled, catches introduction of lines 
 .sp
 All the \fBgit commit\fR hooks are invoked with the environment variable \fBGIT_EDITOR=:\fR if the command will not bring up an editor to modify the commit message\&.
 .sp
-The default \fIpre\-commit\fR hook, when enabled\(emand with the \fBhooks\&.allownonascii\fR config option unset or set to false\(emprevents the use of non\-ASCII filenames\&.
+The default \fIpre\-commit\fR hook, when enabled\(em\:and with the \fBhooks\&.allownonascii\fR config option unset or set to false\(em\:prevents the use of non\-ASCII filenames\&.
 .SS "pre\-merge\-commit"
 .sp
 This hook is invoked by \fBgit-merge\fR(1), and can be bypassed with the \fB\-\-no\-verify\fR option\&. It takes no parameters, and is invoked after the merge has been carried out successfully and before obtaining the proposed commit log message to make a commit\&. Exiting with a non\-zero status from this script causes the \fBgit merge\fR command to abort before creating a commit\&.
@@ -190,7 +189,7 @@ If the hook exits with non\-zero status, none of the refs will be updated\&. If 
 .sp
 Both standard output and standard error output are forwarded to \fBgit send\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
 .sp
-The number of push options given on the command line of \fBgit push \-\-push\-option=\&.\&.\&.\fR can be read from the environment variable \fBGIT_PUSH_OPTION_COUNT\fR, and the options themselves are found in \fBGIT_PUSH_OPTION_0\fR, \fBGIT_PUSH_OPTION_1\fR,\&... If it is negotiated to not use the push options phase, the environment variables will not be set\&. If the client selects to use push options, but doesn\(cqt transmit any, the count variable will be set to zero, \fBGIT_PUSH_OPTION_COUNT=0\fR\&.
+The number of push options given on the command line of \fBgit push \-\-push\-option=\&.\&.\&.\fR can be read from the environment variable \fBGIT_PUSH_OPTION_COUNT\fR, and the options themselves are found in \fBGIT_PUSH_OPTION_0\fR, \fBGIT_PUSH_OPTION_1\fR,\&...\: If it is negotiated to not use the push options phase, the environment variables will not be set\&. If the client selects to use push options, but doesn\(cqt transmit any, the count variable will be set to zero, \fBGIT_PUSH_OPTION_COUNT=0\fR\&.
 .sp
 See the section on "Quarantine Environment" in \fBgit-receive-pack\fR(1) for some caveats\&.
 .SS "update"
@@ -242,7 +241,7 @@ In an environment that restricts the users\*(Aq access only to git commands over
 .sp
 Both standard output and standard error output are forwarded to \fBgit send\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
 .sp
-The default \fIupdate\fR hook, when enabled\(emand with \fBhooks\&.allowunannotated\fR config option unset or set to false\(emprevents unannotated tags from being pushed\&.
+The default \fIupdate\fR hook, when enabled\(em\:and with \fBhooks\&.allowunannotated\fR config option unset or set to false\(em\:prevents unannotated tags from being pushed\&.
 .SS "proc\-receive"
 .sp
 This hook is invoked by \fBgit-receive-pack\fR(1)\&. If the server has set the multi\-valued config variable \fBreceive\&.procReceiveRefs\fR, and the commands sent to \fIreceive\-pack\fR have matching reference names, these commands will be executed by this hook, instead of by the internal \fBexecute_commands()\fR function\&. This hook is responsible for updating the relevant references and reporting the results back to \fIreceive\-pack\fR\&.
@@ -311,9 +310,9 @@ Each command for the \fIproc\-receive\fR hook may point to a pseudo\-reference a
 The report of the commands of this hook should have the same order as the input\&. The exit status of the \fIproc\-receive\fR hook only determines the success or failure of the group of commands sent to it, unless atomic push is in use\&.
 .SS "post\-receive"
 .sp
-This hook is invoked by \fBgit-receive-pack\fR(1) when it reacts to \fBgit push\fR and updates reference(s) in its repository\&. It executes on the remote repository once after all the refs have been updated\&.
+This hook is invoked by \fBgit-receive-pack\fR(1) when it reacts to \fBgit push\fR and updates reference(s) in its repository\&. The hook executes on the remote repository once after all the proposed ref updates are processed and if at least one ref is updated as the result\&.
 .sp
-This hook executes once for the receive operation\&. It takes no arguments, but gets the same information as the \fIpre\-receive\fR hook does on its standard input\&.
+The hook takes no arguments\&. It receives one line on standard input for each ref that is successfully updated following the same format as the \fIpre\-receive\fR hook\&.
 .sp
 This hook does not affect the outcome of \fBgit receive\-pack\fR, as it is called after the real work is done\&.
 .sp
@@ -323,7 +322,9 @@ Both standard output and standard error output are forwarded to \fBgit send\-pac
 .sp
 The default \fIpost\-receive\fR hook is empty, but there is a sample script \fBpost\-receive\-email\fR provided in the \fBcontrib/hooks\fR directory in Git distribution, which implements sending commit emails\&.
 .sp
-The number of push options given on the command line of \fBgit push \-\-push\-option=\&.\&.\&.\fR can be read from the environment variable \fBGIT_PUSH_OPTION_COUNT\fR, and the options themselves are found in \fBGIT_PUSH_OPTION_0\fR, \fBGIT_PUSH_OPTION_1\fR,\&... If it is negotiated to not use the push options phase, the environment variables will not be set\&. If the client selects to use push options, but doesn\(cqt transmit any, the count variable will be set to zero, \fBGIT_PUSH_OPTION_COUNT=0\fR\&.
+The number of push options given on the command line of \fBgit push \-\-push\-option=\&.\&.\&.\fR can be read from the environment variable \fBGIT_PUSH_OPTION_COUNT\fR, and the options themselves are found in \fBGIT_PUSH_OPTION_0\fR, \fBGIT_PUSH_OPTION_1\fR,\&...\: If it is negotiated to not use the push options phase, the environment variables will not be set\&. If the client selects to use push options, but doesn\(cqt transmit any, the count variable will be set to zero, \fBGIT_PUSH_OPTION_COUNT=0\fR\&.
+.sp
+See the "post\-receive" section in \fBgit-receive-pack\fR(1) for additional details\&.
 .SS "post\-update"
 .sp
 This hook is invoked by \fBgit-receive-pack\fR(1) when it reacts to \fBgit push\fR and updates reference(s) in its repository\&. It executes on the remote repository once after all the refs have been updated\&.
@@ -453,9 +454,9 @@ An example of a few common headers is shown below\&. Take notice of the capitali
 From: Example <from@example\&.com>
 To: to@example\&.com
 Cc: cc@example\&.com,
-        A <author@example\&.com>,
-        One <one@example\&.com>,
-        two@example\&.com
+ A <author@example\&.com>,
+ One <one@example\&.com>,
+ two@example\&.com
 Subject: PATCH\-STRING
 .fi
 .if n \{\

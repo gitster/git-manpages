@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,6 @@ gitprotocol-v2 \- Git Wire Protocol, Version 2
 .nf
 <over\-the\-wire\-protocol>
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 This document presents a specification for a version 2 of Git\(cqs wire protocol\&. Protocol v2 will improve upon v1 in the following ways:
@@ -213,8 +212,8 @@ A server which decides to communicate (based on a request from a client) using p
 .\}
 .nf
 capability\-advertisement = protocol\-version
-                           capability\-list
-                           flush\-pkt
+      capability\-list
+      flush\-pkt
 .fi
 .if n \{\
 .RE
@@ -253,10 +252,10 @@ After receiving the capability advertisement, a client can then issue a request 
 request = empty\-request | command\-request
 empty\-request = flush\-pkt
 command\-request = command
-                  capability\-list
-                  delim\-pkt
-                  command\-args
-                  flush\-pkt
+    capability\-list
+    delim\-pkt
+    command\-args
+    flush\-pkt
 command = PKT\-LINE("command=" key LF)
 command\-args = *command\-specific\-arg
 .fi
@@ -298,18 +297,18 @@ ls\-refs takes in the following arguments:
 .RS 4
 .\}
 .nf
-symrefs
-    In addition to the object pointed by it, show the underlying ref
-    pointed by it when showing a symbolic ref\&.
-peel
-    Show peeled tags\&.
-ref\-prefix <prefix>
-    When specified, only references having a prefix matching one of
-    the provided prefixes are displayed\&. Multiple instances may be
-    given, in which case references matching any prefix will be
-    shown\&. Note that this is purely for optimization; a server MAY
-    show refs not matching the prefix if it chooses, and clients
-    should filter the result themselves\&.
+   symrefs
+In addition to the object pointed by it, show the underlying ref
+pointed by it when showing a symbolic ref\&.
+   peel
+Show peeled tags\&.
+   ref\-prefix <prefix>
+When specified, only references having a prefix matching one of
+the provided prefixes are displayed\&. Multiple instances may be
+given, in which case references matching any prefix will be
+shown\&. Note that this is purely for optimization; a server MAY
+show refs not matching the prefix if it chooses, and clients
+should filter the result themselves\&.
 .fi
 .if n \{\
 .RE
@@ -321,10 +320,10 @@ If the \fIunborn\fR feature is advertised the following argument can be included
 .RS 4
 .\}
 .nf
-unborn
-    The server will send information about HEAD even if it is a symref
-    pointing to an unborn branch in the form "unborn HEAD
-    symref\-target:<target>"\&.
+   unborn
+The server will send information about HEAD even if it is a symref
+pointing to an unborn branch in the form "unborn HEAD
+symref\-target:<target>"\&.
 .fi
 .if n \{\
 .RE
@@ -337,7 +336,7 @@ The output of ls\-refs is as follows:
 .\}
 .nf
 output = *ref
-         flush\-pkt
+  flush\-pkt
 obj\-id\-or\-unborn = (obj\-id | "unborn")
 ref = PKT\-LINE(obj\-id\-or\-unborn SP refname *(SP ref\-attribute) LF)
 ref\-attribute = (symref | peeled)
@@ -359,10 +358,10 @@ A \fBfetch\fR request can take the following arguments:
 .RS 4
 .\}
 .nf
-want <oid>
-    Indicates to the server an object which the client wants to
-    retrieve\&.  Wants can be anything and are not limited to
-    advertised objects\&.
+   want <oid>
+Indicates to the server an object which the client wants to
+retrieve\&.  Wants can be anything and are not limited to
+advertised objects\&.
 .fi
 .if n \{\
 .RE
@@ -372,11 +371,11 @@ want <oid>
 .RS 4
 .\}
 .nf
-have <oid>
-    Indicates to the server an object which the client has locally\&.
-    This allows the server to make a packfile which only contains
-    the objects that the client needs\&. Multiple \*(Aqhave\*(Aq lines can be
-    supplied\&.
+   have <oid>
+Indicates to the server an object which the client has locally\&.
+This allows the server to make a packfile which only contains
+the objects that the client needs\&. Multiple \*(Aqhave\*(Aq lines can be
+supplied\&.
 .fi
 .if n \{\
 .RE
@@ -386,11 +385,11 @@ have <oid>
 .RS 4
 .\}
 .nf
-done
-    Indicates to the server that negotiation should terminate (or
-    not even begin if performing a clone) and that the server should
-    use the information supplied in the request to construct the
-    packfile\&.
+   done
+Indicates to the server that negotiation should terminate (or
+not even begin if performing a clone) and that the server should
+use the information supplied in the request to construct the
+packfile\&.
 .fi
 .if n \{\
 .RE
@@ -400,13 +399,13 @@ done
 .RS 4
 .\}
 .nf
-thin\-pack
-    Request that a thin pack be sent, which is a pack with deltas
-    which reference base objects not contained within the pack (but
-    are known to exist at the receiving end)\&. This can reduce the
-    network traffic significantly, but it requires the receiving end
-    to know how to "thicken" these packs by adding the missing bases
-    to the pack\&.
+   thin\-pack
+Request that a thin pack be sent, which is a pack with deltas
+which reference base objects not contained within the pack (but
+are known to exist at the receiving end)\&. This can reduce the
+network traffic significantly, but it requires the receiving end
+to know how to "thicken" these packs by adding the missing bases
+to the pack\&.
 .fi
 .if n \{\
 .RE
@@ -416,11 +415,11 @@ thin\-pack
 .RS 4
 .\}
 .nf
-no\-progress
-    Request that progress information that would normally be sent on
-    side\-band channel 2, during the packfile transfer, should not be
-    sent\&.  However, the side\-band channel 3 is still used for error
-    responses\&.
+   no\-progress
+Request that progress information that would normally be sent on
+side\-band channel 2, during the packfile transfer, should not be
+sent\&.  However, the side\-band channel 3 is still used for error
+responses\&.
 .fi
 .if n \{\
 .RE
@@ -430,9 +429,9 @@ no\-progress
 .RS 4
 .\}
 .nf
-include\-tag
-    Request that annotated tags should be sent if the objects they
-    point to are being sent\&.
+   include\-tag
+Request that annotated tags should be sent if the objects they
+point to are being sent\&.
 .fi
 .if n \{\
 .RE
@@ -442,10 +441,10 @@ include\-tag
 .RS 4
 .\}
 .nf
-ofs\-delta
-    Indicate that the client understands PACKv2 with delta referring
-    to its base by position in pack rather than by an oid\&.  That is,
-    they can read OBJ_OFS_DELTA (aka type 6) in a packfile\&.
+   ofs\-delta
+Indicate that the client understands PACKv2 with delta referring
+to its base by position in pack rather than by an oid\&.  That is,
+they can read OBJ_OFS_DELTA (aka type 6) in a packfile\&.
 .fi
 .if n \{\
 .RE
@@ -457,13 +456,13 @@ If the \fIshallow\fR feature is advertised the following arguments can be includ
 .RS 4
 .\}
 .nf
-shallow <oid>
-    A client must notify the server of all commits for which it only
-    has shallow copies (meaning that it doesn\*(Aqt have the parents of
-    a commit) by supplying a \*(Aqshallow <oid>\*(Aq line for each such
-    object so that the server is aware of the limitations of the
-    client\*(Aqs history\&.  This is so that the server is aware that the
-    client may not have all objects reachable from such commits\&.
+   shallow <oid>
+A client must notify the server of all commits for which it only
+has shallow copies (meaning that it doesn\*(Aqt have the parents of
+a commit) by supplying a \*(Aqshallow <oid>\*(Aq line for each such
+object so that the server is aware of the limitations of the
+client\*(Aqs history\&.  This is so that the server is aware that the
+client may not have all objects reachable from such commits\&.
 .fi
 .if n \{\
 .RE
@@ -473,9 +472,9 @@ shallow <oid>
 .RS 4
 .\}
 .nf
-deepen <depth>
-    Requests that the fetch/clone should be shallow having a commit
-    depth of <depth> relative to the remote side\&.
+   deepen <depth>
+Requests that the fetch/clone should be shallow having a commit
+depth of <depth> relative to the remote side\&.
 .fi
 .if n \{\
 .RE
@@ -485,11 +484,11 @@ deepen <depth>
 .RS 4
 .\}
 .nf
-deepen\-relative
-    Requests that the semantics of the "deepen" command be changed
-    to indicate that the depth requested is relative to the client\*(Aqs
-    current shallow boundary, instead of relative to the requested
-    commits\&.
+   deepen\-relative
+Requests that the semantics of the "deepen" command be changed
+to indicate that the depth requested is relative to the client\*(Aqs
+current shallow boundary, instead of relative to the requested
+commits\&.
 .fi
 .if n \{\
 .RE
@@ -499,11 +498,11 @@ deepen\-relative
 .RS 4
 .\}
 .nf
-deepen\-since <timestamp>
-    Requests that the shallow clone/fetch should be cut at a
-    specific time, instead of depth\&.  Internally it\*(Aqs equivalent to
-    doing "git rev\-list \-\-max\-age=<timestamp>"\&. Cannot be used with
-    "deepen"\&.
+   deepen\-since <timestamp>
+Requests that the shallow clone/fetch should be cut at a
+specific time, instead of depth\&.  Internally it\*(Aqs equivalent to
+doing "git rev\-list \-\-max\-age=<timestamp>"\&. Cannot be used with
+"deepen"\&.
 .fi
 .if n \{\
 .RE
@@ -513,12 +512,12 @@ deepen\-since <timestamp>
 .RS 4
 .\}
 .nf
-deepen\-not <rev>
-    Requests that the shallow clone/fetch should be cut at a
-    specific revision specified by \*(Aq<rev>\*(Aq, instead of a depth\&.
-    Internally it\*(Aqs equivalent of doing "git rev\-list \-\-not <rev>"\&.
-    Cannot be used with "deepen", but can be used with
-    "deepen\-since"\&.
+   deepen\-not <rev>
+Requests that the shallow clone/fetch should be cut at a
+specific revision specified by \*(Aq<rev>\*(Aq, instead of a depth\&.
+Internally it\*(Aqs equivalent of doing "git rev\-list \-\-not <rev>"\&.
+Cannot be used with "deepen", but can be used with
+"deepen\-since"\&.
 .fi
 .if n \{\
 .RE
@@ -530,17 +529,17 @@ If the \fIfilter\fR feature is advertised, the following argument can be include
 .RS 4
 .\}
 .nf
-filter <filter\-spec>
-    Request that various objects from the packfile be omitted
-    using one of several filtering techniques\&. These are intended
-    for use with partial clone and partial fetch operations\&. See
-    `rev\-list` for possible "filter\-spec" values\&. When communicating
-    with other processes, senders SHOULD translate scaled integers
-    (e\&.g\&. "1k") into a fully\-expanded form (e\&.g\&. "1024") to aid
-    interoperability with older receivers that may not understand
-    newly\-invented scaling suffixes\&. However, receivers SHOULD
-    accept the following suffixes: \*(Aqk\*(Aq, \*(Aqm\*(Aq, and \*(Aqg\*(Aq for 1024,
-    1048576, and 1073741824, respectively\&.
+   filter <filter\-spec>
+Request that various objects from the packfile be omitted
+using one of several filtering techniques\&. These are intended
+for use with partial clone and partial fetch operations\&. See
+`rev\-list` for possible "filter\-spec" values\&. When communicating
+with other processes, senders SHOULD translate scaled integers
+(e\&.g\&. "1k") into a fully\-expanded form (e\&.g\&. "1024") to aid
+interoperability with older receivers that may not understand
+newly\-invented scaling suffixes\&. However, receivers SHOULD
+accept the following suffixes: \*(Aqk\*(Aq, \*(Aqm\*(Aq, and \*(Aqg\*(Aq for 1024,
+1048576, and 1073741824, respectively\&.
 .fi
 .if n \{\
 .RE
@@ -552,11 +551,11 @@ If the \fIref\-in\-want\fR feature is advertised, the following argument can be 
 .RS 4
 .\}
 .nf
-want\-ref <ref>
-    Indicates to the server that the client wants to retrieve a
-    particular ref, where <ref> is the full name of a ref on the
-    server\&.  It is a protocol error to send want\-ref for the
-    same ref more than once\&.
+   want\-ref <ref>
+Indicates to the server that the client wants to retrieve a
+particular ref, where <ref> is the full name of a ref on the
+server\&.  It is a protocol error to send want\-ref for the
+same ref more than once\&.
 .fi
 .if n \{\
 .RE
@@ -568,12 +567,12 @@ If the \fIsideband\-all\fR feature is advertised, the following argument can be 
 .RS 4
 .\}
 .nf
-sideband\-all
-    Instruct the server to send the whole response multiplexed, not just
-    the packfile section\&. All non\-flush and non\-delim PKT\-LINE in the
-    response (not only in the packfile section) will then start with a byte
-    indicating its sideband (1, 2, or 3), and the server may send "0005\e2"
-    (a PKT\-LINE of sideband 2 with no payload) as a keepalive packet\&.
+   sideband\-all
+Instruct the server to send the whole response multiplexed, not just
+the packfile section\&. All non\-flush and non\-delim PKT\-LINE in the
+response (not only in the packfile section) will then start with a byte
+indicating its sideband (1, 2, or 3), and the server may send "0005\e2"
+(a PKT\-LINE of sideband 2 with no payload) as a keepalive packet\&.
 .fi
 .if n \{\
 .RE
@@ -585,12 +584,12 @@ If the \fIpackfile\-uris\fR feature is advertised, the following argument can be
 .RS 4
 .\}
 .nf
-packfile\-uris <comma\-separated\-list\-of\-protocols>
-    Indicates to the server that the client is willing to receive
-    URIs of any of the given protocols in place of objects in the
-    sent packfile\&. Before performing the connectivity check, the
-    client should download from all given URIs\&. Currently, the
-    protocols supported are "http" and "https"\&.
+   packfile\-uris <comma\-separated\-list\-of\-protocols>
+Indicates to the server that the client is willing to receive
+URIs of any of the given protocols in place of objects in the
+sent packfile\&. Before performing the connectivity check, the
+client should download from all given URIs\&. Currently, the
+protocols supported are "http" and "https"\&.
 .fi
 .if n \{\
 .RE
@@ -602,10 +601,10 @@ If the \fIwait\-for\-done\fR feature is advertised, the following argument can b
 .RS 4
 .\}
 .nf
-wait\-for\-done
-    Indicates to the server that it should never send "ready", but
-    should wait for the client to say "done" before sending the
-    packfile\&.
+   wait\-for\-done
+Indicates to the server that it should never send "ready", but
+should wait for the client to say "done" before sending the
+packfile\&.
 .fi
 .if n \{\
 .RE
@@ -618,9 +617,9 @@ The response of \fBfetch\fR is broken into a number of sections separated by del
 .\}
 .nf
 output = acknowledgements flush\-pkt |
-         [acknowledgments delim\-pkt] [shallow\-info delim\-pkt]
-         [wanted\-refs delim\-pkt] [packfile\-uris delim\-pkt]
-         packfile flush\-pkt
+  [acknowledgments delim\-pkt] [shallow\-info delim\-pkt]
+  [wanted\-refs delim\-pkt] [packfile\-uris delim\-pkt]
+  packfile flush\-pkt
 .fi
 .if n \{\
 .RE
@@ -631,8 +630,8 @@ output = acknowledgements flush\-pkt |
 .\}
 .nf
 acknowledgments = PKT\-LINE("acknowledgments" LF)
-                  (nak | *ack)
-                  (ready)
+    (nak | *ack)
+    (ready)
 ready = PKT\-LINE("ready" LF)
 nak = PKT\-LINE("NAK" LF)
 ack = PKT\-LINE("ACK" SP obj\-id LF)
@@ -646,7 +645,7 @@ ack = PKT\-LINE("ACK" SP obj\-id LF)
 .\}
 .nf
 shallow\-info = PKT\-LINE("shallow\-info" LF)
-               *PKT\-LINE((shallow | unshallow) LF)
+ *PKT\-LINE((shallow | unshallow) LF)
 shallow = "shallow" SP obj\-id
 unshallow = "unshallow" SP obj\-id
 .fi
@@ -659,7 +658,7 @@ unshallow = "unshallow" SP obj\-id
 .\}
 .nf
 wanted\-refs = PKT\-LINE("wanted\-refs" LF)
-              *PKT\-LINE(wanted\-ref LF)
+*PKT\-LINE(wanted\-ref LF)
 wanted\-ref = obj\-id SP refname
 .fi
 .if n \{\
@@ -682,7 +681,7 @@ packfile\-uri = PKT\-LINE(40*(HEXDIGIT) SP *%x20\-ff LF)
 .\}
 .nf
 packfile = PKT\-LINE("packfile" LF)
-           *PKT\-LINE(%x01\-03 *%x00\-ff)
+    *PKT\-LINE(%x01\-03 *%x00\-ff)
 .fi
 .if n \{\
 .RE
@@ -692,11 +691,11 @@ packfile = PKT\-LINE("packfile" LF)
 .RS 4
 .\}
 .nf
-acknowledgments section
-    * If the client determines that it is finished with negotiations by
-      sending a "done" line (thus requiring the server to send a packfile),
-      the acknowledgments sections MUST be omitted from the server\*(Aqs
-      response\&.
+   acknowledgments section
+* If the client determines that it is finished with negotiations by
+  sending a "done" line (thus requiring the server to send a packfile),
+  the acknowledgments sections MUST be omitted from the server\*(Aqs
+  response\&.
 .fi
 .if n \{\
 .RE
@@ -771,14 +770,14 @@ If the server has found a suitable cut point and has decided to send a "ready" l
 .RS 4
 .\}
 .nf
-shallow\-info section
-    * If the client has requested a shallow fetch/clone, a shallow
-      client requests a fetch or the server is shallow then the
-      server\*(Aqs response may include a shallow\-info section\&.  The
-      shallow\-info section will be included if (due to one of the
-      above conditions) the server needs to inform the client of any
-      shallow boundaries or adjustments to the clients already
-      existing shallow boundaries\&.
+   shallow\-info section
+* If the client has requested a shallow fetch/clone, a shallow
+  client requests a fetch or the server is shallow then the
+  server\*(Aqs response may include a shallow\-info section\&.  The
+  shallow\-info section will be included if (due to one of the
+  above conditions) the server needs to inform the client of any
+  shallow boundaries or adjustments to the clients already
+  existing shallow boundaries\&.
 .fi
 .if n \{\
 .RE
@@ -843,10 +842,10 @@ The server MUST NOT send any "unshallow" lines for anything which the client has
 .RS 4
 .\}
 .nf
-wanted\-refs section
-    * This section is only included if the client has requested a
-      ref using a \*(Aqwant\-ref\*(Aq line and if a packfile section is also
-      included in the response\&.
+   wanted\-refs section
+* This section is only included if the client has requested a
+  ref using a \*(Aqwant\-ref\*(Aq line and if a packfile section is also
+  included in the response\&.
 .fi
 .if n \{\
 .RE
@@ -893,10 +892,10 @@ lines\&.
 .RS 4
 .\}
 .nf
-packfile\-uris section
-    * This section is only included if the client sent
-      \*(Aqpackfile\-uris\*(Aq and the server has at least one such URI to
-      send\&.
+   packfile\-uris section
+* This section is only included if the client sent
+  \*(Aqpackfile\-uris\*(Aq and the server has at least one such URI to
+  send\&.
 .fi
 .if n \{\
 .RE
@@ -939,12 +938,12 @@ The hashes are 40 hex characters long\&. When Git upgrades to a new hash algorit
 .RS 4
 .\}
 .nf
-packfile section
-    * This section is only included if the client has sent \*(Aqwant\*(Aq
-      lines in its request and either requested that no more
-      negotiation be done by sending \*(Aqdone\*(Aq or if the server has
-      decided it has found a sufficient cut point to produce a
-      packfile\&.
+   packfile section
+* This section is only included if the client has sent \*(Aqwant\*(Aq
+  lines in its request and either requested that no more
+  negotiation be done by sending \*(Aqdone\*(Aq or if the server has
+  decided it has found a sufficient cut point to produce a
+  packfile\&.
 .fi
 .if n \{\
 .RE
@@ -989,10 +988,10 @@ capability from protocol version 1\&. This means that each packet, during the pa
 .RS 4
 .\}
 .nf
-The stream code can be one of:
-      1 \- pack data
-      2 \- progress messages
-      3 \- fatal error message just before stream aborts
+ The stream code can be one of:
+1 \- pack data
+2 \- progress messages
+3 \- fatal error message just before stream aborts
 .fi
 .if n \{\
 .RE
@@ -1057,7 +1056,7 @@ output = info flush\-pkt
 .\}
 .nf
 info = PKT\-LINE(attrs) LF)
-        *PKT\-LINE(obj\-info LF)
+	*PKT\-LINE(obj\-info LF)
 .fi
 .if n \{\
 .RE
@@ -1094,7 +1093,7 @@ obj\-info = obj\-id SP obj\-size
 .\}
 .SS "bundle\-uri"
 .sp
-If the \fIbundle\-uri\fR capability is advertised, the server supports the \(oqbundle\-uri\(cq command\&.
+If the \fIbundle\-uri\fR capability is advertised, the server supports the \(lqbundle\-uri\(rq command\&.
 .sp
 The capability is currently advertised with no value (i\&.e\&. not "bundle\-uri=somevalue"), a value may be added in the future for supporting command\-wide extensions\&. Clients MUST ignore any unknown capability values and proceed with the \*(Aqbundle\-uri` dialog they support\&.
 .sp

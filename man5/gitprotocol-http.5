@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gitprotocol-http
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-HTTP" "5" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GITPROTOCOL\-HTTP" "5" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,6 @@ gitprotocol-http \- Git HTTP\-based protocols
 .nf
 <over\-the\-wire\-protocol>
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Git supports two HTTP based transfer protocols\&. A "dumb" protocol which requires only a standard HTTP server on the server end of the connection, and a "smart" protocol which requires a Git aware CGI (or server module)\&. This document describes both protocols\&.
@@ -163,10 +162,10 @@ C: GET $GIT_URL/info/refs HTTP/1\&.0
 .nf
 S: 200 OK
 S:
-S: 95dcfa3633004da0049d3d0fa03f80589cbcaf31  refs/heads/maint
-S: d049f6c27a2244e12041955e262a404c7faba355  refs/heads/master
-S: 2cb58b79488a98d2721cea644875a8dd0026b115  refs/tags/v1\&.0
-S: a3c2e2402b99163d1d59756e5f207ae21cccba4c  refs/tags/v1\&.0^{}
+S: 95dcfa3633004da0049d3d0fa03f80589cbcaf31	refs/heads/maint
+S: d049f6c27a2244e12041955e262a404c7faba355	refs/heads/master
+S: 2cb58b79488a98d2721cea644875a8dd0026b115	refs/tags/v1\&.0
+S: a3c2e2402b99163d1d59756e5f207ae21cccba4c	refs/tags/v1\&.0^{}
 .fi
 .if n \{\
 .RE
@@ -197,7 +196,7 @@ ref_record  =  any_ref / peeled_ref
 .nf
 any_ref     =  obj\-id HTAB refname LF
 peeled_ref  =  obj\-id HTAB refname LF
-               obj\-id HTAB refname "^{}" LF
+ obj\-id HTAB refname "^{}" LF
 .fi
 .if n \{\
 .RE
@@ -226,10 +225,10 @@ dumb server reply:
 .nf
 S: 200 OK
 S:
-S: 95dcfa3633004da0049d3d0fa03f80589cbcaf31  refs/heads/maint
-S: d049f6c27a2244e12041955e262a404c7faba355  refs/heads/master
-S: 2cb58b79488a98d2721cea644875a8dd0026b115  refs/tags/v1\&.0
-S: a3c2e2402b99163d1d59756e5f207ae21cccba4c  refs/tags/v1\&.0^{}
+S: 95dcfa3633004da0049d3d0fa03f80589cbcaf31	refs/heads/maint
+S: d049f6c27a2244e12041955e262a404c7faba355	refs/heads/master
+S: 2cb58b79488a98d2721cea644875a8dd0026b115	refs/tags/v1\&.0
+S: a3c2e2402b99163d1d59756e5f207ae21cccba4c	refs/tags/v1\&.0^{}
 .fi
 .if n \{\
 .RE
@@ -309,10 +308,10 @@ The returned response contains "version 1" if "version=1" was sent as an Extra P
 .\}
 .nf
 smart_reply     =  PKT\-LINE("# service=$servicename" LF)
-                   "0000"
-                   *1("version 1")
-                   ref_list
-                   "0000"
+     "0000"
+     *1("version 1")
+     ref_list
+     "0000"
 ref_list        =  empty_list / non_empty_list
 .fi
 .if n \{\
@@ -334,7 +333,7 @@ empty_list      =  PKT\-LINE(zero\-id SP "capabilities^{}" NUL cap\-list LF)
 .\}
 .nf
 non_empty_list  =  PKT\-LINE(obj\-id SP name NUL cap_list LF)
-                   *ref_record
+     *ref_record
 .fi
 .if n \{\
 .RE
@@ -359,7 +358,7 @@ LC_ALPHA        =  %x61\-7A
 ref_record      =  any_ref / peeled_ref
 any_ref         =  PKT\-LINE(obj\-id SP name LF)
 peeled_ref      =  PKT\-LINE(obj\-id SP name LF)
-                   PKT\-LINE(obj\-id SP name "^{}" LF
+     PKT\-LINE(obj\-id SP name "^{}" LF
 .fi
 .if n \{\
 .RE
@@ -412,8 +411,8 @@ Clients MUST send at least one "want" command in the request body\&. Clients MUS
 .\}
 .nf
 compute_request   =  want_list
-                     have_list
-                     request_end
+       have_list
+       request_end
 request_end       =  "0000" / "done"
 .fi
 .if n \{\
@@ -425,7 +424,7 @@ request_end       =  "0000" / "done"
 .\}
 .nf
 want_list         =  PKT\-LINE(want SP cap_list LF)
-                     *(want_pkt)
+       *(want_pkt)
 want_pkt          =  PKT\-LINE(want LF)
 want              =  "want" SP id
 cap_list          =  capability *(SP capability)
@@ -615,7 +614,7 @@ Clients MUST send at least one command in the request body\&. Within the command
 .\}
 .nf
 update_request  =  command_list
-                   "PACK" <binary\-data>
+     "PACK" <binary\-data>
 .fi
 .if n \{\
 .RE
@@ -626,7 +625,7 @@ update_request  =  command_list
 .\}
 .nf
 command_list    =  PKT\-LINE(command NUL cap_list LF)
-                   *(command_pkt)
+     *(command_pkt)
 command_pkt     =  PKT\-LINE(command LF)
 cap_list        =  *(SP capability) SP
 .fi

@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: gitprotocol-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
-.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 2024-07-29
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2024-07-31
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0
+.\"    Source: Git 2.46.0.39.g891ee3b9db
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-PACK" "5" "2024\-07\-29" "Git 2\&.46\&.0" "Git Manual"
+.TH "GITPROTOCOL\-PACK" "5" "2024-07-31" "Git 2\&.46\&.0\&.39\&.g891ee3b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,6 @@ gitprotocol-pack \- How packs are transferred over\-the\-wire
 .nf
 <over\-the\-wire\-protocol>
 .fi
-.sp
 .SH "DESCRIPTION"
 .sp
 Git supports transferring data in packfiles over the ssh://, git://, http:// and file:// transports\&. There exist two sets of protocols, one for pushing data from a client to a server and another for fetching data from a server to a client\&. The three transports (ssh, git, file) use the same protocol to transfer data\&. http is documented in \fBgitprotocol-http\fR(5)\&.
@@ -55,7 +54,6 @@ An error packet is a special pkt\-line that contains an error string\&.
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 Throughout the protocol, where \fBPKT\-LINE(\&.\&.\&.)\fR is expected, an error packet MAY be sent\&. Once this packet is sent by a client or a server, the data transfer process defined in this protocol is terminated\&.
 .SH "TRANSPORTS"
@@ -103,9 +101,9 @@ The transport may send Extra Parameters by adding an additional NUL byte, and th
 .\}
 .nf
 git\-proto\-request = request\-command SP pathname NUL
-                    [ host\-parameter NUL ] [ NUL extra\-parameters ]
+      [ host\-parameter NUL ] [ NUL extra\-parameters ]
 request\-command   = "git\-upload\-pack" / "git\-receive\-pack" /
-                    "git\-upload\-archive"   ; case sensitive
+      "git\-upload\-archive"   ; case sensitive
 pathname          = *( %x01\-ff ) ; exclude NUL
 host\-parameter    = "host=" hostname [ ":" port ]
 extra\-parameters  = 1*extra\-parameter
@@ -153,8 +151,8 @@ In an ssh:// format URI, it\(cqs absolute in the URI, so the \fI/\fR after the h
 .\}
 .nf
    git clone ssh://user@example\&.com/project\&.git
-                |
-                v
+  |
+  v
 ssh user@example\&.com "git\-upload\-pack \*(Aq/project\&.git\*(Aq"
 .fi
 .if n \{\
@@ -168,8 +166,8 @@ In a "user@host:path" format URI, it\(cqs relative to the user\(cqs home directo
 .\}
 .nf
    git clone user@example\&.com:project\&.git
-                  |
-                  v
+    |
+    v
 ssh user@example\&.com "git\-upload\-pack \*(Aqproject\&.git\*(Aq"
 .fi
 .if n \{\
@@ -183,8 +181,8 @@ The exception is if a \fI~\fR is used, in which case we execute it without the l
 .\}
 .nf
    ssh://user@example\&.com/~alice/project\&.git,
-                  |
-                  v
+    |
+    v
 ssh user@example\&.com "git\-upload\-pack \*(Aq~alice/project\&.git\*(Aq"
 .fi
 .if n \{\
@@ -227,17 +225,17 @@ When the client initially connects the server will immediately respond with a ve
 .RS 4
 .\}
 .nf
-$ echo \-e \-n "0045git\-upload\-pack /schacon/gitbook\&.git\e0host=example\&.com\e0\e0version=1\e0" |
-   nc \-v example\&.com 9418
-000eversion 1
-00887217a7c7e582c46cec22a130adf4b9d7d950fba0 HEAD\e0multi_ack thin\-pack
-             side\-band side\-band\-64k ofs\-delta shallow no\-progress include\-tag
-00441d3fcd5ced445d1abc402225c0b8a1299641f497 refs/heads/integration
-003f7217a7c7e582c46cec22a130adf4b9d7d950fba0 refs/heads/master
-003cb88d2441cac0977faf98efc80305012112238d9d refs/tags/v0\&.9
-003c525128480b96c89e6418b1e40909bf6c5b2d580f refs/tags/v1\&.0
-003fe92df48743b7bc7d26bcaabfddde0a1e20cae47c refs/tags/v1\&.0^{}
-0000
+ $ echo \-e \-n "0045git\-upload\-pack /schacon/gitbook\&.git\e0host=example\&.com\e0\e0version=1\e0" |
+    nc \-v example\&.com 9418
+ 000eversion 1
+ 00887217a7c7e582c46cec22a130adf4b9d7d950fba0 HEAD\e0multi_ack thin\-pack
+side\-band side\-band\-64k ofs\-delta shallow no\-progress include\-tag
+ 00441d3fcd5ced445d1abc402225c0b8a1299641f497 refs/heads/integration
+ 003f7217a7c7e582c46cec22a130adf4b9d7d950fba0 refs/heads/master
+ 003cb88d2441cac0977faf98efc80305012112238d9d refs/tags/v0\&.9
+ 003c525128480b96c89e6418b1e40909bf6c5b2d580f refs/tags/v1\&.0
+ 003fe92df48743b7bc7d26bcaabfddde0a1e20cae47c refs/tags/v1\&.0^{}
+ 0000
 .fi
 .if n \{\
 .RE
@@ -279,7 +277,6 @@ The stream MUST include capability declarations behind a NUL on the first ref\&.
 .RE
 .\}
 .sp
-.sp
 Server and client MUST use lowercase for obj\-id, both MUST treat obj\-id as case\-insensitive\&.
 .sp
 See protocol\-capabilities\&.txt for a list of allowed server capabilities and descriptions\&.
@@ -319,7 +316,6 @@ Otherwise, it enters the negotiation phase, where the client and server determin
 .RE
 .\}
 .sp
-.sp
 Clients MUST send all the obj\-ids it wants from the reference discovery phase as \fIwant\fR lines\&. Clients MUST send at least one \fIwant\fR command in the request body\&. Clients MUST NOT mention an obj\-id in a \fIwant\fR command which did not appear in the response obtained through ref discovery\&.
 .sp
 The client MUST write all obj\-ids which it only has shallow copies of (meaning that it does not have the parents of a commit) as \fIshallow\fR lines so that the server is aware of the limitations of the client\(cqs history\&.
@@ -348,7 +344,6 @@ Otherwise, if the client sent a positive depth request, the server will determin
 .RE
 .\}
 .sp
-.sp
 If the client has requested a positive depth, the server will compute the set of commits which are no deeper than the desired depth\&. The set of commits starts at the client\(cqs wants\&.
 .sp
 The server writes \fIshallow\fR lines for each commit whose parents will not be sent as a result\&. The server writes an \fIunshallow\fR line for each commit which the client has indicated is shallow, but is no longer shallow at the currently requested depth (that is, its parents will now be sent)\&. The server MUST NOT mark as unshallow anything which the client has not indicated was shallow\&.
@@ -369,7 +364,6 @@ Now the client will send a list of the obj\-ids it has using \fIhave\fR lines, s
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 If the server reads \fIhave\fR lines, it then will respond by ACKing any of the obj\-ids the client said it had that the server also has\&. The server will ACK obj\-ids differently depending on which ack mode is chosen by the client\&.
 .sp
@@ -483,7 +477,6 @@ Then the server will start sending its packfile data\&.
 .RE
 .\}
 .sp
-.sp
 A simple clone may look like this (with no \fIhave\fR lines):
 .sp
 .if n \{\
@@ -505,7 +498,6 @@ A simple clone may look like this (with no \fIhave\fR lines):
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 An incremental update (fetch) response might look like this:
 .sp
@@ -535,7 +527,6 @@ An incremental update (fetch) response might look like this:
 .if n \{\
 .RE
 .\}
-.sp
 .SH "PACKFILE DATA"
 .sp
 Now that the client and server have finished negotiation about what the minimal amount of data that needs to be sent to the client is, the server will construct and send the required data in packfile format\&.
@@ -603,7 +594,6 @@ This list is followed by a flush\-pkt\&.
 .RE
 .\}
 .sp
-.sp
 If the server has advertised the \fIpush\-options\fR capability and the client has specified \fIpush\-options\fR as part of the capability list above, the client then sends its push options followed by a flush\-pkt\&.
 .sp
 .if n \{\
@@ -615,7 +605,6 @@ If the server has advertised the \fIpush\-options\fR capability and the client h
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 For backwards compatibility with older Git servers, if the client sends a push cert and push options, it MUST send its push options both embedded within the push cert and after the push cert\&. (Note that the push options within the cert are prefixed, but the push options after the cert are not\&.) Both these lists MUST be the same, modulo the prefix\&.
 .sp
@@ -630,7 +619,6 @@ After that the packfile that should contain all the objects that the server will
 .if n \{\
 .RE
 .\}
-.sp
 .sp
 If the receiving end does not support delete\-refs, the sending end MUST NOT ask for delete command\&.
 .sp
@@ -649,7 +637,7 @@ Currently, the following header fields are defined:
 .PP
 \fBpusher\fR ident
 .RS 4
-Identify the GPG key in "Human Readable Name <\m[blue]\fBemail@address\fR\m[]\&\s-2\u[1]\d\s+2>" format\&.
+Identify the GPG key in "Human Readable Name <email@address>" format\&.
 .RE
 .PP
 \fBpushee\fR url
@@ -692,7 +680,6 @@ After receiving the pack data from the sender, the receiver sends a report if \f
 .RE
 .\}
 .sp
-.sp
 The \fIreport\-status\-v2\fR capability extends the protocol by adding new option lines in order to support reporting of reference rewritten by the \fIproc\-receive\fR hook\&. The \fIproc\-receive\fR hook may handle a command for a pseudo\-reference which may create or update one or more references, and each reference may have different name, different new\-oid, and different old\-oid\&.
 .sp
 .if n \{\
@@ -729,7 +716,6 @@ The \fIreport\-status\-v2\fR capability extends the protocol by adding new optio
 .RE
 .\}
 .sp
-.sp
 Updates can be unsuccessful for a number of reasons\&. The reference can have changed since the reference discovery phase was originally sent, meaning someone pushed in the meantime\&. The reference being pushed could be a non\-fast\-forward reference and the update hooks or configuration could be set to not allow that, etc\&. Also, some references can be updated while others can be rejected\&.
 .sp
 An example client/server communication might look like this:
@@ -756,13 +742,6 @@ An example client/server communication might look like this:
 .if n \{\
 .RE
 .\}
-.sp
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
-.SH "NOTES"
-.IP " 1." 4
-email@address
-.RS 4
-\%mailto:email@address
-.RE
