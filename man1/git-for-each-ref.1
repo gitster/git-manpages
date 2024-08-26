@@ -2,12 +2,12 @@
 .\"     Title: git-for-each-ref
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-08-23
+.\"      Date: 2024-08-26
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0.348.g6a09c36371
+.\"    Source: Git 2.46.0.421.g159f2d50e7
 .\"  Language: English
 .\"
-.TH "GIT\-FOR\-EACH\-REF" "1" "2024-08-23" "Git 2\&.46\&.0\&.348\&.g6a09c3" "Git Manual"
+.TH "GIT\-FOR\-EACH\-REF" "1" "2024-08-26" "Git 2\&.46\&.0\&.421\&.g159f2d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -409,6 +409,68 @@ ahead\-behind:<committish>
 Two integers, separated by a space, demonstrating the number of commits ahead and behind, respectively, when comparing the output ref to the
 \fB<committish>\fR
 specified in the format\&.
+.RE
+.PP
+is\-base:<committish>
+.RS 4
+In at most one row,
+\fB(<committish>)\fR
+will appear to indicate the ref that is most likely the ref used as a starting point for the branch that produced
+\fB<committish>\fR\&. This choice is made using a heuristic: choose the ref that minimizes the number of commits in the first\-parent history of
+\fB<committish>\fR
+and not in the first\-parent history of the ref\&.
+.sp
+For example, consider the following figure of first\-parent histories of several refs:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+*\-\-*\-\-*\-\-*\-\-*\-\-* refs/heads/A
+\e
+ \e
+  *\-\-*\-\-*\-\-* refs/heads/B
+   \e     \e
+    \e     \e
+     *     * refs/heads/C
+      \e
+       \e
+        *\-\-* refs/heads/D
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Here, if
+\fBA\fR,
+\fBB\fR, and
+\fBC\fR
+are the filtered references, and the format string is
+\fB%(refname):%(is\-base:D)\fR, then the output would be
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+refs/heads/A:
+refs/heads/B:(D)
+refs/heads/C:
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This is because the first\-parent history of
+\fBD\fR
+has its earliest intersection with the first\-parent histories of the filtered refs at a common first\-parent ancestor of
+\fBB\fR
+and
+\fBC\fR
+and ties are broken by the earliest ref in the sorted order\&.
+.sp
+Note that this token will not appear if the first\-parent history of
+\fB<committish>\fR
+does not intersect the first\-parent histories of the filtered refs\&.
 .RE
 .PP
 describe[:options]
