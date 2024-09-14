@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-09-12
+.\"      Date: 2024-09-13
 .\"    Manual: Git Manual
-.\"    Source: Git 2.46.0.581.g57974d46a4
+.\"    Source: Git 2.46.1.506.ged155187b4
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024-09-12" "Git 2\&.46\&.0\&.581\&.g57974d" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024-09-13" "Git 2\&.46\&.1\&.506\&.ged1551" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1358,8 +1358,12 @@ is deprecated, as it does not follow the usual naming convention for configurati
 .PP
 advice\&.*
 .RS 4
-These variables control various optional help messages designed to aid new users\&. When left unconfigured, Git will give the message alongside instructions on how to squelch it\&. You can tell Git that you do not need the help message by setting these to
-\fBfalse\fR:
+These variables control various optional help messages designed to aid new users\&. When left unconfigured, Git will give the message alongside instructions on how to squelch it\&. You can tell Git that you have understood the issue and no longer need a specific help message by setting the corresponding variable to
+\fBfalse\fR\&.
+.sp
+As they are intended to help human users, these messages are output to the standard error\&. When tools that run Git as a subprocess find them disruptive, they can set
+\fBGIT_ADVICE=0\fR
+in the environment to squelch all advice messages\&.
 .PP
 addEmbeddedRepo
 .RS 4
@@ -8977,22 +8981,19 @@ option was given on the command line\&.
 .PP
 remote\&.<name>\&.skipDefaultUpdate
 .RS 4
-If true, this remote will be skipped by default when updating using
-\fBgit-fetch\fR(1)
-or the
-\fBupdate\fR
-subcommand of
-\fBgit-remote\fR(1)\&.
+A deprecated synonym to
+\fBremote\&.<name>\&.skipFetchAll\fR
+(if both are set in the configuration files with different values, the value of the last occurrence will be used)\&.
 .RE
 .PP
 remote\&.<name>\&.skipFetchAll
 .RS 4
-If true, this remote will be skipped by default when updating using
-\fBgit-fetch\fR(1)
-or the
+If true, this remote will be skipped when updating using
+\fBgit-fetch\fR(1), the
 \fBupdate\fR
 subcommand of
-\fBgit-remote\fR(1)\&.
+\fBgit-remote\fR(1), and ignored by the prefetch task of
+\fBgit maitenance\fR\&.
 .RE
 .PP
 remote\&.<name>\&.receivepack
