@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -122,7 +122,8 @@ command at the end of the stream\&. This option might be useful for detecting er
 \-\-export\-marks=<file>
 .RS 4
 Dumps the internal marks table to <file> when complete\&. Marks are written one per line as
-\fB:markid SHA\-1\fR\&. Frontends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs\&. As <file> is only opened and truncated at checkpoint (or completion) the same path can also be safely given to \-\-import\-marks\&.
+\fB:markid\fR
+\fBSHA\-1\fR\&. Frontends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs\&. As <file> is only opened and truncated at checkpoint (or completion) the same path can also be safely given to \-\-import\-marks\&.
 .RE
 .PP
 \-\-import\-marks=<file>
@@ -146,8 +147,10 @@ Relative and non\-relative marks may be combined by interweaving \-\-(no\-)\-rel
 \-\-rewrite\-submodules\-from=<name>:<file>, \-\-rewrite\-submodules\-to=<name>:<file>
 .RS 4
 Rewrite the object IDs for the submodule specified by <name> from the values used in the from <file> to those used in the to <file>\&. The from marks should have been created by
-\fBgit fast\-export\fR, and the to marks should have been created by
-\fBgit fast\-import\fR
+\fBgit\fR
+\fBfast\-export\fR, and the to marks should have been created by
+\fBgit\fR
+\fBfast\-import\fR
 when importing that same submodule\&.
 .sp
 <name> may be any arbitrary string not containing a colon character, but the same value must be used with both options when specifying corresponding marks\&. Multiple submodules may be specified with different values for <name>\&. It is an error not to use these options in corresponding pairs\&.
@@ -199,7 +202,7 @@ Most bottlenecks appear to be in foreign source data access (the source just can
 A typical frontend for fast\-import tends to weigh in at approximately 200 lines of Perl/Python/Ruby code\&. Most developers have been able to create working importers in just a couple of hours, even though it is their first exposure to fast\-import, and sometimes even to Git\&. This is an ideal situation, given that most conversion tools are throw\-away (use once, and never look back)\&.
 .SH "PARALLEL OPERATION"
 .sp
-Like \fIgit push\fR or \fIgit fetch\fR, imports handled by fast\-import are safe to run alongside parallel \fBgit repack \-a \-d\fR or \fBgit gc\fR invocations, or any other Git operation (including \fIgit prune\fR, as loose objects are never used by fast\-import)\&.
+Like \fIgit push\fR or \fIgit fetch\fR, imports handled by fast\-import are safe to run alongside parallel \fBgit\fR \fBrepack\fR \fB\-a\fR \fB\-d\fR or \fBgit\fR \fBgc\fR invocations, or any other Git operation (including \fIgit prune\fR, as loose objects are never used by fast\-import)\&.
 .sp
 fast\-import does not lock the branch or tag refs it is actively importing\&. After the import, during its ref update phase, fast\-import tests each existing branch ref to verify the update will be a fast\-forward update (the commit stored in the ref is contained in the new history of the commit to be written)\&. If the update is not a fast\-forward update, fast\-import will skip updating that ref and instead prints a warning message\&. fast\-import will always attempt to update all branch refs, and does not stop on the first failure\&.
 .sp
@@ -216,7 +219,7 @@ With the exception of raw file data (which Git does not interpret) the fast\-imp
 fast\-import is very strict about its input\&. Where we say SP below we mean \fBexactly\fR one space\&. Likewise LF means one (and only one) linefeed and HT one (and only one) horizontal tab\&. Supplying additional whitespace characters will cause unexpected results, such as branch names or file names with leading or trailing spaces in their name, or early termination of fast\-import when it encounters unexpected input\&.
 .SS "Stream Comments"
 .sp
-To aid in debugging frontends fast\-import ignores any line that begins with \fB#\fR (ASCII pound/hash) up to and including the line ending \fBLF\fR\&. A comment line may contain any sequence of bytes that does not contain an LF and therefore may be used to include any detailed debugging information that might be specific to the frontend and useful when inspecting a fast\-import data stream\&.
+To aid in debugging frontends fast\-import ignores any line that begins with # (ASCII pound/hash) up to and including the line ending \fBLF\fR\&. A comment line may contain any sequence of bytes that does not contain an LF and therefore may be used to include any detailed debugging information that might be specific to the frontend and useful when inspecting a fast\-import data stream\&.
 .SS "Date Formats"
 .sp
 The following date formats are supported\&. A frontend should select the format it will use for this import by passing the format name in the \-\-date\-format=<fmt> command\-line option\&.
@@ -224,21 +227,23 @@ The following date formats are supported\&. A frontend should select the format 
 \fBraw\fR
 .RS 4
 This is the Git native format and is
-\fB<time> SP <offutc>\fR\&. It is also fast\-import\(cqs default format, if \-\-date\-format was not specified\&.
+\fI<time>\fR
+\fBSP\fR
+\fI<offutc>\fR\&. It is also fast\-import\(cqs default format, if \-\-date\-format was not specified\&.
 .sp
 The time of the event is specified by
-\fB<time>\fR
+\fI<time>\fR
 as the number of seconds since the UNIX epoch (midnight, Jan 1, 1970, UTC) and is written as an ASCII decimal integer\&.
 .sp
 The local offset is specified by
-\fB<offutc>\fR
+\fI<offutc>\fR
 as a positive or negative offset from UTC\&. For example EST (which is 5 hours behind UTC) would be expressed in
-\fB<tz>\fR
+\fI<tz>\fR
 by
 \(lq\-0500\(rq
 while UTC is
 \(lq+0000\(rq\&. The local offset does not affect
-\fB<time>\fR; it is used only as an advisement to help formatting routines display the timestamp\&.
+\fI<time>\fR; it is used only as an advisement to help formatting routines display the timestamp\&.
 .sp
 If the local offset is not available in the source material, use
 \(lq+0000\(rq, or the most common local offset\&. For example many organizations have a CVS repository which has only ever been accessed by users who are located in the same location and time zone\&. In this case a reasonable offset from UTC could be assumed\&.
@@ -282,7 +287,7 @@ format if the source material already uses UNIX\-epoch format, can be coaxed to 
 Always use the current time and time zone\&. The literal
 \fBnow\fR
 must always be supplied for
-\fB<when>\fR\&.
+\fI<when>\fR\&.
 .sp
 This is a toy format\&. The current time and time zone of this system is always copied into the identity string at the time it is being created by fast\-import\&. There is no way to specify a different time or time zone\&.
 .sp
@@ -349,7 +354,8 @@ Marks the end of the stream\&. This command is optional unless the
 feature was requested using the
 \fB\-\-done\fR
 command\-line option or
-\fBfeature done\fR
+\fBfeature\fR
+\fBdone\fR
 command\&.
 .RE
 .PP
@@ -416,7 +422,7 @@ Create or update a branch with a new commit, recording one logical change to the
 .RE
 .\}
 .sp
-where \fB<ref>\fR is the name of the branch to make the commit on\&. Typically branch names are prefixed with \fBrefs/heads/\fR in Git, so importing the CVS branch symbol \fBRELENG\-1_0\fR would use \fBrefs/heads/RELENG\-1_0\fR for the value of \fB<ref>\fR\&. The value of \fB<ref>\fR must be a valid refname in Git\&. As \fBLF\fR is not valid in a Git refname, no quoting or escaping syntax is supported here\&.
+where \fI<ref>\fR is the name of the branch to make the commit on\&. Typically branch names are prefixed with \fBrefs/heads/\fR in Git, so importing the CVS branch symbol \fBRELENG\-1_0\fR would use \fBrefs/heads/RELENG\-1_0\fR for the value of \fI<ref>\fR\&. The value of \fI<ref>\fR must be a valid refname in Git\&. As \fBLF\fR is not valid in a Git refname, no quoting or escaping syntax is supported here\&.
 .sp
 A \fBmark\fR command may optionally appear, requesting fast\-import to save a reference to the newly created commit for future use by the frontend (see below for format)\&. It is very common for frontends to mark every commit they create, thereby allowing future branch creation from any imported commit\&.
 .sp
@@ -447,9 +453,9 @@ An \fBauthor\fR command may optionally appear, if the author information might d
 .sp
 The \fBcommitter\fR command indicates who made this commit, and when they made it\&.
 .sp
-Here \fB<name>\fR is the person\(cqs display name (for example \(lqCom M Itter\(rq) and \fB<email>\fR is the person\(cqs email address (\(lqcm@example\&.com\(rq)\&. \fBLT\fR and \fBGT\fR are the literal less\-than (\ex3c) and greater\-than (\ex3e) symbols\&. These are required to delimit the email address from the other fields in the line\&. Note that \fB<name>\fR and \fB<email>\fR are free\-form and may contain any sequence of bytes, except \fBLT\fR, \fBGT\fR and \fBLF\fR\&. \fB<name>\fR is typically UTF\-8 encoded\&.
+Here \fI<name>\fR is the person\(cqs display name (for example \(lqCom M Itter\(rq) and \fI<email>\fR is the person\(cqs email address (\(lqcm@example\&.com\(rq)\&. \fBLT\fR and \fBGT\fR are the literal less\-than (\ex3c) and greater\-than (\ex3e) symbols\&. These are required to delimit the email address from the other fields in the line\&. Note that \fI<name>\fR and \fI<email>\fR are free\-form and may contain any sequence of bytes, except \fBLT\fR, \fBGT\fR and \fBLF\fR\&. \fI<name>\fR is typically UTF\-8 encoded\&.
 .sp
-The time of the change is specified by \fB<when>\fR using the date format that was selected by the \-\-date\-format=<fmt> command\-line option\&. See \(lqDate Formats\(rq above for the set of supported formats, and their syntax\&.
+The time of the change is specified by \fI<when>\fR using the date format that was selected by the \-\-date\-format=<fmt> command\-line option\&. See \(lqDate Formats\(rq above for the set of supported formats, and their syntax\&.
 .RE
 .sp
 .it 1 an-trap
@@ -475,9 +481,9 @@ The \fBfrom\fR command is used to specify the commit to initialize this branch f
 .sp
 Omitting the \fBfrom\fR command in the first commit of a new branch will cause fast\-import to create that commit with no ancestor\&. This tends to be desired only for the initial commit of a project\&. If the frontend creates all files from scratch when making a new branch, a \fBmerge\fR command may be used instead of \fBfrom\fR to start the commit with an empty tree\&. Omitting the \fBfrom\fR command on existing branches is usually desired, as the current commit on that branch is automatically assumed to be the first ancestor of the new commit\&.
 .sp
-As \fBLF\fR is not valid in a Git refname or SHA\-1 expression, no quoting or escaping syntax is supported within \fB<commit\-ish>\fR\&.
+As \fBLF\fR is not valid in a Git refname or SHA\-1 expression, no quoting or escaping syntax is supported within \fI<commit\-ish>\fR\&.
 .sp
-Here \fB<commit\-ish>\fR is any of the following:
+Here \fI<commit\-ish>\fR is any of the following:
 .sp
 .RS 4
 .ie n \{\
@@ -499,8 +505,8 @@ The name of an existing branch already in fast\-import\(cqs internal branch tabl
 .IP \(bu 2.3
 .\}
 A mark reference,
-\fB:<idnum>\fR, where
-\fB<idnum>\fR
+\fB:\fR\fI<idnum>\fR, where
+\fI<idnum>\fR
 is the mark number\&.
 .sp
 The reason fast\-import uses
@@ -577,7 +583,7 @@ The \fB^0\fR suffix is necessary as fast\-import does not permit a branch to sta
 .sp
 Includes one additional ancestor commit\&. The additional ancestry link does not change the way the tree state is built at this commit\&. If the \fBfrom\fR command is omitted when creating a new branch, the first \fBmerge\fR commit will be the first ancestor of the current commit, and the branch will start out with no files\&. An unlimited number of \fBmerge\fR commands per commit are permitted by fast\-import, thereby establishing an n\-way merge\&.
 .sp
-Here \fB<commit\-ish>\fR is any of the commit specification expressions also accepted by \fBfrom\fR (see above)\&.
+Here \fI<commit\-ish>\fR is any of the commit specification expressions also accepted by \fBfrom\fR (see above)\&.
 .RE
 .sp
 .it 1 an-trap
@@ -607,15 +613,14 @@ command\&. The frontend just needs to connect it\&.
 .\}
 .sp
 Here usually
-\fB<dataref>\fR
-must be either a mark reference (\fB:<idnum>\fR) set by a prior
+\fI<dataref>\fR
+must be either a mark reference (\fB:\fR\fI<idnum>\fR) set by a prior
 \fBblob\fR
 command, or a full 40\-byte SHA\-1 of an existing Git blob object\&. If
-\fB<mode>\fR
+\fI<mode>\fR
 is
-\fB040000`\fR
-then
-\fB<dataref>\fR
+\fB040000\fR` then
+\fI<dataref>\fR
 must be the full 40\-byte SHA\-1 of an existing Git tree object or a mark reference set with
 \fB\-\-import\-marks\fR\&.
 .RE
@@ -640,7 +645,7 @@ See below for a detailed description of the
 command\&.
 .RE
 .sp
-In both formats \fB<mode>\fR is the type of file entry, specified in octal\&. Git only supports the following modes:
+In both formats \fI<mode>\fR is the type of file entry, specified in octal\&. Git only supports the following modes:
 .sp
 .RS 4
 .ie n \{\
@@ -702,15 +707,15 @@ or
 \fB\-\-import\-marks\fR\&.
 .RE
 .sp
-In both formats \fB<path>\fR is the complete path of the file to be added (if not already existing) or modified (if already existing)\&.
+In both formats \fI<path>\fR is the complete path of the file to be added (if not already existing) or modified (if already existing)\&.
 .sp
-A \fB<path>\fR can be written as unquoted bytes or a C\-style quoted string\&.
+A \fI<path>\fR can be written as unquoted bytes or a C\-style quoted string\&.
 .sp
-When a \fB<path>\fR does not start with a double quote (\fB"\fR), it is an unquoted string and is parsed as literal bytes without any escape sequences\&. However, if the filename contains \fBLF\fR or starts with double quote, it cannot be represented as an unquoted string and must be quoted\&. Additionally, the source \fB<path>\fR in \fBfilecopy\fR or \fBfilerename\fR must be quoted if it contains SP\&.
+When a \fI<path>\fR does not start with a double quote ("), it is an unquoted string and is parsed as literal bytes without any escape sequences\&. However, if the filename contains \fBLF\fR or starts with double quote, it cannot be represented as an unquoted string and must be quoted\&. Additionally, the source \fI<path>\fR in \fBfilecopy\fR or \fBfilerename\fR must be quoted if it contains SP\&.
 .sp
-When a \fB<path>\fR starts with a double quote (\fB"\fR), it is a C\-style quoted string, where the complete filename is enclosed in a pair of double quotes and escape sequences are used\&. Certain characters must be escaped by preceding them with a backslash: \fBLF\fR is written as \fB\en\fR, backslash as \fB\e\e\fR, and double quote as \fB\e"\fR\&. Some characters may optionally be written with escape sequences: \fB\ea\fR for bell, \fB\eb\fR for backspace, \fB\ef\fR for form feed, \fB\en\fR for line feed, \fB\er\fR for carriage return, \fB\et\fR for horizontal tab, and \fB\ev\fR for vertical tab\&. Any byte can be written with 3\-digit octal codes (e\&.g\&., \fB\e033\fR)\&. All filenames can be represented as quoted strings\&.
+When a \fI<path>\fR starts with a double quote ("), it is a C\-style quoted string, where the complete filename is enclosed in a pair of double quotes and escape sequences are used\&. Certain characters must be escaped by preceding them with a backslash: \fBLF\fR is written as \en, backslash as \e\e, and double quote as \e"\&. Some characters may optionally be written with escape sequences: \ea for bell, \eb for backspace, \ef for form feed, \en for line feed, \er for carriage return, \et for horizontal tab, and \ev for vertical tab\&. Any byte can be written with 3\-digit octal codes (e\&.g\&., \e033)\&. All filenames can be represented as quoted strings\&.
 .sp
-A \fB<path>\fR must use UNIX\-style directory separators (forward slash \fB/\fR) and its value must be in canonical form\&. That is it must not:
+A \fI<path>\fR must use UNIX\-style directory separators (forward slash \fB/\fR) and its value must be in canonical form\&. That is it must not:
 .sp
 .RS 4
 .ie n \{\
@@ -759,20 +764,16 @@ is invalid),
 .sp -1
 .IP \(bu 2.3
 .\}
-contain the special component
-\fB\&.\fR
-or
-\fB\&.\&.\fR
-(e\&.g\&.
+contain the special component \&. or \&.\&. (e\&.g\&.
 \fBfoo/\&./bar\fR
 and
-\fBfoo/\&.\&./bar\fR
+\fBfoo/\fR\fB\&.\&.\fR\fB/bar\fR
 are invalid)\&.
 .RE
 .sp
-The root of the tree can be represented by an empty string as \fB<path>\fR\&.
+The root of the tree can be represented by an empty string as \fI<path>\fR\&.
 .sp
-\fB<path>\fR cannot contain NUL, either literally or escaped as \fB\e000\fR\&. It is recommended that \fB<path>\fR always be encoded using UTF\-8\&.
+\fI<path>\fR cannot contain NUL, either literally or escaped as \e000\&. It is recommended that \fI<path>\fR always be encoded using UTF\-8\&.
 .RE
 .sp
 .it 1 an-trap
@@ -795,7 +796,7 @@ Included in a \fBcommit\fR command to remove a file or recursively delete an ent
 .RE
 .\}
 .sp
-here \fB<path>\fR is the complete path of the file or subdirectory to be removed from the branch\&. See \fBfilemodify\fR above for a detailed description of \fB<path>\fR\&.
+here \fI<path>\fR is the complete path of the file or subdirectory to be removed from the branch\&. See \fBfilemodify\fR above for a detailed description of \fI<path>\fR\&.
 .RE
 .sp
 .it 1 an-trap
@@ -818,7 +819,7 @@ Recursively copies an existing file or subdirectory to a different location with
 .RE
 .\}
 .sp
-here the first \fB<path>\fR is the source location and the second \fB<path>\fR is the destination\&. See \fBfilemodify\fR above for a detailed description of what \fB<path>\fR may look like\&. To use a source path that contains SP the path must be quoted\&.
+here the first \fI<path>\fR is the source location and the second \fI<path>\fR is the destination\&. See \fBfilemodify\fR above for a detailed description of what \fI<path>\fR may look like\&. To use a source path that contains SP the path must be quoted\&.
 .sp
 A \fBfilecopy\fR command takes effect immediately\&. Once the source location has been copied to the destination any future commands applied to the source location will not impact the destination of the copy\&.
 .RE
@@ -843,7 +844,7 @@ Renames an existing file or subdirectory to a different location within the bran
 .RE
 .\}
 .sp
-here the first \fB<path>\fR is the source location and the second \fB<path>\fR is the destination\&. See \fBfilemodify\fR above for a detailed description of what \fB<path>\fR may look like\&. To use a source path that contains SP the path must be quoted\&.
+here the first \fI<path>\fR is the source location and the second \fI<path>\fR is the destination\&. See \fBfilemodify\fR above for a detailed description of what \fI<path>\fR may look like\&. To use a source path that contains SP the path must be quoted\&.
 .sp
 A \fBfilerename\fR command takes effect immediately\&. Once the source location has been renamed to the destination any future commands applied to the source location will create new files there and not impact the destination of the rename\&.
 .sp
@@ -883,7 +884,7 @@ Issuing a \fBfiledeleteall\fR followed by the needed \fBfilemodify\fR commands t
 \fBnotemodify\fR
 .RS 4
 .sp
-Included in a \fBcommit\fR \fB<notes\-ref>\fR command to add a new note annotating a \fB<commit\-ish>\fR or change this annotation contents\&. Internally it is similar to filemodify 100644 on \fB<commit\-ish>\fR path (maybe split into subdirectories)\&. It\(cqs not advised to use any other commands to write to the \fB<notes\-ref>\fR tree except \fBfiledeleteall\fR to delete all existing notes in this tree\&. This command has two different means of specifying the content of the note\&.
+Included in a \fBcommit\fR \fI<notes\-ref>\fR command to add a new note annotating a \fI<commit\-ish>\fR or change this annotation contents\&. Internally it is similar to filemodify 100644 on \fI<commit\-ish>\fR path (maybe split into subdirectories)\&. It\(cqs not advised to use any other commands to write to the \fI<notes\-ref>\fR tree except \fBfiledeleteall\fR to delete all existing notes in this tree\&. This command has two different means of specifying the content of the note\&.
 .PP
 External data format
 .RS 4
@@ -902,8 +903,8 @@ command\&. The frontend just needs to connect it to the commit that is to be ann
 .\}
 .sp
 Here
-\fB<dataref>\fR
-can be either a mark reference (\fB:<idnum>\fR) set by a prior
+\fI<dataref>\fR
+can be either a mark reference (\fB:\fR\fI<idnum>\fR) set by a prior
 \fBblob\fR
 command, or a full 40\-byte SHA\-1 of an existing Git blob object\&.
 .RE
@@ -928,7 +929,7 @@ See below for a detailed description of the
 command\&.
 .RE
 .sp
-In both formats \fB<commit\-ish>\fR is any of the commit specification expressions also accepted by \fBfrom\fR (see above)\&.
+In both formats \fI<commit\-ish>\fR is any of the commit specification expressions also accepted by \fBfrom\fR (see above)\&.
 .RE
 .SS "\fBmark\fR"
 .sp
@@ -944,9 +945,9 @@ Arranges for fast\-import to save a reference to the current object, allowing th
 .RE
 .\}
 .sp
-where \fB<idnum>\fR is the number assigned by the frontend to this mark\&. The value of \fB<idnum>\fR is expressed as an ASCII decimal integer\&. The value 0 is reserved and cannot be used as a mark\&. Only values greater than or equal to 1 may be used as marks\&.
+where \fI<idnum>\fR is the number assigned by the frontend to this mark\&. The value of \fI<idnum>\fR is expressed as an ASCII decimal integer\&. The value 0 is reserved and cannot be used as a mark\&. Only values greater than or equal to 1 may be used as marks\&.
 .sp
-New marks are created automatically\&. Existing marks can be moved to another object simply by reusing the same \fB<idnum>\fR in another \fBmark\fR command\&.
+New marks are created automatically\&. Existing marks can be moved to another object simply by reusing the same \fI<idnum>\fR in another \fBmark\fR command\&.
 .SS "\fBoriginal\-oid\fR"
 .sp
 Provides the name of the object in the original source control system\&. fast\-import will simply ignore this directive, but filter processes which operate on and modify the stream before feeding to fast\-import may have uses for this information
@@ -961,7 +962,7 @@ Provides the name of the object in the original source control system\&. fast\-i
 .RE
 .\}
 .sp
-where \fB<object\-identifier>\fR is any string not containing LF\&.
+where \fI<object\-identifier>\fR is any string not containing LF\&.
 .SS "\fBtag\fR"
 .sp
 Creates an annotated tag referring to a specific commit\&. To create lightweight (non\-annotated) tags see the \fBreset\fR command below\&.
@@ -981,11 +982,11 @@ Creates an annotated tag referring to a specific commit\&. To create lightweight
 .RE
 .\}
 .sp
-where \fB<name>\fR is the name of the tag to create\&.
+where \fI<name>\fR is the name of the tag to create\&.
 .sp
-Tag names are automatically prefixed with \fBrefs/tags/\fR when stored in Git, so importing the CVS branch symbol \fBRELENG\-1_0\-FINAL\fR would use just \fBRELENG\-1_0\-FINAL\fR for \fB<name>\fR, and fast\-import will write the corresponding ref as \fBrefs/tags/RELENG\-1_0\-FINAL\fR\&.
+Tag names are automatically prefixed with \fBrefs/tags/\fR when stored in Git, so importing the CVS branch symbol \fBRELENG\-1_0\-FINAL\fR would use just \fBRELENG\-1_0\-FINAL\fR for \fI<name>\fR, and fast\-import will write the corresponding ref as \fBrefs/tags/RELENG\-1_0\-FINAL\fR\&.
 .sp
-The value of \fB<name>\fR must be a valid refname in Git and therefore may contain forward slashes\&. As \fBLF\fR is not valid in a Git refname, no quoting or escaping syntax is supported here\&.
+The value of \fI<name>\fR must be a valid refname in Git and therefore may contain forward slashes\&. As \fBLF\fR is not valid in a Git refname, no quoting or escaping syntax is supported here\&.
 .sp
 The \fBfrom\fR command is the same as in the \fBcommit\fR command; see above for details\&.
 .sp
@@ -1010,7 +1011,7 @@ Creates (or recreates) the named branch, optionally starting from a specific rev
 .RE
 .\}
 .sp
-For a detailed description of \fB<ref>\fR and \fB<commit\-ish>\fR see above under \fBcommit\fR and \fBfrom\fR\&.
+For a detailed description of \fI<ref>\fR and \fI<commit\-ish>\fR see above under \fBcommit\fR and \fBfrom\fR\&.
 .sp
 The \fBLF\fR after the command is optional (it used to be required)\&.
 .sp
@@ -1050,7 +1051,7 @@ The mark command is optional here as some frontends have chosen to generate the 
 .sp
 Supplies raw data (for use as blob/file content, commit messages, or annotated tag messages) to fast\-import\&. Data can be supplied using an exact byte count or delimited with a terminating line\&. Real frontends intended for production\-quality conversions should always use the exact byte count format, as it is more robust and performs better\&. The delimited format is intended primarily for testing fast\-import\&.
 .sp
-Comment lines appearing within the \fB<raw>\fR part of \fBdata\fR commands are always taken to be part of the body of the data and are therefore never ignored by fast\-import\&. This makes it safe to import any file/message content whose lines might start with \fB#\fR\&.
+Comment lines appearing within the \fI<raw>\fR part of \fBdata\fR commands are always taken to be part of the body of the data and are therefore never ignored by fast\-import\&. This makes it safe to import any file/message content whose lines might start with #\&.
 .PP
 Exact byte count format
 .RS 4
@@ -1068,24 +1069,24 @@ The frontend must specify the number of bytes of data\&.
 .\}
 .sp
 where
-\fB<count>\fR
+\fI<count>\fR
 is the exact number of bytes appearing within
-\fB<raw>\fR\&. The value of
-\fB<count>\fR
+\fI<raw>\fR\&. The value of
+\fI<count>\fR
 is expressed as an ASCII decimal integer\&. The
 \fBLF\fR
 on either side of
-\fB<raw>\fR
+\fI<raw>\fR
 is not included in
-\fB<count>\fR
+\fI<count>\fR
 and will not be included in the imported data\&.
 .sp
 The
 \fBLF\fR
 after
-\fB<raw>\fR
+\fI<raw>\fR
 is optional (it used to be required) but recommended\&. Always including it makes debugging a fast\-import stream easier as the next command always starts in column 0 of the next line, even if
-\fB<raw>\fR
+\fI<raw>\fR
 did not end with an
 \fBLF\fR\&.
 .RE
@@ -1108,21 +1109,22 @@ A delimiter string is used to mark the end of the data\&. fast\-import will comp
 .\}
 .sp
 where
-\fB<delim>\fR
+\fI<delim>\fR
 is the chosen delimiter string\&. The string
-\fB<delim>\fR
+\fI<delim>\fR
 must not appear on a line by itself within
-\fB<raw>\fR, as otherwise fast\-import will think the data ends earlier than it really does\&. The
+\fI<raw>\fR, as otherwise fast\-import will think the data ends earlier than it really does\&. The
 \fBLF\fR
 immediately trailing
-\fB<raw>\fR
+\fI<raw>\fR
 is part of
-\fB<raw>\fR\&. This is one of the limitations of the delimited format, it is impossible to supply a data chunk which does not have an LF as its last byte\&.
+\fI<raw>\fR\&. This is one of the limitations of the delimited format, it is impossible to supply a data chunk which does not have an LF as its last byte\&.
 .sp
 The
 \fBLF\fR
 after
-\fB<delim> LF\fR
+\fI<delim>\fR
+\fBLF\fR
 is optional (it used to be required)\&.
 .RE
 .SS "\fBalias\fR"
@@ -1142,7 +1144,7 @@ Record that a mark refers to a given object without first creating any new objec
 .RE
 .\}
 .sp
-For a detailed description of \fB<commit\-ish>\fR see above under \fBfrom\fR\&.
+For a detailed description of \fI<commit\-ish>\fR see above under \fBfrom\fR\&.
 .SS "\fBcheckpoint\fR"
 .sp
 Forces fast\-import to close the current packfile, start a new one, and to save out all current branch refs, tags and marks\&.
@@ -1180,7 +1182,7 @@ Causes fast\-import to print the entire \fBprogress\fR line unmodified to its st
 .RE
 .\}
 .sp
-The \fB<any>\fR part of the command may contain any sequence of bytes that does not contain \fBLF\fR\&. The \fBLF\fR after the command is optional\&. Callers may wish to process the output through a tool such as sed to remove the leading part of the line, for example:
+The \fI<any>\fR part of the command may contain any sequence of bytes that does not contain \fBLF\fR\&. The \fBLF\fR after the command is optional\&. Callers may wish to process the output through a tool such as sed to remove the leading part of the line, for example:
 .sp
 .if n \{\
 .RS 4
@@ -1222,9 +1224,9 @@ Causes fast\-import to print a blob to a file descriptor previously arranged wit
 .RE
 .\}
 .sp
-The \fB<dataref>\fR can be either a mark reference (\fB:<idnum>\fR) set previously or a full 40\-byte SHA\-1 of a Git blob, preexisting or ready to be written\&.
+The \fI<dataref>\fR can be either a mark reference (\fB:\fR\fI<idnum>\fR) set previously or a full 40\-byte SHA\-1 of a Git blob, preexisting or ready to be written\&.
 .sp
-Output uses the same format as \fBgit cat\-file \-\-batch\fR:
+Output uses the same format as \fBgit\fR \fBcat\-file\fR \fB\-\-batch\fR:
 .sp
 .if n \{\
 .RS 4
@@ -1265,9 +1267,9 @@ This form can only be used in the middle of a
 Reading from a named tree
 .RS 4
 The
-\fB<dataref>\fR
-can be a mark reference (\fB:<idnum>\fR) or the full 40\-byte SHA\-1 of a Git tag, commit, or tree object, preexisting or waiting to be written\&. The path is relative to the top level of the tree named by
-\fB<dataref>\fR\&.
+\fI<dataref>\fR
+can be a mark reference (\fB:\fR\fI<idnum>\fR) or the full 40\-byte SHA\-1 of a Git tag, commit, or tree object, preexisting or waiting to be written\&. The path is relative to the top level of the tree named by
+\fI<dataref>\fR\&.
 .sp
 .if n \{\
 .RS 4
@@ -1280,9 +1282,9 @@ can be a mark reference (\fB:<idnum>\fR) or the full 40\-byte SHA\-1 of a Git ta
 .\}
 .RE
 .sp
-See \fBfilemodify\fR above for a detailed description of \fB<path>\fR\&.
+See \fBfilemodify\fR above for a detailed description of \fI<path>\fR\&.
 .sp
-Output uses the same format as \fBgit ls\-tree <tree> \-\- <path>\fR:
+Output uses the same format as \fBgit\fR \fBls\-tree\fR \fI<tree>\fR \fB\-\-\fR \fI<path>\fR:
 .sp
 .if n \{\
 .RS 4
@@ -1375,7 +1377,7 @@ Processes the specified option so that git fast\-import behaves in a way that su
 .RE
 .\}
 .sp
-The \fB<option>\fR part of the command may contain any of the options listed in the OPTIONS section that do not change import semantics, without the leading \fB\-\-\fR and is treated in the same way\&.
+The \fI<option>\fR part of the command may contain any of the options listed in the OPTIONS section that do not change import semantics, without the leading \fB\-\-\fR and is treated in the same way\&.
 .sp
 Option commands must be the first commands on the input (not counting feature commands), to give an option command after any non\-option command is an error\&.
 .sp
@@ -1439,7 +1441,7 @@ force
 .sp
 If the \fBdone\fR feature is not in use, treated as if EOF was read\&. This can be used to tell fast\-import to finish early\&.
 .sp
-If the \fB\-\-done\fR command\-line option or \fBfeature done\fR command is in use, the \fBdone\fR command is mandatory and marks the end of the stream\&.
+If the \fB\-\-done\fR command\-line option or \fBfeature\fR \fBdone\fR command is in use, the \fBdone\fR command is mandatory and marks the end of the stream\&.
 .SH "RESPONSES TO COMMANDS"
 .sp
 New objects written by fast\-import are not available immediately\&. Most fast\-import commands have no visible effect until the next checkpoint (or completion)\&. The frontend can send commands to fill fast\-import\(cqs input pipe without worrying about how quickly they will take effect, which improves performance by simplifying scheduling\&.
@@ -1606,7 +1608,7 @@ END OF CRASH REPORT
 The following tips and tricks have been collected from various users of fast\-import, and are offered here as suggestions\&.
 .SS "Use One Mark Per Commit"
 .sp
-When doing a repository conversion, use a unique mark per commit (\fBmark :<n>\fR) and supply the \-\-export\-marks option on the command line\&. fast\-import will dump a file which lists every mark and the Git object SHA\-1 that corresponds to it\&. If the frontend can tie the marks back to the source repository, it is easy to verify the accuracy and completeness of the import by comparing each Git commit to the corresponding source revision\&.
+When doing a repository conversion, use a unique mark per commit (\fBmark\fR \fB:\fR\fI<n>\fR) and supply the \-\-export\-marks option on the command line\&. fast\-import will dump a file which lists every mark and the Git object SHA\-1 that corresponds to it\&. If the frontend can tie the marks back to the source repository, it is easy to verify the accuracy and completeness of the import by comparing each Git commit to the corresponding source revision\&.
 .sp
 Coming from a system such as Perforce or Subversion, this should be quite simple, as the fast\-import mark can also be the Perforce changeset number or the Subversion revision number\&.
 .SS "Freely Skip Around Branches"
@@ -1627,7 +1629,7 @@ For example since all normal branches are stored under \fBrefs/heads/\fR name th
 .sp
 When committing fixups, consider using \fBmerge\fR to connect the commit(s) which are supplying file revisions to the fixup branch\&. Doing so will allow tools such as \fIgit blame\fR to track through the real commit history and properly annotate the source files\&.
 .sp
-After fast\-import terminates the frontend will need to do \fBrm \&.git/TAG_FIXUP\fR to remove the dummy branch\&.
+After fast\-import terminates the frontend will need to do \fBrm\fR \fB\&.git/TAG_FIXUP\fR to remove the dummy branch\&.
 .SS "Import Now, Repack Later"
 .sp
 As soon as fast\-import completes the Git repository is completely valid and ready for use\&. Typically this takes only a very short time, even for considerably large projects (100,000+ commits)\&.
@@ -1649,9 +1651,9 @@ Frontends which have efficient access to all revisions of a single file (for exa
 .sp
 The packfile(s) created by fast\-import do not encourage good disk access patterns\&. This is caused by fast\-import writing the data in the order it is received on standard input, while Git typically organizes data within packfiles to make the most recent (current tip) data appear before historical data\&. Git also clusters commits together, speeding up revision traversal through better cache locality\&.
 .sp
-For this reason it is strongly recommended that users repack the repository with \fBgit repack \-a \-d\fR after fast\-import completes, allowing Git to reorganize the packfiles for faster data access\&. If blob deltas are suboptimal (see above) then also adding the \fB\-f\fR option to force recomputation of all deltas can significantly reduce the final packfile size (30\-50% smaller can be quite typical)\&.
+For this reason it is strongly recommended that users repack the repository with \fBgit\fR \fBrepack\fR \fB\-a\fR \fB\-d\fR after fast\-import completes, allowing Git to reorganize the packfiles for faster data access\&. If blob deltas are suboptimal (see above) then also adding the \fB\-f\fR option to force recomputation of all deltas can significantly reduce the final packfile size (30\-50% smaller can be quite typical)\&.
 .sp
-Instead of running \fBgit repack\fR you can also run \fBgit gc \-\-aggressive\fR, which will also optimize other things after an import (e\&.g\&. pack loose refs)\&. As noted in the "AGGRESSIVE" section in \fBgit-gc\fR(1) the \fB\-\-aggressive\fR option will find new deltas with the \fB\-f\fR option to \fBgit-repack\fR(1)\&. For the reasons elaborated on above using \fB\-\-aggressive\fR after a fast\-import is one of the few cases where it\(cqs known to be worthwhile\&.
+Instead of running \fBgit\fR \fBrepack\fR you can also run \fBgit\fR \fBgc\fR \fB\-\-aggressive\fR, which will also optimize other things after an import (e\&.g\&. pack loose refs)\&. As noted in the "AGGRESSIVE" section in \fBgit-gc\fR(1) the \fB\-\-aggressive\fR option will find new deltas with the \fB\-f\fR option to \fBgit-repack\fR(1)\&. For the reasons elaborated on above using \fB\-\-aggressive\fR after a fast\-import is one of the few cases where it\(cqs known to be worthwhile\&.
 .SH "MEMORY UTILIZATION"
 .sp
 There are a number of factors which affect how much memory fast\-import requires to perform an import\&. Like critical sections of core Git, fast\-import uses its own memory allocators to amortize any overheads associated with malloc\&. In practice fast\-import tends to amortize any malloc overheads to 0, due to its use of large block allocations\&.

@@ -2,12 +2,12 @@
 .\"     Title: git-cherry-pick
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-CHERRY\-PICK" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-CHERRY\-PICK" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -88,10 +88,7 @@ Paths in which the change applied cleanly are updated both in the index file and
 .IP "  4." 4.2
 .\}
 For conflicting paths, the index file records up to three versions, as described in the "TRUE MERGE" section of
-\fBgit-merge\fR(1)\&. The working tree files will include a description of the conflict bracketed by the usual conflict markers
-\fB<<<<<<<\fR
-and
-\fB>>>>>>>\fR\&.
+\fBgit-merge\fR(1)\&. The working tree files will include a description of the conflict bracketed by the usual conflict markers <<<<<<< and >>>>>>>\&.
 .RE
 .sp
 .RS 4
@@ -194,7 +191,9 @@ If the current HEAD is the same as the parent of the cherry\-pick\(cqed commit, 
 \-\-allow\-empty
 .RS 4
 By default, cherry\-picking an empty commit will fail, indicating that an explicit invocation of
-\fBgit commit \-\-allow\-empty\fR
+\fBgit\fR
+\fBcommit\fR
+\fB\-\-allow\-empty\fR
 is required\&. This option overrides that behavior, allowing empty commits to be preserved automatically in a cherry\-pick\&. Note that when "\-\-ff" is in effect, empty commits that meet the "fast\-forward" requirement will be kept even without this option\&. Note also, that use of this option only keeps commits that were initially empty (i\&.e\&. the commit recorded the same tree as its parent)\&. Commits which are made empty due to a previous commit will cause the cherry\-pick to fail\&. To force the inclusion of those commits, use
 \fB\-\-empty=keep\fR\&.
 .RE
@@ -262,14 +261,14 @@ After the rerere mechanism reuses a recorded resolution on the current conflict 
 is a good way to double\-check what
 \fBrerere\fR
 did and catch potential mismerges, before committing the result to the index with a separate
-\fBgit add\fR\&.
+\fBgit\fR
+\fBadd\fR\&.
 .RE
 .SH "SEQUENCER SUBCOMMANDS"
 .PP
 \-\-continue
 .RS 4
-Continue the operation in progress using the information in
-\fB\&.git/sequencer\fR\&. Can be used to continue after resolving conflicts in a failed cherry\-pick or revert\&.
+Continue the operation in progress using the information in \&.\fBgit/sequencer\fR\&. Can be used to continue after resolving conflicts in a failed cherry\-pick or revert\&.
 .RE
 .PP
 \-\-skip
@@ -288,17 +287,17 @@ Cancel the operation and return to the pre\-sequence state\&.
 .RE
 .SH "EXAMPLES"
 .PP
-\fBgit cherry\-pick master\fR
+\fBgit\fR \fBcherry\-pick\fR \fBmaster\fR
 .RS 4
 Apply the change introduced by the commit at the tip of the master branch and create a new commit with this change\&.
 .RE
 .PP
-\fBgit cherry\-pick \&.\&.master\fR, \fBgit cherry\-pick ^HEAD master\fR
+\fBgit\fR \fBcherry\-pick\fR \fB\&.\&.\fR\fBmaster\fR, \fBgit\fR \fBcherry\-pick\fR \fB^HEAD\fR \fBmaster\fR
 .RS 4
 Apply the changes introduced by all commits that are ancestors of master but not of HEAD to produce new commits\&.
 .RE
 .PP
-\fBgit cherry\-pick maint next ^master\fR, \fBgit cherry\-pick maint master\&.\&.next\fR
+\fBgit\fR \fBcherry\-pick\fR \fBmaint\fR \fBnext\fR \fB^master\fR, \fBgit\fR \fBcherry\-pick\fR \fBmaint\fR \fBmaster\fR\fB\&.\&.\fR\fBnext\fR
 .RS 4
 Apply the changes introduced by all commits that are ancestors of maint or next, but not master or any of its ancestors\&. Note that the latter does not mean
 \fBmaint\fR
@@ -311,22 +310,22 @@ will not be used if it is included in
 \fBmaster\fR\&.
 .RE
 .PP
-\fBgit cherry\-pick master~4 master~2\fR
+\fBgit\fR \fBcherry\-pick\fR \fBmaster~4\fR \fBmaster~2\fR
 .RS 4
 Apply the changes introduced by the fifth and third last commits pointed to by master and create 2 new commits with these changes\&.
 .RE
 .PP
-\fBgit cherry\-pick \-n master~1 next\fR
+\fBgit\fR \fBcherry\-pick\fR \fB\-n\fR \fBmaster~1\fR \fBnext\fR
 .RS 4
 Apply to the working tree and the index the changes introduced by the second last commit pointed to by master and by the last commit pointed to by next, but do not create any commit with these changes\&.
 .RE
 .PP
-\fBgit cherry\-pick \-\-ff \&.\&.next\fR
+\fBgit\fR \fBcherry\-pick\fR \fB\-\-ff\fR \fB\&.\&.\fR\fBnext\fR
 .RS 4
 If history is linear and HEAD is an ancestor of next, update the working tree and advance the HEAD pointer to match next\&. Otherwise, apply the changes introduced by those commits that are in next but not HEAD to the current branch, creating a new commit for each new change\&.
 .RE
 .PP
-\fBgit rev\-list \-\-reverse master \-\- README | git cherry\-pick \-n \-\-stdin\fR
+\fBgit\fR \fBrev\-list\fR \fB\-\-reverse\fR \fBmaster\fR \fB\-\-\fR \fBREADME\fR | \fBgit\fR \fBcherry\-pick\fR \fB\-n\fR \fB\-\-stdin\fR
 .RS 4
 Apply the changes introduced by all commits on the master branch that touched README to the working tree and index, so the result can be inspected and made into a single new commit if suitable\&.
 .RE
@@ -350,7 +349,9 @@ tab(:);
 r lw(\n(.lu*75u/100u).
 \fB1.\fR\h'-2n':T{
 apply the change that would be shown by
-\fBgit show topic^\fR\&. In this example, the patch does not apply cleanly, so information about the conflict is written to the index and working tree and no new commit results\&.
+\fBgit\fR
+\fBshow\fR
+\fBtopic^\fR\&. In this example, the patch does not apply cleanly, so information about the conflict is written to the index and working tree and no new commit results\&.
 T}
 \fB2.\fR\h'-2n':T{
 summarize changes to be reconciled

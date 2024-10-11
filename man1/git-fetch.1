@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-FETCH" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -47,21 +47,19 @@ By default, any tag that points into the histories being fetched is also fetched
 .sp
 When no remote is specified, by default the \fBorigin\fR remote will be used, unless there\(cqs an upstream branch configured for the current branch\&.
 .sp
-The names of refs that are fetched, together with the object names they point at, are written to \fB\&.git/FETCH_HEAD\fR\&. This information may be used by scripts or other git commands, such as \fBgit-pull\fR(1)\&.
+The names of refs that are fetched, together with the object names they point at, are written to \&.\fBgit/FETCH_HEAD\fR\&. This information may be used by scripts or other git commands, such as \fBgit-pull\fR(1)\&.
 .SH "OPTIONS"
 .PP
 \-\-[no\-]all
 .RS 4
 Fetch all remotes, except for the ones that has the
-\fBremote\&.<name>\&.skipFetchAll\fR
+\fBremote\&.\fR\fI<name>\fR\fB\&.skipFetchAll\fR
 configuration variable set\&. This overrides the configuration variable fetch\&.all`\&.
 .RE
 .PP
 \-a, \-\-append
 .RS 4
-Append ref names and object names of fetched refs to the existing contents of
-\fB\&.git/FETCH_HEAD\fR\&. Without this option old data in
-\fB\&.git/FETCH_HEAD\fR
+Append ref names and object names of fetched refs to the existing contents of \&.\fBgit/FETCH_HEAD\fR\&. Without this option old data in \&.\fBgit/FETCH_HEAD\fR
 will be overwritten\&.
 .RE
 .PP
@@ -75,9 +73,10 @@ Use an atomic transaction to update local refs\&. Either all refs are updated, o
 Limit fetching to the specified number of commits from the tip of each remote branch history\&. If fetching to a
 \fIshallow\fR
 repository created by
-\fBgit clone\fR
+\fBgit\fR
+\fBclone\fR
 with
-\fB\-\-depth=<depth>\fR
+\fB\-\-depth=\fR\fI<depth>\fR
 option (see
 \fBgit-clone\fR(1)), deepen or shorten the history to the specified number of commits\&. Tags for the deepened commits are not fetched\&.
 .RE
@@ -107,7 +106,8 @@ If the source repository is shallow, fetch as much as possible so that the curre
 \-\-update\-shallow
 .RS 4
 By default when fetching from a shallow repository,
-\fBgit fetch\fR
+\fBgit\fR
+\fBfetch\fR
 refuses refs that require updating \&.git/shallow\&. This option updates \&.git/shallow and accepts such refs\&.
 .RE
 .PP
@@ -132,11 +132,10 @@ option below\&.
 \-\-negotiate\-only
 .RS 4
 Do not fetch anything from the server, and instead print the ancestors of the provided
-\fB\-\-negotiation\-tip=*\fR
-arguments, which we have in common with the server\&.
+\fB\-\-negotiation\-tip=\fR* arguments, which we have in common with the server\&.
 .sp
 This is incompatible with
-\fB\-\-recurse\-submodules=[yes|on\-demand]\fR\&. Internally this is used to implement the
+\fB\-\-recurse\-submodules=\fR[\fByes\fR|\fBon\-demand\fR]\&. Internally this is used to implement the
 \fBpush\&.negotiate\fR
 option, see
 \fBgit-config\fR(1)\&.
@@ -154,8 +153,7 @@ Print the output to standard output in an easy\-to\-parse format for scripts\&. 
 for details\&.
 .sp
 This is incompatible with
-\fB\-\-recurse\-submodules=[yes|on\-demand]\fR
-and takes precedence over the
+\fB\-\-recurse\-submodules=\fR[\fByes\fR|\fBon\-demand\fR] and takes precedence over the
 \fBfetch\&.output\fR
 config option\&.
 .RE
@@ -177,9 +175,9 @@ option, the file is never written\&.
 When
 \fIgit fetch\fR
 is used with
-\fB<src>:<dst>\fR
+\fI<src>\fR\fB:\fR\fI<dst>\fR
 refspec, it may refuse to update the local branch as discussed in the
-\fB<refspec>\fR
+\fI<refspec>\fR
 part below\&. This option overrides that check\&.
 .RE
 .PP
@@ -196,8 +194,11 @@ Allow several <repository> and <group> arguments to be specified\&. No <refspec>
 \-\-[no\-]auto\-maintenance, \-\-[no\-]auto\-gc
 .RS 4
 Run
-\fBgit maintenance run \-\-auto\fR
-at the end to perform automatic repository maintenance if needed\&. (\fB\-\-[no\-]auto\-gc\fR
+\fBgit\fR
+\fBmaintenance\fR
+\fBrun\fR
+\fB\-\-auto\fR
+at the end to perform automatic repository maintenance if needed\&. (\fB\-\-\fR[\fBno\-\fR]\fBauto\-gc\fR
 is a synonym\&.) This is enabled by default\&.
 .RE
 .PP
@@ -254,9 +255,9 @@ when the filter definition has changed\&. Automatic post\-fetch maintenance will
 \-\-refmap=<refspec>
 .RS 4
 When fetching refs listed on the command line, use the specified refspec (can be given more than once) to map the refs to remote\-tracking branches, instead of the values of
-\fBremote\&.*\&.fetch\fR
+\fBremote\&.\fR*\&.\fBfetch\fR
 configuration variables for the remote repository\&. Providing an empty
-\fB<refspec>\fR
+\fI<refspec>\fR
 to the
 \fB\-\-refmap\fR
 option causes Git to ignore the configured refspecs and rely entirely on the refspecs supplied as command\-line arguments\&. See section on "Configured Remote\-tracking Branches" for details\&.
@@ -265,20 +266,22 @@ option causes Git to ignore the configured refspecs and rely entirely on the ref
 \-t, \-\-tags
 .RS 4
 Fetch all tags from the remote (i\&.e\&., fetch remote tags
-\fBrefs/tags/*\fR
-into local tags with the same name), in addition to whatever else would otherwise be fetched\&. Using this option alone does not subject tags to pruning, even if \-\-prune is used (though tags may be pruned anyway if they are also the destination of an explicit refspec; see
+\fBrefs/tags/\fR* into local tags with the same name), in addition to whatever else would otherwise be fetched\&. Using this option alone does not subject tags to pruning, even if \-\-prune is used (though tags may be pruned anyway if they are also the destination of an explicit refspec; see
 \fB\-\-prune\fR)\&.
 .RE
 .PP
 \-\-recurse\-submodules[=(yes|on\-demand|no)]
 .RS 4
 This option controls if and under what conditions new commits of submodules should be fetched too\&. When recursing through submodules,
-\fBgit fetch\fR
+\fBgit\fR
+\fBfetch\fR
 always attempts to fetch "changed" submodules, that is, a submodule that has commits that are referenced by a newly fetched superproject commit but are missing in the local submodule clone\&. A changed submodule can be fetched as long as it is present locally e\&.g\&. in
 \fB$GIT_DIR/modules/\fR
 (see
 \fBgitsubmodules\fR(7)); if the upstream adds a new submodule, that submodule cannot be fetched until it is cloned e\&.g\&. by
-\fBgit submodule update\fR\&.
+\fBgit\fR
+\fBsubmodule\fR
+\fBupdate\fR\&.
 .sp
 When set to
 \fIon\-demand\fR, only changed submodules are fetched\&. When set to
@@ -322,9 +325,9 @@ option)\&.
 If the remote is fetched successfully, add upstream (tracking) reference, used by argument\-less
 \fBgit-pull\fR(1)
 and other commands\&. For more information, see
-\fBbranch\&.<name>\&.merge\fR
+\fBbranch\&.\fR\fI<name>\fR\fB\&.merge\fR
 and
-\fBbranch\&.<name>\&.remote\fR
+\fBbranch\&.\fR\fI<name>\fR\fB\&.remote\fR
 in
 \fBgit-config\fR(1)\&.
 .RE
@@ -356,7 +359,7 @@ to communicate with
 .RS 4
 When given, and the repository to fetch from is handled by
 \fIgit fetch\-pack\fR,
-\fB\-\-exec=<upload\-pack>\fR
+\fB\-\-exec=\fR\fI<upload\-pack>\fR
 is passed to the command to specify non\-default path for the command run on the other end\&.
 .RE
 .PP
@@ -378,7 +381,7 @@ Progress status is reported on the standard error stream by default when it is a
 \-o <option>, \-\-server\-option=<option>
 .RS 4
 Transmit the given string to the server when communicating using protocol version 2\&. The given string must not contain a NUL or LF character\&. The server\(cqs handling of server options, including unknown ones, is server\-specific\&. When multiple
-\fB\-\-server\-option=<option>\fR
+\fB\-\-server\-option=\fR\fI<option>\fR
 are given, they are all sent to the other side in the order listed on the command line\&.
 .RE
 .PP
@@ -424,7 +427,7 @@ A name referring to a list of repositories as the value of remotes\&.<group> in 
 <refspec>
 .RS 4
 Specifies which refs to fetch and which local refs to update\&. When no <refspec>s appear on the command line, the refs to fetch are read from
-\fBremote\&.<repository>\&.fetch\fR
+\fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR
 variables instead (see
 CONFIGURED REMOTE\-TRACKING BRANCHES
 below)\&.
@@ -433,28 +436,22 @@ The format of a <refspec> parameter is an optional plus
 \fB+\fR, followed by the source <src>, followed by a colon
 \fB:\fR, followed by the destination ref <dst>\&. The colon can be omitted when <dst> is empty\&. <src> is typically a ref, but it can also be a fully spelled hex object name\&.
 .sp
-A <refspec> may contain a
-\fB*\fR
-in its <src> to indicate a simple pattern match\&. Such a refspec functions like a glob that matches any ref with the same prefix\&. A pattern <refspec> must have a
-\fB*\fR
-in both the <src> and <dst>\&. It will map refs to the destination by replacing the
-\fB*\fR
-with the contents matched from the source\&.
+A <refspec> may contain a * in its <src> to indicate a simple pattern match\&. Such a refspec functions like a glob that matches any ref with the same prefix\&. A pattern <refspec> must have a * in both the <src> and <dst>\&. It will map refs to the destination by replacing the * with the contents matched from the source\&.
 .sp
 If a refspec is prefixed by
 \fB^\fR, it will be interpreted as a negative refspec\&. Rather than specifying which refs to fetch or which local refs to update, such a refspec will instead specify refs to exclude\&. A ref will be considered to match if it matches at least one positive refspec, and does not match any negative refspec\&. Negative refspecs can be useful to restrict the scope of a pattern refspec so that it will not include specific refs\&. Negative refspecs can themselves be pattern refspecs\&. However, they may only contain a <src> and do not specify a <dst>\&. Fully spelled out hex object names are also not supported\&.
 .sp
-\fBtag <tag>\fR
+\fBtag\fR
+\fI<tag>\fR
 means the same as
-\fBrefs/tags/<tag>:refs/tags/<tag>\fR; it requests fetching everything up to the given tag\&.
+\fBrefs/tags/\fR\fI<tag>\fR\fB:refs/tags/\fR\fI<tag>\fR; it requests fetching everything up to the given tag\&.
 .sp
 The remote ref that matches <src> is fetched, and if <dst> is not an empty string, an attempt is made to update the local ref that matches it\&.
 .sp
 Whether that update is allowed without
 \fB\-\-force\fR
 depends on the ref namespace it\(cqs being fetched to, the type of object being fetched, and whether the update is considered to be a fast\-forward\&. Generally, the same rules apply for fetching as when pushing, see the
-\fB<refspec>\&.\&.\&.\fR
-section of
+\fI<refspec>\fR\&.\&.\&. section of
 \fBgit-push\fR(1)
 for what those are\&. Exceptions to those rules particular to
 \fIgit fetch\fR
@@ -462,21 +459,18 @@ are noted below\&.
 .sp
 Until Git version 2\&.20, and unlike when pushing with
 \fBgit-push\fR(1), any updates to
-\fBrefs/tags/*\fR
-would be accepted without
+\fBrefs/tags/\fR* would be accepted without
 \fB+\fR
 in the refspec (or
 \fB\-\-force\fR)\&. When fetching, we promiscuously considered all tag updates from a remote to be forced fetches\&. Since Git version 2\&.20, fetching to update
-\fBrefs/tags/*\fR
-works the same way as when pushing\&. I\&.e\&. any updates will be rejected without
+\fBrefs/tags/\fR* works the same way as when pushing\&. I\&.e\&. any updates will be rejected without
 \fB+\fR
 in the refspec (or
 \fB\-\-force\fR)\&.
 .sp
 Unlike when pushing with
 \fBgit-push\fR(1), any updates outside of
-\fBrefs/{tags,heads}/*\fR
-will be accepted without
+\fBrefs/\fR{tags,heads}/* will be accepted without
 \fB+\fR
 in the refspec (or
 \fB\-\-force\fR), whether that\(cqs swapping e\&.g\&. a tree object for a blob, or a commit for another commit that doesn\(cqt have the previous commit as an ancestor etc\&.
@@ -494,8 +488,7 @@ As with pushing with
 to a refspec (or using the
 \fB\-\-force\fR
 command line option)\&. The only exception to this is that no amount of forcing will make the
-\fBrefs/heads/*\fR
-namespace accept a non\-commit object\&.
+\fBrefs/heads/\fR* namespace accept a non\-commit object\&.
 .if n \{\
 .sp
 .\}
@@ -525,7 +518,7 @@ In general, URLs contain information about the transport protocol, the address o
 .sp
 Git supports ssh, git, http, and https protocols (in addition, ftp and ftps can be used for fetching, but this is inefficient and deprecated; do not use them)\&.
 .sp
-The native transport (i\&.e\&. git:// URL) does no authentication and should be used with caution on unsecured networks\&.
+The native transport (i\&.e\&. \fBgit://\fR URL) does no authentication and should be used with caution on unsecured networks\&.
 .sp
 The following syntaxes may be used with them:
 .sp
@@ -548,7 +541,7 @@ The following syntaxes may be used with them:
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBgit://\fR\fI<host>\fR[:\fI<port>\fR]\fB/\fR\fI<path\-to\-git\-repo>\fR
+\fBgit://\fR\fI<host>\fR[\fB:\fR\fI<port>\fR]\fB/\fR\fI<path\-to\-git\-repo>\fR
 .RE
 .sp
 .RS 4
@@ -586,7 +579,7 @@ An alternative scp\-like syntax may also be used with the ssh protocol:
 [\fI<user>\fR\fB@\fR]\fI<host>\fR\fB:/\fR\fI<path\-to\-git\-repo>\fR
 .RE
 .sp
-This syntax is only recognized if there are no slashes before the first colon\&. This helps differentiate a local path that contains a colon\&. For example the local path \fBfoo:bar\fR could be specified as an absolute path or \fB\&./foo:bar\fR to avoid being misinterpreted as an ssh url\&.
+This syntax is only recognized if there are no slashes before the first colon\&. This helps differentiate a local path that contains a colon\&. For example the local path \fBfoo:bar\fR could be specified as an absolute path or \&.\fB/foo:bar\fR to avoid being misinterpreted as an ssh url\&.
 .sp
 The ssh and git protocols additionally support \fB~\fR\fI<username>\fR expansion:
 .sp
@@ -644,12 +637,12 @@ For local repositories, also supported by Git natively, the following syntaxes m
 .sp -1
 .IP \(bu 2.3
 .\}
-\fB\m[blue]\fBfile:///path/to/repo\&.git/\fR\m[]\fR
+\fBfile:///path/to/repo\&.git/\fR
 .RE
 .sp
 These two syntaxes are mostly equivalent, except when cloning, when the former implies \fB\-\-local\fR option\&. See \fBgit-clone\fR(1) for details\&.
 .sp
-\fBgit clone\fR, \fBgit fetch\fR and \fBgit pull\fR, but not \fBgit push\fR, will also accept a suitable bundle file\&. See \fBgit-bundle\fR(1)\&.
+\fBgit\fR \fBclone\fR, \fBgit\fR \fBfetch\fR and \fBgit\fR \fBpull\fR, but not \fBgit\fR \fBpush\fR, will also accept a suitable bundle file\&. See \fBgit-bundle\fR(1)\&.
 .sp
 When Git doesn\(cqt know how to handle a certain transport protocol, it attempts to use the \fBremote\-\fR\fI<transport>\fR remote helper, if one exists\&. To explicitly request a remote helper, the following syntax may be used:
 .sp
@@ -661,7 +654,7 @@ When Git doesn\(cqt know how to handle a certain transport protocol, it attempts
 .sp -1
 .IP \(bu 2.3
 .\}
-\fI<transport>\fR::\fI<address>\fR
+\fI<transport>\fR\fB::\fR\fI<address>\fR
 .RE
 .sp
 where \fI<address>\fR may be a path, a server and path, or an arbitrary URL\-like string recognized by the specific remote helper being invoked\&. See \fBgitremote-helpers\fR(7) for details\&.
@@ -724,7 +717,7 @@ For example, with this:
 a URL like "git://example\&.org/path/to/repo\&.git" will be rewritten to "ssh://example\&.org/path/to/repo\&.git" for pushes, but pulls will still use the original URL\&.
 .SH "REMOTES"
 .sp
-The name of one of the following can be used instead of a URL as \fB<repository>\fR argument:
+The name of one of the following can be used instead of a URL as \fI<repository>\fR argument:
 .sp
 .RS 4
 .ie n \{\
@@ -783,7 +776,7 @@ You can choose to provide the name of a remote which you had previously configur
 .RE
 .\}
 .sp
-The \fB<pushurl>\fR is used for pushes only\&. It is optional and defaults to \fB<URL>\fR\&. Pushing to a remote affects all defined pushurls or all defined urls if no pushurls are defined\&. Fetch, however, will only fetch from the first defined url if multiple urls are defined\&.
+The \fI<pushurl>\fR is used for pushes only\&. It is optional and defaults to \fI<URL>\fR\&. Pushing to a remote affects all defined pushurls or all defined urls if no pushurls are defined\&. Fetch, however, will only fetch from the first defined url if multiple urls are defined\&.
 .SS "Named file in \fB$GIT_DIR/remotes\fR"
 .sp
 You can choose to provide the name of a file in \fB$GIT_DIR/remotes\fR\&. The URL in this file will be used to access the repository\&. The refspec in this file will be used as default when you do not provide a refspec on the command line\&. This file should have the following format:
@@ -815,9 +808,9 @@ You can choose to provide the name of a file in \fB$GIT_DIR/branches\fR\&. The U
 .RE
 .\}
 .sp
-\fB<URL>\fR is required; \fB#<head>\fR is optional\&.
+\fI<URL>\fR is required; #\fI<head>\fR is optional\&.
 .sp
-Depending on the operation, git will use one of the following refspecs, if you don\(cqt provide one on the command line\&. \fB<branch>\fR is the name of this file in \fB$GIT_DIR/branches\fR and \fB<head>\fR defaults to \fBmaster\fR\&.
+Depending on the operation, git will use one of the following refspecs, if you don\(cqt provide one on the command line\&. \fI<branch>\fR is the name of this file in \fB$GIT_DIR/branches\fR and \fI<head>\fR defaults to \fBmaster\fR\&.
 .sp
 git fetch uses:
 .sp
@@ -844,7 +837,7 @@ git push uses:
 .\}
 .SH "CONFIGURED REMOTE\-TRACKING BRANCHES"
 .sp
-You often interact with the same remote repository by regularly and repeatedly fetching from it\&. In order to keep track of the progress of such a remote repository, \fBgit fetch\fR allows you to configure \fBremote\&.<repository>\&.fetch\fR configuration variables\&.
+You often interact with the same remote repository by regularly and repeatedly fetching from it\&. In order to keep track of the progress of such a remote repository, \fBgit\fR \fBfetch\fR allows you to configure \fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR configuration variables\&.
 .sp
 Typically such a variable may look like this:
 .sp
@@ -870,18 +863,21 @@ This configuration is used in two ways:
 .IP \(bu 2.3
 .\}
 When
-\fBgit fetch\fR
+\fBgit\fR
+\fBfetch\fR
 is run without specifying what branches and/or tags to fetch on the command line, e\&.g\&.
-\fBgit fetch origin\fR
+\fBgit\fR
+\fBfetch\fR
+\fBorigin\fR
 or
-\fBgit fetch\fR,
-\fBremote\&.<repository>\&.fetch\fR
+\fBgit\fR
+\fBfetch\fR,
+\fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR
 values are used as the refspecs\(em\:they specify which refs to fetch and which local refs to update\&. The example above will fetch all branches that exist in the
 \fBorigin\fR
 (i\&.e\&. any ref that matches the left\-hand side of the value,
-\fBrefs/heads/*\fR) and update the corresponding remote\-tracking branches in the
-\fBrefs/remotes/origin/*\fR
-hierarchy\&.
+\fBrefs/heads/\fR*) and update the corresponding remote\-tracking branches in the
+\fBrefs/remotes/origin/\fR* hierarchy\&.
 .RE
 .sp
 .RS 4
@@ -893,9 +889,13 @@ hierarchy\&.
 .IP \(bu 2.3
 .\}
 When
-\fBgit fetch\fR
+\fBgit\fR
+\fBfetch\fR
 is run with explicit branches and/or tags to fetch on the command line, e\&.g\&.
-\fBgit fetch origin master\fR, the <refspec>s given on the command line determine what are to be fetched (e\&.g\&.
+\fBgit\fR
+\fBfetch\fR
+\fBorigin\fR
+\fBmaster\fR, the <refspec>s given on the command line determine what are to be fetched (e\&.g\&.
 \fBmaster\fR
 in the example, which is a short\-hand for
 \fBmaster:\fR, which in turn means "fetch the
@@ -905,9 +905,9 @@ branch but I do not explicitly say what remote\-tracking branch to update with i
 the
 \fImaster\fR
 branch\&. The
-\fBremote\&.<repository>\&.fetch\fR
+\fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR
 values determine which remote\-tracking branch, if any, is updated\&. When used in this way, the
-\fBremote\&.<repository>\&.fetch\fR
+\fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR
 values do not have any effect in deciding
 \fIwhat\fR
 gets fetched (i\&.e\&. the values are not used as refspecs when the command\-line lists refspecs); they are only used to decide
@@ -915,12 +915,12 @@ gets fetched (i\&.e\&. the values are not used as refspecs when the command\-lin
 the refs that are fetched are stored by acting as a mapping\&.
 .RE
 .sp
-The latter use of the \fBremote\&.<repository>\&.fetch\fR values can be overridden by giving the \fB\-\-refmap=<refspec>\fR parameter(s) on the command line\&.
+The latter use of the \fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR values can be overridden by giving the \fB\-\-refmap=\fR\fI<refspec>\fR parameter(s) on the command line\&.
 .SH "PRUNING"
 .sp
 Git has a default disposition of keeping data unless it\(cqs explicitly thrown away; this extends to holding onto local references to branches on remotes that have themselves deleted those branches\&.
 .sp
-If left to accumulate, these stale references might make performance worse on big and busy repos that have a lot of branch churn, and e\&.g\&. make the output of commands like \fBgit branch \-a \-\-contains <commit>\fR needlessly verbose, as well as impacting anything else that\(cqll work with the complete set of known references\&.
+If left to accumulate, these stale references might make performance worse on big and busy repos that have a lot of branch churn, and e\&.g\&. make the output of commands like \fBgit\fR \fBbranch\fR \fB\-a\fR \fB\-\-contains\fR \fI<commit>\fR needlessly verbose, as well as impacting anything else that\(cqll work with the complete set of known references\&.
 .sp
 These remote\-tracking references can be deleted as a one\-off with either of:
 .sp
@@ -938,19 +938,19 @@ $ git remote prune <name>
 .RE
 .\}
 .sp
-To prune references as part of your normal workflow without needing to remember to run that, set \fBfetch\&.prune\fR globally, or \fBremote\&.<name>\&.prune\fR per\-remote in the config\&. See \fBgit-config\fR(1)\&.
+To prune references as part of your normal workflow without needing to remember to run that, set \fBfetch\&.prune\fR globally, or \fBremote\&.\fR\fI<name>\fR\fB\&.prune\fR per\-remote in the config\&. See \fBgit-config\fR(1)\&.
 .sp
-Here\(cqs where things get tricky and more specific\&. The pruning feature doesn\(cqt actually care about branches, instead it\(cqll prune local \(<-\(-> remote\-references as a function of the refspec of the remote (see \fB<refspec>\fR and CONFIGURED REMOTE\-TRACKING BRANCHES above)\&.
+Here\(cqs where things get tricky and more specific\&. The pruning feature doesn\(cqt actually care about branches, instead it\(cqll prune local \(<-\(-> remote\-references as a function of the refspec of the remote (see \fI<refspec>\fR and CONFIGURED REMOTE\-TRACKING BRANCHES above)\&.
 .sp
-Therefore if the refspec for the remote includes e\&.g\&. \fBrefs/tags/*:refs/tags/*\fR, or you manually run e\&.g\&. \fBgit fetch \-\-prune <name> "refs/tags/*:refs/tags/*"\fR it won\(cqt be stale remote tracking branches that are deleted, but any local tag that doesn\(cqt exist on the remote\&.
+Therefore if the refspec for the remote includes e\&.g\&. \fBrefs/tags/\fR*:refs/tags/*, or you manually run e\&.g\&. \fBgit\fR \fBfetch\fR \fB\-\-prune\fR \fI<name>\fR "refs/tags/*:refs/tags/*" it won\(cqt be stale remote tracking branches that are deleted, but any local tag that doesn\(cqt exist on the remote\&.
 .sp
-This might not be what you expect, i\&.e\&. you want to prune remote \fB<name>\fR, but also explicitly fetch tags from it, so when you fetch from it you delete all your local tags, most of which may not have come from the \fB<name>\fR remote in the first place\&.
+This might not be what you expect, i\&.e\&. you want to prune remote \fI<name>\fR, but also explicitly fetch tags from it, so when you fetch from it you delete all your local tags, most of which may not have come from the \fI<name>\fR remote in the first place\&.
 .sp
-So be careful when using this with a refspec like \fBrefs/tags/*:refs/tags/*\fR, or any other refspec which might map references from multiple remotes to the same local namespace\&.
+So be careful when using this with a refspec like \fBrefs/tags/\fR*:refs/tags/*, or any other refspec which might map references from multiple remotes to the same local namespace\&.
 .sp
-Since keeping up\-to\-date with both branches and tags on the remote is a common use\-case the \fB\-\-prune\-tags\fR option can be supplied along with \fB\-\-prune\fR to prune local tags that don\(cqt exist on the remote, and force\-update those tags that differ\&. Tag pruning can also be enabled with \fBfetch\&.pruneTags\fR or \fBremote\&.<name>\&.pruneTags\fR in the config\&. See \fBgit-config\fR(1)\&.
+Since keeping up\-to\-date with both branches and tags on the remote is a common use\-case the \fB\-\-prune\-tags\fR option can be supplied along with \fB\-\-prune\fR to prune local tags that don\(cqt exist on the remote, and force\-update those tags that differ\&. Tag pruning can also be enabled with \fBfetch\&.pruneTags\fR or \fBremote\&.\fR\fI<name>\fR\fB\&.pruneTags\fR in the config\&. See \fBgit-config\fR(1)\&.
 .sp
-The \fB\-\-prune\-tags\fR option is equivalent to having \fBrefs/tags/*:refs/tags/*\fR declared in the refspecs of the remote\&. This can lead to some seemingly strange interactions:
+The \fB\-\-prune\-tags\fR option is equivalent to having \fBrefs/tags/\fR*:refs/tags/* declared in the refspecs of the remote\&. This can lead to some seemingly strange interactions:
 .sp
 .if n \{\
 .RS 4
@@ -966,7 +966,7 @@ $ git fetch \-\-no\-tags \-\-prune\-tags origin
 .sp
 The reason it doesn\(cqt error out when provided without \fB\-\-prune\fR or its config versions is for flexibility of the configured versions, and to maintain a 1=1 mapping between what the command line flags do, and what the configuration versions do\&.
 .sp
-It\(cqs reasonable to e\&.g\&. configure \fBfetch\&.pruneTags=true\fR in \fB~/\&.gitconfig\fR to have tags pruned whenever \fBgit fetch \-\-prune\fR is run, without making every invocation of \fBgit fetch\fR without \fB\-\-prune\fR an error\&.
+It\(cqs reasonable to e\&.g\&. configure \fBfetch\&.pruneTags=true\fR in \fB~/\&.gitconfig\fR to have tags pruned whenever \fBgit\fR \fBfetch\fR \fB\-\-prune\fR is run, without making every invocation of \fBgit\fR \fBfetch\fR without \fB\-\-prune\fR an error\&.
 .sp
 Pruning tags with \fB\-\-prune\-tags\fR also works when fetching a URL instead of a named remote\&. These will all prune tags not found on origin:
 .sp
@@ -1012,7 +1012,7 @@ When using \fB\-\-porcelain\fR, the output format is intended to be machine\-par
 .sp
 The status of up\-to\-date refs is shown only if the \-\-verbose option is used\&.
 .sp
-In compact output mode, specified with configuration variable fetch\&.output, if either entire \fB<from>\fR or \fB<to>\fR is found in the other string, it will be substituted with \fB*\fR in the other string\&. For example, \fBmaster \-> origin/master\fR becomes \fBmaster \-> origin/*\fR\&.
+In compact output mode, specified with configuration variable fetch\&.output, if either entire \fI<from>\fR or \fI<to>\fR is found in the other string, it will be substituted with * in the other string\&. For example, \fBmaster\fR \fB\-\fR> \fBorigin/master\fR becomes \fBmaster\fR \fB\-\fR> \fBorigin/\fR*\&.
 .PP
 flag
 .RS 4
@@ -1038,12 +1038,12 @@ for a successfully pruned ref;
 for a successful tag update;
 .RE
 .PP
-\fB*\fR
+*
 .RS 4
 for a successfully fetched new ref;
 .RE
 .PP
-\fB!\fR
+!
 .RS 4
 for a ref that was rejected or failed to update; and
 .RE
@@ -1057,25 +1057,26 @@ for a ref that was up to date and did not need fetching\&.
 summary
 .RS 4
 For a successfully fetched ref, the summary shows the old and new values of the ref in a form suitable for using as an argument to
-\fBgit log\fR
+\fBgit\fR
+\fBlog\fR
 (this is
-\fB<old>\&.\&.<new>\fR
+\fI<old>\fR\fB\&.\&.\fR\fI<new>\fR
 in most cases, and
-\fB<old>\&.\&.\&.<new>\fR
+\fI<old>\fR\fB\&.\&.\&.\fR\fI<new>\fR
 for forced non\-fast\-forward updates)\&.
 .RE
 .PP
 from
 .RS 4
 The name of the remote ref being fetched from, minus its
-\fBrefs/<type>/\fR
+\fBrefs/\fR\fI<type>\fR\fB/\fR
 prefix\&. In the case of deletion, the name of the remote ref is "(none)"\&.
 .RE
 .PP
 to
 .RS 4
 The name of the local ref being updated, minus its
-\fBrefs/<type>/\fR
+\fBrefs/\fR\fI<type>\fR\fB/\fR
 prefix\&.
 .RE
 .PP
@@ -1110,7 +1111,7 @@ The above command copies all branches from the remote
 namespace and stores them to the local
 \fBrefs/remotes/origin/\fR
 namespace, unless the
-\fBremote\&.<repository>\&.fetch\fR
+\fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR
 option is used to specify a non\-default refspec\&.
 .RE
 .sp
@@ -1216,9 +1217,11 @@ Everything below this line in this section is selectively included from the \fBg
 fetch\&.recurseSubmodules
 .RS 4
 This option controls whether
-\fBgit fetch\fR
+\fBgit\fR
+\fBfetch\fR
 (and the underlying fetch in
-\fBgit pull\fR) will recursively fetch into populated submodules\&. This option can be set either to a boolean value or to
+\fBgit\fR
+\fBpull\fR) will recursively fetch into populated submodules\&. This option can be set either to a boolean value or to
 \fIon\-demand\fR\&. Setting it to a boolean changes the behavior of fetch and pull to recurse unconditionally into submodules when set to true or to not recurse at all when set to false\&. When set to
 \fIon\-demand\fR, fetch and pull will only recurse into a populated submodule when its superproject retrieves a commit that updates the submodule\(cqs reference\&. Defaults to
 \fIon\-demand\fR, or to the value of
@@ -1238,11 +1241,11 @@ is used instead\&.
 fetch\&.fsck\&.<msg\-id>
 .RS 4
 Acts like
-\fBfsck\&.<msg\-id>\fR, but is used by
+\fBfsck\&.\fR\fI<msg\-id>\fR, but is used by
 \fBgit-fetch-pack\fR(1)
 instead of
 \fBgit-fsck\fR(1)\&. See the
-\fBfsck\&.<msg\-id>\fR
+\fBfsck\&.\fR\fI<msg\-id>\fR
 documentation for details\&.
 .RE
 .PP
@@ -1269,7 +1272,7 @@ fetch\&.prune
 If true, fetch will automatically behave as if the
 \fB\-\-prune\fR
 option was given on the command line\&. See also
-\fBremote\&.<name>\&.prune\fR
+\fBremote\&.\fR\fI<name>\fR\fB\&.prune\fR
 and the PRUNING section of
 \fBgit-fetch\fR(1)\&.
 .RE
@@ -1277,11 +1280,10 @@ and the PRUNING section of
 fetch\&.pruneTags
 .RS 4
 If true, fetch will automatically behave as if the
-\fBrefs/tags/*:refs/tags/*\fR
-refspec was provided when pruning, if not set already\&. This allows for setting both this option and
+\fBrefs/tags/\fR*:refs/tags/* refspec was provided when pruning, if not set already\&. This allows for setting both this option and
 \fBfetch\&.prune\fR
 to maintain a 1=1 mapping to upstream refs\&. See also
-\fBremote\&.<name>\&.pruneTags\fR
+\fBremote\&.\fR\fI<name>\fR\fB\&.pruneTags\fR
 and the PRUNING section of
 \fBgit-fetch\fR(1)\&.
 .RE
@@ -1349,13 +1351,19 @@ config setting\&.
 fetch\&.writeCommitGraph
 .RS 4
 Set to true to write a commit\-graph after every
-\fBgit fetch\fR
+\fBgit\fR
+\fBfetch\fR
 command that downloads a pack\-file from a remote\&. Using the
 \fB\-\-split\fR
 option, most executions will create a very small commit\-graph file on top of the existing commit\-graph file(s)\&. Occasionally, these files will merge and the write may take longer\&. Having an updated commit\-graph file helps performance of many Git commands, including
-\fBgit merge\-base\fR,
-\fBgit push \-f\fR, and
-\fBgit log \-\-graph\fR\&. Defaults to false\&.
+\fBgit\fR
+\fBmerge\-base\fR,
+\fBgit\fR
+\fBpush\fR
+\fB\-f\fR, and
+\fBgit\fR
+\fBlog\fR
+\fB\-\-graph\fR\&. Defaults to false\&.
 .RE
 .PP
 fetch\&.bundleURI
@@ -1364,7 +1372,9 @@ This value stores a URI for downloading Git object data from a bundle URI before
 \fB\-\-bundle\-uri\fR
 option behaves in
 \fBgit-clone\fR(1)\&.
-\fBgit clone \-\-bundle\-uri\fR
+\fBgit\fR
+\fBclone\fR
+\fB\-\-bundle\-uri\fR
 will set the
 \fBfetch\&.bundleURI\fR
 value if the supplied bundle URI contains a bundle list that is organized for incremental fetches\&.
@@ -1393,7 +1403,7 @@ value before fetching\&.
 .RE
 .SH "BUGS"
 .sp
-Using \-\-recurse\-submodules can only fetch new commits in submodules that are present locally e\&.g\&. in \fB$GIT_DIR/modules/\fR\&. If the upstream adds a new submodule, that submodule cannot be fetched until it is cloned e\&.g\&. by \fBgit submodule update\fR\&. This is expected to be fixed in a future Git version\&.
+Using \-\-recurse\-submodules can only fetch new commits in submodules that are present locally e\&.g\&. in \fB$GIT_DIR/modules/\fR\&. If the upstream adds a new submodule, that submodule cannot be fetched until it is cloned e\&.g\&. by \fBgit\fR \fBsubmodule\fR \fBupdate\fR\&. This is expected to be fixed in a future Git version\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-pull\fR(1)

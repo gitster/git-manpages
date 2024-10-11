@@ -2,12 +2,12 @@
 .\"     Title: gitformat-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITFORMAT\-PACK" "5" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITFORMAT\-PACK" "5" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1024,7 +1024,7 @@ Given the list of packs and their counts of objects, you can na\(:ively reconstr
 .sp
 Callers could handle duplicates themselves by reading objects in order of their bit\-position, but that\(cqs linear in the number of objects, and much too expensive for ordinary bitmap lookups\&. Building a reverse index solves this, since it is the logical inverse of the index, and that index has already removed duplicates\&. But, building a reverse index on the fly can be expensive\&. Since we already have an on\-disk format for pack\-based reverse indexes, let\(cqs reuse it for the MIDX\(cqs pseudo\-pack, too\&.
 .sp
-Objects from the MIDX are ordered as follows to string together the pseudo\-pack\&. Let \fBpack(o)\fR return the pack from which \fBo\fR was selected by the MIDX, and define an ordering of packs based on their numeric ID (as stored by the MIDX)\&. Let \fBoffset(o)\fR return the object offset of \fBo\fR within \fBpack(o)\fR\&. Then, compare \fBo1\fR and \fBo2\fR as follows:
+Objects from the MIDX are ordered as follows to string together the pseudo\-pack\&. Let \fBpack\fR(\fBo\fR) return the pack from which \fBo\fR was selected by the MIDX, and define an ordering of packs based on their numeric ID (as stored by the MIDX)\&. Let \fBoffset\fR(\fBo\fR) return the object offset of \fBo\fR within \fBpack\fR(\fBo\fR)\&. Then, compare \fBo1\fR and \fBo2\fR as follows:
 .sp
 .RS 4
 .ie n \{\
@@ -1035,10 +1035,8 @@ Objects from the MIDX are ordered as follows to string together the pseudo\-pack
 .IP \(bu 2.3
 .\}
 If one of
-\fBpack(o1)\fR
-and
-\fBpack(o2)\fR
-is preferred and the other is not, then the preferred one sorts first\&.
+\fBpack\fR(\fBo1\fR) and
+\fBpack\fR(\fBo2\fR) is preferred and the other is not, then the preferred one sorts first\&.
 .sp
 (This is a detail that allows the MIDX bitmap to determine which pack should be used by the pack\-reuse mechanism, since it can ask the MIDX for the pack containing the object at bit position 0)\&.
 .RE
@@ -1052,7 +1050,8 @@ is preferred and the other is not, then the preferred one sorts first\&.
 .IP \(bu 2.3
 .\}
 If
-\fBpack(o1) \(!= pack(o2)\fR, then sort the two objects in descending order based on the pack ID\&.
+\fBpack\fR(\fBo1\fR) \(!=
+\fBpack\fR(\fBo2\fR), then sort the two objects in descending order based on the pack ID\&.
 .RE
 .sp
 .RS 4
@@ -1064,12 +1063,15 @@ If
 .IP \(bu 2.3
 .\}
 Otherwise,
-\fBpack(o1) = pack(o2)\fR, and the objects are sorted in pack\-order (i\&.e\&.,
+\fBpack\fR(\fBo1\fR)
+\fB=\fR
+\fBpack\fR(\fBo2\fR), and the objects are sorted in pack\-order (i\&.e\&.,
 \fBo1\fR
 sorts ahead of
 \fBo2\fR
 exactly when
-\fBoffset(o1) < offset(o2)\fR)\&.
+\fBoffset\fR(\fBo1\fR) <
+\fBoffset\fR(\fBo2\fR))\&.
 .RE
 .sp
 In short, a MIDX\(cqs pseudo\-pack is the de\-duplicated concatenation of objects in packs stored by the MIDX, laid out in pack order, and the packs arranged in MIDX order (with the preferred pack coming first)\&.
@@ -1186,7 +1188,7 @@ With this information in place, we can treat each packfile as individually reusa
 The cruft packs feature offer an alternative to Git\(cqs traditional mechanism of removing unreachable objects\&. This document provides an overview of Git\(cqs pruning mechanism, and how a cruft pack can be used instead to accomplish the same\&.
 .SS "Background"
 .sp
-To remove unreachable objects from your repository, Git offers \fBgit repack \-Ad\fR (see \fBgit-repack\fR(1))\&. Quoting from the documentation:
+To remove unreachable objects from your repository, Git offers \fBgit\fR \fBrepack\fR \fB\-Ad\fR (see \fBgit-repack\fR(1))\&. Quoting from the documentation:
 .sp
 .if n \{\
 .RS 4
@@ -1204,12 +1206,12 @@ Unreachable objects aren\(cqt removed immediately, since doing so could race wit
 .sp
 Git must store these unreachable objects loose in order to keep track of their per\-object mtimes\&. If these unreachable objects were written into one big pack, then either freshening that pack (because an object contained within it was re\-written) or creating a new pack of unreachable objects would cause the pack\(cqs mtime to get updated, and the objects within it would never leave the expiration window\&. Instead, objects are stored loose in order to keep track of the individual object mtimes and avoid a situation where all cruft objects are freshened at once\&.
 .sp
-This can lead to undesirable situations when a repository contains many unreachable objects which have not yet left the grace period\&. Having large directories in the shards of \fB\&.git/objects\fR can lead to decreased performance in the repository\&. But given enough unreachable objects, this can lead to inode starvation and degrade the performance of the whole system\&. Since we can never pack those objects, these repositories often take up a large amount of disk space, since we can only zlib compress them, but not store them in delta chains\&.
+This can lead to undesirable situations when a repository contains many unreachable objects which have not yet left the grace period\&. Having large directories in the shards of \&.\fBgit/objects\fR can lead to decreased performance in the repository\&. But given enough unreachable objects, this can lead to inode starvation and degrade the performance of the whole system\&. Since we can never pack those objects, these repositories often take up a large amount of disk space, since we can only zlib compress them, but not store them in delta chains\&.
 .SS "Cruft packs"
 .sp
 A cruft pack eliminates the need for storing unreachable objects in a loose state by including the per\-object mtimes in a separate file alongside a single pack containing all loose objects\&.
 .sp
-A cruft pack is written by \fBgit repack \-\-cruft\fR when generating a new pack\&. \fBgit-pack-objects\fR(1)\*(Aqs \fB\-\-cruft\fR option\&. Note that \fBgit repack \-\-cruft\fR is a classic all\-into\-one repack, meaning that everything in the resulting pack is reachable, and everything else is unreachable\&. Once written, the \fB\-\-cruft\fR option instructs \fBgit repack\fR to generate another pack containing only objects not packed in the previous step (which equates to packing all unreachable objects together)\&. This progresses as follows:
+A cruft pack is written by \fBgit\fR \fBrepack\fR \fB\-\-cruft\fR when generating a new pack\&. \fBgit-pack-objects\fR(1)\*(Aqs \fB\-\-cruft\fR option\&. Note that \fBgit\fR \fBrepack\fR \fB\-\-cruft\fR is a classic all\-into\-one repack, meaning that everything in the resulting pack is reachable, and everything else is unreachable\&. Once written, the \fB\-\-cruft\fR option instructs \fBgit\fR \fBrepack\fR to generate another pack containing only objects not packed in the previous step (which equates to packing all unreachable objects together)\&. This progresses as follows:
 .sp
 .RS 4
 .ie n \{\
@@ -1241,14 +1243,13 @@ Perform a reachability traversal based on the tips gathered in the previous step
 .sp -1
 .IP "  3." 4.2
 .\}
-Write the pack out, along with a
-\fB\&.mtimes\fR
+Write the pack out, along with a \&.\fBmtimes\fR
 file that records the per\-object timestamps\&.
 .RE
 .sp
 This mode is invoked internally by \fBgit-repack\fR(1) when instructed to write a cruft pack\&. Crucially, the set of in\-core kept packs is exactly the set of packs which will not be deleted by the repack; in other words, they contain all of the repository\(cqs reachable objects\&.
 .sp
-When a repository already has a cruft pack, \fBgit repack \-\-cruft\fR typically only adds objects to it\&. An exception to this is when \fBgit repack\fR is given the \fB\-\-cruft\-expiration\fR option, which allows the generated cruft pack to omit expired objects instead of waiting for \fBgit-gc\fR(1) to expire those objects later on\&.
+When a repository already has a cruft pack, \fBgit\fR \fBrepack\fR \fB\-\-cruft\fR typically only adds objects to it\&. An exception to this is when \fBgit\fR \fBrepack\fR is given the \fB\-\-cruft\-expiration\fR option, which allows the generated cruft pack to omit expired objects instead of waiting for \fBgit-gc\fR(1) to expire those objects later on\&.
 .sp
 It is \fBgit-gc\fR(1) that is typically responsible for removing expired unreachable objects\&.
 .SS "Alternatives"
@@ -1266,7 +1267,7 @@ Notable alternatives to this design include:
 The location of the per\-object mtime data\&.
 .RE
 .sp
-On the location of mtime data, a new auxiliary file tied to the pack was chosen to avoid complicating the \fB\&.idx\fR format\&. If the \fB\&.idx\fR format were ever to gain support for optional chunks of data, it may make sense to consolidate the \fB\&.mtimes\fR format into the \fB\&.idx\fR itself\&.
+On the location of mtime data, a new auxiliary file tied to the pack was chosen to avoid complicating the \&.\fBidx\fR format\&. If the \&.\fBidx\fR format were ever to gain support for optional chunks of data, it may make sense to consolidate the \&.\fBmtimes\fR format into the \&.\fBidx\fR itself\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

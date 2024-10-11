@@ -2,12 +2,12 @@
 .\"     Title: git-filter-branch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-FILTER\-BRANCH" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-FILTER\-BRANCH" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -49,7 +49,7 @@ Lets you rewrite Git revision history by rewriting the branches mentioned in the
 .sp
 The command will only rewrite the \fIpositive\fR refs mentioned in the command line (e\&.g\&. if you pass \fIa\&.\&.b\fR, only \fIb\fR will be rewritten)\&. If you specify no filters, the commits will be recommitted without any changes, which would normally have no effect\&. Nevertheless, this may be useful in the future for compensating for some Git bugs or such, therefore such a usage is permitted\&.
 .sp
-\fBNOTE\fR: This command honors \fB\&.git/info/grafts\fR file and refs in the \fBrefs/replace/\fR namespace\&. If you have any grafts or replacement refs defined, running this command will make them permanent\&.
+\fBNOTE\fR: This command honors \&.\fBgit/info/grafts\fR file and refs in the \fBrefs/replace/\fR namespace\&. If you have any grafts or replacement refs defined, running this command will make them permanent\&.
 .sp
 \fBWARNING\fR! The rewritten history will have different object names for all the objects and will not converge with the original branch\&. You will not be able to easily push and distribute the rewritten branch on top of the original branch\&. Please do not use this command if you do not know the full implications, and avoid using it anyway, if a simple single commit would suffice to fix your problem\&. (See the "RECOVERING FROM UPSTREAM REBASE" section in \fBgit-rebase\fR(1) for further information about rewriting published history\&.)
 .sp
@@ -92,7 +92,11 @@ This is the filter for rewriting the tree and its contents\&. The argument is ev
 \-\-index\-filter <command>
 .RS 4
 This is the filter for rewriting the index\&. It is similar to the tree filter but does not check out the tree, which makes it much faster\&. Frequently used with
-\fBgit rm \-\-cached \-\-ignore\-unmatch \&.\&.\&.\fR, see EXAMPLES below\&. For hairy cases, see
+\fBgit\fR
+\fBrm\fR
+\fB\-\-cached\fR
+\fB\-\-ignore\-unmatch\fR
+\&.\&.\&., see EXAMPLES below\&. For hairy cases, see
 \fBgit-update-index\fR(1)\&.
 .RE
 .PP
@@ -124,10 +128,11 @@ will leave out the current commit (but not its changes! If you want that, use
 instead)\&.
 .sp
 You can also use the
-\fBgit_commit_non_empty_tree "$@"\fR
-instead of
-\fBgit commit\-tree "$@"\fR
-if you don\(cqt wish to keep commits with a single parent and that makes no change to the tree\&.
+\fBgit_commit_non_empty_tree\fR
+"$@" instead of
+\fBgit\fR
+\fBcommit\-tree\fR
+"$@" if you don\(cqt wish to keep commits with a single parent and that makes no change to the tree\&.
 .RE
 .PP
 \-\-tag\-name\-filter <command>
@@ -155,8 +160,7 @@ Use this option to set the namespace where the original commits will be stored\&
 .PP
 \-d <directory>
 .RS 4
-Use this option to set the path to the temporary directory used for rewriting\&. When applying a tree filter, the command needs to temporarily check out the tree to some directory, which may consume considerable space in case of large projects\&. By default it does this in the
-\fB\&.git\-rewrite/\fR
+Use this option to set the path to the temporary directory used for rewriting\&. When applying a tree filter, the command needs to temporarily check out the tree to some directory, which may consume considerable space in case of large projects\&. By default it does this in the \&.\fBgit\-rewrite/\fR
 directory but you can override that choice by this parameter\&.
 .RE
 .PP
@@ -205,9 +209,9 @@ git filter\-branch \-\-tree\-filter \*(Aqrm filename\*(Aq HEAD
 .RE
 .\}
 .sp
-However, if the file is absent from the tree of some commit, a simple \fBrm filename\fR will fail for that tree and commit\&. Thus you may instead want to use \fBrm \-f filename\fR as the script\&.
+However, if the file is absent from the tree of some commit, a simple \fBrm\fR \fBfilename\fR will fail for that tree and commit\&. Thus you may instead want to use \fBrm\fR \fB\-f\fR \fBfilename\fR as the script\&.
 .sp
-Using \fB\-\-index\-filter\fR with \fIgit rm\fR yields a significantly faster version\&. Like with using \fBrm filename\fR, \fBgit rm \-\-cached filename\fR will fail if the file is absent from the tree of a commit\&. If you want to "completely forget" a file, it does not matter when it entered history, so we also add \fB\-\-ignore\-unmatch\fR:
+Using \fB\-\-index\-filter\fR with \fIgit rm\fR yields a significantly faster version\&. Like with using \fBrm\fR \fBfilename\fR, \fBgit\fR \fBrm\fR \fB\-\-cached\fR \fBfilename\fR will fail if the file is absent from the tree of a commit\&. If you want to "completely forget" a file, it does not matter when it entered history, so we also add \fB\-\-ignore\-unmatch\fR:
 .sp
 .if n \{\
 .RS 4
@@ -435,7 +439,13 @@ git\-filter\-branch can be used to get rid of a subset of files, usually with so
 .IP \(bu 2.3
 .\}
 You really removed all variants of a filename, if a blob was moved over its lifetime\&.
-\fBgit log \-\-name\-only \-\-follow \-\-all \-\- filename\fR
+\fBgit\fR
+\fBlog\fR
+\fB\-\-name\-only\fR
+\fB\-\-follow\fR
+\fB\-\-all\fR
+\fB\-\-\fR
+\fBfilename\fR
 can help you find renames\&.
 .RE
 .sp
@@ -448,7 +458,10 @@ can help you find renames\&.
 .IP \(bu 2.3
 .\}
 You really filtered all refs: use
-\fB\-\-tag\-name\-filter cat \-\- \-\-all\fR
+\fB\-\-tag\-name\-filter\fR
+\fBcat\fR
+\fB\-\-\fR
+\fB\-\-all\fR
 when calling git\-filter\-branch\&.
 .RE
 .sp
@@ -463,7 +476,9 @@ Then there are two ways to get a smaller repository\&. A safer way is to clone, 
 .IP \(bu 2.3
 .\}
 Clone it with
-\fBgit clone file:///path/to/repo\fR\&. The clone will not have the removed objects\&. See
+\fBgit\fR
+\fBclone\fR
+\fBfile:///path/to/repo\fR\&. The clone will not have the removed objects\&. See
 \fBgit-clone\fR(1)\&. (Note that cloning with a plain path just hardlinks everything!)
 .RE
 .sp
@@ -478,7 +493,17 @@ If you really don\(cqt want to clone it, for whatever reasons, check the followi
 .IP \(bu 2.3
 .\}
 Remove the original refs backed up by git\-filter\-branch: say
-\fBgit for\-each\-ref \-\-format="%(refname)" refs/original/ | xargs \-n 1 git update\-ref \-d\fR\&.
+\fBgit\fR
+\fBfor\-each\-ref\fR
+\fB\-\-format=\fR"%(\fBrefname\fR)"
+\fBrefs/original/\fR
+|
+\fBxargs\fR
+\fB\-n\fR
+\fB1\fR
+\fBgit\fR
+\fBupdate\-ref\fR
+\fB\-d\fR\&.
 .RE
 .sp
 .RS 4
@@ -490,7 +515,11 @@ Remove the original refs backed up by git\-filter\-branch: say
 .IP \(bu 2.3
 .\}
 Expire all reflogs with
-\fBgit reflog expire \-\-expire=now \-\-all\fR\&.
+\fBgit\fR
+\fBreflog\fR
+\fBexpire\fR
+\fB\-\-expire=now\fR
+\fB\-\-all\fR\&.
 .RE
 .sp
 .RS 4
@@ -502,10 +531,16 @@ Expire all reflogs with
 .IP \(bu 2.3
 .\}
 Garbage collect all unreferenced objects with
-\fBgit gc \-\-prune=now\fR
+\fBgit\fR
+\fBgc\fR
+\fB\-\-prune=now\fR
 (or if your git\-gc is not new enough to support arguments to
 \fB\-\-prune\fR, use
-\fBgit repack \-ad; git prune\fR
+\fBgit\fR
+\fBrepack\fR
+\fB\-ad\fR;
+\fBgit\fR
+\fBprune\fR
 instead)\&.
 .RE
 .SH "PERFORMANCE"
@@ -527,8 +562,7 @@ files and
 commits, but each commit only modifies five files, then git\-filter\-branch will make you do
 \fB10^10\fR
 modifications, despite only having (at most)
-\fB5*10^5\fR
-unique blobs\&.
+\fB5\fR*10^5 unique blobs\&.
 .RE
 .sp
 .RS 4
@@ -657,7 +691,16 @@ Filenames with spaces are often mishandled by shell snippets since they cause pr
 .IP \(bu 2.3
 .\}
 Non\-ascii filenames can be silently removed despite being in a desired directory\&. Keeping only wanted paths is often done using pipelines like
-\fBgit ls\-files | grep \-v ^WANTED_DIR/ | xargs git rm\fR\&. ls\-files will only quote filenames if needed, so folks may not notice that one of the files didn\(cqt match the regex (at least not until it\(cqs much too late)\&. Yes, someone who knows about core\&.quotePath can avoid this (unless they have other special characters like \et, \en, or "), and people who use ls\-files \-z with something other than grep can avoid this, but that doesn\(cqt mean they will\&.
+\fBgit\fR
+\fBls\-files\fR
+|
+\fBgrep\fR
+\fB\-v\fR
+\fB^WANTED_DIR/\fR
+|
+\fBxargs\fR
+\fBgit\fR
+\fBrm\fR\&. ls\-files will only quote filenames if needed, so folks may not notice that one of the files didn\(cqt match the regex (at least not until it\(cqs much too late)\&. Yes, someone who knows about core\&.quotePath can avoid this (unless they have other special characters like \et, \en, or "), and people who use ls\-files \-z with something other than grep can avoid this, but that doesn\(cqt mean they will\&.
 .RE
 .sp
 .RS 4

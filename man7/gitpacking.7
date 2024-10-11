@@ -2,12 +2,12 @@
 .\"     Title: gitpacking
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITPACKING" "7" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITPACKING" "7" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -82,18 +82,18 @@ Pseudo\-merge bitmaps can accelerate bitmap traversals when all commits for a gi
 .sp
 For example, suppose there exists a pseudo\-merge bitmap with a large number of commits, all of which are listed in the \fBWANTS\fR section of some bitmap traversal query\&. When pseudo\-merge bitmaps are enabled, the bitmap machinery can quickly determine there is a pseudo\-merge which satisfies some subset of the wanted objects on either side of the query\&. Then, we can inflate the EWAH\-compressed bitmap, and \fBOR\fR it in to the resulting bitmap\&. By contrast, without pseudo\-merge bitmaps, we would have to repeat the decompression and \fBOR\fR\-ing step over a potentially large number of individual bitmaps, which can take proportionally more time\&.
 .sp
-Another benefit of pseudo\-merges arises when there is some combination of (a) a large number of references, with (b) poor bitmap coverage, and (c) deep, nested trees, making fill\-in traversal relatively expensive\&. For example, suppose that there are a large enough number of tags where bitmapping each of the tags individually is infeasible\&. Without pseudo\-merge bitmaps, computing the result of, say, \fBgit rev\-list \-\-use\-bitmap\-index \-\-count \-\-objects \-\-tags\fR would likely require a large amount of fill\-in traversal\&. But when a large quantity of those tags are stored together in a pseudo\-merge bitmap, the bitmap machinery can take advantage of the fact that we only care about the union of objects reachable from all of those tags, and answer the query much faster\&.
+Another benefit of pseudo\-merges arises when there is some combination of (a) a large number of references, with (b) poor bitmap coverage, and (c) deep, nested trees, making fill\-in traversal relatively expensive\&. For example, suppose that there are a large enough number of tags where bitmapping each of the tags individually is infeasible\&. Without pseudo\-merge bitmaps, computing the result of, say, \fBgit\fR \fBrev\-list\fR \fB\-\-use\-bitmap\-index\fR \fB\-\-count\fR \fB\-\-objects\fR \fB\-\-tags\fR would likely require a large amount of fill\-in traversal\&. But when a large quantity of those tags are stored together in a pseudo\-merge bitmap, the bitmap machinery can take advantage of the fact that we only care about the union of objects reachable from all of those tags, and answer the query much faster\&.
 .SS "Configuration"
 .sp
 Reference tips are grouped into different pseudo\-merge groups according to two criteria\&. A reference name matches one or more of the defined pseudo\-merge patterns, and optionally one or more capture groups within that pattern which further partition the group\&.
 .sp
-Within a group, commits may be considered "stable", or "unstable" depending on their age\&. These are adjusted by setting the \fBbitmapPseudoMerge\&.<name>\&.stableThreshold\fR and \fBbitmapPseudoMerge\&.<name>\&.threshold\fR configuration values, respectively\&.
+Within a group, commits may be considered "stable", or "unstable" depending on their age\&. These are adjusted by setting the \fBbitmapPseudoMerge\&.\fR\fI<name>\fR\fB\&.stableThreshold\fR and \fBbitmapPseudoMerge\&.\fR\fI<name>\fR\fB\&.threshold\fR configuration values, respectively\&.
 .sp
-All stable commits are grouped into pseudo\-merges of equal size (\fBbitmapPseudoMerge\&.<name>\&.stableSize\fR)\&. If the \fBstableSize\fR configuration is set to, say, 100, then the first 100 commits (ordered by committer date) which are older than the \fBstableThreshold\fR value will form one group, the next 100 commits will form another group, and so on\&.
+All stable commits are grouped into pseudo\-merges of equal size (\fBbitmapPseudoMerge\&.\fR\fI<name>\fR\fB\&.stableSize\fR)\&. If the \fBstableSize\fR configuration is set to, say, 100, then the first 100 commits (ordered by committer date) which are older than the \fBstableThreshold\fR value will form one group, the next 100 commits will form another group, and so on\&.
 .sp
 Among unstable commits, the pseudo\-merge machinery will attempt to combine older commits into large groups as opposed to newer commits which will appear in smaller groups\&. This is based on the heuristic that references whose tip commit is older are less likely to be modified to point at a different commit than a reference whose tip commit is newer\&.
 .sp
-The size of groups is determined by a power\-law decay function, and the decay parameter roughly corresponds to "k" in \fBf(n) = C*n^(\-k/100)\fR, where \fBf(n)\fR describes the size of the \fBn\fR\-th pseudo\-merge group\&. The sample rate controls what percentage of eligible commits are considered as candidates\&. The threshold parameter indicates the minimum age (so as to avoid including too\-recent commits in a pseudo\-merge group, making it less likely to be valid)\&. The "maxMerges" parameter sets an upper\-bound on the number of pseudo\-merge commits an individual group
+The size of groups is determined by a power\-law decay function, and the decay parameter roughly corresponds to "k" in \fBf\fR(\fBn\fR) \fB=\fR \fBC\fR*n^(\fB\-k/100\fR), where \fBf\fR(\fBn\fR) describes the size of the \fBn\fR\-th pseudo\-merge group\&. The sample rate controls what percentage of eligible commits are considered as candidates\&. The threshold parameter indicates the minimum age (so as to avoid including too\-recent commits in a pseudo\-merge group, making it less likely to be valid)\&. The "maxMerges" parameter sets an upper\-bound on the number of pseudo\-merge commits an individual group
 .sp
 The "stable"\-related parameters control "stable" pseudo\-merge groups, comprised of a fixed number of commits which are older than the configured "stable threshold" value and may be grouped together in chunks of "stableSize" in order of age\&.
 .sp
@@ -111,16 +111,16 @@ The exact configuration for pseudo\-merges is as follows:
 .ps -1
 .br
 .sp
-The configuration options in \fBbitmapPseudoMerge\&.*\fR are considered EXPERIMENTAL and may be subject to change or be removed entirely in the future\&. For more information about the pseudo\-merge bitmap feature, see the "Pseudo\-merge bitmaps" section of \fBgitpacking\fR(7)\&.
+The configuration options in \fBbitmapPseudoMerge\&.\fR* are considered EXPERIMENTAL and may be subject to change or be removed entirely in the future\&. For more information about the pseudo\-merge bitmap feature, see the "Pseudo\-merge bitmaps" section of \fBgitpacking\fR(7)\&.
 .sp .5v
 .RE
 .PP
 bitmapPseudoMerge\&.<name>\&.pattern
 .RS 4
 Regular expression used to match reference names\&. Commits pointed to by references matching this pattern (and meeting the below criteria, like
-\fBbitmapPseudoMerge\&.<name>\&.sampleRate\fR
+\fBbitmapPseudoMerge\&.\fR\fI<name>\fR\fB\&.sampleRate\fR
 and
-\fBbitmapPseudoMerge\&.<name>\&.threshold\fR) will be considered for inclusion in a pseudo\-merge bitmap\&.
+\fBbitmapPseudoMerge\&.\fR\fI<name>\fR\fB\&.threshold\fR) will be considered for inclusion in a pseudo\-merge bitmap\&.
 .sp
 Commits are grouped into pseudo\-merge groups based on whether or not any reference(s) that point at a given commit match the pattern, which is an extended regular expression\&.
 .sp
@@ -130,7 +130,7 @@ dash in between\&.
 .sp
 For example, if the pattern is
 \fBrefs/tags/\fR, then all tags (provided they meet the below criteria) will be considered candidates for the same pseudo\-merge group\&. However, if the pattern is instead
-\fBrefs/remotes/([0\-9])+/tags/\fR, then tags from different remotes will be grouped into separate pseudo\-merge groups, based on the remote number\&.
+\fBrefs/remotes/\fR([\fB0\-9\fR])\fB+/tags/\fR, then tags from different remotes will be grouped into separate pseudo\-merge groups, based on the remote number\&.
 .RE
 .PP
 bitmapPseudoMerge\&.<name>\&.decay
@@ -138,17 +138,23 @@ bitmapPseudoMerge\&.<name>\&.decay
 Determines the rate at which consecutive pseudo\-merge bitmap groups decrease in size\&. Must be non\-negative\&. This parameter can be thought of as
 \fBk\fR
 in the function
-\fBf(n) = C * n^\-k\fR, where
-\fBf(n)\fR
-is the size of the `n`th group\&.
+\fBf\fR(\fBn\fR)
+\fB=\fR
+\fBC\fR
+*
+\fBn^\-k\fR, where
+\fBf\fR(\fBn\fR) is the size of the `n`th group\&.
 .sp
 Setting the decay rate equal to
 \fB0\fR
 will cause all groups to be the same size\&. Setting the decay rate equal to
 \fB1\fR
 will cause the
-\fBn`th group to be `1/n\fR
-the size of the initial group\&. Higher values of the decay rate cause consecutive groups to shrink at an increasing rate\&. The default is
+\fBn\fR`th
+\fBgroup\fR
+\fBto\fR
+\fBbe\fR
+`1/n the size of the initial group\&. Higher values of the decay rate cause consecutive groups to shrink at an increasing rate\&. The default is
 \fB1\fR\&.
 .sp
 If all groups are the same size, it is possible that groups containing newer commits will be able to be used less often than earlier groups, since it is more likely that the references pointing at newer commits will be updated more often than a reference pointing at an old commit\&.
@@ -180,7 +186,7 @@ For example, if your capture group is
 \fBrefs/tags/\fR, then this setting will distribute all tags into a maximum of
 \fBmaxMerges\fR
 pseudo\-merge commits\&. However, if your capture group is, say,
-\fBrefs/remotes/([0\-9]+)/tags/\fR, then this setting will be applied to each remote\(cqs set of tags individually\&.
+\fBrefs/remotes/\fR([\fB0\-9\fR]\fB+\fR)\fB/tags/\fR, then this setting will be applied to each remote\(cqs set of tags individually\&.
 .sp
 Must be non\-negative\&. The default value is 64\&.
 .RE

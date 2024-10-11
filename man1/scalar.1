@@ -2,12 +2,12 @@
 .\"     Title: scalar
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "SCALAR" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "SCALAR" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -48,7 +48,7 @@ Scalar is a repository management tool that optimizes Git for use in large repos
 .sp
 An important Scalar concept is the enlistment: this is the top\-level directory of the project\&. It usually contains the subdirectory \fBsrc/\fR which is a Git worktree\&. This encourages the separation between tracked files (inside \fBsrc/\fR) and untracked files, such as build artifacts (outside \fBsrc/\fR)\&. When registering an existing Git worktree with Scalar whose name is not \fBsrc\fR, the enlistment will be identical to the worktree\&.
 .sp
-The \fBscalar\fR command implements various subcommands, and different options depending on the subcommand\&. With the exception of \fBclone\fR, \fBlist\fR and \fBreconfigure \-\-all\fR, all subcommands expect to be run in an enlistment\&.
+The \fBscalar\fR command implements various subcommands, and different options depending on the subcommand\&. With the exception of \fBclone\fR, \fBlist\fR and \fBreconfigure\fR \fB\-\-all\fR, all subcommands expect to be run in an enlistment\&.
 .sp
 The following options can be specified \fIbefore\fR the subcommand:
 .PP
@@ -70,23 +70,29 @@ clone [<options>] <url> [<enlistment>]
 .RS 4
 Clones the specified repository, similar to
 \fBgit-clone\fR(1)\&. By default, only commit and tree objects are cloned\&. Once finished, the worktree is located at
-\fB<enlistment>/src\fR\&.
+\fI<enlistment>\fR\fB/src\fR\&.
 .sp
 The sparse\-checkout feature is enabled (except when run with
 \fB\-\-full\-clone\fR) and the only files present are those in the top\-level directory\&. Use
-\fBgit sparse\-checkout set\fR
+\fBgit\fR
+\fBsparse\-checkout\fR
+\fBset\fR
 to expand the set of directories you want to see, or
-\fBgit sparse\-checkout disable\fR
+\fBgit\fR
+\fBsparse\-checkout\fR
+\fBdisable\fR
 to expand to all files (see
 \fBgit-sparse-checkout\fR(1)
 for more details)\&. You can explore the subdirectories outside your sparse\-checkout by using
-\fBgit ls\-tree HEAD[:<directory>]\fR\&.
+\fBgit\fR
+\fBls\-tree\fR
+\fBHEAD\fR[\fB:\fR\fI<directory>\fR]\&.
 .RE
 .PP
 \-b <name>, \-\-branch <name>
 .RS 4
 Instead of checking out the branch pointed to by the cloned repository\(cqs HEAD, check out the
-\fB<name>\fR
+\fI<name>\fR
 branch instead\&.
 .RE
 .PP
@@ -106,29 +112,35 @@ clone was made, no remote\-tracking branch is created\&.
 \-\-[no\-]src
 .RS 4
 By default,
-\fBscalar clone\fR
+\fBscalar\fR
+\fBclone\fR
 places the cloned repository within a
-\fB<entlistment>/src\fR
+\fI<entlistment>\fR\fB/src\fR
 directory\&. Use
 \fB\-\-no\-src\fR
 to place the cloned repository directly in the
-\fB<enlistment>\fR
+\fI<enlistment>\fR
 directory\&.
 .RE
 .PP
 \-\-[no\-]tags
 .RS 4
 By default,
-\fBscalar clone\fR
+\fBscalar\fR
+\fBclone\fR
 will fetch the tag objects advertised by the remote and future
-\fBgit fetch\fR
+\fBgit\fR
+\fBfetch\fR
 commands will do the same\&. Use
 \fB\-\-no\-tags\fR
 to avoid fetching tags in
-\fBscalar clone\fR
+\fBscalar\fR
+\fBclone\fR
 and to configure the repository to avoid fetching tags in the future\&. To fetch tags after cloning with
 \fB\-\-no\-tags\fR, run
-\fBgit fetch \-\-tags\fR\&.
+\fBgit\fR
+\fBfetch\fR
+\fB\-\-tags\fR\&.
 .RE
 .PP
 \-\-[no\-]full\-clone
@@ -147,7 +159,7 @@ List enlistments that are currently registered by Scalar\&. This subcommand does
 register [<enlistment>]
 .RS 4
 Adds the enlistment\(cqs repository to the list of registered repositories and starts background maintenance\&. If
-\fB<enlistment>\fR
+\fI<enlistment>\fR
 is not provided, then the enlistment associated with the current working directory is registered\&.
 .sp
 Note: when this subcommand is called in a worktree that is called
@@ -187,7 +199,8 @@ These tasks are run automatically as part of the scheduled maintenance, as soon 
 The
 \fBconfig\fR
 task is specific to Scalar and configures all those opinionated default settings that make Git work more efficiently with large repositories\&. As this task is run as part of
-\fBscalar clone\fR
+\fBscalar\fR
+\fBclone\fR
 automatically, explicit invocations of this task are rarely needed\&.
 .RE
 .SS "Reconfigure"
@@ -201,8 +214,7 @@ diagnose [<enlistment>]
 .RS 4
 When reporting issues with Scalar, it is often helpful to provide the information gathered by this command, including logs and certain statistics describing the data shape of the current enlistment\&.
 .sp
-The output of this command is a
-\fB\&.zip\fR
+The output of this command is a \&.\fBzip\fR
 file that is written into a directory adjacent to the worktree in the
 \fBsrc\fR
 directory\&.

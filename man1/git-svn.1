@@ -2,12 +2,12 @@
 .\"     Title: git-svn
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-SVN" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-SVN" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -114,9 +114,8 @@ This allows one to specify a prefix which is prepended to the names of remotes i
 .ps -1
 .br
 Before Git v2\&.0, the default prefix was "" (no prefix)\&. This meant that SVN\-tracking refs were put at "refs/remotes/*", which is incompatible with how Git\(cqs own remote\-tracking refs are organized\&. If you still want the old default, you can get it by passing
-\fB\-\-prefix ""\fR
-on the command line (\fB\-\-prefix=""\fR
-may not work if your Perl\(cqs Getopt::Long is < v2\&.37)\&.
+\fB\-\-prefix\fR
+"" on the command line (\fB\-\-prefix=\fR"" may not work if your Perl\(cqs Getopt::Long is < v2\&.37)\&.
 .sp .5v
 .RE
 .RE
@@ -178,7 +177,8 @@ in the FILES section below for details)\&.
 Store Git commit times in the local time zone instead of UTC\&. This makes
 \fIgit log\fR
 (even without \-\-date=local) show the same times that
-\fBsvn log\fR
+\fBsvn\fR
+\fBlog\fR
 would in the local time zone\&.
 .sp
 This doesn\(cqt interfere with interoperating with the Subversion repository you cloned from, but if you wish for your local Git repository to be able to interoperate with someone else\(cqs local Git repository, either don\(cqt use this option or you should both use it in the same local time zone\&.
@@ -192,8 +192,7 @@ Fetch only from the SVN parent of the current HEAD\&.
 \-\-ignore\-refs=<regex>
 .RS 4
 Ignore refs for branches or tags matching the Perl regular expression\&. A "negative look\-ahead assertion" like
-\fB^refs/remotes/origin/(?!tags/wanted\-tag|wanted\-branch)\&.*$\fR
-can be used to allow only certain refs\&.
+\fB^refs/remotes/origin/\fR(?!tags/wanted\-tag|\fBwanted\-branch\fR)\&.*$ can be used to allow only certain refs\&.
 .sp
 .if n \{\
 .RS 4
@@ -327,7 +326,8 @@ Set the name of placeholder files created by \-\-preserve\-empty\-dirs\&. Defaul
 This fetches revisions from the SVN parent of the current HEAD and rebases the current (uncommitted to SVN) work against it\&.
 .sp
 This works similarly to
-\fBsvn update\fR
+\fBsvn\fR
+\fBupdate\fR
 or
 \fIgit pull\fR
 except that it preserves linear history with
@@ -408,7 +408,8 @@ Using this option for any other purpose (don\(cqt ask) is very strongly discoura
 \-\-mergeinfo=<mergeinfo>
 .RS 4
 Add the given merge information during the dcommit (e\&.g\&.
-\fB\-\-mergeinfo="/branches/foo:1\-10"\fR)\&. All svn server versions can store this information (as a property), and svn clients starting from version 1\&.5 can make use of it\&. To specify merge information from multiple branches, use a single space character between the branches (\fB\-\-mergeinfo="/branches/foo:1\-10 /branches/bar:3,5\-6,8"\fR)
+\fB\-\-mergeinfo=\fR"/branches/foo:1\-10")\&. All svn server versions can store this information (as a property), and svn clients starting from version 1\&.5 can make use of it\&. To specify merge information from multiple branches, use a single space character between the branches (\fB\-\-mergeinfo=\fR"/branches/foo:1\-10
+\fB/branches/bar:3,5\-6,8\fR")
 .sp
 .if n \{\
 .RS 4
@@ -620,7 +621,9 @@ Attempts to recreate empty directories that core Git cannot track based on infor
 \fIcommit\-diff\fR
 .RS 4
 Commits the diff of two tree\-ish arguments from the command\-line\&. This command does not rely on being inside a
-\fBgit svn init\fR\-ed repository\&. This command takes three arguments, (a) the original tree to diff against, (b) the new tree result, (c) the URL of the target Subversion repository\&. The final argument (URL) may be omitted if you are working from a
+\fBgit\fR
+\fBsvn\fR
+\fBinit\fR\-ed repository\&. This command takes three arguments, (a) the original tree to diff against, (b) the new tree result, (c) the URL of the target Subversion repository\&. The final argument (URL) may be omitted if you are working from a
 \fIgit svn\fR\-aware repository (that has been
 \fBinit\fR\-ed with
 \fIgit svn\fR)\&. The \-r<revision> option is required for this\&.
@@ -1156,7 +1159,7 @@ Similar to the useSvmProps option; this is for users who need to remap the UUID 
 svn\-remote\&.<name>\&.pushurl
 .RS 4
 Similar to Git\(cqs
-\fBremote\&.<name>\&.pushurl\fR, this key is designed to be used in cases where
+\fBremote\&.\fR\fI<name>\fR\fB\&.pushurl\fR, this key is designed to be used in cases where
 \fIurl\fR
 points to an SVN repository via a read\-only transport, to provide an alternate read/write transport\&. It is assumed that both keys point to the same repository\&. Unlike
 \fIcommiturl\fR,
@@ -1280,7 +1283,7 @@ The initial \fIgit svn clone\fR can be quite time\-consuming (especially for lar
 .sp
 Prefer to use \fIgit svn rebase\fR or \fIgit rebase\fR, rather than \fIgit pull\fR or \fIgit merge\fR to synchronize unintegrated commits with a \fIgit svn\fR branch\&. Doing so will keep the history of unintegrated commits linear with respect to the upstream SVN repository and allow the use of the preferred \fIgit svn dcommit\fR subcommand to push unintegrated commits back into SVN\&.
 .sp
-Originally, \fIgit svn\fR recommended that developers pulled or merged from the \fIgit svn\fR branch\&. This was because the author favored \fBgit svn set\-tree B\fR to commit a single head rather than the \fBgit svn set\-tree A\&.\&.B\fR notation to commit multiple commits\&. Use of \fIgit pull\fR or \fIgit merge\fR with \fBgit svn set\-tree A\&.\&.B\fR will cause non\-linear history to be flattened when committing into SVN and this can lead to merge commits unexpectedly reversing previous commits in SVN\&.
+Originally, \fIgit svn\fR recommended that developers pulled or merged from the \fIgit svn\fR branch\&. This was because the author favored \fBgit\fR \fBsvn\fR \fBset\-tree\fR \fBB\fR to commit a single head rather than the \fBgit\fR \fBsvn\fR \fBset\-tree\fR \fBA\fR\fB\&.\&.\fR\fBB\fR notation to commit multiple commits\&. Use of \fIgit pull\fR or \fIgit merge\fR with \fBgit\fR \fBsvn\fR \fBset\-tree\fR \fBA\fR\fB\&.\&.\fR\fBB\fR will cause non\-linear history to be flattened when committing into SVN and this can lead to merge commits unexpectedly reversing previous commits in SVN\&.
 .SH "MERGE TRACKING"
 .sp
 While \fIgit svn\fR can track copy history (including branches and tags) for repositories adopting a standard layout, it cannot yet represent merge history that happened inside git back upstream to SVN users\&. Therefore it is advised that users keep history as linear as possible inside Git to ease compatibility with SVN (see the CAVEATS section below)\&.
@@ -1355,7 +1358,7 @@ branches = debug/*:refs/remotes/svn/debug/*
 .RE
 .\}
 .sp
-Keep in mind that the \fB*\fR (asterisk) wildcard of the local ref (right of the \fB:\fR) \fBmust\fR be the farthest right path component; however the remote wildcard may be anywhere as long as it\(cqs an independent path component (surrounded by \fB/\fR or EOL)\&. This type of configuration is not automatically created by \fIinit\fR and should be manually entered with a text\-editor or using \fIgit config\fR\&.
+Keep in mind that the * (asterisk) wildcard of the local ref (right of the \fB:\fR) \fBmust\fR be the farthest right path component; however the remote wildcard may be anywhere as long as it\(cqs an independent path component (surrounded by \fB/\fR or EOL)\&. This type of configuration is not automatically created by \fIinit\fR and should be manually entered with a text\-editor or using \fIgit config\fR\&.
 .sp
 Also note that only one asterisk is allowed per word\&. For example:
 .sp

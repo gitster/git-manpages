@@ -2,12 +2,12 @@
 .\"     Title: gitformat-signature
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITFORMAT\-SIGNATURE" "5" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITFORMAT\-SIGNATURE" "5" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,32 +37,48 @@ gitformat-signature \- Git cryptographic signature formats
 .fi
 .SH "DESCRIPTION"
 .sp
-Git uses cryptographic signatures in various places, currently objects (tags, commits, mergetags) and transactions (pushes)\&. In every case, the command which is about to create an object or transaction determines a payload from that, calls an external program to obtain a detached signature for the payload (\fBgpg \-bsa\fR in the case of PGP signatures), and embeds the signature into the object or transaction\&.
+Git uses cryptographic signatures in various places, currently objects (tags, commits, mergetags) and transactions (pushes)\&. In every case, the command which is about to create an object or transaction determines a payload from that, calls an external program to obtain a detached signature for the payload (\fBgpg\fR \fB\-bsa\fR in the case of PGP signatures), and embeds the signature into the object or transaction\&.
 .sp
 Signatures begin with an "ASCII Armor" header line and end with a tail line, which differ depending on signature type (as selected by \fBgpg\&.format\fR, see \fBgit-config\fR(1))\&. These are, for \fBgpg\&.format\fR values:
 .PP
 \fBgpg\fR (PGP)
 .RS 4
-\fB\-\-\-\-\-BEGIN PGP SIGNATURE\-\-\-\-\-\fR
+\fB\-\-\-\-\-BEGIN\fR
+\fBPGP\fR
+\fBSIGNATURE\-\-\-\-\-\fR
 and
-\fB\-\-\-\-\-END PGP SIGNATURE\-\-\-\-\-\fR\&. Or, if gpg is told to produce RFC1991 signatures,
-\fB\-\-\-\-\-BEGIN PGP MESSAGE\-\-\-\-\-\fR
+\fB\-\-\-\-\-END\fR
+\fBPGP\fR
+\fBSIGNATURE\-\-\-\-\-\fR\&. Or, if gpg is told to produce RFC1991 signatures,
+\fB\-\-\-\-\-BEGIN\fR
+\fBPGP\fR
+\fBMESSAGE\-\-\-\-\-\fR
 and
-\fB\-\-\-\-\-END PGP MESSAGE\-\-\-\-\-\fR
+\fB\-\-\-\-\-END\fR
+\fBPGP\fR
+\fBMESSAGE\-\-\-\-\-\fR
 .RE
 .PP
 \fBssh\fR (SSH)
 .RS 4
-\fB\-\-\-\-\-BEGIN SSH SIGNATURE\-\-\-\-\-\fR
+\fB\-\-\-\-\-BEGIN\fR
+\fBSSH\fR
+\fBSIGNATURE\-\-\-\-\-\fR
 and
-\fB\-\-\-\-\-END SSH SIGNATURE\-\-\-\-\-\fR
+\fB\-\-\-\-\-END\fR
+\fBSSH\fR
+\fBSIGNATURE\-\-\-\-\-\fR
 .RE
 .PP
 \fBx509\fR (X\&.509)
 .RS 4
-\fB\-\-\-\-\-BEGIN SIGNED MESSAGE\-\-\-\-\-\fR
+\fB\-\-\-\-\-BEGIN\fR
+\fBSIGNED\fR
+\fBMESSAGE\-\-\-\-\-\fR
 and
-\fB\-\-\-\-\-END SIGNED MESSAGE\-\-\-\-\-\fR
+\fB\-\-\-\-\-END\fR
+\fBSIGNED\fR
+\fBMESSAGE\-\-\-\-\-\fR
 .RE
 .sp
 Signatures sometimes appear as a part of the normal payload (e\&.g\&. a signed tag has the signature block appended after the payload that the signature applies to), and sometimes appear in the value of an object header (e\&.g\&. a merge commit that merged a signed tag would have the entire tag contents on its "mergetag" header)\&. In the case of the latter, the usual multi\-line formatting rule for object headers applies\&. I\&.e\&. the second and subsequent lines are prefixed with a SP to signal that the line is continued from the previous line\&.
@@ -81,7 +97,9 @@ The signed payload and the way the signature is embedded depends on the type of 
 .IP \(bu 2.3
 .\}
 created by:
-\fBgit tag \-s\fR
+\fBgit\fR
+\fBtag\fR
+\fB\-s\fR
 .RE
 .sp
 .RS 4
@@ -117,7 +135,8 @@ embedding: append the signature to the unsigned tag object
 example: tag
 \fBsignedtag\fR
 with subject
-\fBsigned tag\fR
+\fBsigned\fR
+\fBtag\fR
 .RE
 .sp
 .if n \{\
@@ -157,9 +176,12 @@ lZyI6HWixKJkWw8lE9aAOD9TmTW9sFJwcVAzmAuFX2kUreDUKMZduGcoRYGpD7E=
 .IP \(bu 2.3
 .\}
 verify with:
-\fBgit verify\-tag [\-v]\fR
-or
-\fBgit tag \-v\fR
+\fBgit\fR
+\fBverify\-tag\fR
+[\fB\-v\fR] or
+\fBgit\fR
+\fBtag\fR
+\fB\-v\fR
 .RE
 .sp
 .if n \{\
@@ -194,7 +216,9 @@ signed tag message body
 .IP \(bu 2.3
 .\}
 created by:
-\fBgit commit \-S\fR
+\fBgit\fR
+\fBcommit\fR
+\fB\-S\fR
 .RE
 .sp
 .RS 4
@@ -230,7 +254,8 @@ embedding: header entry
 .IP \(bu 2.3
 .\}
 example: commit with subject
-\fBsigned commit\fR
+\fBsigned\fR
+\fBcommit\fR
 .RE
 .sp
 .if n \{\
@@ -270,9 +295,12 @@ signed commit message body
 .IP \(bu 2.3
 .\}
 verify with:
-\fBgit verify\-commit [\-v]\fR
-(or
-\fBgit show \-\-show\-signature\fR)
+\fBgit\fR
+\fBverify\-commit\fR
+[\fB\-v\fR] (or
+\fBgit\fR
+\fBshow\fR
+\fB\-\-show\-signature\fR)
 .RE
 .sp
 .if n \{\
@@ -307,7 +335,8 @@ signed commit message body
 .IP \(bu 2.3
 .\}
 created by:
-\fBgit merge\fR
+\fBgit\fR
+\fBmerge\fR
 on signed tag
 .RE
 .sp
@@ -390,7 +419,9 @@ signed tag message body
 .IP \(bu 2.3
 .\}
 verify with: verification is embedded in merge commit message by default, alternatively with
-\fBgit show \-\-show\-signature\fR:
+\fBgit\fR
+\fBshow\fR
+\fB\-\-show\-signature\fR:
 .RE
 .sp
 .if n \{\

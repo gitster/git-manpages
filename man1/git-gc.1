@@ -2,12 +2,12 @@
 .\"     Title: git-gc
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-GC" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-GC" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -38,9 +38,9 @@ git-gc \- Cleanup unnecessary files and optimize the local repository
 .sp
 Runs a number of housekeeping tasks within the current repository, such as compressing file revisions (to reduce disk space and increase performance), removing unreachable objects which may have been created from prior invocations of \fIgit add\fR, packing refs, pruning reflog, rerere metadata or stale working trees\&. May also update ancillary indexes such as the commit\-graph\&.
 .sp
-When common porcelain operations that create objects are run, they will check whether the repository has grown substantially since the last maintenance, and if so run \fBgit gc\fR automatically\&. See \fBgc\&.auto\fR below for how to disable this behavior\&.
+When common porcelain operations that create objects are run, they will check whether the repository has grown substantially since the last maintenance, and if so run \fBgit\fR \fBgc\fR automatically\&. See \fBgc\&.auto\fR below for how to disable this behavior\&.
 .sp
-Running \fBgit gc\fR manually should only be needed when adding objects to a repository without regularly running such porcelain commands, to do a one\-off repository optimization, or e\&.g\&. to clean up a suboptimal mass\-import\&. See the "PACKFILE OPTIMIZATION" section in \fBgit-fast-import\fR(1) for more details on the import case\&.
+Running \fBgit\fR \fBgc\fR manually should only be needed when adding objects to a repository without regularly running such porcelain commands, to do a one\-off repository optimization, or e\&.g\&. to clean up a suboptimal mass\-import\&. See the "PACKFILE OPTIMIZATION" section in \fBgit-fast-import\fR(1) for more details on the import case\&.
 .SH "OPTIONS"
 .PP
 \-\-aggressive
@@ -85,7 +85,7 @@ is on by default\&.
 \-\-max\-cruft\-size=<n>
 .RS 4
 When packing unreachable objects into a cruft pack, limit the size of new cruft packs to be at most
-\fB<n>\fR
+\fI<n>\fR
 bytes\&. Overrides any value specified via the
 \fBgc\&.maxCruftSize\fR
 configuration\&. See the
@@ -114,16 +114,17 @@ Suppress all progress reports\&.
 \-\-force
 .RS 4
 Force
-\fBgit gc\fR
+\fBgit\fR
+\fBgc\fR
 to run even if there may be another
-\fBgit gc\fR
+\fBgit\fR
+\fBgc\fR
 instance running on this repository\&.
 .RE
 .PP
 \-\-keep\-largest\-pack
 .RS 4
-All packs except the largest non\-cruft pack, any packs marked with a
-\fB\&.keep\fR
+All packs except the largest non\-cruft pack, any packs marked with a \&.\fBkeep\fR
 file, and any cruft pack(s) are consolidated into a single pack\&. When this option is used,
 \fBgc\&.bigPackThreshold\fR
 is ignored\&.
@@ -174,21 +175,26 @@ for more details\&.
 gc\&.auto
 .RS 4
 When there are approximately more than this many loose objects in the repository,
-\fBgit gc \-\-auto\fR
+\fBgit\fR
+\fBgc\fR
+\fB\-\-auto\fR
 will pack them\&. Some Porcelain commands use this command to perform a light\-weight garbage collection from time to time\&. The default value is 6700\&.
 .sp
 Setting this to 0 disables not only automatic packing based on the number of loose objects, but also any other heuristic
-\fBgit gc \-\-auto\fR
+\fBgit\fR
+\fBgc\fR
+\fB\-\-auto\fR
 will otherwise use to determine if there\(cqs work to do, such as
 \fBgc\&.autoPackLimit\fR\&.
 .RE
 .PP
 gc\&.autoPackLimit
 .RS 4
-When there are more than this many packs that are not marked with
-\fB*\&.keep\fR
+When there are more than this many packs that are not marked with *\&.\fBkeep\fR
 file in the repository,
-\fBgit gc \-\-auto\fR
+\fBgit\fR
+\fBgc\fR
+\fB\-\-auto\fR
 consolidates them into one larger pack\&. The default value is 50\&. Setting this to 0 disables it\&. Setting
 \fBgc\&.auto\fR
 to 0 will also disable this\&.
@@ -201,7 +207,9 @@ configuration variable below\&. When in use, it\(cqll affect how the auto pack l
 gc\&.autoDetach
 .RS 4
 Make
-\fBgit gc \-\-auto\fR
+\fBgit\fR
+\fBgc\fR
+\fB\-\-auto\fR
 return immediately and run in the background if the system supports it\&. Default is true\&. This config variable acts as a fallback in case
 \fBmaintenance\&.autoDetach\fR
 is not set\&.
@@ -210,7 +218,8 @@ is not set\&.
 gc\&.bigPackThreshold
 .RS 4
 If non\-zero, all non\-cruft packs larger than this limit are kept when
-\fBgit gc\fR
+\fBgit\fR
+\fBgc\fR
 is run\&. This is very similar to
 \fB\-\-keep\-largest\-pack\fR
 except that all non\-cruft packs that meet the threshold are kept, not just the largest pack\&. Defaults to zero\&. Common unit suffixes of
@@ -222,11 +231,13 @@ are supported\&.
 Note that if the number of kept packs is more than gc\&.autoPackLimit, this configuration variable is ignored, all packs except the base pack will be repacked\&. After this the number of packs should go below gc\&.autoPackLimit and gc\&.bigPackThreshold should be respected again\&.
 .sp
 If the amount of memory estimated for
-\fBgit repack\fR
+\fBgit\fR
+\fBrepack\fR
 to run smoothly is not available and
 \fBgc\&.bigPackThreshold\fR
 is not set, the largest pack will also be excluded (this is the equivalent of running
-\fBgit gc\fR
+\fBgit\fR
+\fBgc\fR
 with
 \fB\-\-keep\-largest\-pack\fR)\&.
 .RE
@@ -236,7 +247,9 @@ gc\&.writeCommitGraph
 If true, then gc will rewrite the commit\-graph file when
 \fBgit-gc\fR(1)
 is run\&. When using
-\fBgit gc \-\-auto\fR
+\fBgit\fR
+\fBgc\fR
+\fB\-\-auto\fR
 the commit\-graph will be updated if housekeeping is required\&. Default is true\&. See
 \fBgit-commit-graph\fR(1)
 for details\&.
@@ -245,7 +258,9 @@ for details\&.
 gc\&.logExpiry
 .RS 4
 If the file gc\&.log exists, then
-\fBgit gc \-\-auto\fR
+\fBgit\fR
+\fBgc\fR
+\fB\-\-auto\fR
 will print its content and exit with status zero instead of running unless that file is more than
 \fIgc\&.logExpiry\fR
 old\&. Default is "1\&.day"\&. See
@@ -256,11 +271,13 @@ for more ways to specify its value\&.
 gc\&.packRefs
 .RS 4
 Running
-\fBgit pack\-refs\fR
+\fBgit\fR
+\fBpack\-refs\fR
 in a repository renders it unclonable by Git versions prior to 1\&.5\&.1\&.2 over dumb transports such as HTTP\&. This variable determines whether
 \fIgit gc\fR
 runs
-\fBgit pack\-refs\fR\&. This can be set to
+\fBgit\fR
+\fBpack\-refs\fR\&. This can be set to
 \fBnotbare\fR
 to enable it within all non\-bare repos or it can be set to a boolean value\&. The default is
 \fBtrue\fR\&.
@@ -321,9 +338,12 @@ gc\&.reflogExpireUnreachable, gc\&.<pattern>\&.reflogExpireUnreachable
 removes reflog entries older than this time and are not reachable from the current tip; defaults to 30 days\&. The value "now" expires all entries immediately, and "never" suppresses expiration altogether\&. With "<pattern>" (e\&.g\&. "refs/stash") in the middle, the setting applies only to the refs that match the <pattern>\&.
 .sp
 These types of entries are generally created as a result of using
-\fBgit commit \-\-amend\fR
+\fBgit\fR
+\fBcommit\fR
+\fB\-\-amend\fR
 or
-\fBgit rebase\fR
+\fBgit\fR
+\fBrebase\fR
 and are the commits prior to the amend or rebase occurring\&. Since these changes are not part of the current project most users will want to expire them sooner, which is why the default is more aggressive than
 \fBgc\&.reflogExpire\fR\&.
 .RE
@@ -338,7 +358,7 @@ Output must contain exactly one hex object ID per line, and nothing else\&. Obje
 gc\&.repackFilter
 .RS 4
 When repacking, use the specified filter to move certain objects into a separate packfile\&. See the
-\fB\-\-filter=<filter\-spec>\fR
+\fB\-\-filter=\fR\fI<filter\-spec>\fR
 option of
 \fBgit-repack\fR(1)\&.
 .RE
@@ -349,7 +369,7 @@ When repacking and using a filter, see
 \fBgc\&.repackFilter\fR, the specified location will be used to create the packfile containing the filtered out objects\&.
 \fBWARNING:\fR
 The specified location should be accessible, using for example the Git alternates mechanism, otherwise the repo could be considered corrupt by Git as it might not be able to access the objects in that packfile\&. See the
-\fB\-\-filter\-to=<dir>\fR
+\fB\-\-filter\-to=\fR\fI<dir>\fR
 option of
 \fBgit-repack\fR(1)
 and the

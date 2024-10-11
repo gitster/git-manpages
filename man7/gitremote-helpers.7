@@ -2,12 +2,12 @@
 .\"     Title: gitremote-helpers
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITREMOTE\-HELPERS" "7" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITREMOTE\-HELPERS" "7" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -49,7 +49,7 @@ When Git encounters a URL of the form \fI<transport>://<address>\fR, where \fI<t
 .sp
 A URL of the form \fI<transport>::<address>\fR explicitly instructs Git to invoke \fIgit remote\-<transport>\fR with \fI<address>\fR as the second argument\&. If such a URL is encountered directly on the command line, the first argument is \fI<address>\fR, and if it is encountered in a configured remote, the first argument is the name of that remote\&.
 .sp
-Additionally, when a configured remote has \fBremote\&.<name>\&.vcs\fR set to \fI<transport>\fR, Git explicitly invokes \fIgit remote\-<transport>\fR with \fI<name>\fR as the first argument\&. If set, the second argument is \fBremote\&.<name>\&.url\fR; otherwise, the second argument is omitted\&.
+Additionally, when a configured remote has \fBremote\&.\fR\fI<name>\fR\fB\&.vcs\fR set to \fI<transport>\fR, Git explicitly invokes \fIgit remote\-<transport>\fR with \fI<name>\fR as the first argument\&. If set, the second argument is \fBremote\&.\fR\fI<name>\fR\fB\&.url\fR; otherwise, the second argument is omitted\&.
 .SH "INPUT FORMAT"
 .sp
 Git sends the remote helper a list of commands on standard input, one per line\&. The first command is always the \fIcapabilities\fR command, in response to which the remote helper must print a list of the capabilities it supports (see below) followed by a blank line\&. The response to the capabilities command determines what commands Git uses in the remainder of the command stream\&.
@@ -205,16 +205,18 @@ capability use this\&. It\(cqs mandatory for
 \fIexport\fR\&.
 .sp
 A helper advertising the capability
-\fBrefspec refs/heads/*:refs/svn/origin/branches/*\fR
-is saying that, when it is asked to
-\fBimport refs/heads/topic\fR, the stream it outputs will update the
+\fBrefspec\fR
+\fBrefs/heads/\fR*:refs/svn/origin/branches/* is saying that, when it is asked to
+\fBimport\fR
+\fBrefs/heads/topic\fR, the stream it outputs will update the
 \fBrefs/svn/origin/branches/topic\fR
 ref\&.
 .sp
 This capability can be advertised multiple times\&. The first applicable refspec takes precedence\&. The left\-hand of refspecs advertised with this capability must cover all refs reported by the list command\&. If no
 \fIrefspec\fR
 capability is advertised, there is an implied
-\fBrefspec *:*\fR\&.
+\fBrefspec\fR
+*:*\&.
 .sp
 When writing remote\-helpers for decentralized version control systems, it is advised to keep a local copy of the repository to interact with, and to let the private namespace refs point to this local repository, while the refs/remotes namespace is used to track the remote repository\&.
 .RE
@@ -239,7 +241,7 @@ commands of a batch before sending data to fast\-import\&. This is to prevent mi
 This modifies the
 \fIexport\fR
 capability, instructing Git to dump the internal marks table to <file> when complete\&. For details, read up on
-\fB\-\-export\-marks=<file>\fR
+\fB\-\-export\-marks=\fR\fI<file>\fR
 in
 \fBgit-fast-export\fR(1)\&.
 .RE
@@ -249,7 +251,7 @@ in
 This modifies the
 \fIexport\fR
 capability, instructing Git to load the marks specified in <file> before processing any input\&. For details, read up on
-\fB\-\-import\-marks=<file>\fR
+\fB\-\-import\-marks=\fR\fI<file>\fR
 in
 \fBgit-fast-export\fR(1)\&.
 .RE
@@ -326,9 +328,7 @@ Optionally may output a
 \fIlock <file>\fR
 line indicating the full path of a file under
 \fB$GIT_DIR/objects/pack\fR
-which is keeping a pack until refs can be suitably updated\&. The path must end with
-\fB\&.keep\fR\&. This is a mechanism to name a <pack,idx,keep> tuple by giving only the keep component\&. The kept pack will not be deleted by a concurrent repack, even though its objects may not be referenced until the fetch completes\&. The
-\fB\&.keep\fR
+which is keeping a pack until refs can be suitably updated\&. The path must end with \&.\fBkeep\fR\&. This is a mechanism to name a <pack,idx,keep> tuple by giving only the keep component\&. The kept pack will not be deleted by a concurrent repack, even though its objects may not be referenced until the fetch completes\&. The \&.\fBkeep\fR
 file will be deleted at the conclusion of the fetch\&.
 .sp
 If option
@@ -449,12 +449,11 @@ Supported if the helper has the "stateless\-connect" capability\&.
 \fIget\fR <uri> <path>
 .RS 4
 Downloads the file from the given
-\fB<uri>\fR
+\fI<uri>\fR
 to the given
-\fB<path>\fR\&. If
-\fB<path>\&.temp\fR
-exists, then Git assumes that the
-\fB\&.temp\fR
+\fI<path>\fR\&. If
+\fI<path>\fR\fB\&.temp\fR
+exists, then Git assumes that the \&.\fBtemp\fR
 file is a partial download from a previous attempt and will resume the download from that position\&.
 .RE
 .sp

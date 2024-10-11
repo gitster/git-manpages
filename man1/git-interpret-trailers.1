@@ -2,12 +2,12 @@
 .\"     Title: git-interpret-trailers
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-INTERPRET\-TRAILERS" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-INTERPRET\-TRAILERS" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -59,7 +59,7 @@ the last two lines starting with "Signed\-off\-by" are trailers\&.
 .sp
 This command reads commit messages from either the <file> arguments or the standard input if no <file> is specified\&. If \fB\-\-parse\fR is specified, the output consists of the parsed trailers coming from the input, without influencing them with any command line options or configuration variables\&.
 .sp
-Otherwise, this command applies \fBtrailer\&.*\fR configuration variables (which could potentially add new trailers, as well as reposition them), as well as any command line arguments that can override configuration variables (such as \fB\-\-trailer=\&.\&.\&.\fR which could also add new trailers), to each input file\&. The result is emitted on the standard output\&.
+Otherwise, this command applies \fBtrailer\&.\fR* configuration variables (which could potentially add new trailers, as well as reposition them), as well as any command line arguments that can override configuration variables (such as \fB\-\-trailer=\&.\&.\fR\&. which could also add new trailers), to each input file\&. The result is emitted on the standard output\&.
 .sp
 This command can also operate on the output of \fBgit-format-patch\fR(1), which is more elaborate than a plain commit message\&. Namely, such output includes a commit message (as above), a "\-\-\-" divider line, and a patch part\&. For these inputs, the divider and patch parts are not modified by this command and are emitted as is on the output, unless \fB\-\-no\-divider\fR is specified\&.
 .sp
@@ -77,7 +77,7 @@ key: value
 .RE
 .\}
 .sp
-This means that the trimmed <key> and <value> will be separated by \fB\*(Aq: \*(Aq\fR (one colon followed by one space)\&.
+This means that the trimmed <key> and <value> will be separated by \*(Aq: \*(Aq (one colon followed by one space)\&.
 .sp
 For convenience, a <key\-alias> can be configured to make using \fB\-\-trailer\fR shorter to type on the command line\&. This can be configured using the \fItrailer\&.<key\-alias>\&.key\fR configuration variable\&. The <keyAlias> must be a prefix of the full <key> string, although case sensitivity does not matter\&. For example, if you have
 .sp
@@ -91,7 +91,7 @@ trailer\&.sign\&.key "Signed\-off\-by: "
 .RE
 .\}
 .sp
-in your configuration, you only need to specify \fB\-\-trailer="sign: foo"\fR on the command line instead of \fB\-\-trailer="Signed\-off\-by: foo"\fR\&.
+in your configuration, you only need to specify \fB\-\-trailer=\fR"sign: \fBfoo\fR" on the command line instead of \fB\-\-trailer=\fR"Signed\-off\-by: \fBfoo\fR"\&.
 .sp
 By default the new trailer will appear at the end of all the existing trailers\&. If there is no existing trailer, the new trailer will appear at the end of the input\&. A blank line will be added before the new trailer if there isn\(cqt one already\&.
 .sp
@@ -135,7 +135,7 @@ Specify where all new trailers will be added\&. A setting provided with
 overrides the
 \fBtrailer\&.where\fR
 and any applicable
-\fBtrailer\&.<keyAlias>\&.where\fR
+\fBtrailer\&.\fR\fI<keyAlias>\fR\fB\&.where\fR
 configuration variables and applies to all
 \fI\-\-trailer\fR
 options until the next occurrence of
@@ -158,7 +158,7 @@ Specify what action will be performed when there is already at least one trailer
 overrides the
 \fBtrailer\&.ifExists\fR
 and any applicable
-\fBtrailer\&.<keyAlias>\&.ifExists\fR
+\fBtrailer\&.\fR\fI<keyAlias>\fR\fB\&.ifExists\fR
 configuration variables and applies to all
 \fI\-\-trailer\fR
 options until the next occurrence of
@@ -180,7 +180,7 @@ Specify what action will be performed when there is no other trailer with the sa
 overrides the
 \fBtrailer\&.ifMissing\fR
 and any applicable
-\fBtrailer\&.<keyAlias>\&.ifMissing\fR
+\fBtrailer\&.\fR\fI<keyAlias>\fR\fB\&.ifMissing\fR
 configuration variables and applies to all
 \fI\-\-trailer\fR
 options until the next occurrence of
@@ -200,8 +200,7 @@ Output only the trailers, not any other parts of the input\&.
 \-\-only\-input
 .RS 4
 Output only trailers that exist in the input; do not add any from the command\-line or by applying
-\fBtrailer\&.*\fR
-configuration variables\&.
+\fBtrailer\&.\fR* configuration variables\&.
 .RE
 .PP
 \-\-unfold
@@ -212,7 +211,9 @@ If a trailer has a value that runs over multiple lines (aka "folded"), reformat 
 \-\-parse
 .RS 4
 A convenience alias for
-\fB\-\-only\-trailers \-\-only\-input \-\-unfold\fR\&. This makes it easier to only see the trailers coming from the input without influencing them with any command line options or configuration variables, while also making the output machine\-friendly with \-\-unfold\&.
+\fB\-\-only\-trailers\fR
+\fB\-\-only\-input\fR
+\fB\-\-unfold\fR\&. This makes it easier to only see the trailers coming from the input without influencing them with any command line options or configuration variables, while also making the output machine\-friendly with \-\-unfold\&.
 .RE
 .PP
 \-\-no\-divider
@@ -220,7 +221,8 @@ A convenience alias for
 Do not treat
 \fB\-\-\-\fR
 as the end of the commit message\&. Use this when you know your input contains just the commit message itself (and not an email or the output of
-\fBgit format\-patch\fR)\&.
+\fBgit\fR
+\fBformat\-patch\fR)\&.
 .RE
 .SH "CONFIGURATION VARIABLES"
 .PP
@@ -320,11 +322,14 @@ With
 trailer\&.<keyAlias>\&.key
 .RS 4
 Defines a <keyAlias> for the <key>\&. The <keyAlias> must be a prefix (case does not matter) of the <key>\&. For example, in
-\fBgit config trailer\&.ack\&.key "Acked\-by"\fR
-the "Acked\-by" is the <key> and the "ack" is the <keyAlias>\&. This configuration allows the shorter
-\fB\-\-trailer "ack:\&.\&.\&."\fR
-invocation on the command line using the "ack" <keyAlias> instead of the longer
-\fB\-\-trailer "Acked\-by:\&.\&.\&."\fR\&.
+\fBgit\fR
+\fBconfig\fR
+\fBtrailer\&.ack\&.key\fR
+"Acked\-by" the "Acked\-by" is the <key> and the "ack" is the <keyAlias>\&. This configuration allows the shorter
+\fB\-\-trailer\fR
+"ack:\fB\&.\&.\&.\fR" invocation on the command line using the "ack" <keyAlias> instead of the longer
+\fB\-\-trailer\fR
+"Acked\-by:\fB\&.\&.\&.\fR"\&.
 .sp
 At the end of the <key>, a separator can appear and then some space characters\&. By default the only valid separator is
 \fI:\fR, but this can be changed using the

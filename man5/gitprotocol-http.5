@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-http
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-HTTP" "5" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITPROTOCOL\-HTTP" "5" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -122,9 +122,9 @@ Servers MUST NOT require HTTP cookies in order to function correctly\&. Clients 
 .sp
 Except where noted, all standard HTTP behavior SHOULD be assumed by both client and server\&. This includes (but is not necessarily limited to):
 .sp
-If there is no repository at \fB$GIT_URL\fR, or the resource pointed to by a location matching \fB$GIT_URL\fR does not exist, the server MUST NOT respond with \fB200 OK\fR response\&. A server SHOULD respond with \fB404 Not Found\fR, \fB410 Gone\fR, or any other suitable HTTP status code which does not imply the resource exists as requested\&.
+If there is no repository at \fB$GIT_URL\fR, or the resource pointed to by a location matching \fB$GIT_URL\fR does not exist, the server MUST NOT respond with \fB200\fR \fBOK\fR response\&. A server SHOULD respond with \fB404\fR \fBNot\fR \fBFound\fR, \fB410\fR \fBGone\fR, or any other suitable HTTP status code which does not imply the resource exists as requested\&.
 .sp
-If there is a repository at \fB$GIT_URL\fR, but access is not currently permitted, the server MUST respond with the \fB403 Forbidden\fR HTTP status code\&.
+If there is a repository at \fB$GIT_URL\fR, but access is not currently permitted, the server MUST respond with the \fB403\fR \fBForbidden\fR HTTP status code\&.
 .sp
 Servers SHOULD support both HTTP 1\&.0 and HTTP 1\&.1\&. Servers SHOULD support chunked encoding for both request and response bodies\&.
 .sp
@@ -134,7 +134,7 @@ Servers MAY return ETag and/or Last\-Modified headers\&.
 .sp
 Clients MAY revalidate cached entities by including If\-Modified\-Since and/or If\-None\-Match request headers\&.
 .sp
-Servers MAY return \fB304 Not Modified\fR if the relevant headers appear in the request and the entity has not changed\&. Clients MUST treat \fB304 Not Modified\fR identical to \fB200 OK\fR by reusing the cached entity\&.
+Servers MAY return \fB304\fR \fBNot\fR \fBModified\fR if the relevant headers appear in the request and the entity has not changed\&. Clients MUST treat \fB304\fR \fBNot\fR \fBModified\fR identical to \fB200\fR \fBOK\fR by reusing the cached entity\&.
 .sp
 Clients MAY reuse a cached entity without revalidation if the Cache\-Control and/or Expires header permits caching\&. Clients and servers MUST follow RFC 2616 for cache controls\&.
 .SH "DISCOVERING REFERENCES"
@@ -171,11 +171,11 @@ S: a3c2e2402b99163d1d59756e5f207ae21cccba4c	refs/tags/v1\&.0^{}
 .RE
 .\}
 .sp
-The Content\-Type of the returned info/refs entity SHOULD be \fBtext/plain; charset=utf\-8\fR, but MAY be any content type\&. Clients MUST NOT attempt to validate the returned Content\-Type\&. Dumb servers MUST NOT return a return type starting with \fBapplication/x\-git\-\fR\&.
+The Content\-Type of the returned info/refs entity SHOULD be \fBtext/plain\fR; \fBcharset=utf\-8\fR, but MAY be any content type\&. Clients MUST NOT attempt to validate the returned Content\-Type\&. Dumb servers MUST NOT return a return type starting with \fBapplication/x\-git\-\fR\&.
 .sp
 Cache\-Control headers MAY be returned to disable caching of the returned entity\&.
 .sp
-When examining the response clients SHOULD only examine the HTTP status code\&. Valid responses are \fB200 OK\fR, or \fB304 Not Modified\fR\&.
+When examining the response clients SHOULD only examine the HTTP status code\&. Valid responses are \fB200\fR \fBOK\fR, or \fB304\fR \fBNot\fR \fBModified\fR\&.
 .sp
 The returned content is a UNIX formatted text file describing each ref and its known value\&. The file SHOULD be sorted by name according to the C locale ordering\&. The file SHOULD NOT include the default ref named \fBHEAD\fR\&.
 .sp
@@ -281,7 +281,7 @@ See the prior section under dumb clients for a more detailed description of the 
 \fBSmart Server Response\fR
 .RS 4
 .sp
-If the server does not recognize the requested service name, or the requested service name has been disabled by the server administrator, the server MUST respond with the \fB403 Forbidden\fR HTTP status code\&.
+If the server does not recognize the requested service name, or the requested service name has been disabled by the server administrator, the server MUST respond with the \fB403\fR \fBForbidden\fR HTTP status code\&.
 .sp
 Otherwise, smart servers MUST respond with the smart server reply format for the requested service name\&.
 .sp
@@ -289,13 +289,13 @@ Cache\-Control headers SHOULD be used to disable caching of the returned entity\
 .sp
 The Content\-Type MUST be \fBapplication/x\-$servicename\-advertisement\fR\&. Clients SHOULD fall back to the dumb protocol if another content type is returned\&. When falling back to the dumb protocol clients SHOULD NOT make an additional request to \fB$GIT_URL/info/refs\fR, but instead SHOULD use the response already in hand\&. Clients MUST NOT continue if they do not support the dumb protocol\&.
 .sp
-Clients MUST validate the status code is either \fB200 OK\fR or \fB304 Not Modified\fR\&.
+Clients MUST validate the status code is either \fB200\fR \fBOK\fR or \fB304\fR \fBNot\fR \fBModified\fR\&.
 .sp
-Clients MUST validate the first five bytes of the response entity matches the regex \fB^[0\-9a\-f]{4}#\fR\&. If this test fails, clients MUST NOT continue\&.
+Clients MUST validate the first five bytes of the response entity matches the regex \fB^\fR[\fB0\-9a\-f\fR]{4}#\&. If this test fails, clients MUST NOT continue\&.
 .sp
 Clients MUST parse the entire response as a sequence of pkt\-line records\&.
 .sp
-Clients MUST verify the first pkt\-line is \fB# service=$servicename\fR\&. Servers MUST set $servicename to be the request parameter value\&. Servers SHOULD include an LF at the end of this line\&. Clients MUST ignore an LF at the end of the line\&.
+Clients MUST verify the first pkt\-line is # \fBservice=$servicename\fR\&. Servers MUST set $servicename to be the request parameter value\&. Servers SHOULD include an LF at the end of this line\&. Clients MUST ignore an LF at the end of the line\&.
 .sp
 Servers MUST terminate the response with the magic \fB0000\fR end pkt\-line marker\&.
 .sp
@@ -368,7 +368,7 @@ peeled_ref      =  PKT\-LINE(obj\-id SP name LF)
 .sp
 This service reads from the repository pointed to by \fB$GIT_URL\fR\&.
 .sp
-Clients MUST first perform ref discovery with \fB$GIT_URL/info/refs?service=git\-upload\-pack\fR\&.
+Clients MUST first perform ref discovery with \fB$GIT_URL/info/refs\fR?service=git\-upload\-pack\&.
 .sp
 .if n \{\
 .RS 4
@@ -572,7 +572,7 @@ C: Parse the upload\-pack response: TODO: Document parsing response
 .sp
 This service reads from the repository pointed to by \fB$GIT_URL\fR\&.
 .sp
-Clients MUST first perform ref discovery with \fB$GIT_URL/info/refs?service=git\-receive\-pack\fR\&.
+Clients MUST first perform ref discovery with \fB$GIT_URL/info/refs\fR?service=git\-receive\-pack\&.
 .sp
 .if n \{\
 .RS 4

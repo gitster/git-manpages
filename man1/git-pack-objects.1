@@ -2,12 +2,12 @@
 .\"     Title: git-pack-objects
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-PACK\-OBJECTS" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-PACK\-OBJECTS" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -74,7 +74,8 @@ flag uses its
 arguments to build the list of objects it outputs\&. The objects on the resulting list are packed\&. Besides revisions,
 \fB\-\-not\fR
 or
-\fB\-\-shallow <SHA\-1>\fR
+\fB\-\-shallow\fR
+\fI<SHA\-1>\fR
 lines are also accepted\&.
 .RE
 .PP
@@ -114,10 +115,11 @@ Incompatible with
 .PP
 \-\-cruft
 .RS 4
-Packs unreachable objects into a separate "cruft" pack, denoted by the existence of a
-\fB\&.mtimes\fR
+Packs unreachable objects into a separate "cruft" pack, denoted by the existence of a \&.\fBmtimes\fR
 file\&. Typically used by
-\fBgit repack \-\-cruft\fR\&. Callers provide a list of pack names and indicate which packs will remain in the repository, along with which packs will be deleted (indicated by the
+\fBgit\fR
+\fBrepack\fR
+\fB\-\-cruft\fR\&. Callers provide a list of pack names and indicate which packs will remain in the repository, along with which packs will be deleted (indicated by the
 \fB\-\fR
 prefix)\&. The contents of the cruft pack are all objects not contained in the surviving packs which have not exceeded the grace period (see
 \fB\-\-cruft\-expiration\fR
@@ -139,7 +141,7 @@ Incompatible with
 \-\-cruft\-expiration=<approxidate>
 .RS 4
 If specified, objects are eliminated from the cruft pack if they have an mtime older than
-\fB<approxidate>\fR\&. If unspecified (and given
+\fI<approxidate>\fR\&. If unspecified (and given
 \fB\-\-cruft\fR), then no objects are eliminated\&.
 .RE
 .PP
@@ -178,7 +180,7 @@ This flag causes an object already in a local pack that has a \&.keep file to be
 \-\-keep\-pack=<pack\-name>
 .RS 4
 This flag causes an object already in the given pack to be ignored, even if it would have otherwise been packed\&.
-\fB<pack\-name>\fR
+\fI<pack\-name>\fR
 is the pack file name without leading directory (e\&.g\&.
 \fBpack\-123\&.pack\fR)\&. The option could be specified multiple times to keep multiple packs\&.
 .RE
@@ -244,7 +246,9 @@ Toggle the "sparse" algorithm to determine which objects to include in the pack,
 Create a "thin" pack by omitting the common objects between a sender and a receiver in order to reduce network transfer\&. This option only makes sense in conjunction with \-\-stdout\&.
 .sp
 Note: A thin pack violates the packed archive format by omitting required objects and is thus unusable by Git without making it self\-contained\&. Use
-\fBgit index\-pack \-\-fix\-thin\fR
+\fBgit\fR
+\fBindex\-pack\fR
+\fB\-\-fix\-thin\fR
 (see
 \fBgit-index-pack\fR(1)) to restore the self\-contained property\&.
 .RE
@@ -261,13 +265,16 @@ A packed archive can express the base object of a delta as either a 20\-byte obj
 only uses the former format for better compatibility\&. This option allows the command to use the latter format for compactness\&. Depending on the average delta chain length, this option typically shrinks the resulting packfile by 3\-5 per\-cent\&.
 .sp
 Note: Porcelain commands such as
-\fBgit gc\fR
+\fBgit\fR
+\fBgc\fR
 (see
 \fBgit-gc\fR(1)),
-\fBgit repack\fR
+\fBgit\fR
+\fBrepack\fR
 (see
 \fBgit-repack\fR(1)) pass this option by default in modern Git when they put objects in your repository into pack files\&. So does
-\fBgit bundle\fR
+\fBgit\fR
+\fBbundle\fR
 (see
 \fBgit-bundle\fR(1)) when it creates a bundle\&.
 .RE
@@ -292,7 +299,7 @@ With this option, parents that are hidden by grafts are packed nevertheless\&.
 Omits certain objects (usually blobs) from the resulting packfile\&. See
 \fBgit-rev-list\fR(1)
 for valid
-\fB<filter\-spec>\fR
+\fI<filter\-spec>\fR
 forms\&.
 .RE
 .PP

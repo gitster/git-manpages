@@ -2,12 +2,12 @@
 .\"     Title: git-range-diff
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-RANGE\-DIFF" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-RANGE\-DIFF" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,7 +42,7 @@ git-range-diff \- Compare two commit ranges (e\&.g\&. two versions of a branch)
 .sp
 This command shows the differences between two versions of a patch series, or more generally, two commit ranges (ignoring merge commits)\&.
 .sp
-In the presence of \fB<path>\fR arguments, these commit ranges are limited accordingly\&.
+In the presence of \fI<path>\fR arguments, these commit ranges are limited accordingly\&.
 .sp
 To that end, it first finds pairs of commits from both commit ranges that correspond with each other\&. Two commits are said to correspond when the diff between their patches (i\&.e\&. the author information, the commit message and the commit diff) is reasonably small compared to the patches\*(Aq size\&. See ``Algorithm`` below for details\&.
 .sp
@@ -58,12 +58,13 @@ There are three ways to specify the commit ranges:
 .sp -1
 .IP \(bu 2.3
 .\}
-\fB<range1> <range2>\fR: Either commit range can be of the form
-\fB<base>\&.\&.<rev>\fR,
-\fB<rev>^!\fR
-or
-\fB<rev>^\-<n>\fR\&. See
-\fBSPECIFYING RANGES\fR
+\fI<range1>\fR
+\fI<range2>\fR: Either commit range can be of the form
+\fI<base>\fR\fB\&.\&.\fR\fI<rev>\fR,
+\fI<rev>\fR\fB^\fR! or
+\fI<rev>\fR\fB^\-\fR\fI<n>\fR\&. See
+\fBSPECIFYING\fR
+\fBRANGES\fR
 in
 \fBgitrevisions\fR(7)
 for more details\&.
@@ -77,8 +78,9 @@ for more details\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fB<rev1>\&.\&.\&.<rev2>\fR\&. This is equivalent to
-\fB<rev2>\&.\&.<rev1> <rev1>\&.\&.<rev2>\fR\&.
+\fI<rev1>\fR\fB\&.\&.\&.\fR\fI<rev2>\fR\&. This is equivalent to
+\fI<rev2>\fR\fB\&.\&.\fR\fI<rev1>\fR
+\fI<rev1>\fR\fB\&.\&.\fR\fI<rev2>\fR\&.
 .RE
 .sp
 .RS 4
@@ -89,31 +91,35 @@ for more details\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fB<base> <rev1> <rev2>\fR: This is equivalent to
-\fB<base>\&.\&.<rev1> <base>\&.\&.<rev2>\fR\&.
+\fI<base>\fR
+\fI<rev1>\fR
+\fI<rev2>\fR: This is equivalent to
+\fI<base>\fR\fB\&.\&.\fR\fI<rev1>\fR
+\fI<base>\fR\fB\&.\&.\fR\fI<rev2>\fR\&.
 .RE
 .SH "OPTIONS"
 .PP
 \-\-no\-dual\-color
 .RS 4
 When the commit diffs differ,
-\fBgit range\-diff\fR
+\fBgit\fR
+\fBrange\-diff\fR
 recreates the original diffs\*(Aq coloring, and adds outer \-/+ diff markers with the
 \fBbackground\fR
 being red/green to make it easier to see e\&.g\&. when there was a change in what exact lines were added\&.
 .sp
 Additionally, the commit diff lines that are only present in the first commit range are shown "dimmed" (this can be overridden using the
-\fBcolor\&.diff\&.<slot>\fR
+\fBcolor\&.diff\&.\fR\fI<slot>\fR
 config setting where
-\fB<slot>\fR
+\fI<slot>\fR
 is one of
 \fBcontextDimmed\fR,
 \fBoldDimmed\fR
 and
 \fBnewDimmed\fR), and the commit diff lines that are only present in the second commit range are shown in bold (which can be overridden using the config settings
-\fBcolor\&.diff\&.<slot>\fR
+\fBcolor\&.diff\&.\fR\fI<slot>\fR
 with
-\fB<slot>\fR
+\fI<slot>\fR
 being one of
 \fBcontextBold\fR,
 \fBoldBold\fR
@@ -130,29 +136,31 @@ to revert to color all lines according to the outer diff markers (and completely
 \-\-creation\-factor=<percent>
 .RS 4
 Set the creation/deletion cost fudge factor to
-\fB<percent>\fR\&. Defaults to 60\&. Try a larger value if
-\fBgit range\-diff\fR
+\fI<percent>\fR\&. Defaults to 60\&. Try a larger value if
+\fBgit\fR
+\fBrange\-diff\fR
 erroneously considers a large change a total rewrite (deletion of one commit and addition of another), and a smaller one in the reverse case\&. See the ``Algorithm`` section below for an explanation of why this is needed\&.
 .RE
 .PP
 \-\-left\-only
 .RS 4
 Suppress commits that are missing from the first specified range (or the "left range" when using the
-\fB<rev1>\&.\&.\&.<rev2>\fR
+\fI<rev1>\fR\fB\&.\&.\&.\fR\fI<rev2>\fR
 format)\&.
 .RE
 .PP
 \-\-right\-only
 .RS 4
 Suppress commits that are missing from the second specified range (or the "right range" when using the
-\fB<rev1>\&.\&.\&.<rev2>\fR
+\fI<rev1>\fR\fB\&.\&.\&.\fR\fI<rev2>\fR
 format)\&.
 .RE
 .PP
 \-\-[no\-]notes[=<ref>]
 .RS 4
 This flag is passed to the
-\fBgit log\fR
+\fBgit\fR
+\fBlog\fR
 program (see
 \fBgit-log\fR(1)) that generates the patches\&.
 .RE
@@ -160,33 +168,37 @@ program (see
 <range1> <range2>
 .RS 4
 Compare the commits specified by the two ranges, where
-\fB<range1>\fR
+\fI<range1>\fR
 is considered an older version of
-\fB<range2>\fR\&.
+\fI<range2>\fR\&.
 .RE
 .PP
 <rev1>\&...\:<rev2>
 .RS 4
 Equivalent to passing
-\fB<rev2>\&.\&.<rev1>\fR
+\fI<rev2>\fR\fB\&.\&.\fR\fI<rev1>\fR
 and
-\fB<rev1>\&.\&.<rev2>\fR\&.
+\fI<rev1>\fR\fB\&.\&.\fR\fI<rev2>\fR\&.
 .RE
 .PP
 <base> <rev1> <rev2>
 .RS 4
 Equivalent to passing
-\fB<base>\&.\&.<rev1>\fR
+\fI<base>\fR\fB\&.\&.\fR\fI<rev1>\fR
 and
-\fB<base>\&.\&.<rev2>\fR\&. Note that
-\fB<base>\fR
+\fI<base>\fR\fB\&.\&.\fR\fI<rev2>\fR\&. Note that
+\fI<base>\fR
 does not need to be the exact branch point of the branches\&. Example: after rebasing a branch
 \fBmy\-topic\fR,
-\fBgit range\-diff my\-topic@{u} my\-topic@{1} my\-topic\fR
+\fBgit\fR
+\fBrange\-diff\fR
+\fBmy\-topic@\fR{u}
+\fBmy\-topic@\fR{1}
+\fBmy\-topic\fR
 would show the differences introduced by the rebase\&.
 .RE
 .sp
-\fBgit range\-diff\fR also accepts the regular diff options (see \fBgit-diff\fR(1)), most notably the \fB\-\-color=[<when>]\fR and \fB\-\-no\-color\fR options\&. These options are used when generating the "diff between patches", i\&.e\&. to compare the author, commit message and diff of corresponding old/new commits\&. There is currently no means to tweak most of the diff options passed to \fBgit log\fR when generating those patches\&.
+\fBgit\fR \fBrange\-diff\fR also accepts the regular diff options (see \fBgit-diff\fR(1)), most notably the \fB\-\-color=\fR[\fI<when>\fR] and \fB\-\-no\-color\fR options\&. These options are used when generating the "diff between patches", i\&.e\&. to compare the author, commit message and diff of corresponding old/new commits\&. There is currently no means to tweak most of the diff options passed to \fBgit\fR \fBlog\fR when generating those patches\&.
 .SH "OUTPUT STABILITY"
 .sp
 The output of the \fBrange\-diff\fR command is subject to change\&. It is intended to be human\-readable porcelain output, not something that can be used across versions of Git to get a textually stable \fBrange\-diff\fR (as opposed to something like the \fB\-\-stable\fR option to \fBgit-patch-id\fR(1))\&. There\(cqs also no equivalent of \fBgit-apply\fR(1) for \fBrange\-diff\fR, the output is not intended to be machine\-readable\&.
@@ -194,7 +206,7 @@ The output of the \fBrange\-diff\fR command is subject to change\&. It is intend
 This is particularly true when passing in diff options\&. Currently some options like \fB\-\-stat\fR can, as an emergent effect, produce output that\(cqs quite useless in the context of \fBrange\-diff\fR\&. Future versions of \fBrange\-diff\fR may learn to interpret such options in a manner specific to \fBrange\-diff\fR (e\&.g\&. for \fB\-\-stat\fR producing human\-readable output which summarizes how the diffstat changed)\&.
 .SH "CONFIGURATION"
 .sp
-This command uses the \fBdiff\&.color\&.*\fR and \fBpager\&.range\-diff\fR settings (the latter is on by default)\&. See \fBgit-config\fR(1)\&.
+This command uses the \fBdiff\&.color\&.\fR* and \fBpager\&.range\-diff\fR settings (the latter is on by default)\&. See \fBgit-config\fR(1)\&.
 .SH "EXAMPLES"
 .sp
 When a rebase required merge conflicts to be resolved, compare the changes introduced by the rebase directly afterwards using:
@@ -209,7 +221,7 @@ $ git range\-diff @{u} @{1} @
 .RE
 .\}
 .sp
-A typical output of \fBgit range\-diff\fR would look like this:
+A typical output of \fBgit\fR \fBrange\-diff\fR would look like this:
 .sp
 .if n \{\
 .RS 4
@@ -239,7 +251,7 @@ A typical output of \fBgit range\-diff\fR would look like this:
 .sp
 In this example, there are 3 old and 3 new commits, where the developer removed the 3rd, added a new one before the first two, and modified the commit message of the 2nd commit as well as its diff\&.
 .sp
-When the output goes to a terminal, it is color\-coded by default, just like regular \fBgit diff\fR\*(Aqs output\&. In addition, the first line (adding a commit) is green, the last line (deleting a commit) is red, the second line (with a perfect match) is yellow like the commit header of \fBgit show\fR\*(Aqs output, and the third line colors the old commit red, the new one green and the rest like \fBgit show\fR\*(Aqs commit header\&.
+When the output goes to a terminal, it is color\-coded by default, just like regular \fBgit\fR \fBdiff\fR\*(Aqs output\&. In addition, the first line (adding a commit) is green, the last line (deleting a commit) is red, the second line (with a perfect match) is yellow like the commit header of \fBgit\fR \fBshow\fR\*(Aqs output, and the third line colors the old commit red, the new one green and the rest like \fBgit\fR \fBshow\fR\*(Aqs commit header\&.
 .sp
 A naive color\-coded diff of diffs is actually a bit hard to read, though, as it colors the entire lines red or green\&. The line that added "What is unexpected" in the old commit, for example, is completely red, even if the intent of the old commit was to add something\&.
 .sp

@@ -2,12 +2,12 @@
 .\"     Title: git-fast-export
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-EXPORT" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-FAST\-EXPORT" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -89,7 +89,8 @@ Note that earlier versions of this command did not complain and produced incorre
 \-\-export\-marks=<file>
 .RS 4
 Dumps the internal marks table to <file> when complete\&. Marks are written one per line as
-\fB:markid SHA\-1\fR\&. Only marks for revisions are dumped; marks for blobs are ignored\&. Backends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs\&. As <file> is only opened and truncated at completion, the same path can also be safely given to \-\-import\-marks\&. The file will not be written if no new object has been marked/exported\&.
+\fB:markid\fR
+\fBSHA\-1\fR\&. Only marks for revisions are dumped; marks for blobs are ignored\&. Backends can use this file to validate imports after they have been completed, or to save the marks table across incremental runs\&. As <file> is only opened and truncated at completion, the same path can also be safely given to \-\-import\-marks\&. The file will not be written if no new object has been marked/exported\&.
 .RE
 .PP
 \-\-import\-marks=<file>
@@ -141,13 +142,13 @@ below\&.
 \-\-anonymize\-map=<from>[:<to>]
 .RS 4
 Convert token
-\fB<from>\fR
+\fI<from>\fR
 to
-\fB<to>\fR
+\fI<to>\fR
 in the anonymized output\&. If
-\fB<to>\fR
+\fI<to>\fR
 is omitted, map
-\fB<from>\fR
+\fI<from>\fR
 to itself (i\&.e\&., do not anonymize it)\&. See the section on
 \fBANONYMIZING\fR
 below\&.
@@ -156,14 +157,17 @@ below\&.
 \-\-reference\-excluded\-parents
 .RS 4
 By default, running a command such as
-\fBgit fast\-export master~5\&.\&.master\fR
+\fBgit\fR
+\fBfast\-export\fR
+\fBmaster~5\fR\fB\&.\&.\fR\fBmaster\fR
 will not include the commit master~5 and will make master~4 no longer have master~5 as a parent (though both the old master~4 and new master~4 will have all the same files)\&. Use \-\-reference\-excluded\-parents to instead have the stream refer to commits in the excluded range of history by their sha1sum\&. Note that the resulting stream can only be used by a repository which already contains the necessary parent commits\&.
 .RE
 .PP
 \-\-show\-original\-ids
 .RS 4
 Add an extra directive to the output for commits and blobs,
-\fBoriginal\-oid <SHA1SUM>\fR\&. While such directives will likely be ignored by importers such as git\-fast\-import, it may be useful for intermediary filters (e\&.g\&. for rewriting commit messages which refer to older commits, or for stripping blobs by id)\&.
+\fBoriginal\-oid\fR
+\fI<SHA1SUM>\fR\&. While such directives will likely be ignored by importers such as git\-fast\-import, it may be useful for intermediary filters (e\&.g\&. for rewriting commit messages which refer to older commits, or for stripping blobs by id)\&.
 .RE
 .PP
 \-\-reencode=(yes|no|abort)
@@ -188,7 +192,7 @@ A list of arguments, acceptable to
 \fIgit rev\-parse\fR
 and
 \fIgit rev\-list\fR, that specifies the specific objects and references to export\&. For example,
-\fBmaster~10\&.\&.master\fR
+\fBmaster~10\fR\fB\&.\&.\fR\fBmaster\fR
 causes the current master reference to be exported along with all objects added since its 10th ancestor commit and (unless the \-\-reference\-excluded\-parents option is specified) all files common to master~9 and master~10\&.
 .RE
 .SH "EXAMPLES"
@@ -267,7 +271,7 @@ $ perl \-pe \*(Aqs/\ed+/X/g\*(Aq <anon\-stream | sort \-u | less
 .sp
 which shows all of the unique lines (with numbers converted to "X", to collapse "User 0", "User 1", etc into "User X")\&. This produces a much smaller output, and it is usually easy to quickly confirm that there is no private data in the stream\&.
 .sp
-Reproducing some bugs may require referencing particular commits or paths, which becomes challenging after refnames and paths have been anonymized\&. You can ask for a particular token to be left as\-is or mapped to a new value\&. For example, if you have a bug which reproduces with \fBgit rev\-list sensitive \-\- secret\&.c\fR, you can run:
+Reproducing some bugs may require referencing particular commits or paths, which becomes challenging after refnames and paths have been anonymized\&. You can ask for a particular token to be left as\-is or mapped to a new value\&. For example, if you have a bug which reproduces with \fBgit\fR \fBrev\-list\fR \fBsensitive\fR \fB\-\-\fR \fBsecret\&.c\fR, you can run:
 .sp
 .if n \{\
 .RS 4
@@ -282,7 +286,7 @@ $ git fast\-export \-\-anonymize \-\-all \e
 .RE
 .\}
 .sp
-After importing the stream, you can then run \fBgit rev\-list foo \-\- bar\&.c\fR in the anonymized repository\&.
+After importing the stream, you can then run \fBgit\fR \fBrev\-list\fR \fBfoo\fR \fB\-\-\fR \fBbar\&.c\fR in the anonymized repository\&.
 .sp
 Note that paths and refnames are split into tokens at slash boundaries\&. The command above would anonymize \fBsubdir/secret\&.c\fR as something like \fBpath123/bar\&.c\fR; you could then search for \fBbar\&.c\fR in the anonymized repository to determine the final pathname\&.
 .sp

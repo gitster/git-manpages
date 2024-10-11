@@ -2,12 +2,12 @@
 .\"     Title: gitrepository-layout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITREPOSITORY\-LAYOUT" "5" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITREPOSITORY\-LAYOUT" "5" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -44,8 +44,7 @@ A Git repository comes in two different flavours:
 .sp -1
 .IP \(bu 2.3
 .\}
-a
-\fB\&.git\fR
+a \&.\fBgit\fR
 directory at the root of the working tree;
 .RE
 .sp
@@ -58,13 +57,13 @@ directory at the root of the working tree;
 .IP \(bu 2.3
 .\}
 a
-\fB<project>\&.git\fR
+\fI<project>\fR\fB\&.git\fR
 directory that is a
 \fIbare\fR
 repository (i\&.e\&. without its own working tree), that is typically used for exchanging histories with others by pushing into it and fetching from it\&.
 .RE
 .sp
-\fBNote\fR: Also you can have a plain text file \fB\&.git\fR at the root of your working tree, containing \fBgitdir: <path>\fR to point at the real directory that has the repository\&. This mechanism is called a \fIgitfile\fR and is usually managed via the \fBgit submodule\fR and \fBgit worktree\fR commands\&. It is often used for a working tree of a submodule checkout, to allow you in the containing superproject to \fBgit checkout\fR a branch that does not have the submodule\&. The \fBcheckout\fR has to remove the entire submodule working tree, without losing the submodule repository\&.
+\fBNote\fR: Also you can have a plain text file \&.\fBgit\fR at the root of your working tree, containing \fBgitdir:\fR \fI<path>\fR to point at the real directory that has the repository\&. This mechanism is called a \fIgitfile\fR and is usually managed via the \fBgit\fR \fBsubmodule\fR and \fBgit\fR \fBworktree\fR commands\&. It is often used for a working tree of a submodule checkout, to allow you in the containing superproject to \fBgit\fR \fBcheckout\fR a branch that does not have the submodule\&. The \fBcheckout\fR has to remove the entire submodule working tree, without losing the submodule repository\&.
 .sp
 These things may exist in a Git repository\&.
 .PP
@@ -129,7 +128,8 @@ Additional information about the object store is recorded in this directory\&.
 objects/info/packs
 .RS 4
 This file is to help dumb transports discover what packs are available in this object store\&. Whenever a pack is added or removed,
-\fBgit update\-server\-info\fR
+\fBgit\fR
+\fBupdate\-server\-info\fR
 should be run to keep this file up to date if the repository is published for dumb transports\&.
 \fIgit repack\fR
 does this by default\&.
@@ -169,10 +169,10 @@ refs/remotes/\fBname\fR
 records tip\-of\-the\-tree commit objects of branches copied from a remote repository\&.
 .RE
 .PP
-refs/replace/\fB<obj\-sha1>\fR
+refs/replace/\fI<obj\-sha1>\fR
 .RS 4
 records the SHA\-1 of the object that replaces
-\fB<obj\-sha1>\fR\&. This is similar to info/grafts and is internally used and maintained by
+\fI<obj\-sha1>\fR\&. This is similar to info/grafts and is internally used and maintained by
 \fBgit-replace\fR(1)\&. Such refs can be exchanged between repositories while grafts are not\&.
 .RE
 .PP
@@ -220,7 +220,7 @@ A slightly deprecated way to store shorthands to be used to specify a URL to
 \fIgit pull\fR
 and
 \fIgit push\fR\&. A file can be stored as
-\fBbranches/<name>\fR
+\fBbranches/\fR\fI<name>\fR
 and then
 \fIname\fR
 can be given to these commands in place of
@@ -234,8 +234,7 @@ hooks
 .RS 4
 Hooks are customization scripts used by various Git commands\&. A handful of sample hooks are installed when
 \fIgit init\fR
-is run, but all of them are disabled by default\&. To enable, the
-\fB\&.sample\fR
+is run, but all of them are disabled by default\&. To enable, the \&.\fBsample\fR
 suffix has to be removed from the filename by renaming\&. Read
 \fBgithooks\fR(5)
 for more details about each hook\&. This directory is ignored if $GIT_COMMON_DIR is set and "$GIT_COMMON_DIR/hooks" will be used instead\&.
@@ -287,8 +286,7 @@ for a more flexible and robust system to do the same thing\&.
 .PP
 info/exclude
 .RS 4
-This file, by convention among Porcelains, stores the exclude pattern list\&.
-\fB\&.gitignore\fR
+This file, by convention among Porcelains, stores the exclude pattern list\&. \&.\fBgitignore\fR
 is the per\-directory ignore file\&.
 \fIgit status\fR,
 \fIgit add\fR,
@@ -301,8 +299,7 @@ look at it but the core Git commands do not look at it\&. See also:
 .PP
 info/attributes
 .RS 4
-Defines which attributes to assign to a path, similar to per\-directory
-\fB\&.gitattributes\fR
+Defines which attributes to assign to a path, similar to per\-directory \&.\fBgitattributes\fR
 files\&. See also:
 \fBgitattributes\fR(5)\&.
 .RE
@@ -380,9 +377,11 @@ A text file containing the absolute path back to the \&.git file that points to 
 worktrees/<id>/locked
 .RS 4
 If this file exists, the linked working tree may be on a portable device and not available\&. The presence of this file prevents
-\fBworktrees/<id>\fR
+\fBworktrees/\fR\fI<id>\fR
 from being pruned either automatically or manually by
-\fBgit worktree prune\fR\&. The file may contain a string explaining why the repository is locked\&.
+\fBgit\fR
+\fBworktree\fR
+\fBprune\fR\&. The file may contain a string explaining why the repository is locked\&.
 .RE
 .PP
 worktrees/<id>/config\&.worktree
@@ -455,8 +454,7 @@ section of the configuration file\&.
 .IP "  2." 4.2
 .\}
 If a version\-1 repository specifies any
-\fBextensions\&.*\fR
-keys that the running git has not implemented, the operation MUST NOT proceed\&. Similarly, if the value of any known key is not understood by the implementation, the operation MUST NOT proceed\&.
+\fBextensions\&.\fR* keys that the running git has not implemented, the operation MUST NOT proceed\&. Similarly, if the value of any known key is not understood by the implementation, the operation MUST NOT proceed\&.
 .RE
 .sp
 Note that if no extensions are specified in the config file, then \fBcore\&.repositoryformatversion\fR SHOULD be set to \fB0\fR (setting it to \fB1\fR provides no benefit, and makes the repository incompatible with older implementations of git)\&.
@@ -484,7 +482,7 @@ This extension does not change git\(cqs behavior at all\&. It is useful only for
 \fBpreciousObjects\fR
 .RS 4
 .sp
-When the config key \fBextensions\&.preciousObjects\fR is set to \fBtrue\fR, objects in the repository MUST NOT be deleted (e\&.g\&., by \fBgit\-prune\fR or \fBgit repack \-d\fR)\&.
+When the config key \fBextensions\&.preciousObjects\fR is set to \fBtrue\fR, objects in the repository MUST NOT be deleted (e\&.g\&., by \fBgit\-prune\fR or \fBgit\fR \fBrepack\fR \fB\-d\fR)\&.
 .RE
 .sp
 .it 1 an-trap

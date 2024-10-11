@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1128,7 +1128,7 @@ One way that servers could take advantage of these bundles is that the server wo
 .sp
 A \fBbundle\-uri\fR request takes no arguments, and as noted above does not currently advertise a capability value\&. Both may be added in the future\&.
 .sp
-When the client issues a \fBcommand=bundle\-uri\fR request, the response is a list of key\-value pairs provided as packet lines with value \fB<key>=<value>\fR\&. Each \fB<key>\fR should be interpreted as a config key from the \fBbundle\&.*\fR namespace to construct a list of bundles\&. These keys are grouped by a \fBbundle\&.<id>\&.\fR subsection, where each key corresponding to a given \fB<id>\fR contributes attributes to the bundle defined by that \fB<id>\fR\&. See \fBgit-config\fR(1) for the specific details of these keys and how the Git client will interpret their values\&.
+When the client issues a \fBcommand=bundle\-uri\fR request, the response is a list of key\-value pairs provided as packet lines with value \fI<key>\fR\fB=\fR\fI<value>\fR\&. Each \fI<key>\fR should be interpreted as a config key from the \fBbundle\&.\fR* namespace to construct a list of bundles\&. These keys are grouped by a \fBbundle\&.\fR\fI<id>\fR\&. subsection, where each key corresponding to a given \fI<id>\fR contributes attributes to the bundle defined by that \fI<id>\fR\&. See \fBgit-config\fR(1) for the specific details of these keys and how the Git client will interpret their values\&.
 .sp
 Clients MUST parse the line according to the above format, lines that do not conform to the format SHOULD be discarded\&. The user MAY be warned in such a case\&.
 .RE
@@ -1146,16 +1146,19 @@ URI CONTENTS
 The content at the advertised URIs MUST be one of two types\&.
 .sp
 The advertised URI may contain a bundle file that
-\fBgit bundle verify\fR
+\fBgit\fR
+\fBbundle\fR
+\fBverify\fR
 would accept\&. I\&.e\&. they MUST contain one or more reference tips for use by the client, MUST indicate prerequisites (in any) with standard "\-" prefixes, and MUST indicate their "object\-format", if applicable\&.
 .sp
 The advertised URI may alternatively contain a plaintext file that
-\fBgit config \-\-list\fR
+\fBgit\fR
+\fBconfig\fR
+\fB\-\-list\fR
 would accept (with the
 \fB\-\-file\fR
 option)\&. The key\-value pairs in this list are in the
-\fBbundle\&.*\fR
-namespace (see
+\fBbundle\&.\fR* namespace (see
 \fBgit-config\fR(1))\&.
 .RE
 .PP
@@ -1231,7 +1234,7 @@ The only connection the client then needs to keep active is to the concurrently 
 \fBbundle-uri PROTOCOL FEATURES\fR
 .RS 4
 .sp
-The client constructs a bundle list from the \fB<key>=<value>\fR pairs provided by the server\&. These pairs are part of the \fBbundle\&.*\fR namespace as documented in \fBgit-config\fR(1)\&. In this section, we discuss some of these keys and describe the actions the client will do in response to this information\&.
+The client constructs a bundle list from the \fI<key>\fR\fB=\fR\fI<value>\fR pairs provided by the server\&. These pairs are part of the \fBbundle\&.\fR* namespace as documented in \fBgit-config\fR(1)\&. In this section, we discuss some of these keys and describe the actions the client will do in response to this information\&.
 .sp
 In particular, the \fBbundle\&.version\fR key specifies an integer value\&. The only accepted value at the moment is \fB1\fR, but if the client sees an unexpected value here then the client MUST ignore the bundle list\&.
 .sp

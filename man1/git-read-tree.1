@@ -2,12 +2,12 @@
 .\"     Title: git-read-tree
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-READ\-TREE" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-READ\-TREE" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -126,7 +126,7 @@ when both sides add a path identically\&. The resolution is to add that path\&.
 \-\-prefix=<prefix>
 .RS 4
 Keep the current index contents, and read the contents of the named tree\-ish under the directory at
-\fB<prefix>\fR\&. The command will refuse to overwrite entries that already existed in the original index file\&.
+\fI<prefix>\fR\&. The command will refuse to overwrite entries that already existed in the original index file\&.
 .RE
 .PP
 \-\-index\-output=<file>
@@ -168,12 +168,12 @@ If \fB\-m\fR is specified, \fIgit read\-tree\fR can perform 3 kinds of merge, a 
 .sp
 If only 1 tree is specified, \fIgit read\-tree\fR operates as if the user did not specify \fB\-m\fR, except that if the original index has an entry for a given pathname, and the contents of the path match with the tree being read, the stat info from the index is used\&. (In other words, the index\(cqs stat()s take precedence over the merged tree\(cqs)\&.
 .sp
-That means that if you do a \fBgit read\-tree \-m <newtree>\fR followed by a \fBgit checkout\-index \-f \-u \-a\fR, the \fIgit checkout\-index\fR only checks out the stuff that really changed\&.
+That means that if you do a \fBgit\fR \fBread\-tree\fR \fB\-m\fR \fI<newtree>\fR followed by a \fBgit\fR \fBcheckout\-index\fR \fB\-f\fR \fB\-u\fR \fB\-a\fR, the \fIgit checkout\-index\fR only checks out the stuff that really changed\&.
 .sp
 This is used to avoid unnecessary false hits when \fIgit diff\-files\fR is run after \fIgit read\-tree\fR\&.
 .SS "Two Tree Merge"
 .sp
-Typically, this is invoked as \fBgit read\-tree \-m $H $M\fR, where $H is the head commit of the current repository, and $M is the head of a foreign tree, which is simply ahead of $H (i\&.e\&. we are in a fast\-forward situation)\&.
+Typically, this is invoked as \fBgit\fR \fBread\-tree\fR \fB\-m\fR \fB$H\fR \fB$M\fR, where $H is the head commit of the current repository, and $M is the head of a foreign tree, which is simply ahead of $H (i\&.e\&. we are in a fast\-forward situation)\&.
 .sp
 When two trees are specified, the user is telling \fIgit read\-tree\fR the following:
 .sp
@@ -199,7 +199,7 @@ The current index and work tree is derived from $H, but the user may have local 
 The user wants to fast\-forward to $M\&.
 .RE
 .sp
-In this case, the \fBgit read\-tree \-m $H $M\fR command makes sure that no local change is lost as the result of this "merge"\&. Here are the "carry forward" rules, where "I" denotes the index, "clean" means that index and work tree coincide, and "exists"/"nothing" refer to the presence of a path in the specified commit:
+In this case, the \fBgit\fR \fBread\-tree\fR \fB\-m\fR \fB$H\fR \fB$M\fR command makes sure that no local change is lost as the result of this "merge"\&. Here are the "carry forward" rules, where "I" denotes the index, "clean" means that index and work tree coincide, and "exists"/"nothing" refer to the presence of a path in the specified commit:
 .sp
 .if n \{\
 .RS 4
@@ -250,7 +250,7 @@ In this case, the \fBgit read\-tree \-m $H $M\fR command makes sure that no loca
 .sp
 In all "keep index" cases, the index entry stays as in the original index file\&. If the entry is not up to date, \fIgit read\-tree\fR keeps the copy in the work tree intact when operating under the \-u flag\&.
 .sp
-When this form of \fIgit read\-tree\fR returns successfully, you can see which of the "local changes" that you made were carried forward by running \fBgit diff\-index \-\-cached $M\fR\&. Note that this does not necessarily match what \fBgit diff\-index \-\-cached $H\fR would have produced before such a two tree merge\&. This is because of cases 18 and 19 \(em if you already had the changes in $M (e\&.g\&. maybe you picked it up via e\-mail in a patch form), \fBgit diff\-index \-\-cached $H\fR would have told you about the change before this merge, but it would not show in \fBgit diff\-index \-\-cached $M\fR output after the two\-tree merge\&.
+When this form of \fIgit read\-tree\fR returns successfully, you can see which of the "local changes" that you made were carried forward by running \fBgit\fR \fBdiff\-index\fR \fB\-\-cached\fR \fB$M\fR\&. Note that this does not necessarily match what \fBgit\fR \fBdiff\-index\fR \fB\-\-cached\fR \fB$H\fR would have produced before such a two tree merge\&. This is because of cases 18 and 19 \(em if you already had the changes in $M (e\&.g\&. maybe you picked it up via e\-mail in a patch form), \fBgit\fR \fBdiff\-index\fR \fB\-\-cached\fR \fB$H\fR would have told you about the change before this merge, but it would not show in \fBgit\fR \fBdiff\-index\fR \fB\-\-cached\fR \fB$M\fR output after the two\-tree merge\&.
 .sp
 Case 3 is slightly tricky and needs explanation\&. The result from this rule logically should be to remove the path if the user staged the removal of the path and then switching to a new branch\&. That however will prevent the initial checkout from happening, so the rule is modified to use M (new tree) only when the content of the index is empty\&. Otherwise the removal of the path is kept as long as $H and $M are the same\&.
 .SS "3\-Way Merge"

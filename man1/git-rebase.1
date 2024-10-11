@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-REBASE" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,13 +40,13 @@ git-rebase \- Reapply commits on top of another base tip
 .fi
 .SH "DESCRIPTION"
 .sp
-If \fB<branch>\fR is specified, \fBgit rebase\fR will perform an automatic \fBgit switch <branch>\fR before doing anything else\&. Otherwise it remains on the current branch\&.
+If \fI<branch>\fR is specified, \fBgit\fR \fBrebase\fR will perform an automatic \fBgit\fR \fBswitch\fR \fI<branch>\fR before doing anything else\&. Otherwise it remains on the current branch\&.
 .sp
-If \fB<upstream>\fR is not specified, the upstream configured in \fBbranch\&.<name>\&.remote\fR and \fBbranch\&.<name>\&.merge\fR options will be used (see \fBgit-config\fR(1) for details) and the \fB\-\-fork\-point\fR option is assumed\&. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abort\&.
+If \fI<upstream>\fR is not specified, the upstream configured in \fBbranch\&.\fR\fI<name>\fR\fB\&.remote\fR and \fBbranch\&.\fR\fI<name>\fR\fB\&.merge\fR options will be used (see \fBgit-config\fR(1) for details) and the \fB\-\-fork\-point\fR option is assumed\&. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abort\&.
 .sp
-All changes made by commits in the current branch but that are not in \fB<upstream>\fR are saved to a temporary area\&. This is the same set of commits that would be shown by \fBgit log <upstream>\&.\&.HEAD\fR; or by \fBgit log \*(Aqfork_point\*(Aq\&.\&.HEAD\fR, if \fB\-\-fork\-point\fR is active (see the description on \fB\-\-fork\-point\fR below); or by \fBgit log HEAD\fR, if the \fB\-\-root\fR option is specified\&.
+All changes made by commits in the current branch but that are not in \fI<upstream>\fR are saved to a temporary area\&. This is the same set of commits that would be shown by \fBgit\fR \fBlog\fR \fI<upstream>\fR\fB\&.\&.\fR\fBHEAD\fR; or by \fBgit\fR \fBlog\fR \*(Aqfork_point\*(Aq\fB\&.\&.\fR\fBHEAD\fR, if \fB\-\-fork\-point\fR is active (see the description on \fB\-\-fork\-point\fR below); or by \fBgit\fR \fBlog\fR \fBHEAD\fR, if the \fB\-\-root\fR option is specified\&.
 .sp
-The current branch is reset to \fB<upstream>\fR or \fB<newbase>\fR if the \fB\-\-onto\fR option was supplied\&. This has the exact same effect as \fBgit reset \-\-hard <upstream>\fR (or \fB<newbase>\fR)\&. \fBORIG_HEAD\fR is set to point at the tip of the branch before the reset\&.
+The current branch is reset to \fI<upstream>\fR or \fI<newbase>\fR if the \fB\-\-onto\fR option was supplied\&. This has the exact same effect as \fBgit\fR \fBreset\fR \fB\-\-hard\fR \fI<upstream>\fR (or \fI<newbase>\fR)\&. \fBORIG_HEAD\fR is set to point at the tip of the branch before the reset\&.
 .if n \{\
 .sp
 .\}
@@ -60,13 +60,13 @@ The current branch is reset to \fB<upstream>\fR or \fB<newbase>\fR if the \fB\-\
 .ps -1
 .br
 .sp
-\fBORIG_HEAD\fR is not guaranteed to still point to the previous branch tip at the end of the rebase if other commands that write that pseudo\-ref (e\&.g\&. \fBgit reset\fR) are used during the rebase\&. The previous branch tip, however, is accessible using the reflog of the current branch (i\&.e\&. \fB@{1}\fR, see \fBgitrevisions\fR(7))\&.
+\fBORIG_HEAD\fR is not guaranteed to still point to the previous branch tip at the end of the rebase if other commands that write that pseudo\-ref (e\&.g\&. \fBgit\fR \fBreset\fR) are used during the rebase\&. The previous branch tip, however, is accessible using the reflog of the current branch (i\&.e\&. \fB@\fR{1}, see \fBgitrevisions\fR(7))\&.
 .sp .5v
 .RE
 .sp
-The commits that were previously saved into the temporary area are then reapplied to the current branch, one by one, in order\&. Note that any commits in \fBHEAD\fR which introduce the same textual changes as a commit in \fBHEAD\&.\&.<upstream>\fR are omitted (i\&.e\&., a patch already accepted upstream with a different commit message or timestamp will be skipped)\&.
+The commits that were previously saved into the temporary area are then reapplied to the current branch, one by one, in order\&. Note that any commits in \fBHEAD\fR which introduce the same textual changes as a commit in \fBHEAD\fR\fB\&.\&.\fR\fI<upstream>\fR are omitted (i\&.e\&., a patch already accepted upstream with a different commit message or timestamp will be skipped)\&.
 .sp
-It is possible that a merge failure will prevent this process from being completely automatic\&. You will have to resolve any such merge failure and run \fBgit rebase \-\-continue\fR\&. Another option is to bypass the commit that caused the merge failure with \fBgit rebase \-\-skip\fR\&. To check out the original \fB<branch>\fR and remove the \fB\&.git/rebase\-apply\fR working files, use the command \fBgit rebase \-\-abort\fR instead\&.
+It is possible that a merge failure will prevent this process from being completely automatic\&. You will have to resolve any such merge failure and run \fBgit\fR \fBrebase\fR \fB\-\-continue\fR\&. Another option is to bypass the commit that caused the merge failure with \fBgit\fR \fBrebase\fR \fB\-\-skip\fR\&. To check out the original \fI<branch>\fR and remove the \&.\fBgit/rebase\-apply\fR working files, use the command \fBgit\fR \fBrebase\fR \fB\-\-abort\fR instead\&.
 .sp
 Assume the following history exists and the current branch is "topic":
 .sp
@@ -109,9 +109,9 @@ would be:
 .RE
 .\}
 .sp
-\fBNOTE:\fR The latter form is just a short\-hand of \fBgit checkout topic\fR followed by \fBgit rebase master\fR\&. When rebase exits \fBtopic\fR will remain the checked\-out branch\&.
+\fBNOTE:\fR The latter form is just a short\-hand of \fBgit\fR \fBcheckout\fR \fBtopic\fR followed by \fBgit\fR \fBrebase\fR \fBmaster\fR\&. When rebase exits \fBtopic\fR will remain the checked\-out branch\&.
 .sp
-If the upstream branch already contains a change you have made (e\&.g\&., because you mailed a patch which was applied upstream), then that commit will be skipped and warnings will be issued (if the \fImerge\fR backend is used)\&. For example, running \fBgit rebase master\fR on the following history (in which \fBA\*(Aq\fR and \fBA\fR introduce the same set of changes, but have different committer information):
+If the upstream branch already contains a change you have made (e\&.g\&., because you mailed a patch which was applied upstream), then that commit will be skipped and warnings will be issued (if the \fImerge\fR backend is used)\&. For example, running \fBgit\fR \fBrebase\fR \fBmaster\fR on the following history (in which \fBA\fR\*(Aq and \fBA\fR introduce the same set of changes, but have different committer information):
 .sp
 .if n \{\
 .RS 4
@@ -139,7 +139,7 @@ will result in:
 .RE
 .\}
 .sp
-Here is how you would transplant a topic branch based on one branch to another, to pretend that you forked the topic branch from the latter branch, using \fBrebase \-\-onto\fR\&.
+Here is how you would transplant a topic branch based on one branch to another, to pretend that you forked the topic branch from the latter branch, using \fBrebase\fR \fB\-\-onto\fR\&.
 .sp
 First let\(cqs assume your \fItopic\fR is based on branch \fInext\fR\&. For example, a feature developed in \fItopic\fR depends on some functionality which is found in \fInext\fR\&.
 .sp
@@ -267,9 +267,9 @@ would result in the removal of commits F and G:
 .RE
 .\}
 .sp
-This is useful if F and G were flawed in some way, or should not be part of topicA\&. Note that the argument to \fB\-\-onto\fR and the \fB<upstream>\fR parameter can be any valid commit\-ish\&.
+This is useful if F and G were flawed in some way, or should not be part of topicA\&. Note that the argument to \fB\-\-onto\fR and the \fI<upstream>\fR parameter can be any valid commit\-ish\&.
 .sp
-In case of conflict, \fBgit rebase\fR will stop at the first problematic commit and leave conflict markers in the tree\&. You can use \fBgit diff\fR to locate the markers (<<<<<<) and make edits to resolve the conflict\&. For each file you edit, you need to tell Git that the conflict has been resolved, typically this would be done with
+In case of conflict, \fBgit\fR \fBrebase\fR will stop at the first problematic commit and leave conflict markers in the tree\&. You can use \fBgit\fR \fBdiff\fR to locate the markers (<<<<<<) and make edits to resolve the conflict\&. For each file you edit, you need to tell Git that the conflict has been resolved, typically this would be done with
 .sp
 .if n \{\
 .RS 4
@@ -321,11 +321,11 @@ Restart the rebasing process by skipping the current patch\&.
 \-\-abort
 .RS 4
 Abort the rebase operation and reset HEAD to the original branch\&. If
-\fB<branch>\fR
+\fI<branch>\fR
 was provided when the rebase operation was started, then
 \fBHEAD\fR
 will be reset to
-\fB<branch>\fR\&. Otherwise
+\fI<branch>\fR\&. Otherwise
 \fBHEAD\fR
 will be reset to where it was when the rebase operation was started\&.
 .RE
@@ -346,7 +346,9 @@ Edit the todo list during an interactive rebase\&.
 \-\-show\-current\-patch
 .RS 4
 Show the current patch in an interactive rebase or when rebase is stopped because of conflicts\&. This is the equivalent of
-\fBgit show REBASE_HEAD\fR\&.
+\fBgit\fR
+\fBshow\fR
+\fBREBASE_HEAD\fR\&.
 .RE
 .SH "OPTIONS"
 .PP
@@ -355,7 +357,7 @@ Show the current patch in an interactive rebase or when rebase is stopped becaus
 Starting point at which to create the new commits\&. If the
 \fB\-\-onto\fR
 option is not specified, the starting point is
-\fB<upstream>\fR\&. May be any valid commit, and not just an existing branch name\&.
+\fI<upstream>\fR\&. May be any valid commit, and not just an existing branch name\&.
 .sp
 As a special case, you may use "A\&.\&.\&.B" as a shortcut for the merge base of A and B if there is exactly one merge base\&. You can leave out at most one of A and B, in which case it defaults to HEAD\&.
 .RE
@@ -363,12 +365,23 @@ As a special case, you may use "A\&.\&.\&.B" as a shortcut for the merge base of
 \-\-keep\-base
 .RS 4
 Set the starting point at which to create the new commits to the merge base of
-\fB<upstream>\fR
+\fI<upstream>\fR
 and
-\fB<branch>\fR\&. Running
-\fBgit rebase \-\-keep\-base <upstream> <branch>\fR
+\fI<branch>\fR\&. Running
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-keep\-base\fR
+\fI<upstream>\fR
+\fI<branch>\fR
 is equivalent to running
-\fBgit rebase \-\-reapply\-cherry\-picks \-\-no\-fork\-point \-\-onto <upstream>\&.\&.\&.<branch> <upstream> <branch>\fR\&.
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-reapply\-cherry\-picks\fR
+\fB\-\-no\-fork\-point\fR
+\fB\-\-onto\fR
+\fI<upstream>\fR\fB\&.\&.\&.\fR\fI<branch>\fR
+\fI<upstream>\fR
+\fI<branch>\fR\&.
 .sp
 This option is useful in the case where one is developing a feature on top of an upstream branch\&. While the feature is being worked on, the upstream branch may advance and it may not be the best idea to keep rebasing on top of the upstream but to keep the base commit as\-is\&. As the base commit is unchanged this option implies
 \fB\-\-reapply\-cherry\-picks\fR
@@ -377,9 +390,9 @@ to avoid losing commits\&.
 Although both this option and
 \fB\-\-fork\-point\fR
 find the merge base between
-\fB<upstream>\fR
+\fI<upstream>\fR
 and
-\fB<branch>\fR, this option uses the merge base as the
+\fI<branch>\fR, this option uses the merge base as the
 \fIstarting point\fR
 on which new commits will be created, whereas
 \fB\-\-fork\-point\fR
@@ -441,7 +454,10 @@ is a deprecated synonym of
 Note that commits which start empty are kept (unless
 \fB\-\-no\-keep\-empty\fR
 is specified), and commits which are clean cherry\-picks (as determined by
-\fBgit log \-\-cherry\-mark \&.\&.\&.\fR) are detected and dropped as a preliminary step (unless
+\fBgit\fR
+\fBlog\fR
+\fB\-\-cherry\-mark\fR
+\&.\&.\&.) are detected and dropped as a preliminary step (unless
 \fB\-\-reapply\-cherry\-picks\fR
 or
 \fB\-\-keep\-base\fR
@@ -455,7 +471,8 @@ See also INCOMPATIBLE OPTIONS below\&.
 Do not keep commits that start empty before the rebase (i\&.e\&. that do not change anything from its parent) in the result\&. The default is to keep commits which start empty, since creating such commits requires passing the
 \fB\-\-allow\-empty\fR
 override flag to
-\fBgit commit\fR, signifying that a user is very intentionally creating such a commit and thus wants to keep it\&.
+\fBgit\fR
+\fBcommit\fR, signifying that a user is very intentionally creating such a commit and thus wants to keep it\&.
 .sp
 Usage of this flag will probably be rare, since you can get rid of commits that start empty by just firing up an interactive rebase and removing the lines corresponding to the commits you don\(cqt want\&. This flag exists as a convenient shortcut, such as for cases where external tools generate many empty commits and you want them all removed\&.
 .sp
@@ -503,11 +520,11 @@ See also INCOMPATIBLE OPTIONS below\&.
 Using merging strategies to rebase (default)\&.
 .sp
 Note that a rebase merge works by replaying each commit from the working branch on top of the
-\fB<upstream>\fR
+\fI<upstream>\fR
 branch\&. Because of this, when a merge conflict happens, the side reported as
 \fIours\fR
 is the so\-far rebased series, starting with
-\fB<upstream>\fR, and
+\fI<upstream>\fR, and
 \fItheirs\fR
 is the working branch\&. In other words, the sides are swapped\&.
 .sp
@@ -521,13 +538,14 @@ Use the given merge strategy, instead of the default
 \fB\-\-merge\fR\&.
 .sp
 Because
-\fBgit rebase\fR
+\fBgit\fR
+\fBrebase\fR
 replays each commit from the working branch on top of the
-\fB<upstream>\fR
+\fI<upstream>\fR
 branch using the given strategy, using the
 \fBours\fR
 strategy simply empties all patches from the
-\fB<branch>\fR, which makes little sense\&.
+\fI<branch>\fR, which makes little sense\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
@@ -537,7 +555,8 @@ See also INCOMPATIBLE OPTIONS below\&.
 Pass the <strategy\-option> through to the merge strategy\&. This implies
 \fB\-\-merge\fR
 and, if no strategy has been specified,
-\fB\-s ort\fR\&. Note the reversal of
+\fB\-s\fR
+\fBort\fR\&. Note the reversal of
 \fIours\fR
 and
 \fItheirs\fR
@@ -555,7 +574,8 @@ After the rerere mechanism reuses a recorded resolution on the current conflict 
 is a good way to double\-check what
 \fBrerere\fR
 did and catch potential mismerges, before committing the result to the index with a separate
-\fBgit add\fR\&.
+\fBgit\fR
+\fBadd\fR\&.
 .RE
 .PP
 \-S[<keyid>], \-\-gpg\-sign[=<keyid>], \-\-no\-gpg\-sign
@@ -608,7 +628,7 @@ Allows the pre\-rebase hook to run, which is the default\&. This option can be u
 \-C<n>
 .RS 4
 Ensure at least
-\fB<n>\fR
+\fI<n>\fR
 lines of surrounding context match before and after each change\&. When fewer lines of surrounding context exist they all must match\&. By default no context is ever ignored\&. Implies
 \fB\-\-apply\fR\&.
 .sp
@@ -627,31 +647,35 @@ for details)\&.
 \-\-fork\-point, \-\-no\-fork\-point
 .RS 4
 Use reflog to find a better common ancestor between
-\fB<upstream>\fR
+\fI<upstream>\fR
 and
-\fB<branch>\fR
+\fI<branch>\fR
 when calculating which commits have been introduced by
-\fB<branch>\fR\&.
+\fI<branch>\fR\&.
 .sp
 When
 \fB\-\-fork\-point\fR
 is active,
 \fIfork_point\fR
 will be used instead of
-\fB<upstream>\fR
+\fI<upstream>\fR
 to calculate the set of commits to rebase, where
 \fIfork_point\fR
 is the result of
-\fBgit merge\-base \-\-fork\-point <upstream> <branch>\fR
+\fBgit\fR
+\fBmerge\-base\fR
+\fB\-\-fork\-point\fR
+\fI<upstream>\fR
+\fI<branch>\fR
 command (see
 \fBgit-merge-base\fR(1))\&. If
 \fIfork_point\fR
 ends up being empty, the
-\fB<upstream>\fR
+\fI<upstream>\fR
 will be used as a fallback\&.
 .sp
 If
-\fB<upstream>\fR
+\fI<upstream>\fR
 or
 \fB\-\-keep\-base\fR
 is given on the command line, then the default is
@@ -662,9 +686,9 @@ in
 \fBgit-config\fR(1)\&.
 .sp
 If your branch was based on
-\fB<upstream>\fR
+\fI<upstream>\fR
 but
-\fB<upstream>\fR
+\fI<upstream>\fR
 was rewound and your branch contains commits which were dropped, this option can be used with
 \fB\-\-keep\-base\fR
 in order to drop those commits from your branch\&.
@@ -690,7 +714,8 @@ Treat lines with only whitespace changes as unchanged when merging\&. Unfortunat
 \-\-whitespace=<option>
 .RS 4
 This flag is passed to the
-\fBgit apply\fR
+\fBgit\fR
+\fBapply\fR
 program (see
 \fBgit-apply\fR(1)) that applies the patch\&. Implies
 \fB\-\-apply\fR\&.
@@ -749,22 +774,26 @@ and
 \fBno\-rebase\-cousins\fR\&. In
 \fBno\-rebase\-cousins\fR
 mode, commits which do not have
-\fB<upstream>\fR
+\fI<upstream>\fR
 as direct ancestor will keep their original branch point, i\&.e\&. commits that would be excluded by
 \fBgit-log\fR(1)\*(Aqs
 \fB\-\-ancestry\-path\fR
 option will keep their original ancestry by default\&. In
 \fBrebase\-cousins\fR
 mode, such commits are instead rebased onto
-\fB<upstream>\fR
+\fI<upstream>\fR
 (or
-\fB<onto>\fR, if specified)\&.
+\fI<onto>\fR, if specified)\&.
 .sp
 It is currently only possible to recreate the merge commits using the
 \fBort\fR
 merge strategy; different merge strategies can be used only via explicit
-\fBexec git merge \-s <strategy> [\&.\&.\&.]\fR
-commands\&.
+\fBexec\fR
+\fBgit\fR
+\fBmerge\fR
+\fB\-s\fR
+\fI<strategy>\fR
+[\&.\&.\&.] commands\&.
 .sp
 See also REBASING MERGES and INCOMPATIBLE OPTIONS below\&.
 .RE
@@ -772,7 +801,7 @@ See also REBASING MERGES and INCOMPATIBLE OPTIONS below\&.
 \-x <cmd>, \-\-exec <cmd>
 .RS 4
 Append "exec <cmd>" after each line creating a commit in the final history\&.
-\fB<cmd>\fR
+\fI<cmd>\fR
 will be interpreted as one or more shell commands\&. Any command that fails will interrupt the rebase, with exit code 1\&.
 .sp
 You may execute several commands by either using one instance of
@@ -819,8 +848,8 @@ See also INCOMPATIBLE OPTIONS below\&.
 \-\-root
 .RS 4
 Rebase all commits reachable from
-\fB<branch>\fR, instead of limiting them with an
-\fB<upstream>\fR\&. This allows you to rebase the root commit(s) on a branch\&.
+\fI<branch>\fR, instead of limiting them with an
+\fI<upstream>\fR\&. This allows you to rebase the root commit(s) on a branch\&.
 .sp
 See also INCOMPATIBLE OPTIONS below\&.
 .RE
@@ -835,7 +864,8 @@ to
 \fBsquash\fR,
 \fBfixup\fR
 or
-\fBfixup \-C\fR, respectively, and they are moved right after the commit they modify\&. The
+\fBfixup\fR
+\fB\-C\fR, respectively, and they are moved right after the commit they modify\&. The
 \fB\-\-interactive\fR
 option can be used to review and edit the todo list before proceeding\&.
 .sp
@@ -871,7 +901,8 @@ commands that failed\&. This only makes sense in interactive mode (or when an
 option was provided)\&.
 .sp
 This option applies once a rebase is started\&. It is preserved for the whole rebase based on, in order, the command line option provided to the initial
-\fBgit rebase\fR, the
+\fBgit\fR
+\fBrebase\fR, the
 \fBrebase\&.rescheduleFailedExec\fR
 configuration (see
 \fBgit-config\fR(1)
@@ -882,11 +913,15 @@ Recording this option for the whole rebase is a convenience feature\&. Otherwise
 at the start would be overridden by the presence of a
 \fBrebase\&.rescheduleFailedExec=true\fR
 configuration when
-\fBgit rebase \-\-continue\fR
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-continue\fR
 is invoked\&. Currently, you cannot pass
-\fB\-\-[no\-]reschedule\-failed\-exec\fR
+\fB\-\-\fR[\fBno\-\fR]\fBreschedule\-failed\-exec\fR
 to
-\fBgit rebase \-\-continue\fR\&.
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-continue\fR\&.
 .RE
 .PP
 \-\-update\-refs, \-\-no\-update\-refs
@@ -1106,14 +1141,14 @@ In addition, the following pairs of options are incompatible:
 .RE
 .SH "BEHAVIORAL DIFFERENCES"
 .sp
-\fBgit rebase\fR has two primary backends: \fIapply\fR and \fImerge\fR\&. (The \fIapply\fR backend used to be known as the \fIam\fR backend, but the name led to confusion as it looks like a verb instead of a noun\&. Also, the \fImerge\fR backend used to be known as the interactive backend, but it is now used for non\-interactive cases as well\&. Both were renamed based on lower\-level functionality that underpinned each\&.) There are some subtle differences in how these two backends behave:
+\fBgit\fR \fBrebase\fR has two primary backends: \fIapply\fR and \fImerge\fR\&. (The \fIapply\fR backend used to be known as the \fIam\fR backend, but the name led to confusion as it looks like a verb instead of a noun\&. Also, the \fImerge\fR backend used to be known as the interactive backend, but it is now used for non\-interactive cases as well\&. Both were renamed based on lower\-level functionality that underpinned each\&.) There are some subtle differences in how these two backends behave:
 .SS "Empty commits"
 .sp
 The \fIapply\fR backend unfortunately drops intentionally empty commits, i\&.e\&. commits that started empty, though these are rare in practice\&. It also drops commits that become empty and has no option for controlling this behavior\&.
 .sp
 The \fImerge\fR backend keeps intentionally empty commits by default (though with \fB\-i\fR they are marked as empty in the todo list editor, or they can be dropped automatically with \fB\-\-no\-keep\-empty\fR)\&.
 .sp
-Similar to the apply backend, by default the merge backend drops commits that become empty unless \fB\-i\fR/\fB\-\-interactive\fR is specified (in which case it stops and asks the user what to do)\&. The merge backend also has an \fB\-\-empty=(drop|keep|stop)\fR option for changing the behavior of handling commits that become empty\&.
+Similar to the apply backend, by default the merge backend drops commits that become empty unless \fB\-i\fR/\fB\-\-interactive\fR is specified (in which case it stops and asks the user what to do)\&. The merge backend also has an \fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBstop\fR) option for changing the behavior of handling commits that become empty\&.
 .SS "Directory rename detection"
 .sp
 Due to the lack of accurate tree information (arising from constructing fake ancestors with the limited information available in patches), directory rename detection is disabled in the \fIapply\fR backend\&. Disabled directory rename detection means that if one side of history renames a directory and the other adds new files to the old directory, then the new files will be left behind in the old directory without any warning at the time of rebasing that you may want to move these files into the new directory\&.
@@ -1131,13 +1166,13 @@ When there are content conflicts, the merge machinery tries to annotate each sid
 The \fImerge\fR backend works with the full commits on both sides of history and thus has no such limitations\&.
 .SS "Hooks"
 .sp
-The \fIapply\fR backend has not traditionally called the post\-commit hook, while the \fImerge\fR backend has\&. Both have called the post\-checkout hook, though the \fImerge\fR backend has squelched its output\&. Further, both backends only call the post\-checkout hook with the starting point commit of the rebase, not the intermediate commits nor the final commit\&. In each case, the calling of these hooks was by accident of implementation rather than by design (both backends were originally implemented as shell scripts and happened to invoke other commands like \fBgit checkout\fR or \fBgit commit\fR that would call the hooks)\&. Both backends should have the same behavior, though it is not entirely clear which, if any, is correct\&. We will likely make rebase stop calling either of these hooks in the future\&.
+The \fIapply\fR backend has not traditionally called the post\-commit hook, while the \fImerge\fR backend has\&. Both have called the post\-checkout hook, though the \fImerge\fR backend has squelched its output\&. Further, both backends only call the post\-checkout hook with the starting point commit of the rebase, not the intermediate commits nor the final commit\&. In each case, the calling of these hooks was by accident of implementation rather than by design (both backends were originally implemented as shell scripts and happened to invoke other commands like \fBgit\fR \fBcheckout\fR or \fBgit\fR \fBcommit\fR that would call the hooks)\&. Both backends should have the same behavior, though it is not entirely clear which, if any, is correct\&. We will likely make rebase stop calling either of these hooks in the future\&.
 .SS "Interruptability"
 .sp
-The \fIapply\fR backend has safety problems with an ill\-timed interrupt; if the user presses Ctrl\-C at the wrong time to try to abort the rebase, the rebase can enter a state where it cannot be aborted with a subsequent \fBgit rebase \-\-abort\fR\&. The \fImerge\fR backend does not appear to suffer from the same shortcoming\&. (See \m[blue]\fBhttps://lore\&.kernel\&.org/git/20200207132152\&.GC2868@szeder\&.dev/\fR\m[] for details\&.)
+The \fIapply\fR backend has safety problems with an ill\-timed interrupt; if the user presses Ctrl\-C at the wrong time to try to abort the rebase, the rebase can enter a state where it cannot be aborted with a subsequent \fBgit\fR \fBrebase\fR \fB\-\-abort\fR\&. The \fImerge\fR backend does not appear to suffer from the same shortcoming\&. (See \m[blue]\fBhttps://lore\&.kernel\&.org/git/20200207132152\&.GC2868@szeder\&.dev/\fR\m[] for details\&.)
 .SS "Commit Rewording"
 .sp
-When a conflict occurs while rebasing, rebase stops and asks the user to resolve\&. Since the user may need to make notable changes while resolving conflicts, after conflicts are resolved and the user has run \fBgit rebase \-\-continue\fR, the rebase should open an editor and ask the user to update the commit message\&. The \fImerge\fR backend does this, while the \fIapply\fR backend blindly applies the original commit message\&.
+When a conflict occurs while rebasing, rebase stops and asks the user to resolve\&. Since the user may need to make notable changes while resolving conflicts, after conflicts are resolved and the user has run \fBgit\fR \fBrebase\fR \fB\-\-continue\fR, the rebase should open an editor and ask the user to update the commit message\&. The \fImerge\fR backend does this, while the \fIapply\fR backend blindly applies the original commit message\&.
 .SS "Miscellaneous differences"
 .sp
 There are a few more behavioral differences that most folks would probably consider inconsequential but which are mentioned for completeness:
@@ -1172,12 +1207,11 @@ Progress, informational, and error messages: The two backends provide slightly d
 .sp -1
 .IP \(bu 2.3
 .\}
-State directories: The two backends keep their state in different directories under
-\fB\&.git/\fR
+State directories: The two backends keep their state in different directories under \&.\fBgit/\fR
 .RE
 .SH "MERGE STRATEGIES"
 .sp
-The merge mechanism (\fBgit merge\fR and \fBgit pull\fR commands) allows the backend \fImerge strategies\fR to be chosen with \fB\-s\fR option\&. Some strategies can also take their own options, which can be passed by giving \fB\-X<option>\fR arguments to \fBgit merge\fR and/or \fBgit pull\fR\&.
+The merge mechanism (\fBgit\fR \fBmerge\fR and \fBgit\fR \fBpull\fR commands) allows the backend \fImerge strategies\fR to be chosen with \fB\-s\fR option\&. Some strategies can also take their own options, which can be passed by giving \fB\-X\fR\fI<option>\fR arguments to \fBgit\fR \fBmerge\fR and/or \fBgit\fR \fBpull\fR\&.
 .PP
 ort
 .RS 4
@@ -1291,7 +1325,7 @@ configuration variable\&. See also
 rename\-threshold=<n>
 .RS 4
 Deprecated synonym for
-\fBfind\-renames=<n>\fR\&.
+\fBfind\-renames=\fR\fI<n>\fR\&.
 .RE
 .PP
 subtree[=<path>]
@@ -1372,11 +1406,11 @@ strategy\&. When merging trees A and B, if B corresponds to a subtree of A, B is
 With the strategies that use 3\-way merge (including the default, \fIort\fR), if a change is made on both branches, but later reverted on one of the branches, that change will be present in the merged result; some people find this behavior confusing\&. It occurs because only the heads and the merge base are considered when performing a merge, not the individual commits\&. The merge algorithm therefore considers the reverted change as no change at all, and substitutes the changed version instead\&.
 .SH "NOTES"
 .sp
-You should understand the implications of using \fBgit rebase\fR on a repository that you share\&. See also RECOVERING FROM UPSTREAM REBASE below\&.
+You should understand the implications of using \fBgit\fR \fBrebase\fR on a repository that you share\&. See also RECOVERING FROM UPSTREAM REBASE below\&.
 .sp
 When the rebase is run, it will first execute a \fBpre\-rebase\fR hook if one exists\&. You can use this hook to do sanity checks and reject the rebase if it isn\(cqt appropriate\&. Please see the template \fBpre\-rebase\fR hook script for an example\&.
 .sp
-Upon completion, \fB<branch>\fR will be the current branch\&.
+Upon completion, \fI<branch>\fR will be the current branch\&.
 .SH "INTERACTIVE MODE"
 .sp
 Rebasing interactively means that you have a chance to edit the commits which are rebased\&. You can reorder the commits, and you can remove them (weeding out bad or otherwise unwanted patches)\&.
@@ -1518,7 +1552,7 @@ pick fa1afe1 The oneline of the next commit
 .sp
 The oneline descriptions are purely for your pleasure; \fIgit rebase\fR will not look at them but at the commit names ("deadbee" and "fa1afe1" in this example), so do not delete or edit the names\&.
 .sp
-By replacing the command "pick" with the command "edit", you can tell \fBgit rebase\fR to stop after applying that commit, so that you can edit the files and/or the commit message, amend the commit, and continue rebasing\&.
+By replacing the command "pick" with the command "edit", you can tell \fBgit\fR \fBrebase\fR to stop after applying that commit, so that you can edit the files and/or the commit message, amend the commit, and continue rebasing\&.
 .sp
 To interrupt the rebase (just like an "edit" command would do, but without cherry\-picking any commit first), use the "break" command\&.
 .sp
@@ -1528,9 +1562,9 @@ To drop a commit, replace the command "pick" with "drop", or just delete the mat
 .sp
 If you want to fold two or more commits into one, replace the command "pick" for the second and subsequent commits with "squash" or "fixup"\&. If the commits had different authors, the folded commit will be attributed to the author of the first commit\&. The suggested commit message for the folded commit is the concatenation of the first commit\(cqs message with those identified by "squash" commands, omitting the messages of commits identified by "fixup" commands, unless "fixup \-c" is used\&. In that case the suggested commit message is only the message of the "fixup \-c" commit, and an editor is opened allowing you to edit the message\&. The contents (patch) of the "fixup \-c" commit are still incorporated into the folded commit\&. If there is more than one "fixup \-c" commit, the message from the final one is used\&. You can also use "fixup \-C" to get the same behavior as "fixup \-c" except without opening an editor\&.
 .sp
-\fBgit rebase\fR will stop when "pick" has been replaced with "edit" or when a command fails due to merge errors\&. When you are done editing and/or resolving conflicts you can continue with \fBgit rebase \-\-continue\fR\&.
+\fBgit\fR \fBrebase\fR will stop when "pick" has been replaced with "edit" or when a command fails due to merge errors\&. When you are done editing and/or resolving conflicts you can continue with \fBgit\fR \fBrebase\fR \fB\-\-continue\fR\&.
 .sp
-For example, if you want to reorder the last 5 commits, such that what was \fBHEAD~4\fR becomes the new \fBHEAD\fR\&. To achieve that, you would call \fBgit rebase\fR like this:
+For example, if you want to reorder the last 5 commits, such that what was \fBHEAD~4\fR becomes the new \fBHEAD\fR\&. To achieve that, you would call \fBgit\fR \fBrebase\fR like this:
 .sp
 .if n \{\
 .RS 4
@@ -1590,7 +1624,7 @@ exec cd subdir; make test
 .RE
 .\}
 .sp
-The interactive rebase will stop when a command fails (i\&.e\&. exits with non\-0 status) to give you an opportunity to fix the problem\&. You can continue with \fBgit rebase \-\-continue\fR\&.
+The interactive rebase will stop when a command fails (i\&.e\&. exits with non\-0 status) to give you an opportunity to fix the problem\&. You can continue with \fBgit\fR \fBrebase\fR \fB\-\-continue\fR\&.
 .sp
 The "exec" command launches the command in a shell (the default one, usually /bin/sh), so you can use shell features (like "cd", ">", ";" \&...\:)\&. The command is run from the root of the working tree\&.
 .sp
@@ -1624,7 +1658,7 @@ exec make test
 .\}
 .SH "SPLITTING COMMITS"
 .sp
-In interactive mode, you can mark commits with the action "edit"\&. However, this does not necessarily mean that \fBgit rebase\fR expects the result of this edit to be exactly one commit\&. Indeed, you can undo the commit, or you can add other commits\&. This can be used to split a commit into two:
+In interactive mode, you can mark commits with the action "edit"\&. However, this does not necessarily mean that \fBgit\fR \fBrebase\fR expects the result of this edit to be exactly one commit\&. Indeed, you can undo the commit, or you can add other commits\&. This can be used to split a commit into two:
 .sp
 .RS 4
 .ie n \{\
@@ -1635,8 +1669,11 @@ In interactive mode, you can mark commits with the action "edit"\&. However, thi
 .IP \(bu 2.3
 .\}
 Start an interactive rebase with
-\fBgit rebase \-i <commit>^\fR, where
-\fB<commit>\fR
+\fBgit\fR
+\fBrebase\fR
+\fB\-i\fR
+\fI<commit>\fR\fB^\fR, where
+\fI<commit>\fR
 is the commit you want to split\&. In fact, any commit range will do, as long as it contains that commit\&.
 .RE
 .sp
@@ -1660,7 +1697,9 @@ Mark the commit you want to split with the action "edit"\&.
 .IP \(bu 2.3
 .\}
 When it comes to editing that commit, execute
-\fBgit reset HEAD^\fR\&. The effect is that the
+\fBgit\fR
+\fBreset\fR
+\fBHEAD^\fR\&. The effect is that the
 \fBHEAD\fR
 is rewound by one, and the index follows suit\&. However, the working tree stays the same\&.
 .RE
@@ -1674,9 +1713,11 @@ is rewound by one, and the index follows suit\&. However, the working tree stays
 .IP \(bu 2.3
 .\}
 Now add the changes to the index that you want to have in the first commit\&. You can use
-\fBgit add\fR
+\fBgit\fR
+\fBadd\fR
 (possibly interactively) or
-\fBgit gui\fR
+\fBgit\fR
+\fBgui\fR
 (or both) to do that\&.
 .RE
 .sp
@@ -1711,10 +1752,12 @@ Repeat the last two steps until your working tree is clean\&.
 .IP \(bu 2.3
 .\}
 Continue the rebase with
-\fBgit rebase \-\-continue\fR\&.
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-continue\fR\&.
 .RE
 .sp
-If you are not absolutely sure that the intermediate revisions are consistent (they compile, pass the testsuite, etc\&.) you should use \fBgit stash\fR to stash away the not\-yet\-committed changes after each commit, test, and amend the commit if fixes are necessary\&.
+If you are not absolutely sure that the intermediate revisions are consistent (they compile, pass the testsuite, etc\&.) you should use \fBgit\fR \fBstash\fR to stash away the not\-yet\-committed changes after each commit, test, and amend the commit if fixes are necessary\&.
 .SH "RECOVERING FROM UPSTREAM REBASE"
 .sp
 Rebasing (or any other form of rewriting) a branch that others have based work on is a bad idea: anyone downstream of it is forced to manually fix their history\&. This section explains how to do the fix from the downstream\(cqs point of view\&. The real fix, however, would be to avoid rebasing the upstream in the first place\&.
@@ -1785,7 +1828,8 @@ This happens if the
 rebase had conflicts, or used
 \fB\-\-interactive\fR
 to omit, edit, squash, or fixup commits; or if the upstream used one of
-\fBcommit \-\-amend\fR,
+\fBcommit\fR
+\fB\-\-amend\fR,
 \fBreset\fR, or a full history rewriting command like
 \m[blue]\fB\fBfilter\-repo\fR\fR\m[]\&\s-2\u[2]\d\s+2\&.
 .RE
@@ -1836,11 +1880,11 @@ Things get more complicated if the \fIsubsystem\fR changes do not exactly corres
 .ps -1
 .br
 .sp
-While an "easy case recovery" sometimes appears to be successful even in the hard case, it may have unintended consequences\&. For example, a commit that was removed via \fBgit rebase \-\-interactive\fR will be \fBresurrected\fR!
+While an "easy case recovery" sometimes appears to be successful even in the hard case, it may have unintended consequences\&. For example, a commit that was removed via \fBgit\fR \fBrebase\fR \fB\-\-interactive\fR will be \fBresurrected\fR!
 .sp .5v
 .RE
 .sp
-The idea is to manually tell \fBgit rebase\fR "where the old \fIsubsystem\fR ended and your \fItopic\fR began", that is, what the old merge base between them was\&. You will have to find a way to name the last commit of the old \fIsubsystem\fR, for example:
+The idea is to manually tell \fBgit\fR \fBrebase\fR "where the old \fIsubsystem\fR ended and your \fItopic\fR began", that is, what the old merge base between them was\&. You will have to find a way to name the last commit of the old \fIsubsystem\fR, for example:
 .sp
 .RS 4
 .ie n \{\
@@ -1853,10 +1897,11 @@ The idea is to manually tell \fBgit rebase\fR "where the old \fIsubsystem\fR end
 With the
 \fIsubsystem\fR
 reflog: after
-\fBgit fetch\fR, the old tip of
+\fBgit\fR
+\fBfetch\fR, the old tip of
 \fIsubsystem\fR
 is at
-\fBsubsystem@{1}\fR\&. Subsequent fetches will increase the number\&. (See
+\fBsubsystem@\fR{1}\&. Subsequent fetches will increase the number\&. (See
 \fBgit-reflog\fR(1)\&.)
 .RE
 .sp
@@ -1877,7 +1922,7 @@ must be
 \fBtopic~3\fR\&.
 .RE
 .sp
-You can then transplant the old \fBsubsystem\&.\&.topic\fR to the new tip by saying (for the reflog case, and assuming you are on \fItopic\fR already):
+You can then transplant the old \fBsubsystem\fR\fB\&.\&.\fR\fBtopic\fR to the new tip by saying (for the reflog case, and assuming you are on \fItopic\fR already):
 .sp
 .if n \{\
 .RS 4
@@ -1896,7 +1941,7 @@ The interactive rebase command was originally designed to handle individual patc
 .sp
 However, there are legitimate reasons why a developer may want to recreate merge commits: to keep the branch structure (or "commit topology") when working on multiple, inter\-related branches\&.
 .sp
-In the following example, the developer works on a topic branch that refactors the way buttons are defined, and on another topic branch that uses that refactoring to implement a "Report a bug" button\&. The output of \fBgit log \-\-graph \-\-format=%s \-5\fR may look like this:
+In the following example, the developer works on a topic branch that refactors the way buttons are defined, and on another topic branch that uses that refactoring to implement a "Report a bug" button\&. The output of \fBgit\fR \fBlog\fR \fB\-\-graph\fR \fB\-\-format=\fR%s \fB\-5\fR may look like this:
 .sp
 .if n \{\
 .RS 4
@@ -1946,19 +1991,19 @@ merge \-C 6f5e4d report\-a\-bug # Merge \*(Aqreport\-a\-bug\*(Aq
 .sp
 In contrast to a regular interactive rebase, there are \fBlabel\fR, \fBreset\fR and \fBmerge\fR commands in addition to \fBpick\fR ones\&.
 .sp
-The \fBlabel\fR command associates a label with the current HEAD when that command is executed\&. These labels are created as worktree\-local refs (\fBrefs/rewritten/<label>\fR) that will be deleted when the rebase finishes\&. That way, rebase operations in multiple worktrees linked to the same repository do not interfere with one another\&. If the \fBlabel\fR command fails, it is rescheduled immediately, with a helpful message how to proceed\&.
+The \fBlabel\fR command associates a label with the current HEAD when that command is executed\&. These labels are created as worktree\-local refs (\fBrefs/rewritten/\fR\fI<label>\fR) that will be deleted when the rebase finishes\&. That way, rebase operations in multiple worktrees linked to the same repository do not interfere with one another\&. If the \fBlabel\fR command fails, it is rescheduled immediately, with a helpful message how to proceed\&.
 .sp
-The \fBreset\fR command resets the HEAD, index and worktree to the specified revision\&. It is similar to an \fBexec git reset \-\-hard <label>\fR, but refuses to overwrite untracked files\&. If the \fBreset\fR command fails, it is rescheduled immediately, with a helpful message how to edit the todo list (this typically happens when a \fBreset\fR command was inserted into the todo list manually and contains a typo)\&.
+The \fBreset\fR command resets the HEAD, index and worktree to the specified revision\&. It is similar to an \fBexec\fR \fBgit\fR \fBreset\fR \fB\-\-hard\fR \fI<label>\fR, but refuses to overwrite untracked files\&. If the \fBreset\fR command fails, it is rescheduled immediately, with a helpful message how to edit the todo list (this typically happens when a \fBreset\fR command was inserted into the todo list manually and contains a typo)\&.
 .sp
-The \fBmerge\fR command will merge the specified revision(s) into whatever is HEAD at that time\&. With \fB\-C <original\-commit>\fR, the commit message of the specified merge commit will be used\&. When the \fB\-C\fR is changed to a lower\-case \fB\-c\fR, the message will be opened in an editor after a successful merge so that the user can edit the message\&.
+The \fBmerge\fR command will merge the specified revision(s) into whatever is HEAD at that time\&. With \fB\-C\fR \fI<original\-commit>\fR, the commit message of the specified merge commit will be used\&. When the \fB\-C\fR is changed to a lower\-case \fB\-c\fR, the message will be opened in an editor after a successful merge so that the user can edit the message\&.
 .sp
 If a \fBmerge\fR command fails for any reason other than merge conflicts (i\&.e\&. when the merge operation did not even start), it is rescheduled immediately\&.
 .sp
-By default, the \fBmerge\fR command will use the \fBort\fR merge strategy for regular merges, and \fBoctopus\fR for octopus merges\&. One can specify a default strategy for all merges using the \fB\-\-strategy\fR argument when invoking rebase, or can override specific merges in the interactive list of commands by using an \fBexec\fR command to call \fBgit merge\fR explicitly with a \fB\-\-strategy\fR argument\&. Note that when calling \fBgit merge\fR explicitly like this, you can make use of the fact that the labels are worktree\-local refs (the ref \fBrefs/rewritten/onto\fR would correspond to the label \fBonto\fR, for example) in order to refer to the branches you want to merge\&.
+By default, the \fBmerge\fR command will use the \fBort\fR merge strategy for regular merges, and \fBoctopus\fR for octopus merges\&. One can specify a default strategy for all merges using the \fB\-\-strategy\fR argument when invoking rebase, or can override specific merges in the interactive list of commands by using an \fBexec\fR command to call \fBgit\fR \fBmerge\fR explicitly with a \fB\-\-strategy\fR argument\&. Note that when calling \fBgit\fR \fBmerge\fR explicitly like this, you can make use of the fact that the labels are worktree\-local refs (the ref \fBrefs/rewritten/onto\fR would correspond to the label \fBonto\fR, for example) in order to refer to the branches you want to merge\&.
 .sp
-Note: the first command (\fBlabel onto\fR) labels the revision onto which the commits are rebased; The name \fBonto\fR is just a convention, as a nod to the \fB\-\-onto\fR option\&.
+Note: the first command (\fBlabel\fR \fBonto\fR) labels the revision onto which the commits are rebased; The name \fBonto\fR is just a convention, as a nod to the \fB\-\-onto\fR option\&.
 .sp
-It is also possible to introduce completely new merge commits from scratch by adding a command of the form \fBmerge <merge\-head>\fR\&. This form will generate a tentative commit message and always open an editor to let the user edit it\&. This can be useful e\&.g\&. when a topic branch turns out to address more than a single concern and wants to be split into two or even more topic branches\&. Consider this todo list:
+It is also possible to introduce completely new merge commits from scratch by adding a command of the form \fBmerge\fR \fI<merge\-head>\fR\&. This form will generate a tentative commit message and always open an editor to let the user edit it\&. This can be useful e\&.g\&. when a topic branch turns out to address more than a single concern and wants to be split into two or even more topic branches\&. Consider this todo list:
 .sp
 .if n \{\
 .RS 4
@@ -2062,7 +2107,8 @@ A format string, as specified in
 rebase\&.abbreviateCommands
 .RS 4
 If set to true,
-\fBgit rebase\fR
+\fBgit\fR
+\fBrebase\fR
 will use abbreviated command names in the todo list resulting in something like this:
 .sp
 .if n \{\
@@ -2136,15 +2182,16 @@ rebase\&.maxLabelLength
 .RS 4
 When generating label names from commit subjects, truncate the names to this length\&. By default, the names are truncated to a little less than
 \fBNAME_MAX\fR
-(to allow e\&.g\&.
-\fB\&.lock\fR
+(to allow e\&.g\&. \&.\fBlock\fR
 files to be written for the corresponding loose refs)\&.
 .RE
 .PP
 sequence\&.editor
 .RS 4
 Text editor used by
-\fBgit rebase \-i\fR
+\fBgit\fR
+\fBrebase\fR
+\fB\-i\fR
 for editing the rebase instruction file\&. The value is meant to be interpreted by the shell when it is used\&. It can be overridden by the
 \fBGIT_SEQUENCE_EDITOR\fR
 environment variable\&. When not configured, the default commit message editor is used instead\&.

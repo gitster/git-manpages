@@ -2,12 +2,12 @@
 .\"     Title: gitglossary
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GITGLOSSARY" "7" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GITGLOSSARY" "7" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -47,10 +47,8 @@ bare repository
 .RS 4
 A bare repository is normally an appropriately named
 directory
-with a
-\fB\&.git\fR
-suffix that does not have a locally checked\-out copy of any of the files under revision control\&. That is, all of the Git administrative and control files that would normally be present in the hidden
-\fB\&.git\fR
+with a \&.\fBgit\fR
+suffix that does not have a locally checked\-out copy of any of the files under revision control\&. That is, all of the Git administrative and control files that would normally be present in the hidden \&.\fBgit\fR
 sub\-directory are directly present in the
 \fBrepository\&.git\fR
 directory instead, and no other files are present and checked out\&. Usually publishers of public repositories make bare repositories available\&.
@@ -253,11 +251,14 @@ commit
 that isn\(cqt necessarily the tip of any particular branch\&. The HEAD in such a state is called "detached"\&.
 .sp
 Note that commands that operate on the history of the current branch (e\&.g\&.
-\fBgit commit\fR
+\fBgit\fR
+\fBcommit\fR
 to build a new history on top of it) still work while the HEAD is detached\&. They update the HEAD to point at the tip of the updated history without affecting any branch\&. Commands that update or inquire information
 \fIabout\fR
 the current branch (e\&.g\&.
-\fBgit branch \-\-set\-upstream\-to\fR
+\fBgit\fR
+\fBbranch\fR
+\fB\-\-set\-upstream\-to\fR
 that sets what remote\-tracking branch the current branch integrates with) obviously do not work, as there is no (real) current branch to ask about in this state\&.
 .RE
 .PP
@@ -326,8 +327,7 @@ repository
 .PP
 gitfile
 .RS 4
-A plain file
-\fB\&.git\fR
+A plain file \&.\fBgit\fR
 at the root of a working tree that points at the directory that is the real repository\&. For proper use see
 \fBgit-worktree\fR(1)
 or
@@ -341,8 +341,7 @@ Grafts enable two otherwise different lines of development to be joined together
 parents
 a
 commit
-has is different from what was recorded when the commit was created\&. Configured via the
-\fB\&.git/info/grafts\fR
+has is different from what was recorded when the commit was created\&. Configured via the \&.\fBgit/info/grafts\fR
 file\&.
 .sp
 Note that the grafts mechanism is outdated and can lead to problems transferring objects between repositories; see
@@ -390,8 +389,7 @@ hook
 .RS 4
 During the normal execution of several Git commands, call\-outs are made to optional scripts that allow a developer to add functionality or checking\&. Typically, the hooks allow for a command to be pre\-verified and potentially aborted, and allow for a post\-notification after the operation is done\&. The hook scripts are found in the
 \fB$GIT_DIR/hooks/\fR
-directory, and are enabled by simply removing the
-\fB\&.sample\fR
+directory, and are enabled by simply removing the \&.\fBsample\fR
 suffix from the filename\&. In earlier versions of Git you had to make them executable\&.
 .RE
 .PP
@@ -496,7 +494,9 @@ repository\&. Most projects have at least one upstream project which they track\
 is used for that purpose\&. New upstream updates will be fetched into
 remote\-tracking branches
 named origin/name\-of\-upstream\-branch, which you can see using
-\fBgit branch \-r\fR\&.
+\fBgit\fR
+\fBbranch\fR
+\fB\-r\fR\&.
 .RE
 .PP
 overlay
@@ -578,9 +578,7 @@ is followed by zero or more "magic signature" letters (which optionally is termi
 .sp
 In the long form, the leading colon
 \fB:\fR
-is followed by an open parenthesis
-\fB(\fR, a comma\-separated list of zero or more "magic words", and a close parentheses
-\fB)\fR, and the remainder is the pattern to match against the path\&.
+is followed by an open parenthesis (, a comma\-separated list of zero or more "magic words", and a close parentheses ), and the remainder is the pattern to match against the path\&.
 .sp
 A pathspec with only a colon means "there is no pathspec"\&. This form should not be combined with other pathspec\&.
 .PP
@@ -594,11 +592,7 @@ The magic word
 .PP
 literal
 .RS 4
-Wildcards in the pattern such as
-\fB*\fR
-or
-\fB?\fR
-are treated as literal characters\&.
+Wildcards in the pattern such as * or ? are treated as literal characters\&.
 .RE
 .PP
 icase
@@ -610,7 +604,7 @@ glob
 .RS 4
 Git treats the pattern as a shell glob suitable for consumption by fnmatch(3) with the FNM_PATHNAME flag: wildcards in the pattern will not match a / in the pathname\&. For example, "Documentation/*\&.html" matches "Documentation/git\&.html" but not "Documentation/ppc/ppc\&.html" or "tools/perf/Documentation/perf\&.html"\&.
 .sp
-Two consecutive asterisks ("\fB**\fR") in patterns matched against full pathname may have special meaning:
+Two consecutive asterisks ("**") in patterns matched against full pathname may have special meaning:
 .sp
 .RS 4
 .ie n \{\
@@ -620,7 +614,7 @@ Two consecutive asterisks ("\fB**\fR") in patterns matched against full pathname
 .sp -1
 .IP \(bu 2.3
 .\}
-A leading "\fB**\fR" followed by a slash means match in all directories\&. For example, "\fB**/foo\fR" matches file or directory "\fBfoo\fR" anywhere, the same as pattern "\fBfoo\fR"\&. "\fB**/foo/bar\fR" matches file or directory "\fBbar\fR" anywhere that is directly under directory "\fBfoo\fR"\&.
+A leading "**" followed by a slash means match in all directories\&. For example, "**/foo" matches file or directory "\fBfoo\fR" anywhere, the same as pattern "\fBfoo\fR"\&. "**/foo/bar" matches file or directory "\fBbar\fR" anywhere that is directly under directory "\fBfoo\fR"\&.
 .RE
 .sp
 .RS 4
@@ -631,8 +625,7 @@ A leading "\fB**\fR" followed by a slash means match in all directories\&. For e
 .sp -1
 .IP \(bu 2.3
 .\}
-A trailing "\fB/**\fR" matches everything inside\&. For example, "\fBabc/**\fR" matches all files inside directory "abc", relative to the location of the
-\fB\&.gitignore\fR
+A trailing "\fB/\fR**" matches everything inside\&. For example, "\fBabc/\fR**" matches all files inside directory "abc", relative to the location of the \&.\fBgitignore\fR
 file, with infinite depth\&.
 .RE
 .sp
@@ -644,7 +637,7 @@ file, with infinite depth\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-A slash followed by two consecutive asterisks then a slash matches zero or more directories\&. For example, "\fBa/**/b\fR" matches "\fBa/b\fR", "\fBa/x/b\fR", "\fBa/x/y/b\fR" and so on\&.
+A slash followed by two consecutive asterisks then a slash matches zero or more directories\&. For example, "\fBa/\fR**/b" matches "\fBa/b\fR", "\fBa/x/b\fR", "\fBa/x/y/b\fR" and so on\&.
 .RE
 .sp
 .RS 4
@@ -718,7 +711,7 @@ be set to the string
 .sp -1
 .IP \(bu 2.3
 .\}
-"\fB!ATTR\fR" requires that the attribute
+"!ATTR" requires that the attribute
 \fBATTR\fR
 be unspecified\&.
 .sp
@@ -728,9 +721,7 @@ Note that when matching against a tree object, attributes are still obtained fro
 .PP
 exclude
 .RS 4
-After a path matches any non\-exclude pathspec, it will be run through all exclude pathspecs (magic signature:
-\fB!\fR
-or its synonym
+After a path matches any non\-exclude pathspec, it will be run through all exclude pathspecs (magic signature: ! or its synonym
 \fB^\fR)\&. If it matches, the path is ignored\&. When there is no non\-exclude pathspec, the exclusion is applied to the result set as if invoked without any pathspec\&.
 .RE
 .RE
@@ -1085,8 +1076,9 @@ shallow clone
 Mostly a synonym to
 shallow repository
 but the phrase makes it more explicit that it was created by running
-\fBgit clone \-\-depth=\&.\&.\&.\fR
-command\&.
+\fBgit\fR
+\fBclone\fR
+\fB\-\-depth=\&.\&.\fR\&. command\&.
 .RE
 .PP
 shallow repository

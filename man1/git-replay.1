@@ -2,12 +2,12 @@
 .\"     Title: git-replay
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-REPLAY" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-REPLAY" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,7 +36,7 @@ git-replay \- EXPERIMENTAL: Replay commits on a new base, works with bare repos 
 .fi
 .SH "DESCRIPTION"
 .sp
-Takes ranges of commits and replays them onto a new location\&. Leaves the working tree and the index untouched, and updates no references\&. The output of this command is meant to be used as input to \fBgit update\-ref \-\-stdin\fR, which would update the relevant branches (see the OUTPUT section below)\&.
+Takes ranges of commits and replays them onto a new location\&. Leaves the working tree and the index untouched, and updates no references\&. The output of this command is meant to be used as input to \fBgit\fR \fBupdate\-ref\fR \fB\-\-stdin\fR, which would update the relevant branches (see the OUTPUT section below)\&.
 .sp
 THIS COMMAND IS EXPERIMENTAL\&. THE BEHAVIOR MAY CHANGE\&.
 .SH "OPTIONS"
@@ -48,7 +48,9 @@ Starting point at which to create the new commits\&. May be any valid commit, an
 When
 \fB\-\-onto\fR
 is specified, the update\-ref command(s) in the output will update the branch(es) in the revision range to point at the new commits, similar to the way how
-\fBgit rebase \-\-update\-refs\fR
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-update\-refs\fR
 updates multiple branches in the affected range\&.
 .RE
 .PP
@@ -66,7 +68,8 @@ to point at the new commits (in other words, this mimics a cherry\-pick operatio
 <revision\-range>
 .RS 4
 Range of commits to replay\&. More than one <revision\-range> can be passed, but in
-\fB\-\-advance <branch>\fR
+\fB\-\-advance\fR
+\fI<branch>\fR
 mode, they should have a single tip, so that it\(cqs clear where <branch> should point to\&. See "Specifying Ranges" in
 \fBgit-rev-parse\fR(1)
 and the "Commit Limiting" options below\&.
@@ -75,7 +78,7 @@ and the "Commit Limiting" options below\&.
 .sp
 Besides specifying a range of commits that should be listed using the special notations explained in the description, additional commit limiting may be applied\&.
 .sp
-Using more options generally further limits the output (e\&.g\&. \fB\-\-since=<date1>\fR limits to commits newer than \fB<date1>\fR, and using it with \fB\-\-grep=<pattern>\fR further limits to commits whose log message has a line that matches \fB<pattern>\fR), unless otherwise noted\&.
+Using more options generally further limits the output (e\&.g\&. \fB\-\-since=\fR\fI<date1>\fR limits to commits newer than \fI<date1>\fR, and using it with \fB\-\-grep=\fR\fI<pattern>\fR further limits to commits whose log message has a line that matches \fI<pattern>\fR), unless otherwise noted\&.
 .sp
 Note that these are applied before commit ordering and formatting options, such as \fB\-\-reverse\fR\&.
 .PP
@@ -109,8 +112,8 @@ Show commits older than a specific date\&.
 \-\-author=<pattern>, \-\-committer=<pattern>
 .RS 4
 Limit the commits output to ones with author/committer header lines that match the specified pattern (regular expression)\&. With more than one
-\fB\-\-author=<pattern>\fR, commits whose author matches any of the given patterns are chosen (similarly for multiple
-\fB\-\-committer=<pattern>\fR)\&.
+\fB\-\-author=\fR\fI<pattern>\fR, commits whose author matches any of the given patterns are chosen (similarly for multiple
+\fB\-\-committer=\fR\fI<pattern>\fR)\&.
 .RE
 .PP
 \-\-grep\-reflog=<pattern>
@@ -124,7 +127,7 @@ is in use\&.
 \-\-grep=<pattern>
 .RS 4
 Limit the commits output to ones with a log message that matches the specified pattern (regular expression)\&. With more than one
-\fB\-\-grep=<pattern>\fR, commits whose message matches any of the given patterns are chosen (but see
+\fB\-\-grep=\fR\fI<pattern>\fR, commits whose message matches any of the given patterns are chosen (but see
 \fB\-\-all\-match\fR)\&.
 .sp
 When
@@ -141,7 +144,7 @@ Limit the commits output to ones that match all given
 \-\-invert\-grep
 .RS 4
 Limit the commits output to ones with a log message that do not match the pattern specified with
-\fB\-\-grep=<pattern>\fR\&.
+\fB\-\-grep=\fR\fI<pattern>\fR\&.
 .RE
 .PP
 \-i, \-\-regexp\-ignore\-case
@@ -358,7 +361,7 @@ and is cleared after processing them\&.
 \-\-reflog
 .RS 4
 Pretend as if all objects mentioned by reflogs are listed on the command line as
-\fB<commit>\fR\&.
+\fI<commit>\fR\&.
 .RE
 .PP
 \-\-alternate\-refs
@@ -391,8 +394,7 @@ Pretend as if the bad bisection ref
 was listed and as if it was followed by
 \fB\-\-not\fR
 and the good bisection refs
-\fBrefs/bisect/good\-*\fR
-on the command line\&.
+\fBrefs/bisect/good\-\fR* on the command line\&.
 .RE
 .PP
 \-\-stdin
@@ -437,15 +439,13 @@ may be cherry\-picked from branch A)\&. With this option, such pairs of commits 
 .PP
 \-\-left\-only, \-\-right\-only
 .RS 4
-List only commits on the respective side of a symmetric difference, i\&.e\&. only those which would be marked
-\fB<\fR
-resp\&.
-\fB>\fR
-by
+List only commits on the respective side of a symmetric difference, i\&.e\&. only those which would be marked < resp\&. > by
 \fB\-\-left\-right\fR\&.
 .sp
 For example,
-\fB\-\-cherry\-pick \-\-right\-only A\&.\&.\&.B\fR
+\fB\-\-cherry\-pick\fR
+\fB\-\-right\-only\fR
+\fBA\fR\fB\&.\&.\&.\fR\fBB\fR
 omits those commits from
 \fBB\fR
 which are in
@@ -454,17 +454,30 @@ or are patch\-equivalent to a commit in
 \fBA\fR\&. In other words, this lists the
 \fB+\fR
 commits from
-\fBgit cherry A B\fR\&. More precisely,
-\fB\-\-cherry\-pick \-\-right\-only \-\-no\-merges\fR
+\fBgit\fR
+\fBcherry\fR
+\fBA\fR
+\fBB\fR\&. More precisely,
+\fB\-\-cherry\-pick\fR
+\fB\-\-right\-only\fR
+\fB\-\-no\-merges\fR
 gives the exact list\&.
 .RE
 .PP
 \-\-cherry
 .RS 4
 A synonym for
-\fB\-\-right\-only \-\-cherry\-mark \-\-no\-merges\fR; useful to limit the output to the commits on our side and mark those that have been applied to the other side of a forked history with
-\fBgit log \-\-cherry upstream\&.\&.\&.mybranch\fR, similar to
-\fBgit cherry upstream mybranch\fR\&.
+\fB\-\-right\-only\fR
+\fB\-\-cherry\-mark\fR
+\fB\-\-no\-merges\fR; useful to limit the output to the commits on our side and mark those that have been applied to the other side of a forked history with
+\fBgit\fR
+\fBlog\fR
+\fB\-\-cherry\fR
+\fBupstream\fR\fB\&.\&.\&.\fR\fBmybranch\fR, similar to
+\fBgit\fR
+\fBcherry\fR
+\fBupstream\fR
+\fBmybranch\fR\&.
 .RE
 .PP
 \-g, \-\-walk\-reflogs
@@ -482,12 +495,10 @@ format other than
 and
 \fBreference\fR
 (for obvious reasons), this causes the output to have two extra lines of information taken from the reflog\&. The reflog designator in the output may be shown as
-\fBref@{<Nth>}\fR
-(where
+\fBref@\fR{\fI<Nth>\fR} (where
 \fI<Nth>\fR
 is the reverse\-chronological index in the reflog) or as
-\fBref@{<timestamp>}\fR
-(with the
+\fBref@\fR{\fI<timestamp>\fR} (with the
 \fI<timestamp>\fR
 for that entry), depending on a few rules:
 .sp
@@ -500,7 +511,7 @@ for that entry), depending on a few rules:
 .IP "  1." 4.2
 .\}
 If the starting point is specified as
-\fBref@{<Nth>}\fR, show the index format\&.
+\fBref@\fR{\fI<Nth>\fR}, show the index format\&.
 .RE
 .sp
 .RS 4
@@ -512,7 +523,7 @@ If the starting point is specified as
 .IP "  2." 4.2
 .\}
 If the starting point was specified as
-\fBref@{now}\fR, show the timestamp format\&.
+\fBref@\fR{now}, show the timestamp format\&.
 .RE
 .sp
 .RS 4
@@ -552,8 +563,8 @@ Under
 \-\-merge
 .RS 4
 Show commits touching conflicted paths in the range
-\fBHEAD\&.\&.\&.<other>\fR, where
-\fB<other>\fR
+\fBHEAD\fR\fB\&.\&.\&.\fR\fI<other>\fR, where
+\fI<other>\fR
 is the first existing pseudoref in
 \fBMERGE_HEAD\fR,
 \fBCHERRY_PICK_HEAD\fR,
@@ -912,8 +923,7 @@ with parent rewriting does (see above)\&.
 Then simplify each commit
 \fBC\fR
 to its replacement
-\fBC\*(Aq\fR
-in the final history according to the following rules:
+\fBC\fR\*(Aq in the final history according to the following rules:
 .sp
 .RS 4
 .ie n \{\
@@ -924,8 +934,7 @@ in the final history according to the following rules:
 .IP \(bu 2.3
 .\}
 Set
-\fBC\*(Aq\fR
-to
+\fBC\fR\*(Aq to
 \fBC\fR\&.
 .RE
 .sp
@@ -940,9 +949,8 @@ to
 Replace each parent
 \fBP\fR
 of
-\fBC\*(Aq\fR
-with its simplification
-\fBP\*(Aq\fR\&. In the process, drop parents that are ancestors of other parents or that are root commits TREESAME to an empty tree, and remove duplicates, but take care to never drop all parents that we are TREESAME to\&.
+\fBC\fR\*(Aq with its simplification
+\fBP\fR\*(Aq\&. In the process, drop parents that are ancestors of other parents or that are root commits TREESAME to an empty tree, and remove duplicates, but take care to never drop all parents that we are TREESAME to\&.
 .RE
 .sp
 .RS 4
@@ -954,8 +962,7 @@ with its simplification
 .IP \(bu 2.3
 .\}
 If after this parent rewriting,
-\fBC\*(Aq\fR
-is a root or merge commit (has zero or >1 parents), a boundary commit, or !TREESAME, it remains\&. Otherwise, it is replaced with its only parent\&.
+\fBC\fR\*(Aq is a root or merge commit (has zero or >1 parents), a boundary commit, or !TREESAME, it remains\&. Otherwise, it is replaced with its only parent\&.
 .RE
 .sp
 The effect of this is best shown by way of comparing to
@@ -1110,9 +1117,10 @@ which means the same thing when applied to the
 range but is just more explicit\&.
 .sp
 If we instead are interested in a given topic within this range, and all commits affected by that topic, we may only want to view the subset of
-\fBD\&.\&.M\fR
+\fBD\fR\fB\&.\&.\fR\fBM\fR
 which contain that topic in their ancestry path\&. So, using
-\fB\-\-ancestry\-path=H D\&.\&.M\fR
+\fB\-\-ancestry\-path=H\fR
+\fBD\fR\fB\&.\&.\fR\fBM\fR
 for example would result in:
 .sp
 .if n \{\
@@ -1130,7 +1138,8 @@ for example would result in:
 .\}
 .sp
 Whereas
-\fB\-\-ancestry\-path=K D\&.\&.M\fR
+\fB\-\-ancestry\-path=K\fR
+\fBD\fR\fB\&.\&.\fR\fBM\fR
 would result in
 .sp
 .if n \{\
@@ -1320,7 +1329,8 @@ For example, in a commit history like this:
 .\}
 .sp
 where the numbers denote the order of commit timestamps,
-\fBgit rev\-list\fR
+\fBgit\fR
+\fBrev\-list\fR
 and friends with
 \fB\-\-date\-order\fR
 show the commits in the timestamp order: 8 7 6 5 4 3 2 1\&.
@@ -1436,10 +1446,13 @@ By default, tabs are expanded in pretty formats that indent the log message by 4
 .RS 4
 Show the notes (see
 \fBgit-notes\fR(1)) that annotate the commit, when showing the commit log message\&. This is the default for
-\fBgit log\fR,
-\fBgit show\fR
+\fBgit\fR
+\fBlog\fR,
+\fBgit\fR
+\fBshow\fR
 and
-\fBgit whatchanged\fR
+\fBgit\fR
+\fBwhatchanged\fR
 commands when there is no
 \fB\-\-pretty\fR,
 \fB\-\-format\fR, or
@@ -1487,7 +1500,8 @@ These options are deprecated\&. Use the above \-\-notes/\-\-no\-notes options in
 \-\-show\-signature
 .RS 4
 Check the validity of a signed commit object by passing the signature to
-\fBgpg \-\-verify\fR
+\fBgpg\fR
+\fB\-\-verify\fR
 and show the output\&.
 .RE
 .PP
@@ -1578,7 +1592,7 @@ shows the date as seconds since the epoch (1970\-01\-01 00:00:00 UTC), followed 
 or
 \fB\-\fR
 with four digits; the first two are hours, and the second two are minutes)\&. I\&.e\&., as if the timestamp were formatted with
-\fBstrftime("%s %z")\fR)\&. Note that the
+\fBstrftime\fR("%s %z"))\&. Note that the
 \fB\-local\fR
 option does not affect the seconds\-since\-epoch value (which is always measured in UTC), but does switch the accompanying timezone value\&.
 .sp
@@ -1591,21 +1605,22 @@ shows the date as a Unix epoch timestamp (seconds since 1970)\&. As with
 \fB\-local\fR
 has no effect\&.
 .sp
-\fB\-\-date=format:\&.\&.\&.\fR
-feeds the format
-\fB\&.\&.\&.\fR
-to your system
+\fB\-\-date=format:\&.\&.\fR\&. feeds the format \&.\&.\&. to your system
 \fBstrftime\fR, except for %s, %z, and %Z, which are handled internally\&. Use
-\fB\-\-date=format:%c\fR
-to show the date in your system locale\(cqs preferred format\&. See the
+\fB\-\-date=format:\fR%c to show the date in your system locale\(cqs preferred format\&. See the
 \fBstrftime\fR
 manual for a complete list of format placeholders\&. When using
 \fB\-local\fR, the correct syntax is
-\fB\-\-date=format\-local:\&.\&.\&.\fR\&.
+\fB\-\-date=format\-local:\&.\&.\fR\&.\&.
 .sp
 \fB\-\-date=default\fR
 is the default format, and is based on ctime(3) output\&. It shows a single line with three\-letter day of the week, three\-letter month, day\-of\-month, hour\-minute\-seconds in "HH:MM:SS" format, followed by 4\-digit year, plus timezone information, unless the local time zone is used, e\&.g\&.
-\fBThu Jan 1 00:00:00 1970 +0000\fR\&.
+\fBThu\fR
+\fBJan\fR
+\fB1\fR
+\fB00:00:00\fR
+\fB1970\fR
+\fB+0000\fR\&.
 .RE
 .PP
 \-\-parents
@@ -1624,10 +1639,7 @@ above\&.
 .PP
 \-\-left\-right
 .RS 4
-Mark which side of a symmetric difference a commit is reachable from\&. Commits from the left side are prefixed with
-\fB<\fR
-and those from the right with
-\fB>\fR\&. If combined with
+Mark which side of a symmetric difference a commit is reachable from\&. Commits from the left side are prefixed with < and those from the right with >\&. If combined with
 \fB\-\-boundary\fR, those commits are prefixed with
 \fB\-\fR\&.
 .sp
@@ -1686,12 +1698,12 @@ option may also be specified\&.
 \-\-show\-linear\-break[=<barrier>]
 .RS 4
 When \-\-graph is not used, all history branches are flattened which can make it hard to see that the two consecutive commits do not belong to a linear branch\&. This option puts a barrier in between them in that case\&. If
-\fB<barrier>\fR
+\fI<barrier>\fR
 is specified, it is the string that will be shown instead of the default one\&.
 .RE
 .SH "OUTPUT"
 .sp
-When there are no conflicts, the output of this command is usable as input to \fBgit update\-ref \-\-stdin\fR\&. It is of the form:
+When there are no conflicts, the output of this command is usable as input to \fBgit\fR \fBupdate\-ref\fR \fB\-\-stdin\fR\&. It is of the form:
 .sp
 .if n \{\
 .RS 4
@@ -1754,7 +1766,7 @@ update refs/heads/tipbranch ${NEW_tipbranch_HASH} ${OLD_tipbranch_HASH}
 .RE
 .\}
 .sp
-When calling \fBgit replay\fR, one does not need to specify a range of commits to replay using the syntax \fBA\&.\&.B\fR; any range expression will do:
+When calling \fBgit\fR \fBreplay\fR, one does not need to specify a range of commits to replay using the syntax \fBA\fR\fB\&.\&.\fR\fBB\fR; any range expression will do:
 .sp
 .if n \{\
 .RS 4

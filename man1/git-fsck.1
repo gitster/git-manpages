@@ -2,12 +2,12 @@
 .\"     Title: git-fsck
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-FSCK" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-FSCK" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -122,7 +122,7 @@ When displaying names of reachable objects, in addition to the SHA\-1 also displ
 \fBhow\fR
 they are reachable, compatible with
 \fBgit-rev-parse\fR(1), e\&.g\&.
-\fBHEAD@{1234567890}~25^2:src/\fR\&.
+\fBHEAD@\fR{1234567890}~25^2:src/\&.
 .RE
 .PP
 \-\-[no\-]progress
@@ -140,62 +140,63 @@ During fsck git may find issues with legacy data which wouldn\(cqt be generated 
 was set\&. This feature is intended to support working with legacy repositories containing such data\&.
 .sp
 Setting
-\fBfsck\&.<msg\-id>\fR
+\fBfsck\&.\fR\fI<msg\-id>\fR
 will be picked up by
 \fBgit-fsck\fR(1), but to accept pushes of such data set
-\fBreceive\&.fsck\&.<msg\-id>\fR
+\fBreceive\&.fsck\&.\fR\fI<msg\-id>\fR
 instead, or to clone or fetch it set
-\fBfetch\&.fsck\&.<msg\-id>\fR\&.
+\fBfetch\&.fsck\&.\fR\fI<msg\-id>\fR\&.
 .sp
 The rest of the documentation discusses
-\fBfsck\&.*\fR
-for brevity, but the same applies for the corresponding
-\fBreceive\&.fsck\&.*\fR
-and
-\fBfetch\&.fsck\&.*\fR\&. variables\&.
+\fBfsck\&.\fR* for brevity, but the same applies for the corresponding
+\fBreceive\&.fsck\&.\fR* and
+\fBfetch\&.fsck\&.\fR*\&. variables\&.
 .sp
 Unlike variables like
 \fBcolor\&.ui\fR
 and
 \fBcore\&.editor\fR, the
-\fBreceive\&.fsck\&.<msg\-id>\fR
+\fBreceive\&.fsck\&.\fR\fI<msg\-id>\fR
 and
-\fBfetch\&.fsck\&.<msg\-id>\fR
+\fBfetch\&.fsck\&.\fR\fI<msg\-id>\fR
 variables will not fall back on the
-\fBfsck\&.<msg\-id>\fR
+\fBfsck\&.\fR\fI<msg\-id>\fR
 configuration if they aren\(cqt set\&. To uniformly configure the same fsck settings in different circumstances, all three of them must be set to the same values\&.
 .sp
 When
-\fBfsck\&.<msg\-id>\fR
+\fBfsck\&.\fR\fI<msg\-id>\fR
 is set, errors can be switched to warnings and vice versa by configuring the
-\fBfsck\&.<msg\-id>\fR
+\fBfsck\&.\fR\fI<msg\-id>\fR
 setting where the
-\fB<msg\-id>\fR
+\fI<msg\-id>\fR
 is the fsck message ID and the value is one of
 \fBerror\fR,
 \fBwarn\fR
 or
 \fBignore\fR\&. For convenience, fsck prefixes the error/warning with the message ID, e\&.g\&. "missingEmail: invalid author/committer line \- missing email" means that setting
-\fBfsck\&.missingEmail = ignore\fR
+\fBfsck\&.missingEmail\fR
+\fB=\fR
+\fBignore\fR
 will hide that issue\&.
 .sp
 In general, it is better to enumerate existing objects with problems with
 \fBfsck\&.skipList\fR, instead of listing the kind of breakages these problematic objects share to be ignored, as doing the latter will allow new instances of the same breakages go unnoticed\&.
 .sp
 Setting an unknown
-\fBfsck\&.<msg\-id>\fR
+\fBfsck\&.\fR\fI<msg\-id>\fR
 value will cause fsck to die, but doing the same for
-\fBreceive\&.fsck\&.<msg\-id>\fR
+\fBreceive\&.fsck\&.\fR\fI<msg\-id>\fR
 and
-\fBfetch\&.fsck\&.<msg\-id>\fR
+\fBfetch\&.fsck\&.\fR\fI<msg\-id>\fR
 will only cause git to warn\&.
 .sp
 See the
-\fBFsck Messages\fR
+\fBFsck\fR
+\fBMessages\fR
 section of
 \fBgit-fsck\fR(1)
 for supported values of
-\fB<msg\-id>\fR\&.
+\fI<msg\-id>\fR\&.
 .RE
 .PP
 fsck\&.skipList
@@ -205,7 +206,7 @@ The path to a list of object names (i\&.e\&. one unabbreviated SHA\-1 per line) 
 This feature is useful when an established project should be accepted despite early commits containing errors that can be safely ignored, such as invalid committer email addresses\&. Note: corrupt objects cannot be skipped with this setting\&.
 .sp
 Like
-\fBfsck\&.<msg\-id>\fR
+\fBfsck\&.\fR\fI<msg\-id>\fR
 this variable has corresponding
 \fBreceive\&.fsck\&.skipList\fR
 and
@@ -258,7 +259,7 @@ The database has an object whose hash doesn\(cqt match the object database value
 .RE
 .SH "FSCK MESSAGES"
 .sp
-The following lists the types of errors \fBgit fsck\fR detects and what each error means, with their default severity\&. The severity of the error, other than those that are marked as "(FATAL)", can be tweaked by setting the corresponding \fBfsck\&.<msg\-id>\fR configuration variable\&.
+The following lists the types of errors \fBgit\fR \fBfsck\fR detects and what each error means, with their default severity\&. The severity of the error, other than those that are marked as "(FATAL)", can be tweaked by setting the corresponding \fBfsck\&.\fR\fI<msg\-id>\fR configuration variable\&.
 .PP
 \fBbadDate\fR
 .RS 4
@@ -353,62 +354,53 @@ The following lists the types of errors \fBgit fsck\fR detects and what each err
 .PP
 \fBgitattributesBlob\fR
 .RS 4
-(ERROR) A non\-blob found at
-\fB\&.gitattributes\fR\&.
+(ERROR) A non\-blob found at \&.\fBgitattributes\fR\&.
 .RE
 .PP
 \fBgitattributesLarge\fR
 .RS 4
-(ERROR) The
-\fB\&.gitattributes\fR
+(ERROR) The \&.\fBgitattributes\fR
 blob is too large\&.
 .RE
 .PP
 \fBgitattributesLineLength\fR
 .RS 4
-(ERROR) The
-\fB\&.gitattributes\fR
+(ERROR) The \&.\fBgitattributes\fR
 blob contains too long lines\&.
 .RE
 .PP
 \fBgitattributesMissing\fR
 .RS 4
-(ERROR) Unable to read
-\fB\&.gitattributes\fR
+(ERROR) Unable to read \&.\fBgitattributes\fR
 blob\&.
 .RE
 .PP
 \fBgitattributesSymlink\fR
 .RS 4
-(INFO)
-\fB\&.gitattributes\fR
+(INFO) \&.\fBgitattributes\fR
 is a symlink\&.
 .RE
 .PP
 \fBgitignoreSymlink\fR
 .RS 4
-(INFO)
-\fB\&.gitignore\fR
+(INFO) \&.\fBgitignore\fR
 is a symlink\&.
 .RE
 .PP
 \fBgitmodulesBlob\fR
 .RS 4
-(ERROR) A non\-blob found at
-\fB\&.gitmodules\fR\&.
+(ERROR) A non\-blob found at \&.\fBgitmodules\fR\&.
 .RE
 .PP
 \fBgitmodulesLarge\fR
 .RS 4
-(ERROR) The
-\fB\&.gitmodules\fR
+(ERROR) The \&.\fBgitmodules\fR
 file is too large to parse\&.
 .RE
 .PP
 \fBgitmodulesMissing\fR
 .RS 4
-(ERROR) Unable to read
-\fB\&.gitmodules\fR
+(ERROR) Unable to read \&.\fBgitmodules\fR
 blob\&.
 .RE
 .PP
@@ -419,24 +411,21 @@ blob\&.
 .PP
 \fBgitmodulesParse\fR
 .RS 4
-(INFO) Could not parse
-\fB\&.gitmodules\fR
+(INFO) Could not parse \&.\fBgitmodules\fR
 blob\&.
 .RE
 .sp
-\fBgitmodulesLarge\fR; (ERROR) \fB\&.gitmodules\fR blob is too large to parse\&.
+\fBgitmodulesLarge\fR; (ERROR) \&.\fBgitmodules\fR blob is too large to parse\&.
 .PP
 \fBgitmodulesPath\fR
 .RS 4
-(ERROR)
-\fB\&.gitmodules\fR
+(ERROR) \&.\fBgitmodules\fR
 path is invalid\&.
 .RE
 .PP
 \fBgitmodulesSymlink\fR
 .RS 4
-(ERROR)
-\fB\&.gitmodules\fR
+(ERROR) \&.\fBgitmodules\fR
 is a symlink\&.
 .RE
 .PP
@@ -452,20 +441,17 @@ is a symlink\&.
 .PP
 \fBhasDot\fR
 .RS 4
-(WARN) A tree contains an entry named
-\fB\&.\fR\&.
+(WARN) A tree contains an entry named \&.\&.
 .RE
 .PP
 \fBhasDotdot\fR
 .RS 4
-(WARN) A tree contains an entry named
-\fB\&.\&.\fR\&.
+(WARN) A tree contains an entry named \&.\&.\&.
 .RE
 .PP
 \fBhasDotgit\fR
 .RS 4
-(WARN) A tree contains an entry named
-\fB\&.git\fR\&.
+(WARN) A tree contains an entry named \&.\fBgit\fR\&.
 .RE
 .PP
 \fBlargePathname\fR
@@ -477,8 +463,7 @@ contains a colon, that value is used as the maximum allowable length (e\&.g\&., 
 .PP
 \fBmailmapSymlink\fR
 .RS 4
-(INFO)
-\fB\&.mailmap\fR
+(INFO) \&.\fBmailmap\fR
 is a symlink\&.
 .RE
 .PP

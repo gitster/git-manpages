@@ -2,12 +2,12 @@
 .\"     Title: git-update-index
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-06
+.\"      Date: 2024-10-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0
+.\"    Source: Git 2.47.0.72.gef8ce8f3d4
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-INDEX" "1" "2024-10-06" "Git 2\&.47\&.0" "Git Manual"
+.TH "GIT\-UPDATE\-INDEX" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -200,7 +200,9 @@ Report what is being added and removed from the index\&.
 \-\-index\-version <n>
 .RS 4
 Write the resulting index out in the named on\-disk format version\&. Supported versions are 2, 3, and 4\&. The current default version is 2 or 3, depending on whether extra features are used, such as
-\fBgit add \-N\fR\&. With
+\fBgit\fR
+\fBadd\fR
+\fB\-N\fR\&. With
 \fB\-\-verbose\fR, also report the version the index file uses before and after this command\&.
 .sp
 Version 4 performs a simple pathname compression that reduces index size by 30%\-50% on large repositories, which results in faster load time\&. Git supports it since version 1\&.8\&.0, released in October 2012, and support for it was added to libgit2 in 2016 and to JGit in 2020\&. Older versions of this manual page called it "relatively young", but it should be considered mature technology these days\&.
@@ -283,8 +285,7 @@ Do not interpret any more arguments as options\&.
 .RS 4
 Files to act on\&. Note that files beginning with
 \fI\&.\fR
-are discarded\&. This includes
-\fB\&./file\fR
+are discarded\&. This includes \&.\fB/file\fR
 and
 \fBdir/\&./file\fR\&. If you don\(cqt want this, then use cleaner names\&. The same applies to directories ending
 \fI/\fR
@@ -330,7 +331,8 @@ Both \fB\-\-cacheinfo\fR and \fB\-\-info\-only\fR behave similarly: the index is
 mode SP type SP sha1 TAB path
 .sp
 This format is to stuff
-\fBgit ls\-tree\fR
+\fBgit\fR
+\fBls\-tree\fR
 output into the index\&.
 .RE
 .sp
@@ -360,7 +362,8 @@ output\&.
 mode SP sha1 TAB path
 .sp
 This format is no longer produced by any Git command, but is and will continue to be supported by
-\fBupdate\-index \-\-index\-info\fR\&.
+\fBupdate\-index\fR
+\fB\-\-index\-info\fR\&.
 .RE
 .sp
 To place a higher stage entry to the index, the path should first be removed by feeding a mode=0 entry for the path, and then feeding necessary input lines in the third format\&.
@@ -408,11 +411,11 @@ $ git ls\-files \-s
 .\}
 .SH "USING \(lqASSUME UNCHANGED\(rq BIT"
 .sp
-Many operations in Git depend on your filesystem to have an efficient \fBlstat(2)\fR implementation, so that \fBst_mtime\fR information for working tree files can be cheaply checked to see if the file contents have changed from the version recorded in the index file\&. Unfortunately, some filesystems have inefficient \fBlstat(2)\fR\&. If your filesystem is one of them, you can set "assume unchanged" bit to paths you have not changed to cause Git not to do this check\&. Note that setting this bit on a path does not mean Git will check the contents of the file to see if it has changed \(em it makes Git to omit any checking and assume it has \fBnot\fR changed\&. When you make changes to working tree files, you have to explicitly tell Git about it by dropping "assume unchanged" bit, either before or after you modify them\&.
+Many operations in Git depend on your filesystem to have an efficient \fBlstat\fR(\fB2\fR) implementation, so that \fBst_mtime\fR information for working tree files can be cheaply checked to see if the file contents have changed from the version recorded in the index file\&. Unfortunately, some filesystems have inefficient \fBlstat\fR(\fB2\fR)\&. If your filesystem is one of them, you can set "assume unchanged" bit to paths you have not changed to cause Git not to do this check\&. Note that setting this bit on a path does not mean Git will check the contents of the file to see if it has changed \(em it makes Git to omit any checking and assume it has \fBnot\fR changed\&. When you make changes to working tree files, you have to explicitly tell Git about it by dropping "assume unchanged" bit, either before or after you modify them\&.
 .sp
-In order to set "assume unchanged" bit, use \fB\-\-assume\-unchanged\fR option\&. To unset, use \fB\-\-no\-assume\-unchanged\fR\&. To see which files have the "assume unchanged" bit set, use \fBgit ls\-files \-v\fR (see \fBgit-ls-files\fR(1))\&.
+In order to set "assume unchanged" bit, use \fB\-\-assume\-unchanged\fR option\&. To unset, use \fB\-\-no\-assume\-unchanged\fR\&. To see which files have the "assume unchanged" bit set, use \fBgit\fR \fBls\-files\fR \fB\-v\fR (see \fBgit-ls-files\fR(1))\&.
 .sp
-The command looks at \fBcore\&.ignorestat\fR configuration variable\&. When this is true, paths updated with \fBgit update\-index paths\&.\&.\&.\fR and paths updated with other Git commands that update both index and working tree (e\&.g\&. \fIgit apply \-\-index\fR, \fIgit checkout\-index \-u\fR, and \fIgit read\-tree \-u\fR) are automatically marked as "assume unchanged"\&. Note that "assume unchanged" bit is \fBnot\fR set if \fBgit update\-index \-\-refresh\fR finds the working tree file matches the index (use \fBgit update\-index \-\-really\-refresh\fR if you want to mark them as "assume unchanged")\&.
+The command looks at \fBcore\&.ignorestat\fR configuration variable\&. When this is true, paths updated with \fBgit\fR \fBupdate\-index\fR \fBpaths\&.\&.\fR\&. and paths updated with other Git commands that update both index and working tree (e\&.g\&. \fIgit apply \-\-index\fR, \fIgit checkout\-index \-u\fR, and \fIgit read\-tree \-u\fR) are automatically marked as "assume unchanged"\&. Note that "assume unchanged" bit is \fBnot\fR set if \fBgit\fR \fBupdate\-index\fR \fB\-\-refresh\fR finds the working tree file matches the index (use \fBgit\fR \fBupdate\-index\fR \fB\-\-really\-refresh\fR if you want to mark them as "assume unchanged")\&.
 .sp
 Sometimes users confuse the assume\-unchanged bit with the skip\-worktree bit\&. See the final paragraph in the "Skip\-worktree bit" section below for an explanation of the differences\&.
 .SH "EXAMPLES"
@@ -495,9 +498,9 @@ Note that not all git commands will pay attention to this bit, and some only par
 .sp
 The update\-index flags and the read\-tree capabilities relating to the skip\-worktree bit predated the introduction of the \fBgit-sparse-checkout\fR(1) command, which provides a much easier way to configure and handle the skip\-worktree bits\&. If you want to reduce your working tree to only deal with a subset of the files in the repository, we strongly encourage the use of \fBgit-sparse-checkout\fR(1) in preference to the low\-level update\-index and read\-tree primitives\&.
 .sp
-The primary purpose of the skip\-worktree bit is to enable sparse checkouts, i\&.e\&. to have working directories with only a subset of paths present\&. When the skip\-worktree bit is set, Git commands (such as \fBswitch\fR, \fBpull\fR, \fBmerge\fR) will avoid writing these files\&. However, these commands will sometimes write these files anyway in important cases such as conflicts during a merge or rebase\&. Git commands will also avoid treating the lack of such files as an intentional deletion; for example \fBgit add \-u\fR will not stage a deletion for these files and \fBgit commit \-a\fR will not make a commit deleting them either\&.
+The primary purpose of the skip\-worktree bit is to enable sparse checkouts, i\&.e\&. to have working directories with only a subset of paths present\&. When the skip\-worktree bit is set, Git commands (such as \fBswitch\fR, \fBpull\fR, \fBmerge\fR) will avoid writing these files\&. However, these commands will sometimes write these files anyway in important cases such as conflicts during a merge or rebase\&. Git commands will also avoid treating the lack of such files as an intentional deletion; for example \fBgit\fR \fBadd\fR \fB\-u\fR will not stage a deletion for these files and \fBgit\fR \fBcommit\fR \fB\-a\fR will not make a commit deleting them either\&.
 .sp
-Although this bit looks similar to assume\-unchanged bit, its goal is different\&. The assume\-unchanged bit is for leaving the file in the working tree but having Git omit checking it for changes and presuming that the file has not been changed (though if it can determine without stat\(cqing the file that it has changed, it is free to record the changes)\&. skip\-worktree tells Git to ignore the absence of the file, avoid updating it when possible with commands that normally update much of the working directory (e\&.g\&. \fBcheckout\fR, \fBswitch\fR, \fBpull\fR, etc\&.), and not have its absence be recorded in commits\&. Note that in sparse checkouts (setup by \fBgit sparse\-checkout\fR or by configuring core\&.sparseCheckout to true), if a file is marked as skip\-worktree in the index but is found in the working tree, Git will clear the skip\-worktree bit for that file\&.
+Although this bit looks similar to assume\-unchanged bit, its goal is different\&. The assume\-unchanged bit is for leaving the file in the working tree but having Git omit checking it for changes and presuming that the file has not been changed (though if it can determine without stat\(cqing the file that it has changed, it is free to record the changes)\&. skip\-worktree tells Git to ignore the absence of the file, avoid updating it when possible with commands that normally update much of the working directory (e\&.g\&. \fBcheckout\fR, \fBswitch\fR, \fBpull\fR, etc\&.), and not have its absence be recorded in commits\&. Note that in sparse checkouts (setup by \fBgit\fR \fBsparse\-checkout\fR or by configuring core\&.sparseCheckout to true), if a file is marked as skip\-worktree in the index but is found in the working tree, Git will clear the skip\-worktree bit for that file\&.
 .SH "SPLIT INDEX"
 .sp
 This mode is designed for repositories with very large indexes, and aims at reducing the time it takes to repeatedly write these indexes\&.
@@ -511,15 +514,15 @@ Each time a new shared index file is created, the old shared index files are del
 To avoid deleting a shared index file that is still used, its modification time is updated to the current time every time a new split index based on the shared index file is either created or read from\&.
 .SH "UNTRACKED CACHE"
 .sp
-This cache is meant to speed up commands that involve determining untracked files such as \fBgit status\fR\&.
+This cache is meant to speed up commands that involve determining untracked files such as \fBgit\fR \fBstatus\fR\&.
 .sp
 This feature works by recording the mtime of the working tree directories and then omitting reading directories and stat calls against files in those directories whose mtime hasn\(cqt changed\&. For this to work the underlying operating system and file system must change the \fBst_mtime\fR field of directories if files in the directory are added, modified or deleted\&.
 .sp
 You can test whether the filesystem supports that with the \fB\-\-test\-untracked\-cache\fR option\&. The \fB\-\-untracked\-cache\fR option used to implicitly perform that test in older versions of Git, but that\(cqs no longer the case\&.
 .sp
-If you want to enable (or disable) this feature, it is easier to use the \fBcore\&.untrackedCache\fR configuration variable (see \fBgit-config\fR(1)) than using the \fB\-\-untracked\-cache\fR option to \fBgit update\-index\fR in each repository, especially if you want to do so across all repositories you use, because you can set the configuration variable to \fBtrue\fR (or \fBfalse\fR) in your \fB$HOME/\&.gitconfig\fR just once and have it affect all repositories you touch\&.
+If you want to enable (or disable) this feature, it is easier to use the \fBcore\&.untrackedCache\fR configuration variable (see \fBgit-config\fR(1)) than using the \fB\-\-untracked\-cache\fR option to \fBgit\fR \fBupdate\-index\fR in each repository, especially if you want to do so across all repositories you use, because you can set the configuration variable to \fBtrue\fR (or \fBfalse\fR) in your \fB$HOME/\&.gitconfig\fR just once and have it affect all repositories you touch\&.
 .sp
-When the \fBcore\&.untrackedCache\fR configuration variable is changed, the untracked cache is added to or removed from the index the next time a command reads the index; while when \fB\-\-[no\-|force\-]untracked\-cache\fR are used, the untracked cache is immediately added to or removed from the index\&.
+When the \fBcore\&.untrackedCache\fR configuration variable is changed, the untracked cache is added to or removed from the index the next time a command reads the index; while when \fB\-\-\fR[\fBno\-\fR|\fBforce\-\fR]\fBuntracked\-cache\fR are used, the untracked cache is immediately added to or removed from the index\&.
 .sp
 Before 2\&.17, the untracked cache had a bug where replacing a directory with a symlink to another directory could cause it to incorrectly show files tracked by git as untracked\&. See the "status: add a failing test showing a core\&.untrackedCache bug" commit to git\&.git\&. A workaround for that is (and this might work for other undiscovered bugs in the future):
 .sp
@@ -546,9 +549,9 @@ It enables git to work together with a file system monitor (see \fBgit-fsmonitor
 .sp
 When used in conjunction with the untracked cache, it can further improve performance by avoiding the cost of scanning the entire working directory looking for new files\&.
 .sp
-If you want to enable (or disable) this feature, it is easier to use the \fBcore\&.fsmonitor\fR configuration variable (see \fBgit-config\fR(1)) than using the \fB\-\-fsmonitor\fR option to \fBgit update\-index\fR in each repository, especially if you want to do so across all repositories you use, because you can set the configuration variable in your \fB$HOME/\&.gitconfig\fR just once and have it affect all repositories you touch\&.
+If you want to enable (or disable) this feature, it is easier to use the \fBcore\&.fsmonitor\fR configuration variable (see \fBgit-config\fR(1)) than using the \fB\-\-fsmonitor\fR option to \fBgit\fR \fBupdate\-index\fR in each repository, especially if you want to do so across all repositories you use, because you can set the configuration variable in your \fB$HOME/\&.gitconfig\fR just once and have it affect all repositories you touch\&.
 .sp
-When the \fBcore\&.fsmonitor\fR configuration variable is changed, the file system monitor is added to or removed from the index the next time a command reads the index\&. When \fB\-\-[no\-]fsmonitor\fR are used, the file system monitor is immediately added to or removed from the index\&.
+When the \fBcore\&.fsmonitor\fR configuration variable is changed, the file system monitor is added to or removed from the index the next time a command reads the index\&. When \fB\-\-\fR[\fBno\-\fR]\fBfsmonitor\fR are used, the file system monitor is immediately added to or removed from the index\&.
 .SH "CONFIGURATION"
 .sp
 The command honors \fBcore\&.filemode\fR configuration variable\&. If your repository is on a filesystem whose executable bits are unreliable, this should be set to \fIfalse\fR (see \fBgit-config\fR(1))\&. This causes the command to ignore differences in file modes recorded in the index and the file mode on the filesystem if they differ only on executable bit\&. On such an unfortunate filesystem, you may need to use \fIgit update\-index \-\-chmod=\fR\&.
