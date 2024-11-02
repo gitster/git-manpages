@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-10
+.\"      Date: 2024-11-01
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0.72.gef8ce8f3d4
+.\"    Source: Git 2.47.0.229.g8f8d6eee53
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024-11-01" "Git 2\&.47\&.0\&.229\&.g8f8d6e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,7 +35,7 @@ git-config \- Get and set repository or global options
 \fIgit config list\fR [<file\-option>] [<display\-option>] [\-\-includes]
 \fIgit config get\fR [<file\-option>] [<display\-option>] [\-\-includes] [\-\-all] [\-\-regexp] [\-\-value=<value>] [\-\-fixed\-value] [\-\-default=<default>] <name>
 \fIgit config set\fR [<file\-option>] [\-\-type=<type>] [\-\-all] [\-\-value=<value>] [\-\-fixed\-value] <name> <value>
-\fIgit config unset\fR [<file\-option>] [\-\-all] [\-\-value=<value>] [\-\-fixed\-value] <name> <value>
+\fIgit config unset\fR [<file\-option>] [\-\-all] [\-\-value=<value>] [\-\-fixed\-value] <name>
 \fIgit config rename\-section\fR [<file\-option>] <old\-name> <new\-name>
 \fIgit config remove\-section\fR [<file\-option>] <name>
 \fIgit config edit\fR [<file\-option>]
@@ -9273,6 +9273,17 @@ option of
 \fBgit-fetch\fR(1)\&.
 .RE
 .PP
+remote\&.<name>\&.serverOption
+.RS 4
+The default set of server options used when fetching from this remote\&. These server options can be overridden by the
+\fB\-\-server\-option=\fR
+command line arguments\&.
+.sp
+This is a multi\-valued variable, and an empty value can be used in a higher priority configuration file (e\&.g\&. \&.\fBgit/config\fR
+in a repository) to clear the values inherited from a lower priority configuration files (e\&.g\&.
+\fB$HOME/\&.gitconfig\fR)\&.
+.RE
+.PP
 remotes\&.<group>
 .RS 4
 The list of remotes which are fetched by "git remote update <group>"\&. See
@@ -10577,8 +10588,14 @@ uploadpack\&.allowAnySHA1InWant
 .RS 4
 Allow
 \fBupload\-pack\fR
-to accept a fetch request that asks for any object at all\&. Defaults to
-\fBfalse\fR\&.
+to accept a fetch request that asks for any object at all\&. It implies
+\fBuploadpack\&.allowTipSHA1InWant\fR
+and
+\fBuploadpack\&.allowReachableSHA1InWant\fR\&. If set to
+\fBtrue\fR
+it will enable both of them, it set to
+\fBfalse\fR
+it will disable both of them\&. By default not set\&.
 .RE
 .PP
 uploadpack\&.keepAlive

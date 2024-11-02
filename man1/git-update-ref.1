@@ -2,12 +2,12 @@
 .\"     Title: git-update-ref
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-10-10
+.\"      Date: 2024-11-01
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0.72.gef8ce8f3d4
+.\"    Source: Git 2.47.0.229.g8f8d6eee53
 .\"  Language: English
 .\"
-.TH "GIT\-UPDATE\-REF" "1" "2024-10-10" "Git 2\&.47\&.0\&.72\&.gef8ce8f" "Git Manual"
+.TH "GIT\-UPDATE\-REF" "1" "2024-11-01" "Git 2\&.47\&.0\&.229\&.g8f8d6e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,39 +40,11 @@ Given two arguments, stores the <new\-oid> in the <ref>, possibly dereferencing 
 .sp
 Given three arguments, stores the <new\-oid> in the <ref>, possibly dereferencing the symbolic refs, after verifying that the current value of the <ref> matches <old\-oid>\&. E\&.g\&. \fBgit\fR \fBupdate\-ref\fR \fBrefs/heads/master\fR \fI<new\-oid>\fR \fI<old\-oid>\fR updates the master branch head to <new\-oid> only if its current value is <old\-oid>\&. You can specify 40 "0" or an empty string as <old\-oid> to make sure that the ref you are creating does not exist\&.
 .sp
-It also allows a "ref" file to be a symbolic pointer to another ref file by starting with the four\-byte header sequence of "ref:"\&.
-.sp
-More importantly, it allows the update of a ref file to follow these symbolic pointers, whether they are symlinks or these "regular file symbolic refs"\&. It follows \fBreal\fR symlinks only if they start with "refs/": otherwise it will just try to read them and update them as a regular file (i\&.e\&. it will allow the filesystem to follow them, but will overwrite such a symlink to somewhere else with a regular filename)\&.
+The final arguments are object names; this command without any options does not support updating a symbolic ref to point to another ref (see \fBgit-symbolic-ref\fR(1))\&. But \fBgit\fR \fBupdate\-ref\fR \fB\-\-stdin\fR does have the \fBsymref\-\fR* commands so that regular refs and symbolic refs can be committed in the same transaction\&.
 .sp
 If \-\-no\-deref is given, <ref> itself is overwritten, rather than the result of following the symbolic pointers\&.
 .sp
-In general, using
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git update\-ref HEAD "$head"
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-should be a \fIlot\fR safer than doing
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-echo "$head" > "$GIT_DIR/HEAD"
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-both from a symlink following standpoint \fBand\fR an error checking standpoint\&. The "refs/" rule for symlinks means that symlinks that point to "outside" the tree are safe: they\(cqll be followed for reading but not for writing (so we\(cqll never write through a ref symlink to some other tree, if you have copied a whole archive by creating a symlink tree)\&.
-.sp
-With \fB\-d\fR flag, it deletes the named <ref> after verifying it still contains <old\-oid>\&.
+With \fB\-d\fR, it deletes the named <ref> after verifying that it still contains <old\-oid>\&.
 .sp
 With \fB\-\-stdin\fR, update\-ref reads instructions from standard input and performs all modifications together\&. Specify commands of the form:
 .sp
@@ -228,6 +200,14 @@ oldsha1 SP newsha1 SP committer TAB message LF
 Where all fields are as described above and "message" is the value supplied to the \-m option\&.
 .sp
 An update will fail (without changing <ref>) if the current user is unable to create a new log file, append to the existing log file or does not have committer information available\&.
+.SH "NOTES"
+.sp
+Symbolic refs were initially implemented using symbolic links\&. This is now deprecated since not all filesystems support symbolic links\&.
+.sp
+This command follows \fBreal\fR symlinks only if they start with "refs/": otherwise it will just try to read them and update them as a regular file (i\&.e\&. it will allow the filesystem to follow them, but will overwrite such a symlink to somewhere else with a regular filename)\&.
+.SH "SEE ALSO"
+.sp
+\fBgit-symbolic-ref\fR(1)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
