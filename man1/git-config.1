@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-11-01
+.\"      Date: 2024-11-08
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0.229.g8f8d6eee53
+.\"    Source: Git 2.47.0.245.gfacbe4f633
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2024-11-01" "Git 2\&.47\&.0\&.229\&.g8f8d6e" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2024-11-08" "Git 2\&.47\&.0\&.245\&.gfacbe4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3365,7 +3365,8 @@ This value is true by default in a repository that has a working directory assoc
 .PP
 core\&.repositoryFormatVersion
 .RS 4
-Internal variable identifying the repository format and layout version\&.
+Internal variable identifying the repository format and layout version\&. See
+\fBgitrepository-layout\fR(5)\&.
 .RE
 .PP
 core\&.sharedRepository
@@ -4751,16 +4752,45 @@ argument must be provided explicitly for the
 to be used\&.
 .RE
 .PP
-extensions\&.objectFormat
+extensions\&.*
+.RS 4
+Unless otherwise stated, is an error to specify an extension if
+\fBcore\&.repositoryFormatVersion\fR
+is not
+\fB1\fR\&. See
+\fBgitrepository-layout\fR(5)\&.
+.PP
+compatObjectFormat
+.RS 4
+Specify a compatibility hash algorithm to use\&. The acceptable values are
+\fBsha1\fR
+and
+\fBsha256\fR\&. The value specified must be different from the value of
+\fBextensions\&.objectFormat\fR\&. This allows client level interoperability between git repositories whose objectFormat matches this compatObjectFormat\&. In particular when fully implemented the pushes and pulls from a repository in whose objectFormat matches compatObjectFormat\&. As well as being able to use oids encoded in compatObjectFormat in addition to oids encoded with objectFormat to locally specify objects\&.
+.RE
+.PP
+noop
+.RS 4
+This extension does not change git\(cqs behavior at all\&. It is useful only for testing format\-1 compatibility\&.
+.sp
+For historical reasons, this extension is respected regardless of the
+\fBcore\&.repositoryFormatVersion\fR
+setting\&.
+.RE
+.PP
+noop\-v1
+.RS 4
+This extension does not change git\(cqs behavior at all\&. It is useful only for testing format\-1 compatibility\&.
+.RE
+.PP
+objectFormat
 .RS 4
 Specify the hash algorithm to use\&. The acceptable values are
 \fBsha1\fR
 and
 \fBsha256\fR\&. If not specified,
 \fBsha1\fR
-is assumed\&. It is an error to specify this key unless
-\fBcore\&.repositoryFormatVersion\fR
-is 1\&.
+is assumed\&.
 .sp
 Note that this setting should only be set by
 \fBgit-init\fR(1)
@@ -4768,15 +4798,32 @@ or
 \fBgit-clone\fR(1)\&. Trying to change it after initialization will not work and will produce hard\-to\-diagnose issues\&.
 .RE
 .PP
-extensions\&.compatObjectFormat
+partialClone
 .RS 4
-Specify a compatibility hash algorithm to use\&. The acceptable values are
-\fBsha1\fR
-and
-\fBsha256\fR\&. The value specified must be different from the value of extensions\&.objectFormat\&. This allows client level interoperability between git repositories whose objectFormat matches this compatObjectFormat\&. In particular when fully implemented the pushes and pulls from a repository in whose objectFormat matches compatObjectFormat\&. As well as being able to use oids encoded in compatObjectFormat in addition to oids encoded with objectFormat to locally specify objects\&.
+When enabled, indicates that the repo was created with a partial clone (or later performed a partial fetch) and that the remote may have omitted sending certain unwanted objects\&. Such a remote is called a "promisor remote" and it promises that all such omitted objects can be fetched from it in the future\&.
+.sp
+The value of this key is the name of the promisor remote\&.
+.sp
+For historical reasons, this extension is respected regardless of the
+\fBcore\&.repositoryFormatVersion\fR
+setting\&.
 .RE
 .PP
-extensions\&.refStorage
+preciousObjects
+.RS 4
+If enabled, indicates that objects in the repository MUST NOT be deleted (e\&.g\&., by
+\fBgit\-prune\fR
+or
+\fBgit\fR
+\fBrepack\fR
+\fB\-d\fR)\&.
+.sp
+For historical reasons, this extension is respected regardless of the
+\fBcore\&.repositoryFormatVersion\fR
+setting\&.
+.RE
+.PP
+refStorage
 .RS 4
 Specify the ref storage format to use\&. The acceptable values are:
 .sp
@@ -4802,19 +4849,15 @@ for loose files with packed\-refs\&. This is the default\&.
 .\}
 \fBreftable\fR
 for the reftable format\&. This format is experimental and its internals are subject to change\&.
-.sp
-It is an error to specify this key unless
-\fBcore\&.repositoryFormatVersion\fR
-is 1\&.
+.RE
 .sp
 Note that this setting should only be set by
 \fBgit-init\fR(1)
 or
 \fBgit-clone\fR(1)\&. Trying to change it after initialization will not work and will produce hard\-to\-diagnose issues\&.
 .RE
-.RE
 .PP
-extensions\&.worktreeConfig
+worktreeConfig
 .RS 4
 If enabled, then worktrees will load config settings from the
 \fB$GIT_DIR/config\&.worktree\fR
@@ -4831,8 +4874,7 @@ equal to
 \fBconfig\&.worktree\fR
 file will override settings from any other config files\&.
 .sp
-When enabling
-\fBextensions\&.worktreeConfig\fR, you must be careful to move certain values from the common config file to the main working tree\(cqs
+When enabling this extension, you must be careful to move certain values from the common config file to the main working tree\(cqs
 \fBconfig\&.worktree\fR
 file, if present:
 .sp
@@ -4865,6 +4907,7 @@ is true, then it must be moved from
 \fB$GIT_COMMON_DIR/config\fR
 to
 \fB$GIT_COMMON_DIR/config\&.worktree\fR\&.
+.RE
 .sp
 It may also be beneficial to adjust the locations of
 \fBcore\&.sparseCheckout\fR
@@ -4873,16 +4916,13 @@ and
 depending on your desire for customizable sparse\-checkout settings for each worktree\&. By default, the
 \fBgit\fR
 \fBsparse\-checkout\fR
-builtin enables
-\fBextensions\&.worktreeConfig\fR, assigns these config values on a per\-worktree basis, and uses the
+builtin enables this extension, assigns these config values on a per\-worktree basis, and uses the
 \fB$GIT_DIR/info/sparse\-checkout\fR
 file to specify the sparsity for each worktree independently\&. See
 \fBgit-sparse-checkout\fR(1)
 for more details\&.
 .sp
-For historical reasons,
-\fBextensions\&.worktreeConfig\fR
-is respected regardless of the
++ For historical reasons, this extension is respected regardless of the
 \fBcore\&.repositoryFormatVersion\fR
 setting\&.
 .RE
