@@ -2,12 +2,12 @@
 .\"     Title: git-bundle
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-11-25
+.\"      Date: 2024-11-27
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0.336.g6ea2d9d271
+.\"    Source: Git 2.47.0.365.gcc01bad4a9
 .\"  Language: English
 .\"
-.TH "GIT\-BUNDLE" "1" "2024-11-25" "Git 2\&.47\&.0\&.336\&.g6ea2d9" "Git Manual"
+.TH "GIT\-BUNDLE" "1" "2024-11-27" "Git 2\&.47\&.0\&.365\&.gcc01ba" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,11 +42,9 @@ git-bundle \- Move objects and refs by archive
 .sp
 Create, unpack, and manipulate "bundle" files\&. Bundles are used for the "offline" transfer of Git objects without an active "server" sitting on the other side of the network connection\&.
 .sp
-They can be used to create both incremental and full backups of a repository, and to relay the state of the references in one repository to another\&.
+They can be used to create both incremental and full backups of a repository (see the "full backup" example in "EXAMPLES"), and to relay the state of the references in one repository to another (see the second example)\&.
 .sp
 Git commands that fetch or otherwise "read" via protocols such as \fBssh://\fR and \fBhttps://\fR can also operate on bundle files\&. It is possible \fBgit-clone\fR(1) a new repository from a bundle, to use \fBgit-fetch\fR(1) to fetch from one, and to list the references contained within it with \fBgit-ls-remote\fR(1)\&. There\(cqs no corresponding "write" support, i\&.e\&.a \fIgit push\fR into a bundle is not supported\&.
-.sp
-See the "EXAMPLES" section below for examples of how to use bundles\&.
 .SH "BUNDLE FORMAT"
 .sp
 Bundles are \&.\fBpack\fR files (see \fBgit-pack-objects\fR(1)) with a header indicating what references are contained within the bundle\&.
@@ -142,7 +140,7 @@ This flag makes the command not to report its progress on the standard error str
 .RE
 .SH "SPECIFYING REFERENCES"
 .sp
-Revisions must be accompanied by reference names to be packaged in a bundle\&.
+Revisions must be accompanied by reference names to be packaged in a bundle\&. Alternatively \fB\-\-all\fR can be used to package all refs\&.
 .sp
 More than one reference may be packaged, and more than one set of prerequisite objects can be specified\&. The objects packaged are those not contained in the union of the prerequisites\&.
 .sp
@@ -222,12 +220,62 @@ A self\-contained bundle without any prerequisites can be extracted into anywher
 .sp
 It is okay to err on the side of caution, causing the bundle file to contain objects already in the destination, as these are ignored when unpacking at the destination\&.
 .sp
-If you want to match \fBgit\fR \fBclone\fR \fB\-\-mirror\fR, which would include your refs such as \fBrefs/remotes/\fR*, use \fB\-\-all\fR\&. If you want to provide the same set of refs that a clone directly from the source repository would get, use \fB\-\-branches\fR \fB\-\-tags\fR for the \fI<git\-rev\-list\-args>\fR\&.
+If you want to provide the same set of refs that a clone directly from the source repository would get, use \fB\-\-branches\fR \fB\-\-tags\fR for the \fI<git\-rev\-list\-args>\fR\&.
 .sp
 The \fIgit bundle verify\fR command can be used to check whether your recipient repository has the required prerequisite commits for a bundle\&.
 .SH "EXAMPLES"
 .sp
-Assume you want to transfer the history from a repository R1 on machine A to another repository R2 on machine B\&. For whatever reason, direct connection between A and B is not allowed, but we can move data from A to B via some mechanism (CD, email, etc\&.)\&. We want to update R2 with development made on the branch master in R1\&.
+We\(cqll discuss two cases:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Taking a full backup of a repository
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Transferring the history of a repository to another machine when the two machines have no direct connection
+.RE
+.sp
+First let\(cqs consider a full backup of the repository\&. The following command will take a full backup of the repository in the sense that all refs are included in the bundle:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git bundle create backup\&.bundle \-\-all
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+But note again that this is only for the refs, i\&.e\&. you will only include refs and commits reachable from those refs\&. You will not include other local state, such as the contents of the index, working tree, the stash, per\-repository configuration, hooks, etc\&.
+.sp
+You can later recover that repository by using for example \fBgit-clone\fR(1):
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git clone backup\&.bundle <new directory>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+For the next example, assume you want to transfer the history from a repository R1 on machine A to another repository R2 on machine B\&. For whatever reason, direct connection between A and B is not allowed, but we can move data from A to B via some mechanism (CD, email, etc\&.)\&. We want to update R2 with development made on the branch master in R1\&.
 .sp
 To bootstrap the process, you can first create a bundle that does not have any prerequisites\&. You can use a tag to remember up to what commit you last processed, in order to make it easy to later update the other repository with an incremental bundle:
 .sp
@@ -373,6 +421,13 @@ $ git ls\-remote mybundle
 .if n \{\
 .RE
 .\}
+.SH "DISCUSSION"
+.sp
+A naive way to make a full backup of a repository is to use something to the effect of \fBcp\fR \fB\-r\fR \fI<repo>\fR \fI<destination>\fR\&. This is discouraged since the repository could be written to during the copy operation\&. In turn some files at \fI<destination>\fR could be corrupted\&.
+.sp
+This is why it is recommended to use Git tooling for making repository backups, either with this command or with e\&.g\&. \fBgit-clone\fR(1)\&. But keep in mind that these tools will not help you backup state other than refs and commits\&. In other words they will not help you backup contents of the index, working tree, the stash, per\-repository configuration, hooks, etc\&.
+.sp
+See also \fBgitfaq\fR(7), section "TRANSFERS" for a discussion of the problems associated with file syncing across systems\&.
 .SH "FILE FORMAT"
 .sp
 See \fBgitformat-bundle\fR(5)\&.
