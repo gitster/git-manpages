@@ -2,12 +2,12 @@
 .\"     Title: git-fsck
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2024-11-27
+.\"      Date: 2024-12-04
 .\"    Manual: Git Manual
-.\"    Source: Git 2.47.0.365.gcc01bad4a9
+.\"    Source: Git 2.47.1.397.g23692e08c6
 .\"  Language: English
 .\"
-.TH "GIT\-FSCK" "1" "2024-11-27" "Git 2\&.47\&.0\&.365\&.gcc01ba" "Git Manual"
+.TH "GIT\-FSCK" "1" "2024-12-04" "Git 2\&.47\&.1\&.397\&.g23692e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -296,6 +296,11 @@ The following lists the types of errors \fBgit\fR \fBfsck\fR detects and what ea
 (ERROR) A commit object has a bad parent sha1\&.
 .RE
 .PP
+\fBbadRefContent\fR
+.RS 4
+(ERROR) A ref has bad content\&.
+.RE
+.PP
 \fBbadRefFiletype\fR
 .RS 4
 (ERROR) A ref has a bad file type\&.
@@ -304,6 +309,11 @@ The following lists the types of errors \fBgit\fR \fBfsck\fR detects and what ea
 \fBbadRefName\fR
 .RS 4
 (ERROR) A ref has an invalid format\&.
+.RE
+.PP
+\fBbadReferentName\fR
+.RS 4
+(ERROR) The referent name of a symref is invalid\&.
 .RE
 .PP
 \fBbadTagName\fR
@@ -566,6 +576,36 @@ line in a tag object\&.
 (WARN) Tree contains entries pointing to a null sha1\&.
 .RE
 .PP
+\fBrefMissingNewline\fR
+.RS 4
+(INFO) A loose ref that does not end with newline(LF)\&. As valid implementations of Git never created such a loose ref file, it may become an error in the future\&. Report to the
+\m[blue]\fBgit@vger\&.kernel\&.org\fR\m[]\&\s-2\u[1]\d\s+2
+mailing list if you see this error, as we need to know what tools created such a file\&.
+.RE
+.PP
+\fBsymlinkRef\fR
+.RS 4
+(INFO) A symbolic link is used as a symref\&. Report to the
+\m[blue]\fBgit@vger\&.kernel\&.org\fR\m[]\&\s-2\u[1]\d\s+2
+mailing list if you see this error, as we are assessing the feasibility of dropping the support to drop creating symbolic links as symrefs\&.
+.RE
+.PP
+\fBsymrefTargetIsNotARef\fR
+.RS 4
+(INFO) The target of a symbolic reference points neither to a root reference nor to a reference starting with "refs/"\&. Although we allow create a symref pointing to the referent which is outside the "ref" by using
+\fBgit\fR
+\fBsymbolic\-ref\fR, we may tighten the rule in the future\&. Report to the
+\m[blue]\fBgit@vger\&.kernel\&.org\fR\m[]\&\s-2\u[1]\d\s+2
+mailing list if you see this error, as we need to know what tools created such a file\&.
+.RE
+.PP
+\fBtrailingRefContent\fR
+.RS 4
+(INFO) A loose ref has trailing content\&. As valid implementations of Git never created such a loose ref file, it may become an error in the future\&. Report to the
+\m[blue]\fBgit@vger\&.kernel\&.org\fR\m[]\&\s-2\u[1]\d\s+2
+mailing list if you see this error, as we need to know what tools created such a file\&.
+.RE
+.PP
 \fBtreeNotSorted\fR
 .RS 4
 (ERROR) A tree is not properly sorted\&.
@@ -609,3 +649,9 @@ used to specify additional object database roots (usually unset)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+git@vger.kernel.org
+.RS 4
+\%mailto:git@vger.kernel.org
+.RE
