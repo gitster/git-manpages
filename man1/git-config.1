@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-02-10
+.\"      Date: 2025-02-12
 .\"    Manual: Git Manual
-.\"    Source: Git 2.48.1.291.g388218fac7
+.\"    Source: Git 2.48.1.329.ge2067b49ec
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-02-10" "Git 2\&.48\&.1\&.291\&.g388218" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-02-12" "Git 2\&.48\&.1\&.329\&.ge2067b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -6417,7 +6417,7 @@ If git detects typos and can identify exactly one valid command similar to the e
 .sp -1
 .IP \(bu 2.3
 .\}
-0 (default): show the suggested command\&.
+0, "false", "off", "no", "show": show the suggested command (default)\&.
 .RE
 .sp
 .RS 4
@@ -6428,7 +6428,7 @@ If git detects typos and can identify exactly one valid command similar to the e
 .sp -1
 .IP \(bu 2.3
 .\}
-positive number: run the suggested command after specified deciseconds (0\&.1 sec)\&.
+1, "true", "on", "yes", "immediate": run the suggested command immediately\&.
 .RE
 .sp
 .RS 4
@@ -6439,18 +6439,7 @@ positive number: run the suggested command after specified deciseconds (0\&.1 se
 .sp -1
 .IP \(bu 2.3
 .\}
-"immediate": run the suggested command immediately\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-"prompt": show the suggestion and prompt for confirmation to run the command\&.
+positive number > 1: run the suggested command after specified deciseconds (0\&.1 sec)\&.
 .RE
 .sp
 .RS 4
@@ -6462,6 +6451,17 @@ positive number: run the suggested command after specified deciseconds (0\&.1 se
 .IP \(bu 2.3
 .\}
 "never": don\(cqt run or show any suggested command\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"prompt": show the suggestion and prompt for confirmation to run the command\&.
 .RE
 .RE
 .PP
@@ -10496,6 +10496,176 @@ environment variable\&.
 trace2\&.maxFiles
 .RS 4
 Integer\&. When writing trace files to a target directory, do not write additional traces if doing so would exceed this many files\&. Instead, write a sentinel file that will block further tracing to this directory\&. Defaults to 0, which disables this check\&.
+.RE
+.PP
+trailer\&.separators
+.RS 4
+This option tells which characters are recognized as trailer separators\&. By default only
+\fI:\fR
+is recognized as a trailer separator, except that
+\fI=\fR
+is always accepted on the command line for compatibility with other git commands\&.
+.sp
+The first character given by this option will be the default character used when another separator is not specified in the config for this trailer\&.
+.sp
+For example, if the value for this option is "%=$", then only lines using the format
+\fI<key><sep><value>\fR
+with <sep> containing
+\fI%\fR,
+\fI=\fR
+or
+\fI$\fR
+and then spaces will be considered trailers\&. And
+\fI%\fR
+will be the default separator used, so by default trailers will appear like:
+\fI<key>% <value>\fR
+(one percent sign and one space will appear between the key and the value)\&.
+.RE
+.PP
+trailer\&.where
+.RS 4
+This option tells where a new trailer will be added\&.
+.sp
+This can be
+\fBend\fR, which is the default,
+\fBstart\fR,
+\fBafter\fR
+or
+\fBbefore\fR\&.
+.sp
+If it is
+\fBend\fR, then each new trailer will appear at the end of the existing trailers\&.
+.sp
+If it is
+\fBstart\fR, then each new trailer will appear at the start, instead of the end, of the existing trailers\&.
+.sp
+If it is
+\fBafter\fR, then each new trailer will appear just after the last trailer with the same <key>\&.
+.sp
+If it is
+\fBbefore\fR, then each new trailer will appear just before the first trailer with the same <key>\&.
+.RE
+.PP
+trailer\&.ifexists
+.RS 4
+This option makes it possible to choose what action will be performed when there is already at least one trailer with the same <key> in the input\&.
+.sp
+The valid values for this option are:
+\fBaddIfDifferentNeighbor\fR
+(this is the default),
+\fBaddIfDifferent\fR,
+\fBadd\fR,
+\fBreplace\fR
+or
+\fBdoNothing\fR\&.
+.sp
+With
+\fBaddIfDifferentNeighbor\fR, a new trailer will be added only if no trailer with the same (<key>, <value>) pair is above or below the line where the new trailer will be added\&.
+.sp
+With
+\fBaddIfDifferent\fR, a new trailer will be added only if no trailer with the same (<key>, <value>) pair is already in the input\&.
+.sp
+With
+\fBadd\fR, a new trailer will be added, even if some trailers with the same (<key>, <value>) pair are already in the input\&.
+.sp
+With
+\fBreplace\fR, an existing trailer with the same <key> will be deleted and the new trailer will be added\&. The deleted trailer will be the closest one (with the same <key>) to the place where the new one will be added\&.
+.sp
+With
+\fBdoNothing\fR, nothing will be done; that is no new trailer will be added if there is already one with the same <key> in the input\&.
+.RE
+.PP
+trailer\&.ifmissing
+.RS 4
+This option makes it possible to choose what action will be performed when there is not yet any trailer with the same <key> in the input\&.
+.sp
+The valid values for this option are:
+\fBadd\fR
+(this is the default) and
+\fBdoNothing\fR\&.
+.sp
+With
+\fBadd\fR, a new trailer will be added\&.
+.sp
+With
+\fBdoNothing\fR, nothing will be done\&.
+.RE
+.PP
+trailer\&.<keyAlias>\&.key
+.RS 4
+Defines a <keyAlias> for the <key>\&. The <keyAlias> must be a prefix (case does not matter) of the <key>\&. For example, in
+\fBgit\fR
+\fBconfig\fR
+\fBtrailer\&.ack\&.key\fR
+"Acked\-by" the "Acked\-by" is the <key> and the "ack" is the <keyAlias>\&. This configuration allows the shorter
+\fB\-\-trailer\fR
+"ack:\fB\&.\&.\&.\fR" invocation on the command line using the "ack" <keyAlias> instead of the longer
+\fB\-\-trailer\fR
+"Acked\-by:\fB\&.\&.\&.\fR"\&.
+.sp
+At the end of the <key>, a separator can appear and then some space characters\&. By default the only valid separator is
+\fI:\fR, but this can be changed using the
+\fBtrailer\&.separators\fR
+config variable\&.
+.sp
+If there is a separator in the key, then it overrides the default separator when adding the trailer\&.
+.RE
+.PP
+trailer\&.<keyAlias>\&.where
+.RS 4
+This option takes the same values as the
+\fItrailer\&.where\fR
+configuration variable and it overrides what is specified by that option for trailers with the specified <keyAlias>\&.
+.RE
+.PP
+trailer\&.<keyAlias>\&.ifexists
+.RS 4
+This option takes the same values as the
+\fItrailer\&.ifexists\fR
+configuration variable and it overrides what is specified by that option for trailers with the specified <keyAlias>\&.
+.RE
+.PP
+trailer\&.<keyAlias>\&.ifmissing
+.RS 4
+This option takes the same values as the
+\fItrailer\&.ifmissing\fR
+configuration variable and it overrides what is specified by that option for trailers with the specified <keyAlias>\&.
+.RE
+.PP
+trailer\&.<keyAlias>\&.command
+.RS 4
+Deprecated in favor of
+\fItrailer\&.<keyAlias>\&.cmd\fR\&. This option behaves in the same way as
+\fItrailer\&.<keyAlias>\&.cmd\fR, except that it doesn\(cqt pass anything as argument to the specified command\&. Instead the first occurrence of substring $ARG is replaced by the <value> that would be passed as argument\&.
+.sp
+Note that $ARG in the user\(cqs command is only replaced once and that the original way of replacing $ARG is not safe\&.
+.sp
+When both
+\fItrailer\&.<keyAlias>\&.cmd\fR
+and
+\fItrailer\&.<keyAlias>\&.command\fR
+are given for the same <keyAlias>,
+\fItrailer\&.<keyAlias>\&.cmd\fR
+is used and
+\fItrailer\&.<keyAlias>\&.command\fR
+is ignored\&.
+.RE
+.PP
+trailer\&.<keyAlias>\&.cmd
+.RS 4
+This option can be used to specify a shell command that will be called once to automatically add a trailer with the specified <keyAlias>, and then called each time a
+\fI\-\-trailer <keyAlias>=<value>\fR
+argument is specified to modify the <value> of the trailer that this option would produce\&.
+.sp
+When the specified command is first called to add a trailer with the specified <keyAlias>, the behavior is as if a special
+\fI\-\-trailer <keyAlias>=<value>\fR
+argument was added at the beginning of the "git interpret\-trailers" command, where <value> is taken to be the standard output of the command with any leading and trailing whitespace trimmed off\&.
+.sp
+If some
+\fI\-\-trailer <keyAlias>=<value>\fR
+arguments are also passed on the command line, the command is called again once for each of these arguments with the same <keyAlias>\&. And the <value> part of these arguments, if any, will be passed to the command as its first argument\&. This way the command can produce a <value> computed from the <value> passed in the
+\fI\-\-trailer <keyAlias>=<value>\fR
+argument\&.
 .RE
 .PP
 transfer\&.credentialsInUrl

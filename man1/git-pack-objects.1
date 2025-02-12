@@ -2,12 +2,12 @@
 .\"     Title: git-pack-objects
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-02-10
+.\"      Date: 2025-02-12
 .\"    Manual: Git Manual
-.\"    Source: Git 2.48.1.291.g388218fac7
+.\"    Source: Git 2.48.1.329.ge2067b49ec
 .\"  Language: English
 .\"
-.TH "GIT\-PACK\-OBJECTS" "1" "2025-02-10" "Git 2\&.48\&.1\&.291\&.g388218" "Git Manual"
+.TH "GIT\-PACK\-OBJECTS" "1" "2025-02-12" "Git 2\&.48\&.1\&.329\&.ge2067b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -38,7 +38,8 @@ git-pack-objects \- Create a packed archive of objects
         [\-\-revs [\-\-unpacked | \-\-all]] [\-\-keep\-pack=<pack\-name>]
         [\-\-cruft] [\-\-cruft\-expiration=<time>]
         [\-\-stdout [\-\-filter=<filter\-spec>] | <base\-name>]
-        [\-\-shallow] [\-\-keep\-true\-parents] [\-\-[no\-]sparse] < <object\-list>
+        [\-\-shallow] [\-\-keep\-true\-parents] [\-\-[no\-]sparse]
+        [\-\-name\-hash\-version=<n>] < <object\-list>
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -354,6 +355,25 @@ Keep unreachable objects in loose form\&. This implies
 \-\-delta\-islands
 .RS 4
 Restrict delta matches based on "islands"\&. See DELTA ISLANDS below\&.
+.RE
+.PP
+\-\-name\-hash\-version=<n>
+.RS 4
+While performing delta compression, Git groups objects that may be similar based on heuristics using the path to that object\&. While grouping objects by an exact path match is good for paths with many versions, there are benefits for finding delta pairs across different full paths\&. Git collects objects by type and then by a "name hash" of the path and then by size, hoping to group objects that will compress well together\&.
+.sp
+The default name hash version is
+\fB1\fR, which prioritizes hash locality by considering the final bytes of the path as providing the maximum magnitude to the hash function\&. This version excels at distinguishing short paths and finding renames across directories\&. However, the hash function depends primarily on the final 16 bytes of the path\&. If there are many paths in the repo that have the same final 16 bytes and differ only by parent directory, then this name\-hash may lead to too many collisions and cause poor results\&. At the moment, this version is required when writing reachability bitmap files with
+\fB\-\-write\-bitmap\-index\fR\&.
+.sp
+The name hash version
+\fB2\fR
+has similar locality features as version
+\fB1\fR, except it considers each path component separately and overlays the hashes with a shift\&. This still prioritizes the final bytes of the path, but also "salts" the lower bits of the hash using the parent directory names\&. This method allows for some of the locality benefits of version
+\fB1\fR
+while breaking most of the collisions from a similarly\-named file appearing in many different directories\&. At the moment, this version is not allowed when writing reachability bitmap files with
+\fB\-\-write\-bitmap\-index\fR
+and it will be automatically changed to version
+\fB1\fR\&.
 .RE
 .SH "DELTA ISLANDS"
 .sp
