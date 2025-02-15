@@ -2,12 +2,12 @@
 .\"     Title: git-clone
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-02-12
+.\"      Date: 2025-02-14
 .\"    Manual: Git Manual
-.\"    Source: Git 2.48.1.329.ge2067b49ec
+.\"    Source: Git 2.48.1.356.g0394451348
 .\"  Language: English
 .\"
-.TH "GIT\-CLONE" "1" "2025-02-12" "Git 2\&.48\&.1\&.329\&.ge2067b" "Git Manual"
+.TH "GIT\-CLONE" "1" "2025-02-14" "Git 2\&.48\&.1\&.356\&.g039445" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,7 +36,7 @@ git-clone \- Clone a repository into a new directory
 	  [\fB\-l\fR] [\fB\-s\fR] [\fB\-\-no\-hardlinks\fR] [\fB\-q\fR] [\fB\-n\fR] [\fB\-\-bare\fR] [\fB\-\-mirror\fR]
 	  [\fB\-o\fR \fI<name>\fR] [\fB\-b\fR \fI<name>\fR] [\fB\-u\fR \fI<upload\-pack>\fR] [\fB\-\-reference\fR \fI<repository>\fR]
 	  [\fB\-\-dissociate\fR] [\fB\-\-separate\-git\-dir\fR \fI<git\-dir>\fR]
-	  [\fB\-\-depth\fR \fI<depth>\fR] [\fB\-\-\fR[\fBno\-\fR]\fBsingle\-branch\fR] [\fB\-\-no\-tags\fR]
+	  [\fB\-\-depth\fR \fI<depth>\fR] [\fB\-\-\fR[\fBno\-\fR]\fBsingle\-branch\fR] [\fB\-\-\fR[\fBno\-\fR]\fBtags\fR]
 	  [\fB\-\-recurse\-submodules\fR[\fB=\fR\fI<pathspec>\fR]] [\fB\-\-\fR[\fBno\-\fR]\fBshallow\-submodules\fR]
 	  [\fB\-\-\fR[\fBno\-\fR]\fBremote\-submodules\fR] [\fB\-\-jobs\fR \fI<n>\fR] [\fB\-\-sparse\fR] [\fB\-\-\fR[\fBno\-\fR]\fBreject\-shallow\fR]
 	  [\fB\-\-filter=\fR\fI<filter\-spec>\fR] [\fB\-\-also\-filter\-submodules\fR]] [\fB\-\-\fR] \fI<repository>\fR
@@ -281,6 +281,22 @@ can also take tags and detaches the
 at that commit in the resulting repository\&.
 .RE
 .PP
+\fB\-\-revision=\fR\fI<rev>\fR
+.RS 4
+Create a new repository, and fetch the history leading to the given revision
+\fI<rev>\fR
+(and nothing else), without making any remote\-tracking branch, and without making any local branch, and detach
+\fBHEAD\fR
+to
+\fI<rev>\fR\&. The argument can be a ref name (e\&.g\&.
+\fBrefs/heads/main\fR
+or
+\fBrefs/tags/v1\&.0\fR) that peels down to a commit, or a hexadecimal object name\&. This option is incompatible with
+\fB\-\-branch\fR
+and
+\fB\-\-mirror\fR\&.
+.RE
+.PP
 \fB\-u\fR \fI<upload\-pack>\fR, \fB\-\-upload\-pack\fR \fI<upload\-pack>\fR
 .RS 4
 When given, and the repository to clone from is accessed via ssh, this specifies a non\-default path for the command run on the other end\&.
@@ -346,18 +362,31 @@ at the remote did not point at any branch when
 clone was made, no remote\-tracking branch is created\&.
 .RE
 .PP
-\fB\-\-no\-tags\fR
+\fB\-\-\fR[\fBno\-\fR]\fBtags\fR
 .RS 4
-Don\(cqt clone any tags, and set
+Control whether or not tags will be cloned\&. When
+\fB\-\-no\-tags\fR
+is given, the option will be become permanent by setting the
 \fBremote\&.\fR\fI<remote>\fR\fB\&.tagOpt=\-\-no\-tags\fR
-in the config, ensuring that future
+configuration\&. This ensures that future
 \fBgit\fR
 \fBpull\fR
 and
 \fBgit\fR
 \fBfetch\fR
-operations won\(cqt follow any tags\&. Subsequent explicit tag fetches will still work, (see
+won\(cqt follow any tags\&. Subsequent explicit tag fetches will still work (see
 \fBgit-fetch\fR(1))\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+By default, tags are cloned and passing `\-\-tags` is thus typically a
+no\-op, unless it cancels out a previous `\-\-no\-tags`\&.
+.fi
+.if n \{\
+.RE
+.\}
 .sp
 Can be used in conjunction with
 \fB\-\-single\-branch\fR
