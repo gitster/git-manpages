@@ -1,0 +1,69 @@
+'\" t
+.\"     Title: git-backfill
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2025-02-18
+.\"    Manual: Git Manual
+.\"    Source: Git 2.48.1.385.ga554262210
+.\"  Language: English
+.\"
+.TH "GIT\-BACKFILL" "1" "2025-02-18" "Git 2\&.48\&.1\&.385\&.ga55426" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-backfill \- Download missing objects in a partial clone
+.SH "SYNOPSIS"
+.sp
+.nf
+\fBgit\fR \fBbackfill\fR [\fB\-\-min\-batch\-size=\fR\fI<n>\fR] [\fB\-\-\fR[\fBno\-\fR]\fBsparse\fR]
+.fi
+.SH "DESCRIPTION"
+.sp
+Blobless partial clones are created using \fBgit\fR \fBclone\fR \fB\-\-filter=blob:none\fR and then configure the local repository such that the Git client avoids downloading blob objects unless they are required for a local operation\&. This initially means that the clone and later fetches download reachable commits and trees but no blobs\&. Later operations that change the \fBHEAD\fR pointer, such as \fBgit\fR \fBcheckout\fR or \fBgit\fR \fBmerge\fR, may need to download missing blobs in order to complete their operation\&.
+.sp
+In the worst cases, commands that compute blob diffs, such as \fBgit\fR \fBblame\fR, become very slow as they download the missing blobs in single\-blob requests to satisfy the missing object as the Git command needs it\&. This leads to multiple download requests and no ability for the Git server to provide delta compression across those objects\&.
+.sp
+The \fBgit\fR \fBbackfill\fR command provides a way for the user to request that Git downloads the missing blobs (with optional filters) such that the missing blobs representing historical versions of files can be downloaded in batches\&. The \fBbackfill\fR command attempts to optimize the request by grouping blobs that appear at the same path, hopefully leading to good delta compression in the packfile sent by the server\&.
+.sp
+In this way, \fBgit\fR \fBbackfill\fR provides a mechanism to break a large clone into smaller chunks\&. Starting with a blobless partial clone with \fBgit\fR \fBclone\fR \fB\-\-filter=blob:none\fR and then running \fBgit\fR \fBbackfill\fR in the local repository provides a way to download all reachable objects in several smaller network calls than downloading the entire repository at clone time\&.
+.sp
+By default, \fBgit\fR \fBbackfill\fR downloads all blobs reachable from the \fBHEAD\fR commit\&. This set can be restricted or expanded using various options\&.
+.sp
+THIS COMMAND IS EXPERIMENTAL\&. ITS BEHAVIOR MAY CHANGE IN THE FUTURE\&.
+.SH "OPTIONS"
+.PP
+\fB\-\-min\-batch\-size=\fR\fI<n>\fR
+.RS 4
+Specify a minimum size for a batch of missing objects to request from the server\&. This size may be exceeded by the last set of blobs seen at a given path\&. The default minimum batch size is 50,000\&.
+.RE
+.PP
+\fB\-\-\fR[\fBno\-\fR]\fBsparse\fR
+.RS 4
+Only download objects if they appear at a path that matches the current sparse\-checkout\&. If the sparse\-checkout feature is enabled, then
+\fB\-\-sparse\fR
+is assumed and can be disabled with
+\fB\-\-no\-sparse\fR\&.
+.RE
+.SH "SEE ALSO"
+.sp
+\fBgit-clone\fR(1)\&.
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
