@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-02-20
+.\"      Date: 2025-02-21
 .\"    Manual: Git Manual
-.\"    Source: Git 2.48.1.395.gb838bf1938
+.\"    Source: Git 2.48.1.404.g2d2a71ce85
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-02-20" "Git 2\&.48\&.1\&.395\&.gb838bf" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-02-21" "Git 2\&.48\&.1\&.404\&.g2d2a71" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -360,7 +360,15 @@ Valid
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIbool\fR: canonicalize values as either "true" or "false"\&.
+\fIbool\fR: canonicalize values
+\fBtrue\fR,
+\fByes\fR,\fBon\fR, and positive numbers as "true", and values
+\fBfalse\fR,
+\fBno\fR,
+\fBoff\fR
+and
+\fB0\fR
+as "false"\&.
 .RE
 .sp
 .RS 4
@@ -6910,6 +6918,22 @@ http\&.sslBackend
 Name of the SSL backend to use (e\&.g\&. "openssl" or "schannel")\&. This option is ignored if cURL lacks support for choosing the SSL backend at runtime\&.
 .RE
 .PP
+http\&.sslCertType
+.RS 4
+Type of client certificate used when fetching or pushing over HTTPS\&. "PEM", "DER" are supported when using openssl or gnutls backends\&. "P12" is supported on "openssl", "schannel", "securetransport", and gnutls 8\&.11+\&. See also libcurl
+\fBCURLOPT_SSLCERTTYPE\fR\&. Can be overridden by the
+\fBGIT_SSL_CERT_TYPE\fR
+environment variable\&.
+.RE
+.PP
+http\&.sslKeyType
+.RS 4
+Type of client private key used when fetching or pushing over HTTPS\&. (e\&.g\&. "PEM", "DER", or "ENG")\&. Only applicable when using "openssl" backend\&. "DER" is not supported with openssl\&. Particularly useful when set to "ENG" for authenticating with PKCS#11 tokens, with a PKCS#11 URL in sslCert option\&. See also libcurl
+\fBCURLOPT_SSLKEYTYPE\fR\&. Can be overridden by the
+\fBGIT_SSL_KEY_TYPE\fR
+environment variable\&.
+.RE
+.PP
 http\&.schannelCheckRevoke
 .RS 4
 Used to enforce or disable certificate revocation checks in cURL when http\&.sslBackend is set to "schannel"\&. Defaults to
@@ -7720,7 +7744,7 @@ Whether Git detects directory renames, affecting what happens at merge time to n
 .PP
 merge\&.renormalize
 .RS 4
-Tell Git that canonical representation of files in the repository has changed over time (e\&.g\&. earlier commits record text files with CRLF line endings, but recent ones use LF line endings)\&. In such a repository, Git can convert the data recorded in commits to a canonical form before performing a merge to reduce unnecessary conflicts\&. For more information, see section "Merging branches with differing checkin/checkout attributes" in
+Tell Git that canonical representation of files in the repository has changed over time (e\&.g\&. earlier commits record text files with CRLF line endings, but recent ones use LF line endings)\&. In such a repository, for each file where a three\-way content merge is needed, Git can convert the data recorded in commits to a canonical form before performing a merge to reduce unnecessary conflicts\&. For more information, see section "Merging branches with differing checkin/checkout attributes" in
 \fBgitattributes\fR(5)\&.
 .RE
 .PP
