@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-02-25
+.\"      Date: 2025-02-27
 .\"    Manual: Git Manual
-.\"    Source: Git 2.48.1.431.g5a526e5e18
+.\"    Source: Git 2.49.0.rc0.18.gcb0ae672ae
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "2025-02-25" "Git 2\&.48\&.1\&.431\&.g5a526e" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "2025-02-27" "Git 2\&.49\&.0\&.rc0\&.18\&.gc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -284,7 +284,7 @@ There are two different types of capabilities: normal capabilities, which can be
 Protocol version 2 is stateless by default\&. This means that all commands must only last a single round and be stateless from the perspective of the server side, unless the client has requested a capability indicating that state should be maintained by the server\&. Clients MUST NOT require state management on the server side in order to function correctly\&. This permits simple round\-robin load\-balancing on the server side, without needing to worry about state management\&.
 .SS "agent"
 .sp
-The server can advertise the \fBagent\fR capability with a value \fBX\fR (in the form \fBagent=X\fR) to notify the client that the server is running version \fBX\fR\&. The client may optionally send its own agent string by including the \fBagent\fR capability with a value \fBY\fR (in the form \fBagent=Y\fR) in its request to the server (but it MUST NOT do so if the server did not advertise the agent capability)\&. The \fBX\fR and \fBY\fR strings may contain any printable ASCII characters except space (i\&.e\&., the byte range 32 < x < 127), and are typically of the form "package/version" (e\&.g\&., "git/1\&.8\&.3\&.1")\&. The agent strings are purely informative for statistics and debugging purposes, and MUST NOT be used to programmatically assume the presence or absence of particular features\&.
+The server can advertise the \fBagent\fR capability with a value \fBX\fR (in the form \fBagent=X\fR) to notify the client that the server is running version \fBX\fR\&. The client may optionally send its own agent string by including the \fBagent\fR capability with a value \fBY\fR (in the form \fBagent=Y\fR) in its request to the server (but it MUST NOT do so if the server did not advertise the agent capability)\&. The \fBX\fR and \fBY\fR strings may contain any printable ASCII characters except space (i\&.e\&., the byte range 33 \(la x \(la 126), and are typically of the form "package/version\-os" (e\&.g\&., "git/1\&.8\&.3\&.1\-Linux") where \fBos\fR is the operating system name (e\&.g\&., "Linux")\&. \fBX\fR and \fBY\fR can be configured using the GIT_USER_AGENT environment variable and it takes priority\&. The \fBos\fR is retrieved using the \fIsysname\fR field of the \fBuname\fR(\fB2\fR) system call or its equivalent\&. The agent strings are purely informative for statistics and debugging purposes, and MUST NOT be used to programmatically assume the presence or absence of particular features\&.
 .SS "ls\-refs"
 .sp
 \fBls\-refs\fR is the command used to request a reference advertisement in v2\&. Unlike the current reference advertisement, ls\-refs takes in arguments which can be used to limit the refs sent from the server\&.
