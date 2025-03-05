@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-03-04
+.\"      Date: 2025-03-05
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.rc1
+.\"    Source: Git 2.49.0.rc1.37.ge969bc8759
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "2025-03-04" "Git 2\&.49\&.0\&.rc1" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "2025-03-05" "Git 2\&.49\&.0\&.rc1\&.37\&.ge" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1281,6 +1281,55 @@ This would allow for optimizing the common case of servers who\(cqd like to prov
 A client receiving such a response MAY assume that they can skip retrieving the header from a bundle at the indicated URI, and thus save themselves and the server(s) the request(s) needed to inspect the headers of that bundle or bundles\&.
 .RE
 .RE
+.SS "promisor\-remote=<pr\-infos>"
+.sp
+The server may advertise some promisor remotes it is using or knows about to a client which may want to use them as its promisor remotes, instead of this repository\&. In this case <pr\-infos> should be of the form:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+pr\-infos = pr\-info | pr\-infos ";" pr\-info
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+pr\-info = "name=" pr\-name | "name=" pr\-name "," "url=" pr\-url
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+where \fBpr\-name\fR is the urlencoded name of a promisor remote, and \fBpr\-url\fR the urlencoded URL of that promisor remote\&.
+.sp
+In this case, if the client decides to use one or more promisor remotes the server advertised, it can reply with "promisor\-remote=<pr\-names>" where <pr\-names> should be of the form:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+pr\-names = pr\-name | pr\-names ";" pr\-name
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+where \fBpr\-name\fR is the urlencoded name of a promisor remote the server advertised and the client accepts\&.
+.sp
+Note that, everywhere in this document, \fBpr\-name\fR MUST be a valid remote name, and the \fI;\fR and \fI,\fR characters MUST be encoded if they appear in \fBpr\-name\fR or \fBpr\-url\fR\&.
+.sp
+If the server doesn\(cqt know any promisor remote that could be good for a client to use, or prefers a client not to use any promisor remote it uses or knows about, it shouldn\(cqt advertise the "promisor\-remote" capability at all\&.
+.sp
+In this case, or if the client doesn\(cqt want to use any promisor remote the server advertised, the client shouldn\(cqt advertise the "promisor\-remote" capability at all in its reply\&.
+.sp
+The "promisor\&.advertise" and "promisor\&.acceptFromServer" configuration options can be used on the server and client side to control what they advertise or accept respectively\&. See the documentation of these configuration options for more information\&.
+.sp
+Note that in the future it would be nice if the "promisor\-remote" protocol capability could be used by the server, when responding to \fBgit\fR \fBfetch\fR or \fBgit\fR \fBclone\fR, to advertise better\-connected remotes that the client can use as promisor remotes, instead of this repository, so that the client can lazily fetch objects from these other better\-connected remotes\&. This would require the server to omit in its response the objects available on the better\-connected remotes that the client has accepted\&. This hasn\(cqt been implemented yet though\&. So for now this "promisor\-remote" capability is useful only when the server advertises some promisor remotes it already uses to borrow objects from\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
