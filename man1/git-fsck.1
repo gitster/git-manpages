@@ -2,12 +2,12 @@
 .\"     Title: git-fsck
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-03-14
+.\"      Date: 2025-03-26
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0
+.\"    Source: Git 2.49.0.33.g66b90d9bad
 .\"  Language: English
 .\"
-.TH "GIT\-FSCK" "1" "2025-03-14" "Git 2\&.49\&.0" "Git Manual"
+.TH "GIT\-FSCK" "1" "2025-03-26" "Git 2\&.49\&.0\&.33\&.g66b90d9" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,7 +35,7 @@ git-fsck \- Verifies the connectivity and validity of the objects in the databas
 \fIgit fsck\fR [\-\-tags] [\-\-root] [\-\-unreachable] [\-\-cache] [\-\-no\-reflogs]
          [\-\-[no\-]full] [\-\-strict] [\-\-verbose] [\-\-lost\-found]
          [\-\-[no\-]dangling] [\-\-[no\-]progress] [\-\-connectivity\-only]
-         [\-\-[no\-]name\-objects] [<object>\&...\:]
+         [\-\-[no\-]name\-objects] [\-\-[no\-]references] [<object>\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -128,6 +128,14 @@ they are reachable, compatible with
 \-\-[no\-]progress
 .RS 4
 Progress status is reported on the standard error stream by default when it is attached to a terminal, unless \-\-no\-progress or \-\-verbose is specified\&. \-\-progress forces progress status even if the standard error stream is not directed to a terminal\&.
+.RE
+.PP
+\-\-[no\-]references
+.RS 4
+Control whether to check the references database consistency via
+\fIgit refs verify\fR\&. See
+\fBgit-refs\fR(1)
+for details\&. The default is to check the references database\&.
 .RE
 .SH "CONFIGURATION"
 .sp
@@ -289,6 +297,16 @@ The following lists the types of errors \fBgit\fR \fBfsck\fR detects and what ea
 \fBbadObjectSha1\fR
 .RS 4
 (ERROR) An object has a bad sha1\&.
+.RE
+.PP
+\fBbadPackedRefEntry\fR
+.RS 4
+(ERROR) The "packed\-refs" file contains an invalid entry\&.
+.RE
+.PP
+\fBbadPackedRefHeader\fR
+.RS 4
+(ERROR) The "packed\-refs" file contains an invalid header\&.
 .RE
 .PP
 \fBbadParentSha1\fR
@@ -574,6 +592,16 @@ line in a tag object\&.
 \fBnullSha1\fR
 .RS 4
 (WARN) Tree contains entries pointing to a null sha1\&.
+.RE
+.PP
+\fBpackedRefEntryNotTerminated\fR
+.RS 4
+(ERROR) The "packed\-refs" file contains an entry that is not terminated by a newline\&.
+.RE
+.PP
+\fBpackedRefUnsorted\fR
+.RS 4
+(ERROR) The "packed\-refs" file is not sorted\&.
 .RE
 .PP
 \fBrefMissingNewline\fR
