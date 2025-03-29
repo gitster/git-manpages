@@ -2,12 +2,12 @@
 .\"     Title: git-fast-export
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-03-26
+.\"      Date: 2025-03-29
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.33.g66b90d9bad
+.\"    Source: Git 2.49.0.111.g5b97a56fa0
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-EXPORT" "1" "2025-03-26" "Git 2\&.49\&.0\&.33\&.g66b90d9" "Git Manual"
+.TH "GIT\-FAST\-EXPORT" "1" "2025-03-29" "Git 2\&.49\&.0\&.111\&.g5b97a5" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -50,9 +50,9 @@ statements every <n> objects, to be shown by
 during import\&.
 .RE
 .PP
-\-\-signed\-tags=(verbatim|warn|warn\-strip|strip|abort)
+\-\-signed\-tags=(verbatim|warn\-verbatim|warn\-strip|strip|abort)
 .RS 4
-Specify how to handle signed tags\&. Since any transformation after the export can change the tag names (which can also happen when excluding revisions) the signatures will not match\&.
+Specify how to handle signed tags\&. Since any transformation after the export (or during the export, such as excluding revisions) can change the hashes being signed, the signatures may become invalid\&.
 .sp
 When asking to
 \fIabort\fR
@@ -61,7 +61,33 @@ When asking to
 \fIwarn\-strip\fR
 they will be made unsigned but a warning will be displayed, with
 \fIverbatim\fR, they will be silently exported and with
-\fIwarn\fR, they will be exported, but you will see a warning\&.
+\fIwarn\-verbatim\fR
+(or
+\fIwarn\fR, a deprecated synonym), they will be exported, but you will see a warning\&.
+\fIverbatim\fR
+and
+\fIwarn\-verbatim\fR
+should only be used if you know that no transformation affecting tags or any commit in their history will be performed by you or by fast\-export or fast\-import, or if you do not care that the resulting tag will have an invalid signature\&.
+.RE
+.PP
+\-\-signed\-commits=(verbatim|warn\-verbatim|warn\-strip|strip|abort)
+.RS 4
+Specify how to handle signed commits\&. Behaves exactly as
+\fI\-\-signed\-tags\fR, but for commits\&. Default is
+\fIabort\fR\&.
+.sp
+Earlier versions this command that did not have
+\fI\-\-signed\-commits\fR
+behaved as if
+\fI\-\-signed\-commits=strip\fR\&. As an escape hatch for users of tools that call
+\fIgit fast\-export\fR
+but do not yet support
+\fI\-\-signed\-commits\fR, you may set the environment variable
+\fIFAST_EXPORT_SIGNED_COMMITS_NOABORT=1\fR
+in order to change the default from
+\fIabort\fR
+to
+\fIwarn\-strip\fR\&.
 .RE
 .PP
 \-\-tag\-of\-filtered\-object=(abort|drop|rewrite)
