@@ -2,12 +2,12 @@
 .\"     Title: git-repack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-03-29
+.\"      Date: 2025-04-07
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.111.g5b97a56fa0
+.\"    Source: Git 2.49.0.154.g9d22ac5122
 .\"  Language: English
 .\"
-.TH "GIT\-REPACK" "1" "2025-03-29" "Git 2\&.49\&.0\&.111\&.g5b97a5" "Git Manual"
+.TH "GIT\-REPACK" "1" "2025-04-07" "Git 2\&.49\&.0\&.154\&.g9d22ac" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -108,18 +108,23 @@ invocation\&. Only useful with
 .PP
 \-\-max\-cruft\-size=<n>
 .RS 4
-Repack cruft objects into packs as large as
+Overrides
+\fB\-\-max\-pack\-size\fR
+for cruft packs\&. Inherits the value of
+\fB\-\-max\-pack\-size\fR
+(if any) by default\&. See the documentation for
+\fB\-\-max\-pack\-size\fR
+for more details\&.
+.RE
+.PP
+\-\-combine\-cruft\-below\-size=<n>
+.RS 4
+When generating cruft packs without pruning, only repack existing cruft packs whose size is strictly less than
+\fI<n>\fR, where
 \fI<n>\fR
-bytes before creating new packs\&. As long as there are enough cruft packs smaller than
-\fI<n>\fR, repacking will cause a new cruft pack to be created containing objects from any combined cruft packs, along with any new unreachable objects\&. Cruft packs larger than
+represents a number of bytes, which can optionally be suffixed with "k", "m", or "g"\&. Cruft packs whose size is greater than or equal to
 \fI<n>\fR
-will not be modified\&. When the new cruft pack is larger than
-\fI<n>\fR
-bytes, it will be split into multiple packs, all of which are guaranteed to be at most
-\fI<n>\fR
-bytes in size\&. Only useful with
-\fB\-\-cruft\fR
-\fB\-d\fR\&.
+are left as\-is and not repacked\&. Useful when you want to avoid repacking large cruft pack(s) in repositories that have many and/or large unreachable objects\&.
 .RE
 .PP
 \-\-expire\-to=<dir>
