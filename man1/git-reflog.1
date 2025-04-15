@@ -2,12 +2,12 @@
 .\"     Title: git-reflog
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-08
+.\"      Date: 2025-04-15
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.221.g485f5f8636
+.\"    Source: Git 2.49.0.281.g77d6ee513f
 .\"  Language: English
 .\"
-.TH "GIT\-REFLOG" "1" "2025-04-08" "Git 2\&.49\&.0\&.221\&.g485f5f" "Git Manual"
+.TH "GIT\-REFLOG" "1" "2025-04-15" "Git 2\&.49\&.0\&.281\&.g77d6ee" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,6 +39,7 @@ git-reflog \- Manage reflog information
         [\-\-dry\-run | \-n] [\-\-verbose] [\-\-all [\-\-single\-worktree] | <refs>\&...\:]
 \fIgit reflog delete\fR [\-\-rewrite] [\-\-updateref]
         [\-\-dry\-run | \-n] [\-\-verbose] <ref>@{<specifier>}\&...\:
+\fIgit reflog drop\fR [\-\-all [\-\-single\-worktree] | <refs>\&...\:]
 \fIgit reflog exists\fR <ref>
 .fi
 .SH "DESCRIPTION"
@@ -55,7 +56,9 @@ The "list" subcommand lists all refs which have a corresponding reflog\&.
 .sp
 The "expire" subcommand prunes older reflog entries\&. Entries older than \fBexpire\fR time, or entries older than \fBexpire\-unreachable\fR time and not reachable from the current tip, are removed from the reflog\&. This is typically not used directly by end users \(em instead, see \fBgit-gc\fR(1)\&.
 .sp
-The "delete" subcommand deletes single entries from the reflog\&. Its argument must be an \fIexact\fR entry (e\&.g\&. "\fBgit\fR \fBreflog\fR \fBdelete\fR \fBmaster@\fR{2}")\&. This subcommand is also typically not used directly by end users\&.
+The "delete" subcommand deletes single entries from the reflog, but not the reflog itself\&. Its argument must be an \fIexact\fR entry (e\&.g\&. "\fBgit\fR \fBreflog\fR \fBdelete\fR \fBmaster@\fR{2}")\&. This subcommand is also typically not used directly by end users\&.
+.sp
+The "drop" subcommand completely removes the reflog for the specified references\&. This is in contrast to "expire" and "delete", both of which can be used to delete reflog entries, but not the reflog itself\&.
 .sp
 The "exists" subcommand checks whether a ref has a reflog\&. It exits with zero status if the reflog exists, and non\-zero status if it does not\&.
 .SH "OPTIONS"
@@ -130,6 +133,20 @@ Print extra information on screen\&.
 .SS "Options for \fBdelete\fR"
 .sp
 \fBgit\fR \fBreflog\fR \fBdelete\fR accepts options \fB\-\-updateref\fR, \fB\-\-rewrite\fR, \fB\-n\fR, \fB\-\-dry\-run\fR, and \fB\-\-verbose\fR, with the same meanings as when they are used with \fBexpire\fR\&.
+.sp
+Options for \fBdrop\fR ~~~~~~~~
+.PP
+\-\-all
+.RS 4
+Drop the reflogs of all references from all worktrees\&.
+.RE
+.PP
+\-\-single\-worktree
+.RS 4
+By default when
+\fB\-\-all\fR
+is specified, reflogs from all working trees are dropped\&. This option limits the processing to reflogs from the current working tree only\&.
+.RE
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
