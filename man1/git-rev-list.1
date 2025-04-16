@@ -2,12 +2,12 @@
 .\"     Title: git-rev-list
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-15
+.\"      Date: 2025-04-16
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.281.g77d6ee513f
+.\"    Source: Git 2.49.0.366.gc152ae3ef5
 .\"  Language: English
 .\"
-.TH "GIT\-REV\-LIST" "1" "2025-04-15" "Git 2\&.49\&.0\&.281\&.g77d6ee" "Git Manual"
+.TH "GIT\-REV\-LIST" "1" "2025-04-16" "Git 2\&.49\&.0\&.366\&.gc152ae" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -610,6 +610,46 @@ Try to speed up the traversal using the pack bitmap index (if one is available)\
 Show progress reports on stderr as objects are considered\&. The
 \fI<header>\fR
 text will be printed with each progress update\&.
+.RE
+.PP
+\-z
+.RS 4
+Instead of being newline\-delimited, each outputted object and its accompanying metadata is delimited using NUL bytes\&. Output is printed in the following form:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<OID> NUL [<token>=<value> NUL]\&.\&.\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Additional object metadata, such as object paths or boundary objects, is printed using the
+\fI<token>\fR\fB=\fR\fI<value>\fR
+form\&. Token values are printed as\-is without any encoding/truncation\&. An OID entry never contains a
+\fI=\fR
+character and thus is used to signal the start of a new object record\&. Examples:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<OID> NUL
+<OID> NUL path=<path> NUL
+<OID> NUL boundary=yes NUL
+<OID> NUL missing=yes NUL [<token>=<value> NUL]\&.\&.\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This mode is only compatible with the
+\fB\-\-objects\fR,
+\fB\-\-boundary\fR, and
+\fB\-\-missing\fR
+output options\&.
 .RE
 .SS "History Simplification"
 .sp

@@ -2,12 +2,12 @@
 .\"     Title: git-cat-file
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-15
+.\"      Date: 2025-04-16
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.281.g77d6ee513f
+.\"    Source: Git 2.49.0.366.gc152ae3ef5
 .\"  Language: English
 .\"
-.TH "GIT\-CAT\-FILE" "1" "2025-04-15" "Git 2\&.49\&.0\&.281\&.g77d6ee" "Git Manual"
+.TH "GIT\-CAT\-FILE" "1" "2025-04-16" "Git 2\&.49\&.0\&.366\&.gc152ae" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -127,6 +127,31 @@ Show the content as converted by the filters configured in the current working t
 has to be of the form
 \fI<tree\-ish>\fR\fB:\fR\fI<path>\fR, or
 \fB:\fR\fI<path>\fR\&.
+.RE
+.PP
+\-\-filter=<filter\-spec>, \-\-no\-filter
+.RS 4
+Omit objects from the list of printed objects\&. This can only be used in combination with one of the batched modes\&. Excluded objects that have been explicitly requested via any of the batch modes that read objects via standard input (\fB\-\-batch\fR,
+\fB\-\-batch\-check\fR) will be reported as "filtered"\&. Excluded objects in
+\fB\-\-batch\-all\-objects\fR
+mode will not be printed at all\&. The
+\fI<filter\-spec>\fR
+may be one of the following:
+.sp
+The form
+\fI\-\-filter=blob:none\fR
+omits all blobs\&.
+.sp
+The form
+\fI\-\-filter=blob:limit=<n>[kmg]\fR
+omits blobs of size at least n bytes or units\&. n may be zero\&. The suffixes k, m, and g can be used to name units in KiB, MiB, or GiB\&. For example,
+\fIblob:limit=1k\fR
+is the same as
+\fIblob:limit=1024\fR\&.
+.sp
+The form
+\fI\-\-filter=object:type=(tag|commit|tree|blob)\fR
+omits all objects which are not of the requested type\&.
 .RE
 .PP
 \-\-path=<path>
@@ -551,6 +576,18 @@ If a name is specified on stdin that cannot be resolved to an object in the repo
 .\}
 .nf
 <object> SP missing LF
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+If a name is specified on stdin that is filtered out via \fB\-\-filter=\fR, then \fBcat\-file\fR will ignore any custom format and print:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+<object> SP excluded LF
 .fi
 .if n \{\
 .RE
