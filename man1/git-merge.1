@@ -2,12 +2,12 @@
 .\"     Title: git-merge
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-16
+.\"      Date: 2025-04-17
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.366.gc152ae3ef5
+.\"    Source: Git 2.49.0.391.g4bbb303af6
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "2025-04-16" "Git 2\&.49\&.0\&.366\&.gc152ae" "Git Manual"
+.TH "GIT\-MERGE" "1" "2025-04-17" "Git 2\&.49\&.0\&.391\&.g4bbb30" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -915,6 +915,30 @@ configuration variable\&. See also
 \fB\-\-no\-renames\fR\&.
 .RE
 .PP
+histogram
+.RS 4
+Deprecated synonym for
+\fBdiff\-algorithm=histogram\fR\&.
+.RE
+.PP
+patience
+.RS 4
+Deprecated synonym for
+\fBdiff\-algorithm=patience\fR\&.
+.RE
+.PP
+diff\-algorithm=[histogram|minimal|myers|patience]
+.RS 4
+Use a different diff algorithm while merging, which can help avoid mismerges that occur due to unimportant matching lines (such as braces from distinct functions)\&. See also
+\fBgit-diff\fR(1)
+\fB\-\-diff\-algorithm\fR\&. Note that
+\fBort\fR
+defaults to
+\fBdiff\-algorithm=histogram\fR, while regular diffs currently default to the
+\fBdiff\&.algorithm\fR
+config setting\&.
+.RE
+.PP
 subtree[=<path>]
 .RS 4
 This option is a more advanced form of
@@ -925,40 +949,10 @@ strategy, where the strategy makes a guess on how two trees must be shifted to m
 .PP
 recursive
 .RS 4
-This can only resolve two heads using a 3\-way merge algorithm\&. When there is more than one common ancestor that can be used for 3\-way merge, it creates a merged tree of the common ancestors and uses that as the reference tree for the 3\-way merge\&. This has been reported to result in fewer merge conflicts without causing mismerges by tests done on actual merge commits taken from Linux 2\&.6 kernel development history\&. Additionally this can detect and handle merges involving renames\&. It does not make use of detected copies\&. This was the default strategy for resolving two heads from Git v0\&.99\&.9k until v2\&.33\&.0\&.
-.sp
-For a path that is a submodule, the same caution as
-\fIort\fR
-applies to this strategy\&.
-.sp
-The
-\fIrecursive\fR
-strategy takes the same options as
-\fIort\fR\&. However, there are two additional options that
-\fIort\fR
-ignores (not documented above) that are potentially useful with the
-\fIrecursive\fR
-strategy:
-.PP
-patience
-.RS 4
-Deprecated synonym for
-\fBdiff\-algorithm=patience\fR\&.
-.RE
-.PP
-diff\-algorithm=[patience|minimal|histogram|myers]
-.RS 4
-Use a different diff algorithm while merging, which can help avoid mismerges that occur due to unimportant matching lines (such as braces from distinct functions)\&. See also
-\fBgit-diff\fR(1)
-\fB\-\-diff\-algorithm\fR\&. Note that
+This is now a synonym for
+\fBort\fR\&. It was an alternative implementation until v2\&.49\&.0, but was redirected to mean
 \fBort\fR
-specifically uses
-\fBdiff\-algorithm=histogram\fR, while
-\fBrecursive\fR
-defaults to the
-\fBdiff\&.algorithm\fR
-config setting\&.
-.RE
+in v2\&.50\&.0\&. The previous recursive strategy was the default strategy for resolving two heads from Git v0\&.99\&.9k until v2\&.33\&.0\&.
 .RE
 .PP
 resolve
@@ -974,7 +968,7 @@ This resolves cases with more than two heads, but refuses to do a complex merge 
 ours
 .RS 4
 This resolves any number of heads, but the resulting tree of the merge is always that of the current branch head, effectively ignoring all changes from all other branches\&. It is meant to be used to supersede old development history of side branches\&. Note that this is different from the \-Xours option to the
-\fIrecursive\fR
+\fIort\fR
 merge strategy\&.
 .RE
 .PP
