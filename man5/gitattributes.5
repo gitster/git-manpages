@@ -2,12 +2,12 @@
 .\"     Title: gitattributes
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-17
+.\"      Date: 2025-04-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.391.g4bbb303af6
+.\"    Source: Git 2.49.0.411.ga2955b34f4
 .\"  Language: English
 .\"
-.TH "GITATTRIBUTES" "5" "2025-04-17" "Git 2\&.49\&.0\&.391\&.g4bbb30" "Git Manual"
+.TH "GITATTRIBUTES" "5" "2025-04-23" "Git 2\&.49\&.0\&.411\&.ga2955b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -102,7 +102,8 @@ negative patterns are forbidden
 patterns that match a directory do not recursively match paths inside that directory (so using the trailing\-slash
 \fBpath/\fR
 syntax is pointless in an attributes file; use
-\fBpath/\fR** instead)
+\fBpath/**\fR
+instead)
 .RE
 .sp
 When deciding what attributes are assigned to a path, Git consults \fB$GIT_DIR/info/attributes\fR file (which has the highest precedence), \&.\fBgitattributes\fR file in the same directory as the path in question, and its parent directories up to the toplevel of the work tree (the further the directory that contains \&.\fBgitattributes\fR is from the path in question, the lower its precedence)\&. Finally global and system\-wide files are considered (they have the lowest precedence)\&.
@@ -407,7 +408,8 @@ attribute\&. If you decide to use the
 \fBworking\-tree\-encoding\fR
 attribute in your repository, then it is strongly recommended to ensure that all clients working with the repository support it\&.
 .sp
-For example, Microsoft Visual Studio resources files (*\&.\fBrc\fR) or PowerShell script files (*\&.\fBps1\fR) are sometimes encoded in UTF\-16\&. If you declare *\&.\fBps1\fR
+For example, Microsoft Visual Studio resources files (\fB*\&.rc\fR) or PowerShell script files (\fB*\&.ps1\fR) are sometimes encoded in UTF\-16\&. If you declare
+\fB*\&.ps1\fR
 as files as UTF\-16 and you add
 \fBfoo\&.ps1\fR
 with a
@@ -827,7 +829,7 @@ As long as a "smudge\(->clean" results in the same output as a "clean" even on f
 \fBdiff\fR
 .RS 4
 .sp
-The attribute \fBdiff\fR affects how Git generates diffs for particular files\&. It can tell Git whether to generate a textual patch for the path or to treat the path as a binary file\&. It can also affect what line is shown on the hunk header \fB@@\fR \fB\-k,l\fR \fB+n,m\fR \fB@@\fR line, tell Git to use an external command to generate the diff, or ask Git to convert binary files to a text format before generating the diff\&.
+The attribute \fBdiff\fR affects how Git generates diffs for particular files\&. It can tell Git whether to generate a textual patch for the path or to treat the path as a binary file\&. It can also affect what line is shown on the hunk header \fB@@\fR \fB\-k\fR,l \fB+n\fR,m \fB@@\fR line, tell Git to use an external command to generate the diff, or ask Git to convert binary files to a text format before generating the diff\&.
 .PP
 Set
 .RS 4
@@ -1455,7 +1457,7 @@ The simplest way to mark a file as binary is to unset the diff attribute in the 
 .sp
 This will cause Git to generate \fBBinary\fR \fBfiles\fR \fBdiffer\fR (or a binary patch, if binary patches are enabled) instead of a regular diff\&.
 .sp
-However, one may also want to specify other diff driver attributes\&. For example, you might want to use \fBtextconv\fR to convert postscript files to an ASCII representation for human viewing, but otherwise treat them as binary files\&. You cannot specify both \fB\-diff\fR and \fBdiff=ps\fR attributes\&. The solution is to use the \fBdiff\&.\fR*\&.\fBbinary\fR config option:
+However, one may also want to specify other diff driver attributes\&. For example, you might want to use \fBtextconv\fR to convert postscript files to an ASCII representation for human viewing, but otherwise treat them as binary files\&. You cannot specify both \fB\-diff\fR and \fBdiff=ps\fR attributes\&. The solution is to use the \fBdiff\&.*\&.binary\fR config option:
 .sp
 .if n \{\
 .RS 4
@@ -1569,13 +1571,13 @@ To define a custom merge driver \fBfilfre\fR, add a section to your \fB$GIT_DIR/
 .RE
 .\}
 .sp
-The \fBmerge\&.\fR*\&.\fBname\fR variable gives the driver a human\-readable name\&.
+The \fBmerge\&.*\&.name\fR variable gives the driver a human\-readable name\&.
 .sp
-The \fBmerge\&.\fR*\&.\fBdriver\fR variable\(cqs value is used to construct a command to run to common ancestor\(cqs version (%O), current version (%A) and the other branches\*(Aq version (%B)\&. These three tokens are replaced with the names of temporary files that hold the contents of these versions when the command line is built\&. Additionally, %L will be replaced with the conflict marker size (see below)\&.
+The \fBmerge\&.*\&.driver\fR variable\(cqs value is used to construct a command to run to common ancestor\(cqs version (%O), current version (%A) and the other branches\*(Aq version (%B)\&. These three tokens are replaced with the names of temporary files that hold the contents of these versions when the command line is built\&. Additionally, %L will be replaced with the conflict marker size (see below)\&.
 .sp
 The merge driver is expected to leave the result of the merge in the file named with %A by overwriting it, and exit with zero status if it managed to merge them cleanly, or non\-zero if there were conflicts\&. When the driver crashes (e\&.g\&. killed by SEGV), it is expected to exit with non\-zero status that are higher than 128, and in such a case, the merge results in a failure (which is different from producing a conflict)\&.
 .sp
-The \fBmerge\&.\fR*\&.\fBrecursive\fR variable specifies what other merge driver to use when the merge driver is called for an internal merge between common ancestors, when there are more than one\&. When left unspecified, the driver itself is used for both internal merge and the final merge\&.
+The \fBmerge\&.*\&.recursive\fR variable specifies what other merge driver to use when the merge driver is called for an internal merge between common ancestors, when there are more than one\&. When left unspecified, the driver itself is used for both internal merge and the final merge\&.
 .sp
 The merge driver can learn the pathname in which the merged result will be stored via placeholder %P\&. The conflict labels to be used for the common ancestor, local head and other head can be passed by using %S, %X and %Y respectively\&.
 .RE

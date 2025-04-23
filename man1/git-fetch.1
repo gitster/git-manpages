@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-17
+.\"      Date: 2025-04-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.391.g4bbb303af6
+.\"    Source: Git 2.49.0.411.ga2955b34f4
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "2025-04-17" "Git 2\&.49\&.0\&.391\&.g4bbb30" "Git Manual"
+.TH "GIT\-FETCH" "1" "2025-04-23" "Git 2\&.49\&.0\&.411\&.ga2955b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -132,7 +132,8 @@ option below\&.
 \-\-negotiate\-only
 .RS 4
 Do not fetch anything from the server, and instead print the ancestors of the provided
-\fB\-\-negotiation\-tip=\fR* arguments, which we have in common with the server\&.
+\fB\-\-negotiation\-tip=*\fR
+arguments, which we have in common with the server\&.
 .sp
 This is incompatible with
 \fB\-\-recurse\-submodules=\fR[\fByes\fR|\fBon\-demand\fR]\&. Internally this is used to implement the
@@ -255,7 +256,7 @@ when the filter definition has changed\&. Automatic post\-fetch maintenance will
 \-\-refmap=<refspec>
 .RS 4
 When fetching refs listed on the command line, use the specified refspec (can be given more than once) to map the refs to remote\-tracking branches, instead of the values of
-\fBremote\&.\fR*\&.\fBfetch\fR
+\fBremote\&.*\&.fetch\fR
 configuration variables for the remote repository\&. Providing an empty
 \fI<refspec>\fR
 to the
@@ -266,7 +267,8 @@ option causes Git to ignore the configured refspecs and rely entirely on the ref
 \-t, \-\-tags
 .RS 4
 Fetch all tags from the remote (i\&.e\&., fetch remote tags
-\fBrefs/tags/\fR* into local tags with the same name), in addition to whatever else would otherwise be fetched\&. Using this option alone does not subject tags to pruning, even if \-\-prune is used (though tags may be pruned anyway if they are also the destination of an explicit refspec; see
+\fBrefs/tags/*\fR
+into local tags with the same name), in addition to whatever else would otherwise be fetched\&. Using this option alone does not subject tags to pruning, even if \-\-prune is used (though tags may be pruned anyway if they are also the destination of an explicit refspec; see
 \fB\-\-prune\fR)\&.
 .RE
 .PP
@@ -438,9 +440,17 @@ below)\&.
 .sp
 The format of a <refspec> parameter is an optional plus
 \fB+\fR, followed by the source <src>, followed by a colon
-\fB:\fR, followed by the destination <dst>\&. The colon can be omitted when <dst> is empty\&. <src> is typically a ref, or a glob pattern with a single * that is used to match a set of refs, but it can also be a fully spelled hex object name\&.
+\fB:\fR, followed by the destination <dst>\&. The colon can be omitted when <dst> is empty\&. <src> is typically a ref, or a glob pattern with a single
+\fB*\fR
+that is used to match a set of refs, but it can also be a fully spelled hex object name\&.
 .sp
-A <refspec> may contain a * in its <src> to indicate a simple pattern match\&. Such a refspec functions like a glob that matches any ref with the pattern\&. A pattern <refspec> must have one and only one * in both the <src> and <dst>\&. It will map refs to the destination by replacing the * with the contents matched from the source\&.
+A <refspec> may contain a
+\fB*\fR
+in its <src> to indicate a simple pattern match\&. Such a refspec functions like a glob that matches any ref with the pattern\&. A pattern <refspec> must have one and only one
+\fB*\fR
+in both the <src> and <dst>\&. It will map refs to the destination by replacing the
+\fB*\fR
+with the contents matched from the source\&.
 .sp
 If a refspec is prefixed by
 \fB^\fR, it will be interpreted as a negative refspec\&. Rather than specifying which refs to fetch or which local refs to update, such a refspec will instead specify refs to exclude\&. A ref will be considered to match if it matches at least one positive refspec, and does not match any negative refspec\&. Negative refspecs can be useful to restrict the scope of a pattern refspec so that it will not include specific refs\&. Negative refspecs can themselves be pattern refspecs\&. However, they may only contain a <src> and do not specify a <dst>\&. Fully spelled out hex object names are also not supported\&.
@@ -463,11 +473,13 @@ are noted below\&.
 .sp
 Until Git version 2\&.20, and unlike when pushing with
 \fBgit-push\fR(1), any updates to
-\fBrefs/tags/\fR* would be accepted without
+\fBrefs/tags/*\fR
+would be accepted without
 \fB+\fR
 in the refspec (or
 \fB\-\-force\fR)\&. When fetching, we promiscuously considered all tag updates from a remote to be forced fetches\&. Since Git version 2\&.20, fetching to update
-\fBrefs/tags/\fR* works the same way as when pushing\&. I\&.e\&. any updates will be rejected without
+\fBrefs/tags/*\fR
+works the same way as when pushing\&. I\&.e\&. any updates will be rejected without
 \fB+\fR
 in the refspec (or
 \fB\-\-force\fR)\&.
@@ -492,7 +504,8 @@ As with pushing with
 to a refspec (or using the
 \fB\-\-force\fR
 command line option)\&. The only exception to this is that no amount of forcing will make the
-\fBrefs/heads/\fR* namespace accept a non\-commit object\&.
+\fBrefs/heads/*\fR
+namespace accept a non\-commit object\&.
 .if n \{\
 .sp
 .\}
@@ -880,8 +893,9 @@ or
 values are used as the refspecs\(em\:they specify which refs to fetch and which local refs to update\&. The example above will fetch all branches that exist in the
 \fBorigin\fR
 (i\&.e\&. any ref that matches the left\-hand side of the value,
-\fBrefs/heads/\fR*) and update the corresponding remote\-tracking branches in the
-\fBrefs/remotes/origin/\fR* hierarchy\&.
+\fBrefs/heads/*\fR) and update the corresponding remote\-tracking branches in the
+\fBrefs/remotes/origin/*\fR
+hierarchy\&.
 .RE
 .sp
 .RS 4
@@ -946,15 +960,15 @@ To prune references as part of your normal workflow without needing to remember 
 .sp
 Here\(cqs where things get tricky and more specific\&. The pruning feature doesn\(cqt actually care about branches, instead it\(cqll prune local \(<-\(-> remote\-references as a function of the refspec of the remote (see \fI<refspec>\fR and CONFIGURED REMOTE\-TRACKING BRANCHES above)\&.
 .sp
-Therefore if the refspec for the remote includes e\&.g\&. \fBrefs/tags/\fR*:refs/tags/*, or you manually run e\&.g\&. \fBgit\fR \fBfetch\fR \fB\-\-prune\fR \fI<name>\fR "refs/tags/*:refs/tags/*" it won\(cqt be stale remote tracking branches that are deleted, but any local tag that doesn\(cqt exist on the remote\&.
+Therefore if the refspec for the remote includes e\&.g\&. \fBrefs/tags/*:refs/tags/*\fR, or you manually run e\&.g\&. \fBgit\fR \fBfetch\fR \fB\-\-prune\fR \fI<name>\fR "refs/tags/*:refs/tags/*" it won\(cqt be stale remote tracking branches that are deleted, but any local tag that doesn\(cqt exist on the remote\&.
 .sp
 This might not be what you expect, i\&.e\&. you want to prune remote \fI<name>\fR, but also explicitly fetch tags from it, so when you fetch from it you delete all your local tags, most of which may not have come from the \fI<name>\fR remote in the first place\&.
 .sp
-So be careful when using this with a refspec like \fBrefs/tags/\fR*:refs/tags/*, or any other refspec which might map references from multiple remotes to the same local namespace\&.
+So be careful when using this with a refspec like \fBrefs/tags/*:refs/tags/*\fR, or any other refspec which might map references from multiple remotes to the same local namespace\&.
 .sp
 Since keeping up\-to\-date with both branches and tags on the remote is a common use\-case the \fB\-\-prune\-tags\fR option can be supplied along with \fB\-\-prune\fR to prune local tags that don\(cqt exist on the remote, and force\-update those tags that differ\&. Tag pruning can also be enabled with \fBfetch\&.pruneTags\fR or \fBremote\&.\fR\fI<name>\fR\fB\&.pruneTags\fR in the config\&. See \fBgit-config\fR(1)\&.
 .sp
-The \fB\-\-prune\-tags\fR option is equivalent to having \fBrefs/tags/\fR*:refs/tags/* declared in the refspecs of the remote\&. This can lead to some seemingly strange interactions:
+The \fB\-\-prune\-tags\fR option is equivalent to having \fBrefs/tags/*:refs/tags/*\fR declared in the refspecs of the remote\&. This can lead to some seemingly strange interactions:
 .sp
 .if n \{\
 .RS 4
@@ -1016,7 +1030,7 @@ When using \fB\-\-porcelain\fR, the output format is intended to be machine\-par
 .sp
 The status of up\-to\-date refs is shown only if the \-\-verbose option is used\&.
 .sp
-In compact output mode, specified with configuration variable fetch\&.output, if either entire \fI<from>\fR or \fI<to>\fR is found in the other string, it will be substituted with * in the other string\&. For example, \fBmaster\fR \fB\-\fR> \fBorigin/master\fR becomes \fBmaster\fR \fB\-\fR> \fBorigin/\fR*\&.
+In compact output mode, specified with configuration variable fetch\&.output, if either entire \fI<from>\fR or \fI<to>\fR is found in the other string, it will be substituted with \fB*\fR in the other string\&. For example, \fBmaster\fR \fB\-\fR> \fBorigin/master\fR becomes \fBmaster\fR \fB\-\fR> \fBorigin/*\fR\&.
 .PP
 flag
 .RS 4
@@ -1042,7 +1056,7 @@ for a successfully pruned ref;
 for a successful tag update;
 .RE
 .PP
-*
+\fB*\fR
 .RS 4
 for a successfully fetched new ref;
 .RE
@@ -1284,7 +1298,8 @@ and the PRUNING section of
 fetch\&.pruneTags
 .RS 4
 If true, fetch will automatically behave as if the
-\fBrefs/tags/\fR*:refs/tags/* refspec was provided when pruning, if not set already\&. This allows for setting both this option and
+\fBrefs/tags/*:refs/tags/*\fR
+refspec was provided when pruning, if not set already\&. This allows for setting both this option and
 \fBfetch\&.prune\fR
 to maintain a 1=1 mapping to upstream refs\&. See also
 \fBremote\&.\fR\fI<name>\fR\fB\&.pruneTags\fR

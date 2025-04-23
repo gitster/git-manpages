@@ -2,12 +2,12 @@
 .\"     Title: gitignore
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-17
+.\"      Date: 2025-04-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.391.g4bbb303af6
+.\"    Source: Git 2.49.0.411.ga2955b34f4
 .\"  Language: English
 .\"
-.TH "GITIGNORE" "5" "2025-04-17" "Git 2\&.49\&.0\&.391\&.g4bbb30" "Git Manual"
+.TH "GITIGNORE" "5" "2025-04-23" "Git 2\&.49\&.0\&.411\&.ga2955b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -150,7 +150,7 @@ A blank line matches no files, so it can serve as a separator for readability\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-A line starting with # serves as a comment\&. Put a backslash ("\e") in front of the first hash for patterns that begin with a hash\&.
+A line starting with # serves as a comment\&. Put a backslash ("\fB\e\fR") in front of the first hash for patterns that begin with a hash\&.
 .RE
 .sp
 .RS 4
@@ -161,7 +161,7 @@ A line starting with # serves as a comment\&. Put a backslash ("\e") in front of
 .sp -1
 .IP \(bu 2.3
 .\}
-Trailing spaces are ignored unless they are quoted with backslash ("\e")\&.
+Trailing spaces are ignored unless they are quoted with backslash ("\fB\e\fR")\&.
 .RE
 .sp
 .RS 4
@@ -172,7 +172,7 @@ Trailing spaces are ignored unless they are quoted with backslash ("\e")\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-An optional prefix "!" which negates the pattern; any matching file excluded by a previous pattern will become included again\&. It is not possible to re\-include a file if a parent directory of that file is excluded\&. Git doesn\(cqt list excluded directories for performance reasons, so any patterns on contained files have no effect, no matter where they are defined\&. Put a backslash ("\e") in front of the first "!" for patterns that begin with a literal "!", for example, "\e!important!\&.\fBtxt\fR"\&.
+An optional prefix "!" which negates the pattern; any matching file excluded by a previous pattern will become included again\&. It is not possible to re\-include a file if a parent directory of that file is excluded\&. Git doesn\(cqt list excluded directories for performance reasons, so any patterns on contained files have no effect, no matter where they are defined\&. Put a backslash ("\fB\e\fR") in front of the first "!" for patterns that begin with a literal "!", for example, "\fB\e\fR!important!\&.\fBtxt\fR"\&.
 .RE
 .sp
 .RS 4
@@ -243,10 +243,10 @@ file)\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-An asterisk "*" matches anything except a slash\&. The character "?" matches any one character except "\fB/\fR"\&. The range notation, e\&.g\&. [\fBa\-zA\-Z\fR], can be used to match one of the characters in a range\&. See fnmatch(3) and the FNM_PATHNAME flag for a more detailed description\&.
+An asterisk "\fB*\fR" matches anything except a slash\&. The character "?" matches any one character except "\fB/\fR"\&. The range notation, e\&.g\&. [\fBa\-zA\-Z\fR], can be used to match one of the characters in a range\&. See fnmatch(3) and the FNM_PATHNAME flag for a more detailed description\&.
 .RE
 .sp
-Two consecutive asterisks ("**") in patterns matched against full pathname may have special meaning:
+Two consecutive asterisks ("\fB**\fR") in patterns matched against full pathname may have special meaning:
 .sp
 .RS 4
 .ie n \{\
@@ -256,7 +256,7 @@ Two consecutive asterisks ("**") in patterns matched against full pathname may h
 .sp -1
 .IP \(bu 2.3
 .\}
-A leading "**" followed by a slash means match in all directories\&. For example, "**/foo" matches file or directory "\fBfoo\fR" anywhere, the same as pattern "\fBfoo\fR"\&. "**/foo/bar" matches file or directory "\fBbar\fR" anywhere that is directly under directory "\fBfoo\fR"\&.
+A leading "\fB**\fR" followed by a slash means match in all directories\&. For example, "\fB**/foo\fR" matches file or directory "\fBfoo\fR" anywhere, the same as pattern "\fBfoo\fR"\&. "\fB**/foo/bar\fR" matches file or directory "\fBbar\fR" anywhere that is directly under directory "\fBfoo\fR"\&.
 .RE
 .sp
 .RS 4
@@ -267,7 +267,7 @@ A leading "**" followed by a slash means match in all directories\&. For example
 .sp -1
 .IP \(bu 2.3
 .\}
-A trailing "\fB/\fR**" matches everything inside\&. For example, "\fBabc/\fR**" matches all files inside directory "\fBabc\fR", relative to the location of the \&.\fBgitignore\fR
+A trailing "\fB/**\fR" matches everything inside\&. For example, "\fBabc/**\fR" matches all files inside directory "\fBabc\fR", relative to the location of the \&.\fBgitignore\fR
 file, with infinite depth\&.
 .RE
 .sp
@@ -279,7 +279,7 @@ file, with infinite depth\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-A slash followed by two consecutive asterisks then a slash matches zero or more directories\&. For example, "\fBa/\fR**/b" matches "\fBa/b\fR", "\fBa/x/b\fR", "\fBa/x/y/b\fR" and so on\&.
+A slash followed by two consecutive asterisks then a slash matches zero or more directories\&. For example, "\fBa/**/b\fR" matches "\fBa/b\fR", "\fBa/x/b\fR", "\fBa/x/y/b\fR" and so on\&.
 .RE
 .sp
 .RS 4
@@ -313,9 +313,10 @@ Git does not follow symbolic links when accessing a \&.\fBgitignore\fR file in t
 .IP \(bu 2.3
 .\}
 The pattern
-\fBhello\&.\fR* matches any file or directory whose name begins with
+\fBhello\&.*\fR
+matches any file or directory whose name begins with
 \fBhello\&.\fR\&. If one wants to restrict this only to the directory and not in its subdirectories, one can prepend the pattern with a slash, i\&.e\&.
-\fB/hello\&.\fR*; the pattern now matches
+\fB/hello\&.*\fR; the pattern now matches
 \fBhello\&.txt\fR,
 \fBhello\&.c\fR
 but not
@@ -364,7 +365,7 @@ file\&. In other words, a leading slash is not relevant if there is already a mi
 .IP \(bu 2.3
 .\}
 The pattern
-\fBfoo/\fR*, matches
+\fBfoo/*\fR, matches
 \fBfoo/test\&.json\fR
 (a regular file),
 \fBfoo/bar\fR
@@ -426,7 +427,7 @@ Another example:
 .sp
 The second \&.gitignore prevents Git from ignoring \fBarch/foo/kernel/vmlinux\&.lds\&.S\fR\&.
 .sp
-Example to exclude everything except a specific directory \fBfoo/bar\fR (note the \fB/\fR* \- without the slash, the wildcard would also exclude everything within \fBfoo/bar\fR):
+Example to exclude everything except a specific directory \fBfoo/bar\fR (note the \fB/*\fR \- without the slash, the wildcard would also exclude everything within \fBfoo/bar\fR):
 .sp
 .if n \{\
 .RS 4

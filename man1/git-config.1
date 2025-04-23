@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-04-17
+.\"      Date: 2025-04-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.391.g4bbb303af6
+.\"    Source: Git 2.49.0.411.ga2955b34f4
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-04-17" "Git 2\&.49\&.0\&.391\&.g4bbb30" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-04-23" "Git 2\&.49\&.0\&.411\&.ga2955b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -508,7 +508,8 @@ as fallback\&.
 \-\-[no\-]includes
 .RS 4
 Respect
-\fBinclude\&.\fR* directives in config files when looking up values\&. Defaults to
+\fBinclude\&.*\fR
+directives in config files when looking up values\&. Defaults to
 \fBoff\fR
 when a specific file is given (e\&.g\&., using
 \fB\-\-file\fR,
@@ -1014,22 +1015,22 @@ Sections can be further divided into subsections\&. To begin a subsection put it
 .RE
 .\}
 .sp
-Subsection names are case sensitive and can contain any characters except newline and the null byte\&. Doublequote " and backslash can be included by escaping them as \e" and \e\e, respectively\&. Backslashes preceding other characters are dropped when reading; for example, \et is read as \fBt\fR and \e0 is read as \fB0\fR\&. Section headers cannot span multiple lines\&. Variables may belong directly to a section or to a given subsection\&. You can have [\fBsection\fR] if you have [\fBsection\fR "subsection"], but you don\(cqt need to\&.
+Subsection names are case sensitive and can contain any characters except newline and the null byte\&. Doublequote " and backslash can be included by escaping them as \fB\e\fR" and \fB\e\e\fR, respectively\&. Backslashes preceding other characters are dropped when reading; for example, \fB\et\fR is read as \fBt\fR and \fB\e0\fR is read as \fB0\fR\&. Section headers cannot span multiple lines\&. Variables may belong directly to a section or to a given subsection\&. You can have [\fBsection\fR] if you have [\fBsection\fR "subsection"], but you don\(cqt need to\&.
 .sp
 There is also a deprecated [\fBsection\&.subsection\fR] syntax\&. With this syntax, the subsection name is converted to lower\-case and is also compared case sensitively\&. These subsection names follow the same restrictions as section names\&.
 .sp
 All the other lines (and the remainder of the line after the section header) are recognized as setting variables, in the form \fIname = value\fR (or just \fIname\fR, which is a short\-hand to say that the variable is the boolean "true")\&. The variable names are case\-insensitive, allow only alphanumeric characters and \fB\-\fR, and must start with an alphabetic character\&.
 .sp
-Whitespace characters surrounding \fBname\fR, \fB=\fR and \fBvalue\fR are discarded\&. Internal whitespace characters within \fIvalue\fR are retained verbatim\&. Comments starting with either # or ; and extending to the end of line are discarded\&. A line that defines a value can be continued to the next line by ending it with a backslash (\e); the backslash and the end\-of\-line characters are discarded\&.
+Whitespace characters surrounding \fBname\fR, \fB=\fR and \fBvalue\fR are discarded\&. Internal whitespace characters within \fIvalue\fR are retained verbatim\&. Comments starting with either # or ; and extending to the end of line are discarded\&. A line that defines a value can be continued to the next line by ending it with a backslash (\fB\e\fR); the backslash and the end\-of\-line characters are discarded\&.
 .sp
-If \fBvalue\fR needs to contain leading or trailing whitespace characters, it must be enclosed in double quotation marks (")\&. Inside double quotation marks, double quote (") and backslash (\e) characters must be escaped: use \e" for " and \e\e for \e\&.
+If \fBvalue\fR needs to contain leading or trailing whitespace characters, it must be enclosed in double quotation marks (")\&. Inside double quotation marks, double quote (") and backslash (\fB\e\fR) characters must be escaped: use \fB\e\fR" for " and \fB\e\e\fR for \fB\e\fR\&.
 .sp
-The following escape sequences (beside \e" and \e\e) are recognized: \en for newline character (NL), \et for horizontal tabulation (HT, TAB) and \eb for backspace (BS)\&. Other char escape sequences (including octal escape sequences) are invalid\&.
+The following escape sequences (beside \fB\e\fR" and \fB\e\e\fR) are recognized: \fB\en\fR for newline character (NL), \fB\et\fR for horizontal tabulation (HT, TAB) and \fB\eb\fR for backspace (BS)\&. Other char escape sequences (including octal escape sequences) are invalid\&.
 .SS "Includes"
 .sp
 The \fBinclude\fR and \fBincludeIf\fR sections allow you to include config directives from another source\&. These sections behave identically to each other with the exception that \fBincludeIf\fR sections may be ignored if their condition does not evaluate to true; see "Conditional includes" below\&.
 .sp
-You can include a config file from another by setting the special \fBinclude\&.path\fR (or \fBincludeIf\&.\fR*\&.\fBpath\fR) variable to the name of the file to be included\&. The variable takes a pathname as its value, and is subject to tilde expansion\&. These variables can be given multiple times\&.
+You can include a config file from another by setting the special \fBinclude\&.path\fR (or \fBincludeIf\&.*\&.path\fR) variable to the name of the file to be included\&. The variable takes a pathname as its value, and is subject to tilde expansion\&. These variables can be given multiple times\&.
 .sp
 The contents of the included file are inserted immediately, as if they had been found at the location of the include directive\&. If the value of the variable is a relative path, the path is considered to be relative to the configuration file in which the include directive was found\&. See below for examples\&.
 .SS "Conditional includes"
@@ -1048,8 +1049,10 @@ The \&.git location may be auto\-discovered, or come from
 \fB$GIT_DIR\fR
 environment variable\&. If the repository is auto\-discovered via a \&.git file (e\&.g\&. from submodules, or a linked worktree), the \&.git location would be the final location where the \&.git directory is, not where the \&.git file is\&.
 .sp
-The pattern can contain standard globbing wildcards and two additional ones, **/ and
-\fB/\fR**, that can match multiple path components\&. Please refer to
+The pattern can contain standard globbing wildcards and two additional ones,
+\fB**/\fR
+and
+\fB/**\fR, that can match multiple path components\&. Please refer to
 \fBgitignore\fR(5)
 for details\&. For convenience:
 .sp
@@ -1090,9 +1093,13 @@ If the pattern starts with \&.\fB/\fR, it is replaced with the directory contain
 If the pattern does not start with either
 \fB~/\fR, \&.\fB/\fR
 or
-\fB/\fR, **/ will be automatically prepended\&. For example, the pattern
+\fB/\fR,
+\fB**/\fR
+will be automatically prepended\&. For example, the pattern
 \fBfoo/bar\fR
-becomes **/foo/bar and would match
+becomes
+\fB**/foo/bar\fR
+and would match
 \fB/any/path/to/foo/bar\fR\&.
 .RE
 .sp
@@ -1105,10 +1112,12 @@ becomes **/foo/bar and would match
 .IP \(bu 2.3
 .\}
 If the pattern ends with
-\fB/\fR, ** will be automatically added\&. For example, the pattern
+\fB/\fR,
+\fB**\fR
+will be automatically added\&. For example, the pattern
 \fBfoo/\fR
 becomes
-\fBfoo/\fR**\&. In other words, it matches "foo" and everything inside, recursively\&.
+\fBfoo/**\fR\&. In other words, it matches "foo" and everything inside, recursively\&.
 .RE
 .RE
 .PP
@@ -1123,21 +1132,27 @@ except that matching is done case\-insensitively (e\&.g\&. on case\-insensitive 
 .RS 4
 The data that follows the keyword
 \fBonbranch:\fR
-is taken to be a pattern with standard globbing wildcards and two additional ones, **/ and
-\fB/\fR**, that can match multiple path components\&. If we are in a worktree where the name of the branch that is currently checked out matches the pattern, the include condition is met\&.
+is taken to be a pattern with standard globbing wildcards and two additional ones,
+\fB**/\fR
+and
+\fB/**\fR, that can match multiple path components\&. If we are in a worktree where the name of the branch that is currently checked out matches the pattern, the include condition is met\&.
 .sp
 If the pattern ends with
-\fB/\fR, ** will be automatically added\&. For example, the pattern
+\fB/\fR,
+\fB**\fR
+will be automatically added\&. For example, the pattern
 \fBfoo/\fR
 becomes
-\fBfoo/\fR**\&. In other words, it matches all branches that begin with
+\fBfoo/**\fR\&. In other words, it matches all branches that begin with
 \fBfoo/\fR\&. This is useful if your branches are organized hierarchically and you would like to apply a configuration to all the branches in that hierarchy\&.
 .RE
 .PP
-\fBhasconfig:remote\&.\fR*\&.\fBurl:\fR
+\fBhasconfig:remote\&.*\&.url:\fR
 .RS 4
-The data that follows this keyword is taken to be a pattern with standard globbing wildcards and two additional ones, **/ and
-\fB/\fR**, that can match multiple components\&. The first time this keyword is seen, the rest of the config files will be scanned for remote URLs (without applying any values)\&. If there exists at least one remote URL that matches this pattern, the include condition is met\&.
+The data that follows this keyword is taken to be a pattern with standard globbing wildcards and two additional ones,
+\fB**/\fR
+and
+\fB/**\fR, that can match multiple components\&. The first time this keyword is seen, the rest of the config files will be scanned for remote URLs (without applying any values)\&. If there exists at least one remote URL that matches this pattern, the include condition is met\&.
 .sp
 Files included by this option (directly or indirectly) are not allowed to contain remote URLs\&.
 .sp
@@ -1555,8 +1570,10 @@ pushUnqualifiedRefname
 Shown when
 \fBgit-push\fR(1)
 gives up trying to guess based on the source and destination refs what remote ref namespace the source belongs in, but where we can still suggest that the user push to either
-\fBrefs/heads/\fR* or
-\fBrefs/tags/\fR* based on the type of the source object\&.
+\fBrefs/heads/*\fR
+or
+\fBrefs/tags/*\fR
+based on the type of the source object\&.
 .RE
 .PP
 pushUpdateRejected
@@ -1855,7 +1872,10 @@ can help you debug the command being run for your alias\&.
 am\&.keepcr
 .RS 4
 If true, git\-am will call git\-mailsplit for patches in mbox format with parameter
-\fB\-\-keep\-cr\fR\&. In this case git\-mailsplit will not remove \er from lines ending with \er\en\&. Can be overridden by giving
+\fB\-\-keep\-cr\fR\&. In this case git\-mailsplit will not remove
+\fB\er\fR
+from lines ending with
+\fB\er\en\fR\&. Can be overridden by giving
 \fB\-\-no\-keep\-cr\fR
 from the command line\&. See
 \fBgit-am\fR(1),
@@ -1922,7 +1942,7 @@ command line option are used, this configuration variable has no effect\&.
 .ps -1
 .br
 .sp
-The configuration options in \fBbitmapPseudoMerge\&.\fR* are considered EXPERIMENTAL and may be subject to change or be removed entirely in the future\&. For more information about the pseudo\-merge bitmap feature, see the "Pseudo\-merge bitmaps" section of \fBgitpacking\fR(7)\&.
+The configuration options in \fBbitmapPseudoMerge\&.*\fR are considered EXPERIMENTAL and may be subject to change or be removed entirely in the future\&. For more information about the pseudo\-merge bitmap feature, see the "Pseudo\-merge bitmaps" section of \fBgitpacking\fR(7)\&.
 .sp .5v
 .RE
 .PP
@@ -1952,7 +1972,7 @@ in the function
 \fBf\fR(\fBn\fR)
 \fB=\fR
 \fBC\fR
-*
+\fB*\fR
 \fBn^\-k\fR, where
 \fBf\fR(\fBn\fR) is the size of the `n`th group\&.
 .sp
@@ -2307,7 +2327,8 @@ option in
 bundle\&.*
 .RS 4
 The
-\fBbundle\&.\fR* keys may appear in a bundle list file found via the
+\fBbundle\&.*\fR
+keys may appear in a bundle list file found via the
 \fBgit\fR
 \fBclone\fR
 \fB\-\-bundle\-uri\fR
@@ -2342,7 +2363,8 @@ commands\&. The heuristic signals that there are additional keys available for e
 bundle\&.<id>\&.*
 .RS 4
 The
-\fBbundle\&.\fR\fI<id>\fR\&.* keys are used to describe a single item in the bundle list, grouped under
+\fBbundle\&.\fR\fI<id>\fR\fB\&.*\fR
+keys are used to describe a single item in the bundle list, grouped under
 \fI<id>\fR
 for identification purposes\&.
 .RE
@@ -2458,7 +2480,8 @@ is used, also apply the filter to submodules\&.
 color\&.advice
 .RS 4
 A boolean to enable/disable color in hints (e\&.g\&. when a push failed, see
-\fBadvice\&.\fR* for a list)\&. May be set to
+\fBadvice\&.*\fR
+for a list)\&. May be set to
 \fBalways\fR,
 \fBfalse\fR
 (or
@@ -2491,11 +2514,11 @@ Instead of an absolute timestamp relative timestamps work as well, e\&.g\&.
 is valid to address anything older than 2 weeks\&.
 .sp
 It defaults to
-\fBblue,12\fR
+\fBblue\fR,12
 \fBmonth\fR
-\fBago,white,1\fR
+\fBago\fR,white,1
 \fBmonth\fR
-\fBago,red\fR, which colors everything older than one year blue, recent changes between one month and one year old are kept white, and lines introduced within the last month are colored red\&.
+\fBago\fR,red, which colors everything older than one year blue, recent changes between one month and one year old are kept white, and lines introduced within the last month are colored red\&.
 .RE
 .PP
 color\&.blame\&.repeatedLines
@@ -3250,7 +3273,15 @@ core\&.quotePath
 .RS 4
 Commands that output paths (e\&.g\&.
 \fIls\-files\fR,
-\fIdiff\fR), will quote "unusual" characters in the pathname by enclosing the pathname in double\-quotes and escaping those characters with backslashes in the same way C escapes control characters (e\&.g\&. \et for TAB, \en for LF, \e\e for backslash) or bytes with values larger than 0x80 (e\&.g\&. octal \e302\e265 for "micro" in UTF\-8)\&. If this variable is set to false, bytes higher than 0x80 are not considered "unusual" any more\&. Double\-quotes, backslash and control characters are always escaped regardless of the setting of this variable\&. A simple space character is not considered "unusual"\&. Many commands can output pathnames completely verbatim using the
+\fIdiff\fR), will quote "unusual" characters in the pathname by enclosing the pathname in double\-quotes and escaping those characters with backslashes in the same way C escapes control characters (e\&.g\&.
+\fB\et\fR
+for TAB,
+\fB\en\fR
+for LF,
+\fB\e\e\fR
+for backslash) or bytes with values larger than 0x80 (e\&.g\&. octal
+\fB\e302\e265\fR
+for "micro" in UTF\-8)\&. If this variable is set to false, bytes higher than 0x80 are not considered "unusual" any more\&. Double\-quotes, backslash and control characters are always escaped regardless of the setting of this variable\&. A simple space character is not considered "unusual"\&. Many commands can output pathnames completely verbatim using the
 \fB\-z\fR
 option\&. The default value is true\&.
 .RE
@@ -3911,7 +3942,7 @@ When this configuration is encountered, the set of components starts with the pl
 resets the state so that the platform default is ignored\&.
 .sp
 The empty string resets the fsync configuration to the platform default\&. The default on most platforms is equivalent to
-\fBcore\&.fsync=committed,\-loose\-object\fR, which has good performance, but risks losing recent work in the event of an unclean system shutdown\&.
+\fBcore\&.fsync=committed\fR,\-loose\-object, which has good performance, but risks losing recent work in the event of an unclean system shutdown\&.
 .sp
 .RS 4
 .ie n \{\
@@ -3995,7 +4026,7 @@ hardens the index when it is modified\&.
 .\}
 \fBobjects\fR
 is an aggregate option that is equivalent to
-\fBloose\-object,pack\fR\&.
+\fBloose\-object\fR,pack\&.
 .RE
 .sp
 .RS 4
@@ -4020,7 +4051,7 @@ hardens references modified in the repo\&.
 .\}
 \fBderived\-metadata\fR
 is an aggregate option that is equivalent to
-\fBpack\-metadata,commit\-graph\fR\&.
+\fBpack\-metadata\fR,commit\-graph\&.
 .RE
 .sp
 .RS 4
@@ -4049,7 +4080,7 @@ or similar commands is hardened\&.
 .\}
 \fBadded\fR
 is an aggregate option that is currently equivalent to
-\fBcommitted,index\fR\&. This mode sacrifices additional performance to ensure that the results of commands like
+\fBcommitted\fR,index\&. This mode sacrifices additional performance to ensure that the results of commands like
 \fBgit\fR
 \fBadd\fR
 and similar operations are hardened\&.
@@ -4319,9 +4350,9 @@ parameters specifying the default behavior of the
 option to
 \fBgit-diff\fR(1)
 and friends\&. The defaults can be overridden on the command line (using
-\fB\-\-dirstat=\fR\fI<param>\fR\fB,\&.\&.\fR\&.)\&. The fallback defaults (when not changed by
+\fB\-\-dirstat=\fR\fI<param>\fR\fB,\fR\&.\&.\&.)\&. The fallback defaults (when not changed by
 \fBdiff\&.dirstat\fR) are
-\fBchanges,noncumulative,3\fR\&. The following parameters are available:
+\fBchanges\fR,noncumulative,3\&. The following parameters are available:
 .PP
 \fBchanges\fR
 .RS 4
@@ -4335,7 +4366,8 @@ Compute the dirstat numbers by doing the regular line\-based diff analysis, and 
 behavior than the
 \fBchanges\fR
 behavior, but it does count rearranged lines within a file as much as other changes\&. The resulting output is consistent with what you get from the other
-\fB\-\-\fR*stat options\&.
+\fB\-\-*stat\fR
+options\&.
 .RE
 .PP
 \fBfiles\fR
@@ -4359,7 +4391,7 @@ An integer parameter specifies a cut\-off percent (3% by default)\&. Directories
 .RE
 .sp
 Example: The following will count changed files, while ignoring directories with less than 10% of the total amount of changed files, and accumulating child directory counts in the parent directories:
-\fBfiles,10,cumulative\fR\&.
+\fBfiles\fR,10,cumulative\&.
 .RE
 .PP
 \fBdiff\&.statNameWidth\fR
@@ -4701,7 +4733,7 @@ reset the list to
 and
 \fBall\fR
 is a shorthand for
-\fBold,new,context\fR\&. The whitespace errors are colored with
+\fBold\fR,new,context\&. The whitespace errors are colored with
 \fBcolor\&.diff\&.whitespace\fR\&. The command line option
 \fB\-\-ws\-error\-highlight=\fR\fI<kind>\fR
 overrides this setting\&.
@@ -5290,7 +5322,8 @@ and the PRUNING section of
 fetch\&.pruneTags
 .RS 4
 If true, fetch will automatically behave as if the
-\fBrefs/tags/\fR*:refs/tags/* refspec was provided when pruning, if not set already\&. This allows for setting both this option and
+\fBrefs/tags/*:refs/tags/*\fR
+refspec was provided when pruning, if not set already\&. This allows for setting both this option and
 \fBfetch\&.prune\fR
 to maintain a 1=1 mapping to upstream refs\&. See also
 \fBremote\&.\fR\fI<name>\fR\fB\&.pruneTags\fR
@@ -5644,9 +5677,11 @@ instead, or to clone or fetch it set
 \fBfetch\&.fsck\&.\fR\fI<msg\-id>\fR\&.
 .sp
 The rest of the documentation discusses
-\fBfsck\&.\fR* for brevity, but the same applies for the corresponding
-\fBreceive\&.fsck\&.\fR* and
-\fBfetch\&.fsck\&.\fR*\&. variables\&.
+\fBfsck\&.*\fR
+for brevity, but the same applies for the corresponding
+\fBreceive\&.fsck\&.*\fR
+and
+\fBfetch\&.fsck\&.*\fR\&. variables\&.
 .sp
 Unlike variables like
 \fBcolor\&.ui\fR
@@ -5792,7 +5827,8 @@ will otherwise use to determine if there\(cqs work to do, such as
 .PP
 gc\&.autoPackLimit
 .RS 4
-When there are more than this many packs that are not marked with *\&.\fBkeep\fR
+When there are more than this many packs that are not marked with
+\fB*\&.keep\fR
 file in the repository,
 \fBgit\fR
 \fBgc\fR
@@ -6205,7 +6241,7 @@ is expected in the first line of its output\&. This allows for a script doing a 
 gpg\&.ssh\&.allowedSignersFile
 .RS 4
 A file containing ssh public keys which you are willing to trust\&. The file consists of one or more lines of principals followed by an ssh public key\&. e\&.g\&.:
-\fBuser1@example\&.com,user2@example\&.com\fR
+\fBuser1@example\&.com\fR,user2@example\&.\fBcom\fR
 \fBssh\-rsa\fR
 \fBAAAAX1\&.\&.\fR\&. See ssh\-keygen(1) "ALLOWED SIGNERS" for details\&. The principal is only used to identify the key and is available when verifying a signature\&.
 .sp
@@ -7154,8 +7190,10 @@ in
 Host/domain name (e\&.g\&.,
 \fBexample\&.com\fR
 in
-\fBhttps://example\&.com/\fR)\&. This field must match between the config key and the URL\&. It is possible to specify a * as part of the host name to match all subdomains at this level\&.
-\fBhttps://\fR*\&.\fBexample\&.com/\fR
+\fBhttps://example\&.com/\fR)\&. This field must match between the config key and the URL\&. It is possible to specify a
+\fB*\fR
+as part of the host name to match all subdomains at this level\&.
+\fBhttps://*\&.example\&.com/\fR
 for example would match
 \fBhttps://foo\&.example\&.com/\fR, but not
 \fBhttps://foo\&.bar\&.example\&.com/\fR\&.
@@ -8498,13 +8536,18 @@ pack\&.indexVersion
 .RS 4
 Specify the default pack index version\&. Valid values are 1 for legacy pack index used by Git versions prior to 1\&.5\&.2, and 2 for the new pack index with capabilities for packs larger than 4 GB as well as proper protection against the repacking of corrupted packs\&. Version 2 is the default\&. Note that version 2 is enforced and this config option is ignored whenever the corresponding pack is larger than 2 GB\&.
 .sp
-If you have an old Git that does not understand the version 2 *\&.\fBidx\fR
-file, cloning or fetching over a non\-native protocol (e\&.g\&. "http") that will copy both *\&.\fBpack\fR
-file and corresponding *\&.\fBidx\fR
-file from the other side may give you a repository that cannot be accessed with your older version of Git\&. If the *\&.\fBpack\fR
+If you have an old Git that does not understand the version 2
+\fB*\&.idx\fR
+file, cloning or fetching over a non\-native protocol (e\&.g\&. "http") that will copy both
+\fB*\&.pack\fR
+file and corresponding
+\fB*\&.idx\fR
+file from the other side may give you a repository that cannot be accessed with your older version of Git\&. If the
+\fB*\&.pack\fR
 file is smaller than 2 GB, however, you can use
 \fBgit-index-pack\fR(1)
-on the *\&.pack file to regenerate the *\&.\fBidx\fR
+on the *\&.pack file to regenerate the
+\fB*\&.idx\fR
 file\&.
 .RE
 .PP
@@ -9685,7 +9728,8 @@ repack\&.cruftWindow, repack\&.cruftWindowMemory, repack\&.cruftDepth, repack\&.
 Parameters used by
 \fBgit-pack-objects\fR(1)
 when generating a cruft pack and the respective parameters are not given over the command line\&. See similarly named
-\fBpack\&.\fR* configuration variables for defaults and meaning\&.
+\fBpack\&.*\fR
+configuration variables for defaults and meaning\&.
 .RE
 .PP
 rerere\&.autoUpdate
@@ -9780,11 +9824,14 @@ expands to a path relative to Git\(cqs (runtime) prefix\&.
 .sp
 To completely opt\-out of this security check, set
 \fBsafe\&.directory\fR
-to the string *\&. This will allow all repositories to be treated as if their directory was listed in the
+to the string
+\fB*\fR\&. This will allow all repositories to be treated as if their directory was listed in the
 \fBsafe\&.directory\fR
 list\&. If
-\fBsafe\&.directory=\fR* is set in system config and you want to re\-enable this protection, then initialize your list with an empty value before listing the repositories that you deem safe\&. Giving a directory with
-\fB/\fR* appended to it will allow access to all repositories under the named directory\&.
+\fBsafe\&.directory=*\fR
+is set in system config and you want to re\-enable this protection, then initialize your list with an empty value before listing the repositories that you deem safe\&. Giving a directory with
+\fB/*\fR
+appended to it will allow access to all repositories under the named directory\&.
 .sp
 As explained, Git only allows you to access repositories owned by yourself, i\&.e\&. the user who is running Git, by default\&. When Git is running as
 \fIroot\fR
@@ -10640,7 +10687,7 @@ environment variable\&. Defaults to 2\&.
 trace2\&.configParams
 .RS 4
 A comma\-separated list of patterns of "important" config settings that should be recorded in the trace2 output\&. For example,
-\fBcore\&.\fR*,remote\&.*\&.\fBurl\fR
+\fBcore\&.*\fR,remote\&.\fB*\&.url\fR
 would cause the trace2 output to contain events listing each configured remote\&. May be overridden by the
 \fBGIT_TRACE2_CONFIG_PARAMS\fR
 environment variable\&. Unset by default\&.
@@ -10649,8 +10696,7 @@ environment variable\&. Unset by default\&.
 trace2\&.envVars
 .RS 4
 A comma\-separated list of "important" environment variables that should be recorded in the trace2 output\&. For example,
-\fBGIT_HTTP_USER_AGENT,GIT_CONFIG\fR
-would cause the trace2 output to contain events listing the overrides for HTTP user agent and the location of the Git configuration file (assuming any are set)\&. May be overridden by the
+\fBGIT_HTTP_USER_AGENT\fR,GIT_CONFIG would cause the trace2 output to contain events listing the overrides for HTTP user agent and the location of the Git configuration file (assuming any are set)\&. May be overridden by the
 \fBGIT_TRACE2_ENV_VARS\fR
 environment variable\&. Unset by default\&.
 .RE
@@ -11203,7 +11249,7 @@ url\&.<base>\&.insteadOf
 Any URL that starts with this value will be rewritten to start, instead, with <base>\&. In cases where some site serves a large number of repositories, and serves them with multiple access methods, and some users need to use different access methods, this feature allows people to specify any of the equivalent URLs and have Git automatically rewrite the URL to the best alternative for the particular user, even for a never\-before\-seen repository on the site\&. When more than one insteadOf strings match a given URL, the longest match is used\&.
 .sp
 Note that any protocol restrictions will be applied to the rewritten URL\&. If the rewrite changes the URL to use a custom protocol or remote helper, you may need to adjust the
-\fBprotocol\&.\fR*\&.\fBallow\fR
+\fBprotocol\&.*\&.allow\fR
 config to permit the request\&. In particular, protocols you expect to use for submodules must be set to
 \fBalways\fR
 rather than the default of
