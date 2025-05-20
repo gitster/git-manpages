@@ -2,12 +2,12 @@
 .\"     Title: git-send-email
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-05-15
+.\"      Date: 2025-05-19
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.608.gcb96e1697a
+.\"    Source: Git 2.49.0.634.g8613c2bb6c
 .\"  Language: English
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "2025-05-15" "Git 2\&.49\&.0\&.608\&.gcb96e1" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "2025-05-19" "Git 2\&.49\&.0\&.634\&.g8613c2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -985,10 +985,10 @@ To avoid common misconfiguration mistakes,
 \fBgit-send-email\fR(1)
 will abort with a warning if any configuration options for "sendmail" exist\&. Set this variable to bypass the check\&.
 .RE
-.SH "EXAMPLES"
-.SS "Use gmail as the smtp server"
+.SH "EXAMPLES OF SMTP SERVERS"
+.SS "Use Gmail as the SMTP Server"
 .sp
-To use \fIgit send\-email\fR to send your patches through the GMail SMTP server, edit ~/\&.gitconfig to specify your account settings:
+To use \fBgit\fR \fBsend\-email\fR to send your patches through the Gmail SMTP server, edit \fB~/\&.gitconfig\fR to specify your account settings:
 .sp
 .if n \{\
 .RS 4
@@ -1006,6 +1006,44 @@ To use \fIgit send\-email\fR to send your patches through the GMail SMTP server,
 .sp
 If you have multi\-factor authentication set up on your Gmail account, you can generate an app\-specific password for use with \fIgit send\-email\fR\&. Visit \m[blue]\fBhttps://security\&.google\&.com/settings/security/apppasswords\fR\m[] to create it\&.
 .sp
+You can also use OAuth2\&.0 authentication with Gmail\&. \fBOAUTHBEARER\fR and \fBXOAUTH2\fR are common methods used for this type of authentication\&. Gmail supports both of them\&. As an example, if you want to use \fBOAUTHBEARER\fR, edit your \fB~/\&.gitconfig\fR file and add \fBsmtpAuth\fR \fB=\fR \fBOAUTHBEARER\fR to your account settings:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[sendemail]
+        smtpEncryption = tls
+        smtpServer = smtp\&.gmail\&.com
+        smtpUser = yourname@gmail\&.com
+        smtpServerPort = 587
+        smtpAuth = OAUTHBEARER
+.fi
+.if n \{\
+.RE
+.\}
+.SS "Use Microsoft Outlook as the SMTP Server"
+.sp
+Unlike Gmail, Microsoft Outlook no longer supports app\-specific passwords\&. Therefore, OAuth2\&.0 authentication must be used for Outlook\&. Also, it only supports \fBXOAUTH2\fR authentication method\&.
+.sp
+Edit \fB~/\&.gitconfig\fR to specify your account settings for Outlook and use its SMTP server with \fBgit\fR \fBsend\-email\fR:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[sendemail]
+        smtpEncryption = tls
+        smtpServer = smtp\&.office365\&.com
+        smtpUser = yourname@outlook\&.com
+        smtpServerPort = 587
+        smtpAuth = XOAUTH2
+.fi
+.if n \{\
+.RE
+.\}
+.SH "SENDING PATCHES"
+.sp
 Once your commits are ready to be sent to the mailing list, run the following commands:
 .sp
 .if n \{\
@@ -1020,7 +1058,37 @@ $ git send\-email outgoing/*
 .RE
 .\}
 .sp
-The first time you run it, you will be prompted for your credentials\&. Enter the app\-specific or your regular password as appropriate\&. If you have credential helper configured (see \fBgit-credential\fR(1)), the password will be saved in the credential store so you won\(cqt have to type it the next time\&.
+The first time you run it, you will be prompted for your credentials\&. Enter the app\-specific or your regular password as appropriate\&.
+.sp
+If you have a credential helper configured (see \fBgit-credential\fR(1)), the password will be saved in the credential store so you won\(cqt have to type it the next time\&.
+.sp
+If you are using OAuth2\&.0 authentication, you need to use an access token in place of a password when prompted\&. Various OAuth2\&.0 token generators are available online\&. Community maintained credential helpers for Gmail and Outlook are also available:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\m[blue]\fBgit\-credential\-gmail\fR\m[]\&\s-2\u[1]\d\s+2
+(cross platform, dedicated helper for authenticating Gmail accounts)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\m[blue]\fBgit\-credential\-outlook\fR\m[]\&\s-2\u[1]\d\s+2
+(cross platform, dedicated helper for authenticating Microsoft Outlook accounts)
+.RE
+.sp
+You can also see \fBgitcredentials\fR(7) for more OAuth based authentication helpers\&.
 .sp
 Note: the following core Perl modules that may be installed with your distribution of Perl are required: MIME::Base64, MIME::QuotedPrint, Net::Domain and Net::SMTP\&. These additional Perl modules are also required: Authen::SASL and Mail::Address\&.
 .SH "SEE ALSO"
@@ -1029,3 +1097,9 @@ Note: the following core Perl modules that may be installed with your distributi
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
+.SH "NOTES"
+.IP " 1." 4
+git-credential-gmail
+.RS 4
+\%https://github.com/AdityaGarg8/git-credential-email
+.RE
