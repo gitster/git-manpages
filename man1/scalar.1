@@ -2,12 +2,12 @@
 .\"     Title: scalar
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-05-19
+.\"      Date: 2025-05-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.49.0.634.g8613c2bb6c
+.\"    Source: Git 2.49.0.654.g845c48a16a
 .\"  Language: English
 .\"
-.TH "SCALAR" "1" "2025-05-19" "Git 2\&.49\&.0\&.634\&.g8613c2" "Git Manual"
+.TH "SCALAR" "1" "2025-05-23" "Git 2\&.49\&.0\&.654\&.g845c48" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,12 +33,12 @@ scalar \- A tool for managing large Git repositories
 .sp
 .nf
 scalar clone [\-\-single\-branch] [\-\-branch <main\-branch>] [\-\-full\-clone]
-        [\-\-[no\-]src] <url> [<enlistment>]
+        [\-\-[no\-]src] [\-\-[no\-]tags] [\-\-[no\-]maintenance] <url> [<enlistment>]
 scalar list
-scalar register [<enlistment>]
+scalar register [\-\-[no\-]maintenance] [<enlistment>]
 scalar unregister [<enlistment>]
 scalar run ( all | config | commit\-graph | fetch | loose\-objects | pack\-files ) [<enlistment>]
-scalar reconfigure [ \-\-all | <enlistment> ]
+scalar reconfigure [\-\-maintenance=(enable|disable|keep)] [ \-\-all | <enlistment> ]
 scalar diagnose [<enlistment>]
 scalar delete <enlistment>
 .fi
@@ -148,6 +148,16 @@ and to configure the repository to avoid fetching tags in the future\&. To fetch
 A sparse\-checkout is initialized by default\&. This behavior can be turned off via
 \fB\-\-full\-clone\fR\&.
 .RE
+.PP
+\-\-[no\-]maintenance
+.RS 4
+By default,
+\fBscalar\fR
+\fBclone\fR
+configures the enlistment to use Git\(cqs background maintenance feature\&. Use the
+\fB\-\-no\-maintenance\fR
+to skip this configuration\&.
+.RE
 .SS "List"
 .PP
 list
@@ -167,6 +177,16 @@ Note: when this subcommand is called in a worktree that is called
 \fInot\fR
 called
 \fBsrc/\fR, it itself will be considered to be the Scalar enlistment\&.
+.RE
+.PP
+\-\-[no\-]maintenance
+.RS 4
+By default,
+\fBscalar\fR
+\fBregister\fR
+configures the enlistment to use Git\(cqs background maintenance feature\&. Use the
+\fB\-\-no\-maintenance\fR
+to skip this configuration\&. This does not disable any maintenance that may already be enabled in other ways\&.
 .RE
 .SS "Unregister"
 .PP
@@ -206,8 +226,26 @@ automatically, explicit invocations of this task are rarely needed\&.
 .SS "Reconfigure"
 .sp
 After a Scalar upgrade, or when the configuration of a Scalar enlistment was somehow corrupted or changed by mistake, this subcommand allows to reconfigure the enlistment\&.
-.sp
-With the \fB\-\-all\fR option, all enlistments currently registered with Scalar will be reconfigured\&. Use this option after each Scalar upgrade\&.
+.PP
+\-\-all
+.RS 4
+When
+\fB\-\-all\fR
+is specified, reconfigure all enlistments currently registered with Scalar by the
+\fBscalar\&.repo\fR
+config key\&. Use this option after each upgrade to get the latest features\&.
+.RE
+.PP
+\-\-maintenance=(enable|disable|keep)
+.RS 4
+By default, Scalar configures the enlistment to use Git\(cqs background maintenance feature; this is the same as using the
+\fBenable\fR
+value for this option\&. Use the
+\fBdisable\fR
+value to remove each considered enlistment from background maintenance\&. Use
+\(lqkeep\(rq
+to leave the background maintenance configuration untouched for these repositories\&.
+.RE
 .SS "Diagnose"
 .PP
 diagnose [<enlistment>]
