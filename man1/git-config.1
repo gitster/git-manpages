@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-05-29
+.\"      Date: 2025-06-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.0.rc0.18.gfcfe60668e
+.\"    Source: Git 2.50.0.rc0.61.gb07857f7dc
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-05-29" "Git 2\&.50\&.0\&.rc0\&.18\&.gf" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-06-02" "Git 2\&.50\&.0\&.rc0\&.61\&.gb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2375,7 +2375,7 @@ This string value defines the URI by which Git can reach the contents of this
 \fI<id>\fR\&. This URI may be a bundle file or another bundle list\&.
 .RE
 .PP
-checkout\&.defaultRemote
+\fBcheckout\&.defaultRemote\fR
 .RS 4
 When you run
 \fBgit\fR
@@ -2414,7 +2414,7 @@ when
 refers to a remote branch\&. This setting might be used for other checkout\-like commands or functionality in the future\&.
 .RE
 .PP
-checkout\&.guess
+\fBcheckout\&.guess\fR
 .RS 4
 Provides the default value for the
 \fB\-\-guess\fR
@@ -2431,16 +2431,29 @@ and
 \fBgit-checkout\fR(1)\&.
 .RE
 .PP
-checkout\&.workers
+\fBcheckout\&.workers\fR
 .RS 4
 The number of parallel workers to use when updating the working tree\&. The default is one, i\&.e\&. sequential execution\&. If set to a value less than one, Git will use as many workers as the number of logical cores available\&. This setting and
 \fBcheckout\&.thresholdForParallelism\fR
 affect all commands that perform checkout\&. E\&.g\&. checkout, clone, reset, sparse\-checkout, etc\&.
+.if n \{\
 .sp
-Note: Parallel checkout usually delivers better performance for repositories located on SSDs or over NFS\&. For repositories on spinning disks and/or machines with a small number of cores, the default sequential checkout often performs better\&. The size and compression level of a repository might also influence how well the parallel version performs\&.
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+Parallel checkout usually delivers better performance for repositories located on SSDs or over NFS\&. For repositories on spinning disks and/or machines with a small number of cores, the default sequential checkout often performs better\&. The size and compression level of a repository might also influence how well the parallel version performs\&.
+.sp .5v
+.RE
 .RE
 .PP
-checkout\&.thresholdForParallelism
+\fBcheckout\&.thresholdForParallelism\fR
 .RS 4
 When running parallel checkout with a small number of files, the cost of subprocess spawning and inter\-process communication might outweigh the parallelization gains\&. This setting allows you to define the minimum number of files for which parallel checkout should be attempted\&. The default is 100\&.
 .RE
@@ -3045,12 +3058,12 @@ option in
 \fBgit\fR
 \fBcommit\fR\&. See
 \fBgit-commit\fR(1)
-for details\&. Changing the default can be useful when you always want to keep lines that begin with the comment character # in your log message, in which case you would do
+for details\&. Changing the default can be useful when you always want to keep lines that begin with the comment character (\fBcore\&.commentChar\fR, default #) in your log message, in which case you would do
 \fBgit\fR
 \fBconfig\fR
 \fBcommit\&.cleanup\fR
 \fBwhitespace\fR
-(note that you will have to remove the help lines that begin with # in the commit log template yourself, if you do this)\&.
+(note that you will have to remove the help lines that begin with the comment character in the commit log template yourself, if you do this)\&.
 .RE
 .PP
 \fBcommit\&.gpgSign\fR
@@ -7873,7 +7886,7 @@ format\&. See
 \fBgit-help\fR(1)\&.
 .RE
 .PP
-merge\&.conflictStyle
+\fBmerge\&.conflictStyle\fR
 .RS 4
 Specify the style in which conflicted hunks are written out to working tree files upon merge\&. The default is "merge", which shows a <<<<<<< conflict marker, changes made by one side, a
 \fB=======\fR
@@ -7882,20 +7895,19 @@ marker, changes made by the other side, and then a >>>>>>> marker\&. An alternat
 marker\&. The "merge" style tends to produce smaller conflict regions than diff3, both because of the exclusion of the original text, and because when a subset of lines match on the two sides, they are just pulled out of the conflict region\&. Another alternate style, "zdiff3", is similar to diff3 but removes matching lines on the two sides from the conflict region when those matching lines appear near either the beginning or end of a conflict region\&.
 .RE
 .PP
-merge\&.defaultToUpstream
+\fBmerge\&.defaultToUpstream\fR
 .RS 4
 If merge is called without any commit argument, merge the upstream branches configured for the current branch by using their last observed values stored in their remote\-tracking branches\&. The values of the
 \fBbranch\&.\fR<current
 \fBbranch\fR>\fB\&.merge\fR
 that name the branches at the remote named by
-\fBbranch\&.\fR<current
-\fBbranch\fR>\fB\&.remote\fR
+\fBbranch\&.\fR\fI<current\-branch>\fR\fB\&.remote\fR
 are consulted, and then they are mapped via
 \fBremote\&.\fR\fI<remote>\fR\fB\&.fetch\fR
 to their corresponding remote\-tracking branches, and the tips of these tracking branches are merged\&. Defaults to true\&.
 .RE
 .PP
-merge\&.ff
+\fBmerge\&.ff\fR
 .RS 4
 By default, Git does not create an extra merge commit when merging a commit that is a descendant of the current commit\&. Instead, the tip of the current branch is fast\-forwarded\&. When set to
 \fBfalse\fR, this variable tells Git to create an extra merge commit in such a case (equivalent to giving the
@@ -7906,26 +7918,29 @@ option from the command line)\&. When set to
 option from the command line)\&.
 .RE
 .PP
-merge\&.verifySignatures
+\fBmerge\&.verifySignatures\fR
 .RS 4
-If true, this is equivalent to the \-\-verify\-signatures command line option\&. See
+If true, this is equivalent to the
+\fB\-\-verify\-signatures\fR
+command line option\&. See
 \fBgit-merge\fR(1)
 for details\&.
 .RE
 .PP
-merge\&.branchdesc
+\fBmerge\&.branchdesc\fR
 .RS 4
 In addition to branch names, populate the log message with the branch description text associated with them\&. Defaults to false\&.
 .RE
 .PP
-merge\&.log
+\fBmerge\&.log\fR
 .RS 4
 In addition to branch names, populate the log message with at most the specified number of one\-line descriptions from the actual commits that are being merged\&. Defaults to false, and true is a synonym for 20\&.
 .RE
 .PP
-merge\&.suppressDest
+\fBmerge\&.suppressDest\fR
 .RS 4
-By adding a glob that matches the names of integration branches to this multi\-valued configuration variable, the default merge message computed for merges into these integration branches will omit "into <branch name>" from its title\&.
+By adding a glob that matches the names of integration branches to this multi\-valued configuration variable, the default merge message computed for merges into these integration branches will omit "into
+\fI<branch\-name>\fR" from its title\&.
 .sp
 An element with an empty value can be used to clear the list of globs accumulated from previous configuration entries\&. When there is no
 \fBmerge\&.suppressDest\fR
@@ -7934,53 +7949,98 @@ variable defined, the default value of
 is used for backward compatibility\&.
 .RE
 .PP
-merge\&.renameLimit
+\fBmerge\&.renameLimit\fR
 .RS 4
-The number of files to consider in the exhaustive portion of rename detection during a merge\&. If not specified, defaults to the value of diff\&.renameLimit\&. If neither merge\&.renameLimit nor diff\&.renameLimit are specified, currently defaults to 7000\&. This setting has no effect if rename detection is turned off\&.
+The number of files to consider in the exhaustive portion of rename detection during a merge\&. If not specified, defaults to the value of
+\fBdiff\&.renameLimit\fR\&. If neither
+\fBmerge\&.renameLimit\fR
+nor
+\fBdiff\&.renameLimit\fR
+are specified, currently defaults to 7000\&. This setting has no effect if rename detection is turned off\&.
 .RE
 .PP
-merge\&.renames
+\fBmerge\&.renames\fR
 .RS 4
-Whether Git detects renames\&. If set to "false", rename detection is disabled\&. If set to "true", basic rename detection is enabled\&. Defaults to the value of diff\&.renames\&.
+Whether Git detects renames\&. If set to
+\fBfalse\fR, rename detection is disabled\&. If set to
+\fBtrue\fR, basic rename detection is enabled\&. Defaults to the value of diff\&.renames\&.
 .RE
 .PP
-merge\&.directoryRenames
+\fBmerge\&.directoryRenames\fR
 .RS 4
-Whether Git detects directory renames, affecting what happens at merge time to new files added to a directory on one side of history when that directory was renamed on the other side of history\&. If merge\&.directoryRenames is set to "false", directory rename detection is disabled, meaning that such new files will be left behind in the old directory\&. If set to "true", directory rename detection is enabled, meaning that such new files will be moved into the new directory\&. If set to "conflict", a conflict will be reported for such paths\&. If merge\&.renames is false, merge\&.directoryRenames is ignored and treated as false\&. Defaults to "conflict"\&.
+Whether Git detects directory renames, affecting what happens at merge time to new files added to a directory on one side of history when that directory was renamed on the other side of history\&. Possible values are:
+.PP
+\fBfalse\fR
+.RS 4
+Directory rename detection is disabled, meaning that such new files will be left behind in the old directory\&.
 .RE
 .PP
-merge\&.renormalize
+\fBtrue\fR
 .RS 4
-Tell Git that canonical representation of files in the repository has changed over time (e\&.g\&. earlier commits record text files with CRLF line endings, but recent ones use LF line endings)\&. In such a repository, for each file where a three\-way content merge is needed, Git can convert the data recorded in commits to a canonical form before performing a merge to reduce unnecessary conflicts\&. For more information, see section "Merging branches with differing checkin/checkout attributes" in
+Directory rename detection is enabled, meaning that such new files will be moved into the new directory\&.
+.RE
+.PP
+\fBconflict\fR
+.RS 4
+A conflict will be reported for such paths\&.
+.RE
+.sp
+If
+\fBmerge\&.renames\fR
+is
+\fBfalse\fR,
+\fBmerge\&.directoryRenames\fR
+is ignored and treated as
+\fBfalse\fR\&. Defaults to
+\fBconflict\fR\&.
+.RE
+.PP
+\fBmerge\&.renormalize\fR
+.RS 4
+Tell Git that canonical representation of files in the repository has changed over time (e\&.g\&. earlier commits record text files with
+\fICRLF\fR
+line endings, but recent ones use
+\fILF\fR
+line endings)\&. In such a repository, for each file where a three\-way content merge is needed, Git can convert the data recorded in commits to a canonical form before performing a merge to reduce unnecessary conflicts\&. For more information, see section "Merging branches with differing checkin/checkout attributes" in
 \fBgitattributes\fR(5)\&.
 .RE
 .PP
-merge\&.stat
+\fBmerge\&.stat\fR
 .RS 4
-Whether to print the diffstat between ORIG_HEAD and the merge result at the end of the merge\&. True by default\&.
+Whether to print the diffstat between
+\fBORIG_HEAD\fR
+and the merge result at the end of the merge\&. True by default\&.
 .RE
 .PP
-merge\&.autoStash
+\fBmerge\&.autoStash\fR
 .RS 4
-When set to true, automatically create a temporary stash entry before the operation begins, and apply it after the operation ends\&. This means that you can run merge on a dirty worktree\&. However, use with care: the final stash application after a successful merge might result in non\-trivial conflicts\&. This option can be overridden by the
+When set to
+\fBtrue\fR, automatically create a temporary stash entry before the operation begins, and apply it after the operation ends\&. This means that you can run merge on a dirty worktree\&. However, use with care: the final stash application after a successful merge might result in non\-trivial conflicts\&. This option can be overridden by the
 \fB\-\-no\-autostash\fR
 and
 \fB\-\-autostash\fR
 options of
-\fBgit-merge\fR(1)\&. Defaults to false\&.
+\fBgit-merge\fR(1)\&. Defaults to
+\fBfalse\fR\&.
 .RE
 .PP
-merge\&.tool
+\fBmerge\&.tool\fR
 .RS 4
 Controls which merge tool is used by
-\fBgit-mergetool\fR(1)\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom merge tool and requires that a corresponding mergetool\&.<tool>\&.cmd variable is defined\&.
+\fBgit-mergetool\fR(1)\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom merge tool and requires that a corresponding
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.cmd\fR
+variable is defined\&.
 .RE
 .PP
-merge\&.guitool
+\fBmerge\&.guitool\fR
 .RS 4
 Controls which merge tool is used by
 \fBgit-mergetool\fR(1)
-when the \-g/\-\-gui flag is specified\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom merge tool and requires that a corresponding mergetool\&.<guitool>\&.cmd variable is defined\&.
+when the
+\fB\-g\fR/\fB\-\-gui\fR
+flag is specified\&. The list below shows the valid built\-in values\&. Any other value is treated as a custom merge tool and requires that a corresponding
+\fBmergetool\&.\fR\fI<guitool>\fR\fB\&.cmd\fR
+variable is defined\&.
 .PP
 \fBaraxis\fR
 .RS 4
@@ -8182,53 +8242,54 @@ Use xxdiff (requires a graphical session)
 .RE
 .RE
 .PP
-merge\&.verbosity
+\fBmerge\&.verbosity\fR
 .RS 4
 Controls the amount of output shown by the recursive merge strategy\&. Level 0 outputs nothing except a final error message if conflicts were detected\&. Level 1 outputs only conflicts, 2 outputs conflicts and file changes\&. Level 5 and above outputs debugging information\&. The default is level 2\&. Can be overridden by the
 \fBGIT_MERGE_VERBOSITY\fR
 environment variable\&.
 .RE
 .PP
-merge\&.<driver>\&.name
+\fBmerge\&.\fR\fI<driver>\fR\fB\&.name\fR
 .RS 4
 Defines a human\-readable name for a custom low\-level merge driver\&. See
 \fBgitattributes\fR(5)
 for details\&.
 .RE
 .PP
-merge\&.<driver>\&.driver
+\fBmerge\&.\fR\fI<driver>\fR\fB\&.driver\fR
 .RS 4
 Defines the command that implements a custom low\-level merge driver\&. See
 \fBgitattributes\fR(5)
 for details\&.
 .RE
 .PP
-merge\&.<driver>\&.recursive
+\fBmerge\&.\fR\fI<driver>\fR\fB\&.recursive\fR
 .RS 4
 Names a low\-level merge driver to be used when performing an internal merge between common ancestors\&. See
 \fBgitattributes\fR(5)
 for details\&.
 .RE
 .PP
-mergetool\&.<tool>\&.path
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.path\fR
 .RS 4
-Override the path for the given tool\&. This is useful in case your tool is not in the PATH\&.
+Override the path for the given tool\&. This is useful in case your tool is not in the
+\fB$PATH\fR\&.
 .RE
 .PP
-mergetool\&.<tool>\&.cmd
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.cmd\fR
 .RS 4
 Specify the command to invoke the specified merge tool\&. The specified command is evaluated in shell with the following variables available:
-\fIBASE\fR
+\fBBASE\fR
 is the name of a temporary file containing the common base of the files to be merged, if available;
-\fILOCAL\fR
+\fBLOCAL\fR
 is the name of a temporary file containing the contents of the file on the current branch;
-\fIREMOTE\fR
+\fBREMOTE\fR
 is the name of a temporary file containing the contents of the file from the branch being merged;
-\fIMERGED\fR
+\fBMERGED\fR
 contains the name of the file to which the merge tool should write the results of a successful merge\&.
 .RE
 .PP
-mergetool\&.<tool>\&.hideResolved
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.hideResolved\fR
 .RS 4
 Allows the user to override the global
 \fBmergetool\&.hideResolved\fR
@@ -8237,12 +8298,12 @@ value for a specific tool\&. See
 for the full description\&.
 .RE
 .PP
-mergetool\&.<tool>\&.trustExitCode
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.trustExitCode\fR
 .RS 4
 For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful\&. If this is not set to true then the merge target file timestamp is checked, and the merge is assumed to have been successful if the file has been updated; otherwise, the user is prompted to indicate the success of the merge\&.
 .RE
 .PP
-mergetool\&.meld\&.hasOutput
+\fBmergetool\&.meld\&.hasOutput\fR
 .RS 4
 Older versions of
 \fBmeld\fR
@@ -8268,7 +8329,7 @@ avoids using
 \fB\-\-output\fR\&.
 .RE
 .PP
-mergetool\&.meld\&.useAutoMerge
+\fBmergetool\&.meld\&.useAutoMerge\fR
 .RS 4
 When the
 \fB\-\-auto\-merge\fR
@@ -8292,7 +8353,7 @@ avoids using
 altogether, and is the default value\&.
 .RE
 .PP
-mergetool\&.<vimdiff variant>\&.layout
+\fBmergetool\&.\fR\fI<variant>\fR\fB\&.layout\fR
 .RS 4
 Configure the split window layout for vimdiff\(cqs
 \fI<variant>\fR, which is any of
@@ -8311,33 +8372,32 @@ is configured as
 \fI<variant>\fR), Git will consult
 \fBmergetool\&.\fR\fI<variant>\fR\fB\&.layout\fR
 to determine the tool\(cqs layout\&. If the variant\-specific configuration is not available,
-\fBvimdiff\fR\*(Aqs is used as fallback\&. If that too is not available, a default layout with 4 windows will be used\&. To configure the layout, see the
-\fBBACKEND\fR
-\fBSPECIFIC\fR
-\fBHINTS\fR
+\fBvimdiff\fR
+\*(Aq s is used as fallback\&. If that too is not available, a default layout with 4 windows will be used\&. To configure the layout, see the
+\fIBACKEND SPECIFIC HINTS\fR
 section in
 \fBgit-mergetool\fR(1)\&.
 .RE
 .PP
-mergetool\&.hideResolved
+\fBmergetool\&.hideResolved\fR
 .RS 4
 During a merge, Git will automatically resolve as many conflicts as possible and write the
-\fIMERGED\fR
+\fB$MERGED\fR
 file containing conflict markers around any conflicts that it cannot resolve;
-\fILOCAL\fR
+\fB$LOCAL\fR
 and
-\fIREMOTE\fR
-normally represent the versions of the file from before Git\(cqs conflict resolution\&. This flag causes
-\fILOCAL\fR
+\fB$REMOTE\fR
+normally are the versions of the file from before Git`s conflict resolution\&. This flag causes
+\fB$LOCAL\fR
 and
-\fIREMOTE\fR
+\fB$REMOTE\fR
 to be overwritten so that only the unresolved conflicts are presented to the merge tool\&. Can be configured per\-tool via the
 \fBmergetool\&.\fR\fI<tool>\fR\fB\&.hideResolved\fR
 configuration variable\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
-mergetool\&.keepBackup
+\fBmergetool\&.keepBackup\fR
 .RS 4
 After performing a merge, the original file with conflict markers can be saved as a file with a \&.\fBorig\fR
 extension\&. If this variable is set to
@@ -8347,30 +8407,30 @@ then this file is not preserved\&. Defaults to
 (i\&.e\&. keep the backup files)\&.
 .RE
 .PP
-mergetool\&.keepTemporaries
+\fBmergetool\&.keepTemporaries\fR
 .RS 4
 When invoking a custom merge tool, Git uses a set of temporary files to pass to the tool\&. If the tool returns an error and this variable is set to
 \fBtrue\fR, then these temporary files will be preserved; otherwise, they will be removed after the tool has exited\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
-mergetool\&.writeToTemp
+\fBmergetool\&.writeToTemp\fR
 .RS 4
 Git writes temporary
-\fIBASE\fR,
-\fILOCAL\fR, and
-\fIREMOTE\fR
+\fBBASE\fR,
+\fBLOCAL\fR, and
+\fBREMOTE\fR
 versions of conflicting files in the worktree by default\&. Git will attempt to use a temporary directory for these files when set
 \fBtrue\fR\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
-mergetool\&.prompt
+\fBmergetool\&.prompt\fR
 .RS 4
 Prompt before each invocation of the merge resolution program\&.
 .RE
 .PP
-mergetool\&.guiDefault
+\fBmergetool\&.guiDefault\fR
 .RS 4
 Set
 \fBtrue\fR

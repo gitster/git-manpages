@@ -2,12 +2,12 @@
 .\"     Title: git-mergetool
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-05-29
+.\"      Date: 2025-06-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.0.rc0.18.gfcfe60668e
+.\"    Source: Git 2.50.0.rc0.61.gb07857f7dc
 .\"  Language: English
 .\"
-.TH "GIT\-MERGETOOL" "1" "2025-05-29" "Git 2\&.50\&.0\&.rc0\&.18\&.gf" "Git Manual"
+.TH "GIT\-MERGETOOL" "1" "2025-06-02" "Git 2\&.50\&.0\&.rc0\&.61\&.gb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,45 +32,60 @@ git-mergetool \- Run merge conflict resolution tools to resolve merge conflicts
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit mergetool\fR [\-\-tool=<tool>] [\-y | \-\-[no\-]prompt] [<file>\&...\:]
+\fBgit\fR \fBmergetool\fR [\fB\-\-tool=\fR\fI<tool>\fR] [\fB\-y\fR | \fB\-\-\fR[\fBno\-\fR]\fBprompt\fR] [\fI<file>\fR\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
-Use \fBgit\fR \fBmergetool\fR to run one of several merge utilities to resolve merge conflicts\&. It is typically run after \fIgit merge\fR\&.
+Use \fBgit\fR \fBmergetool\fR to run one of several merge utilities to resolve merge conflicts\&. It is typically run after \fBgit\fR \fBmerge\fR\&.
 .sp
-If one or more <file> parameters are given, the merge tool program will be run to resolve differences in each file (skipping those without conflicts)\&. Specifying a directory will include all unresolved files in that path\&. If no <file> names are specified, \fIgit mergetool\fR will run the merge tool program on every file with merge conflicts\&.
+If one or more <file> parameters are given, the merge tool program will be run to resolve differences in each file (skipping those without conflicts)\&. Specifying a directory will include all unresolved files in that path\&. If no \fI<file>\fR names are specified, \fBgit\fR \fBmergetool\fR will run the merge tool program on every file with merge conflicts\&.
 .SH "OPTIONS"
 .PP
-\-t <tool>, \-\-tool=<tool>
+\fB\-t\fR \fI<tool>\fR, \fB\-\-tool=\fR\fI<tool>\fR
 .RS 4
-Use the merge resolution program specified by <tool>\&. Valid values include emerge, gvimdiff, kdiff3, meld, vimdiff, and tortoisemerge\&. Run
+Use the merge resolution program specified by
+\fI<tool>\fR\&. Valid values include
+\fBemerge\fR,
+\fBgvimdiff\fR,
+\fBkdiff3\fR,
+\fBmeld\fR,
+\fBvimdiff\fR, and
+\fBtortoisemerge\fR\&. Run
 \fBgit\fR
 \fBmergetool\fR
 \fB\-\-tool\-help\fR
-for the list of valid <tool> settings\&.
+for the list of valid
+\fI<tool>\fR
+settings\&.
 .sp
 If a merge resolution program is not specified,
-\fIgit mergetool\fR
+\fBgit\fR
+\fBmergetool\fR
 will use the configuration variable
 \fBmerge\&.tool\fR\&. If the configuration variable
 \fBmerge\&.tool\fR
 is not set,
-\fIgit mergetool\fR
+\fBgit\fR
+\fBmergetool\fR
 will pick a suitable default\&.
 .sp
 You can explicitly provide a full path to the tool by setting the configuration variable
 \fBmergetool\&.\fR\fI<tool>\fR\fB\&.path\fR\&. For example, you can configure the absolute path to kdiff3 by setting
 \fBmergetool\&.kdiff3\&.path\fR\&. Otherwise,
-\fIgit mergetool\fR
-assumes the tool is available in PATH\&.
+\fBgit\fR
+\fBmergetool\fR
+assumes the tool is available in
+\fB$PATH\fR\&.
 .sp
 Instead of running one of the known merge tool programs,
-\fIgit mergetool\fR
+\fBgit\fR
+\fBmergetool\fR
 can be customized to run an alternative program by specifying the command line to invoke in a configuration variable
 \fBmergetool\&.\fR\fI<tool>\fR\fB\&.cmd\fR\&.
 .sp
 When
-\fIgit mergetool\fR
+\fBgit\fR
+\fBmergetool\fR
 is invoked with this tool (either through the
 \fB\-t\fR
 or
@@ -78,30 +93,31 @@ or
 option or the
 \fBmerge\&.tool\fR
 configuration variable), the configured command line will be invoked with
-\fB$BASE\fR
+\fBBASE\fR
 set to the name of a temporary file containing the common base for the merge, if available;
-\fB$LOCAL\fR
+\fBLOCAL\fR
 set to the name of a temporary file containing the contents of the file on the current branch;
-\fB$REMOTE\fR
+\fBREMOTE\fR
 set to the name of a temporary file containing the contents of the file to be merged, and
-\fB$MERGED\fR
+\fBMERGED\fR
 set to the name of the file to which the merge tool should write the result of the merge resolution\&.
 .sp
 If the custom merge tool correctly indicates the success of a merge resolution with its exit code, then the configuration variable
 \fBmergetool\&.\fR\fI<tool>\fR\fB\&.trustExitCode\fR
 can be set to
 \fBtrue\fR\&. Otherwise,
-\fIgit mergetool\fR
+\fBgit\fR
+\fBmergetool\fR
 will prompt the user to indicate the success of the resolution after the custom tool has exited\&.
 .RE
 .PP
-\-\-tool\-help
+\fB\-\-tool\-help\fR
 .RS 4
 Print a list of merge tools that may be used with
 \fB\-\-tool\fR\&.
 .RE
 .PP
-\-y, \-\-no\-prompt
+\fB\-y\fR, \fB\-\-no\-prompt\fR
 .RS 4
 Don\(cqt prompt before each invocation of the merge resolution program\&. This is the default if the merge resolution program is explicitly specified with the
 \fB\-\-tool\fR
@@ -110,15 +126,15 @@ option or with the
 configuration variable\&.
 .RE
 .PP
-\-\-prompt
+\fB\-\-prompt\fR
 .RS 4
 Prompt before each invocation of the merge resolution program to give the user a chance to skip the path\&.
 .RE
 .PP
-\-g, \-\-gui
+\fB\-g\fR, \fB\-\-gui\fR
 .RS 4
 When
-\fIgit\-mergetool\fR
+\fBgit\-mergetool\fR
 is invoked with the
 \fB\-g\fR
 or
@@ -133,7 +149,7 @@ is not set, we will fallback to the tool configured under
 \fBmergetool\&.guiDefault\fR\&.
 .RE
 .PP
-\-\-no\-gui
+\fB\-\-no\-gui\fR
 .RS 4
 This overrides a previous
 \fB\-g\fR
@@ -146,9 +162,10 @@ configuration and reads the default merge tool from the configured
 variable\&.
 .RE
 .PP
-\-O<orderfile>
+\fB\-O\fR\fI<orderfile>\fR
 .RS 4
-Process files in the order specified in the <orderfile>, which has one shell glob pattern per line\&. This overrides the
+Process files in the order specified in the
+\fI<orderfile>\fR, which has one shell glob pattern per line\&. This overrides the
 \fBdiff\&.orderFile\fR
 configuration variable (see
 \fBgit-config\fR(1))\&. To cancel
@@ -159,25 +176,26 @@ configuration variable (see
 .sp
 Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
 .PP
-mergetool\&.<tool>\&.path
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.path\fR
 .RS 4
-Override the path for the given tool\&. This is useful in case your tool is not in the PATH\&.
+Override the path for the given tool\&. This is useful in case your tool is not in the
+\fB$PATH\fR\&.
 .RE
 .PP
-mergetool\&.<tool>\&.cmd
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.cmd\fR
 .RS 4
 Specify the command to invoke the specified merge tool\&. The specified command is evaluated in shell with the following variables available:
-\fIBASE\fR
+\fBBASE\fR
 is the name of a temporary file containing the common base of the files to be merged, if available;
-\fILOCAL\fR
+\fBLOCAL\fR
 is the name of a temporary file containing the contents of the file on the current branch;
-\fIREMOTE\fR
+\fBREMOTE\fR
 is the name of a temporary file containing the contents of the file from the branch being merged;
-\fIMERGED\fR
+\fBMERGED\fR
 contains the name of the file to which the merge tool should write the results of a successful merge\&.
 .RE
 .PP
-mergetool\&.<tool>\&.hideResolved
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.hideResolved\fR
 .RS 4
 Allows the user to override the global
 \fBmergetool\&.hideResolved\fR
@@ -186,12 +204,12 @@ value for a specific tool\&. See
 for the full description\&.
 .RE
 .PP
-mergetool\&.<tool>\&.trustExitCode
+\fBmergetool\&.\fR\fI<tool>\fR\fB\&.trustExitCode\fR
 .RS 4
 For a custom merge command, specify whether the exit code of the merge command can be used to determine whether the merge was successful\&. If this is not set to true then the merge target file timestamp is checked, and the merge is assumed to have been successful if the file has been updated; otherwise, the user is prompted to indicate the success of the merge\&.
 .RE
 .PP
-mergetool\&.meld\&.hasOutput
+\fBmergetool\&.meld\&.hasOutput\fR
 .RS 4
 Older versions of
 \fBmeld\fR
@@ -217,7 +235,7 @@ avoids using
 \fB\-\-output\fR\&.
 .RE
 .PP
-mergetool\&.meld\&.useAutoMerge
+\fBmergetool\&.meld\&.useAutoMerge\fR
 .RS 4
 When the
 \fB\-\-auto\-merge\fR
@@ -241,7 +259,7 @@ avoids using
 altogether, and is the default value\&.
 .RE
 .PP
-mergetool\&.<vimdiff variant>\&.layout
+\fBmergetool\&.\fR\fI<variant>\fR\fB\&.layout\fR
 .RS 4
 Configure the split window layout for vimdiff\(cqs
 \fI<variant>\fR, which is any of
@@ -260,32 +278,31 @@ is configured as
 \fI<variant>\fR), Git will consult
 \fBmergetool\&.\fR\fI<variant>\fR\fB\&.layout\fR
 to determine the tool\(cqs layout\&. If the variant\-specific configuration is not available,
-\fBvimdiff\fR\*(Aqs is used as fallback\&. If that too is not available, a default layout with 4 windows will be used\&. To configure the layout, see the
-\fBBACKEND\fR
-\fBSPECIFIC\fR
-\fBHINTS\fR
+\fBvimdiff\fR
+\*(Aq s is used as fallback\&. If that too is not available, a default layout with 4 windows will be used\&. To configure the layout, see the
+\fIBACKEND SPECIFIC HINTS\fR
 section\&.
 .RE
 .PP
-mergetool\&.hideResolved
+\fBmergetool\&.hideResolved\fR
 .RS 4
 During a merge, Git will automatically resolve as many conflicts as possible and write the
-\fIMERGED\fR
+\fB$MERGED\fR
 file containing conflict markers around any conflicts that it cannot resolve;
-\fILOCAL\fR
+\fB$LOCAL\fR
 and
-\fIREMOTE\fR
-normally represent the versions of the file from before Git\(cqs conflict resolution\&. This flag causes
-\fILOCAL\fR
+\fB$REMOTE\fR
+normally are the versions of the file from before Git`s conflict resolution\&. This flag causes
+\fB$LOCAL\fR
 and
-\fIREMOTE\fR
+\fB$REMOTE\fR
 to be overwritten so that only the unresolved conflicts are presented to the merge tool\&. Can be configured per\-tool via the
 \fBmergetool\&.\fR\fI<tool>\fR\fB\&.hideResolved\fR
 configuration variable\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
-mergetool\&.keepBackup
+\fBmergetool\&.keepBackup\fR
 .RS 4
 After performing a merge, the original file with conflict markers can be saved as a file with a \&.\fBorig\fR
 extension\&. If this variable is set to
@@ -295,30 +312,30 @@ then this file is not preserved\&. Defaults to
 (i\&.e\&. keep the backup files)\&.
 .RE
 .PP
-mergetool\&.keepTemporaries
+\fBmergetool\&.keepTemporaries\fR
 .RS 4
 When invoking a custom merge tool, Git uses a set of temporary files to pass to the tool\&. If the tool returns an error and this variable is set to
 \fBtrue\fR, then these temporary files will be preserved; otherwise, they will be removed after the tool has exited\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
-mergetool\&.writeToTemp
+\fBmergetool\&.writeToTemp\fR
 .RS 4
 Git writes temporary
-\fIBASE\fR,
-\fILOCAL\fR, and
-\fIREMOTE\fR
+\fBBASE\fR,
+\fBLOCAL\fR, and
+\fBREMOTE\fR
 versions of conflicting files in the worktree by default\&. Git will attempt to use a temporary directory for these files when set
 \fBtrue\fR\&. Defaults to
 \fBfalse\fR\&.
 .RE
 .PP
-mergetool\&.prompt
+\fBmergetool\&.prompt\fR
 .RS 4
 Prompt before each invocation of the merge resolution program\&.
 .RE
 .PP
-mergetool\&.guiDefault
+\fBmergetool\&.guiDefault\fR
 .RS 4
 Set
 \fBtrue\fR
@@ -754,7 +771,7 @@ Instead of \fB\-\-tool=vimdiff\fR, you can also use one of these other variants:
 .sp
 When using these variants, in order to specify a custom layout you will have to set configuration variables \fBmergetool\&.gvimdiff\&.layout\fR and \fBmergetool\&.nvimdiff\&.layout\fR instead of \fBmergetool\&.vimdiff\&.layout\fR (though the latter will be used as fallback if the variant\-specific one is not set)\&.
 .sp
-In addition, for backwards compatibility with previous Git versions, you can also append \fB1\fR, \fB2\fR or \fB3\fR to either \fBvimdiff\fR or any of the variants (ex: \fBvimdiff3\fR, \fBnvimdiff1\fR, etc\&...\:) to use a predefined layout\&. In other words, using \fB\-\-tool=\fR[\fBg\fR,n,]\fBvimdiffx\fR is the same as using \fB\-\-tool=\fR[\fBg\fR,n,]\fBvimdiff\fR and setting configuration variable \fBmergetool\&.\fR[\fBg\fR,n,]\fBvimdiff\&.layout\fR to\&...\:
+In addition, for backwards compatibility with previous Git versions, you can also append \fB1\fR, \fB2\fR or \fB3\fR to either \fBvimdiff\fR or any of the variants (ex: \fBvimdiff3\fR, \fBnvimdiff1\fR, etc\&...\:) to use a predefined layout\&. In other words, using \fB\-\-tool=\fR[\fBg\fR|\fBn\fR]\fBvimdiff\fR\fI<x>\fR is the same as using \fB\-\-tool=\fR[\fBg\fR|\fBn\fR]\fBvimdiff\fR and setting configuration variable \fBmergetool\&.\fR[\fBg\fR|\fBn\fR]\fBvimdiff\&.layout\fR to\&...\:
 .sp
 .RS 4
 .ie n \{\
@@ -764,7 +781,7 @@ In addition, for backwards compatibility with previous Git versions, you can als
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBx=1\fR: "@LOCAL,
+\fI<x>\fR\fB=1\fR: "@LOCAL,
 \fBREMOTE\fR"
 .RE
 .sp
@@ -776,7 +793,7 @@ In addition, for backwards compatibility with previous Git versions, you can als
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBx=2\fR: "LOCAL,
+\fI<x>\fR\fB=2\fR: "LOCAL,
 \fBMERGED\fR,
 \fBREMOTE\fR"
 .RE
@@ -789,10 +806,10 @@ In addition, for backwards compatibility with previous Git versions, you can als
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBx=3\fR: "MERGED"
+\fI<x>\fR\fB=3\fR: "MERGED"
 .RE
 .sp
-Example: using \fB\-\-tool=gvimdiff2\fR will open \fBgvim\fR with three columns (LOCAL, MERGED and REMOTE)\&.
+Example: using \fB\-\-tool=gvimdiff2\fR will open \fBgvim\fR with three columns (\fBLOCAL\fR, \fBMERGED\fR and \fBREMOTE\fR)\&.
 .RE
 .SH "GIT"
 .sp
