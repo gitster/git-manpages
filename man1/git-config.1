@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-06-15
+.\"      Date: 2025-06-18
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.0
+.\"    Source: Git 2.50.0.81.gcb3b40381e
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-06-15" "Git 2\&.50\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-06-18" "Git 2\&.50\&.0\&.81\&.gcb3b403" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -5227,6 +5227,18 @@ may improve bitmap traversal times by walking fewer objects\&.
 \fBpack\&.allowPackReuse=multi\fR
 may improve the time it takes to create a pack by reusing objects from multiple packs instead of just one\&.
 .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBpack\&.usePathWalk\fR
+may speed up packfile creation and make the packfiles be significantly smaller in the presence of certain filename collisions with Git\(cqs default name\-hash\&.
+.RE
 .RE
 .PP
 feature\&.manyFiles
@@ -8695,6 +8707,18 @@ option is present\&. This algorithm only walks trees that appear in paths that i
 \fBtrue\fR\&.
 .RE
 .PP
+pack\&.usePathWalk
+.RS 4
+Enable the
+\fB\-\-path\-walk\fR
+option by default for
+\fBgit\fR
+\fBpack\-objects\fR
+processes\&. See
+\fBgit-pack-objects\fR(1)
+for full details\&.
+.RE
+.PP
 pack\&.preferBitmapTips
 .RS 4
 When selecting which commits will receive bitmaps, prefer a commit at the tip of any reference that is a suffix of any value of this configuration over any other commits in the "selection window"\&.
@@ -9949,9 +9973,9 @@ variable from root\(cqs environment before invoking git\&.
 sendemail\&.identity
 .RS 4
 A configuration identity\&. When given, causes values in the
-\fIsendemail\&.<identity>\fR
+\fBsendemail\&.\fR\fI<identity>\fR
 subsection to take precedence over values in the
-\fIsendemail\fR
+\fBsendemail\fR
 section\&. The default identity is the value of
 \fBsendemail\&.identity\fR\&.
 .RE
@@ -9961,7 +9985,7 @@ sendemail\&.smtpEncryption
 See
 \fBgit-send-email\fR(1)
 for description\&. Note that this setting is not subject to the
-\fIidentity\fR
+\fBidentity\fR
 mechanism\&.
 .RE
 .PP
@@ -9973,28 +9997,31 @@ Path to ca\-certificates (either a directory or a single file)\&. Set it to an e
 sendemail\&.<identity>\&.*
 .RS 4
 Identity\-specific versions of the
-\fIsendemail\&.*\fR
+\fBsendemail\&.*\fR
 parameters found below, taking precedence over those when this identity is selected, through either the command\-line or
 \fBsendemail\&.identity\fR\&.
 .RE
 .PP
 sendemail\&.multiEdit
 .RS 4
-If true (default), a single editor instance will be spawned to edit files you have to edit (patches when
+If
+\fBtrue\fR
+(default), a single editor instance will be spawned to edit files you have to edit (patches when
 \fB\-\-annotate\fR
 is used, and the summary when
 \fB\-\-compose\fR
-is used)\&. If false, files will be edited one after the other, spawning a new editor each time\&.
+is used)\&. If
+\fBfalse\fR, files will be edited one after the other, spawning a new editor each time\&.
 .RE
 .PP
 sendemail\&.confirm
 .RS 4
 Sets the default for whether to confirm before sending\&. Must be one of
-\fIalways\fR,
-\fInever\fR,
-\fIcc\fR,
-\fIcompose\fR, or
-\fIauto\fR\&. See
+\fBalways\fR,
+\fBnever\fR,
+\fBcc\fR,
+\fBcompose\fR, or
+\fBauto\fR\&. See
 \fB\-\-confirm\fR
 in the
 \fBgit-send-email\fR(1)
@@ -10038,12 +10065,12 @@ To avoid typing long email addresses, point this to one or more email aliases fi
 sendemail\&.aliasFileType
 .RS 4
 Format of the file(s) specified in sendemail\&.aliasesFile\&. Must be one of
-\fImutt\fR,
-\fImailrc\fR,
-\fIpine\fR,
-\fIelm\fR,
-\fIgnus\fR, or
-\fIsendmail\fR\&.
+\fBmutt\fR,
+\fBmailrc\fR,
+\fBpine\fR,
+\fBelm\fR,
+\fBgnus\fR, or
+\fBsendmail\fR\&.
 .sp
 What an alias file in each format looks like can be found in the documentation of the email program of the same name\&. The differences and limitations from the standard formats are described below:
 .PP
@@ -10112,7 +10139,9 @@ Deprecated alias for
 .PP
 sendemail\&.smtpBatchSize
 .RS 4
-Number of messages to be sent per connection, after that a relogin will happen\&. If the value is 0 or undefined, send all messages in one connection\&. See also the
+Number of messages to be sent per connection, after that a relogin will happen\&. If the value is
+\fB0\fR
+or undefined, send all messages in one connection\&. See also the
 \fB\-\-batch\-size\fR
 option of
 \fBgit-send-email\fR(1)\&.
@@ -10130,7 +10159,9 @@ sendemail\&.forbidSendmailVariables
 .RS 4
 To avoid common misconfiguration mistakes,
 \fBgit-send-email\fR(1)
-will abort with a warning if any configuration options for "sendmail" exist\&. Set this variable to bypass the check\&.
+will abort with a warning if any configuration options for
+\fBsendmail\fR
+exist\&. Set this variable to bypass the check\&.
 .RE
 .PP
 sequence\&.editor
