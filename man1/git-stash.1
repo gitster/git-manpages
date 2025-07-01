@@ -2,12 +2,12 @@
 .\"     Title: git-stash
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-06-24
+.\"      Date: 2025-06-30
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.0.106.gf0135a9047
+.\"    Source: Git 2.50.0.145.g83014dc05f
 .\"  Language: English
 .\"
-.TH "GIT\-STASH" "1" "2025-06-24" "Git 2\&.50\&.0\&.106\&.gf0135a" "Git Manual"
+.TH "GIT\-STASH" "1" "2025-06-30" "Git 2\&.50\&.0\&.145\&.g83014d" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -47,6 +47,8 @@ git-stash \- Stash the changes in a dirty working directory away
 \fIgit stash\fR clear
 \fIgit stash\fR create [<message>]
 \fIgit stash\fR store [(\-m | \-\-message) <message>] [\-q | \-\-quiet] <commit>
+\fIgit stash\fR export (\-\-print | \-\-to\-ref <ref>) [<stash>\&...\:]
+\fIgit stash\fR import <commit>
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -206,6 +208,21 @@ Store a given stash created via
 \fIgit stash create\fR
 (which is a dangling merge commit) in the stash ref, updating the stash reflog\&. This is intended to be useful for scripts\&. It is probably not the command you want to use; see "push" above\&.
 .RE
+.PP
+export ( \-\-print | \-\-to\-ref <ref> ) [<stash>\&...\:]
+.RS 4
+Export the specified stashes, or all of them if none are specified, to a chain of commits which can be transferred using the normal fetch and push mechanisms, then imported using the
+\fBimport\fR
+subcommand\&.
+.RE
+.PP
+import <commit>
+.RS 4
+Import the specified stashes from the specified commit, which must have been created by
+\fBexport\fR, and add them to the list of stashes\&. To replace the existing stashes, use
+\fBclear\fR
+first\&.
+.RE
 .SH "OPTIONS"
 .PP
 \-a, \-\-all
@@ -354,6 +371,24 @@ commands\&.
 Quiet, suppress feedback messages\&.
 .RE
 .PP
+\-\-print
+.RS 4
+This option is only valid for the
+\fBexport\fR
+command\&.
+.sp
+Create the chain of commits representing the exported stashes without storing it anywhere in the ref namespace and print the object ID to standard output\&. This is designed for scripts\&.
+.RE
+.PP
+\-\-to\-ref
+.RS 4
+This option is only valid for the
+\fBexport\fR
+command\&.
+.sp
+Create the chain of commits representing the exported stashes and store it to the specified ref\&.
+.RE
+.PP
 \-\-
 .RS 4
 This option is only valid for
@@ -384,7 +419,8 @@ This option is only valid for
 \fBbranch\fR,
 \fBdrop\fR,
 \fBpop\fR,
-\fBshow\fR
+\fBshow\fR, and
+\fBexport\fR
 commands\&.
 .sp
 A reference of the form
