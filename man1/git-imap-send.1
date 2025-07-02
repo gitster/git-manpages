@@ -2,12 +2,12 @@
 .\"     Title: git-imap-send
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-06-30
+.\"      Date: 2025-07-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.0.145.g83014dc05f
+.\"    Source: Git 2.50.0.173.g8b6f19ccfc
 .\"  Language: English
 .\"
-.TH "GIT\-IMAP\-SEND" "1" "2025-06-30" "Git 2\&.50\&.0\&.145\&.g83014d" "Git Manual"
+.TH "GIT\-IMAP\-SEND" "1" "2025-07-02" "Git 2\&.50\&.0\&.173\&.g8b6f19" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,15 +32,24 @@ git-imap-send \- Send a collection of patches from stdin to an IMAP folder
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit imap\-send\fR [\-v] [\-q] [\-\-[no\-]curl]
+\fIgit imap\-send\fR [\-v] [\-q] [\-\-[no\-]curl] [(\-\-folder|\-f) <folder>]
+\fIgit imap\-send\fR \-\-list
 .fi
 .SH "DESCRIPTION"
 .sp
-This command uploads a mailbox generated with \fIgit format\-patch\fR into an IMAP drafts folder\&. This allows patches to be sent as other email is when using mail clients that cannot read mailbox files directly\&. The command also works with any general mailbox in which emails have the fields "From", "Date", and "Subject" in that order\&.
+This command uploads a mailbox generated with \fBgit\fR \fBformat\-patch\fR into an IMAP drafts folder\&. This allows patches to be sent as other email is when using mail clients that cannot read mailbox files directly\&. The command also works with any general mailbox in which emails have the fields \fBFrom\fR, \fBDate\fR, and \fBSubject\fR in that order\&.
 .sp
 Typical usage is something like:
 .sp
-git format\-patch \-\-signoff \-\-stdout \-\-attach origin | git imap\-send
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git format\-patch \-\-signoff \-\-stdout \-\-attach origin | git imap\-send
+.fi
+.if n \{\
+.RE
+.\}
 .SH "OPTIONS"
 .PP
 \-v, \-\-verbose
@@ -53,6 +62,15 @@ Be verbose\&.
 Be quiet\&.
 .RE
 .PP
+\-f <folder>, \-\-folder=<folder>
+.RS 4
+Specify the folder in which the emails have to saved\&. For example:
+\fB\-\-folder=\fR[\fBGmail\fR]\fB/Drafts\fR
+or
+\fB\-f\fR
+\fBINBOX/Drafts\fR\&.
+.RE
+.PP
 \-\-curl
 .RS 4
 Use libcurl to communicate with the IMAP server, unless tunneling into it\&. Ignored if Git was built without the USE_CURL_FOR_IMAP_SEND option set\&.
@@ -62,6 +80,11 @@ Use libcurl to communicate with the IMAP server, unless tunneling into it\&. Ign
 .RS 4
 Talk to the IMAP server using git\(cqs own IMAP routines instead of using libcurl\&. Ignored if Git was built with the NO_OPENSSL option set\&.
 .RE
+.PP
+\-\-list
+.RS 4
+Run the IMAP LIST command to output a list of all the folders present\&.
+.RE
 .SH "CONFIGURATION"
 .sp
 To use the tool, \fBimap\&.folder\fR and either \fBimap\&.tunnel\fR or \fBimap\&.host\fR must be set to appropriate values\&.
@@ -70,7 +93,12 @@ Everything above this line in this section isn\(cqt included from the \fBgit-con
 .PP
 imap\&.folder
 .RS 4
-The folder to drop the mails into, which is typically the Drafts folder\&. For example: "INBOX\&.Drafts", "INBOX/Drafts" or "[Gmail]/Drafts"\&. Required\&.
+The folder to drop the mails into, which is typically the Drafts folder\&. For example:
+\fBINBOX\&.Drafts\fR,
+\fBINBOX/Drafts\fR
+or [\fBGmail\fR]\fB/Drafts\fR\&. The IMAP folder to interact with MUST be specified; the value of this configuration variable is used as the fallback default value when the
+\fB\-\-folder\fR
+option is not given\&.
 .RE
 .PP
 imap\&.tunnel
@@ -118,10 +146,17 @@ imap\&.authMethod
 .RS 4
 Specify the authentication method for authenticating with the IMAP server\&. If Git was built with the NO_CURL option, or if your curl version is older than 7\&.34\&.0, or if you\(cqre running git\-imap\-send with the
 \fB\-\-no\-curl\fR
-option, the only supported method is
-\fICRAM\-MD5\fR\&. If this is not set then
-\fIgit imap\-send\fR
-uses the basic IMAP plaintext LOGIN command\&.
+option, the only supported methods are
+\fBPLAIN\fR,
+\fBCRAM\-MD5\fR,
+\fBOAUTHBEARER\fR
+and
+\fBXOAUTH2\fR\&. If this is not set then
+\fBgit\fR
+\fBimap\-send\fR
+uses the basic IMAP plaintext
+\fBLOGIN\fR
+command\&.
 .RE
 .SH "EXAMPLES"
 .sp
@@ -197,15 +232,16 @@ Using Gmail\(cqs IMAP interface:
 .\}
 .nf
 [imap]
-        folder = "[Gmail]/Drafts"
-        host = imaps://imap\&.gmail\&.com
-        user = user@gmail\&.com
-        port = 993
+    folder = "[Gmail]/Drafts"
+    host = imaps://imap\&.gmail\&.com
+    user = user@gmail\&.com
+    port = 993
 .fi
 .if n \{\
 .RE
 .\}
 .sp
+Gmail does not allow using your regular password for \fBgit\fR \fBimap\-send\fR\&. If you have multi\-factor authentication set up on your Gmail account, you can generate an app\-specific password for use with \fBgit\fR \fBimap\-send\fR\&. Visit \m[blue]\fBhttps://security\&.google\&.com/settings/security/apppasswords\fR\m[] to create it\&. Alternatively, use OAuth2\&.0 authentication as described below\&.
 .if n \{\
 .sp
 .\}
@@ -219,7 +255,7 @@ Using Gmail\(cqs IMAP interface:
 .ps -1
 .br
 .sp
-You might need to instead use: \fBfolder\fR \fB=\fR "[\fBGoogle\fR \fBMail\fR]\fB/Drafts\fR" if you get an error that the "Folder doesn\(cqt exist"\&.
+You might need to instead use: \fBfolder\fR \fB=\fR "[\fBGoogle\fR \fBMail\fR]\fB/Drafts\fR" if you get an error that the "Folder doesn\(cqt exist"\&. You can also run \fBgit\fR \fBimap\-send\fR \fB\-\-list\fR to get a list of available folders\&.
 .sp .5v
 .RE
 .if n \{\
@@ -239,6 +275,42 @@ If your Gmail account is set to another language than English, the name of the "
 .sp .5v
 .RE
 .sp
+If you want to use OAuth2\&.0 based authentication, you can specify \fBOAUTHBEARER\fR or \fBXOAUTH2\fR mechanism in your config\&. It is more secure than using app\-specific passwords, and also does not enforce the need of having multi\-factor authentication\&. You will have to use an OAuth2\&.0 access token in place of your password when using this authentication\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[imap]
+    folder = "[Gmail]/Drafts"
+    host = imaps://imap\&.gmail\&.com
+    user = user@gmail\&.com
+    port = 993
+    authmethod = OAUTHBEARER
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Using Outlook\(cqs IMAP interface:
+.sp
+Unlike Gmail, Outlook only supports OAuth2\&.0 based authentication\&. Also, it supports only \fBXOAUTH2\fR as the mechanism\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[imap]
+    folder = "Drafts"
+    host = imaps://outlook\&.office365\&.com
+    user = user@outlook\&.com
+    port = 993
+    authmethod = XOAUTH2
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 Once the commits are ready to be sent, run the following command:
 .sp
 .if n \{\
@@ -252,6 +324,8 @@ $ git format\-patch \-\-cover\-letter \-M \-\-stdout origin/master | git imap\-s
 .\}
 .sp
 Just make sure to disable line wrapping in the email client (Gmail\(cqs web interface will wrap lines no matter what, so you need to use a real IMAP client)\&.
+.sp
+In case you are using OAuth2\&.0 authentication, it is easier to use credential helpers to generate tokens\&. Credential helpers suggested in \fBgit-send-email\fR(1) can be used for \fBgit\fR \fBimap\-send\fR as well\&.
 .SH "CAUTION"
 .sp
 It is still your responsibility to make sure that the email message sent by your email program meets the standards of your project\&. Many projects do not like patches to be attached\&. Some mail agents will transform patches (e\&.g\&. wrap lines, send them as format=flowed) in ways that make them fail\&. You will get angry flames ridiculing you if you don\(cqt check this\&.
