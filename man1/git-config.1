@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-07-07
+.\"      Date: 2025-07-14
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.1.194.g038143def7
+.\"    Source: Git 2.50.1.271.gd30e120486
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-07-07" "Git 2\&.50\&.1\&.194\&.g038143" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-07-14" "Git 2\&.50\&.1\&.271\&.gd30e12" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,9 +33,9 @@ git-config \- Get and set repository or global options
 .sp
 .nf
 \fIgit config list\fR [<file\-option>] [<display\-option>] [\-\-includes]
-\fIgit config get\fR [<file\-option>] [<display\-option>] [\-\-includes] [\-\-all] [\-\-regexp] [\-\-value=<value>] [\-\-fixed\-value] [\-\-default=<default>] <name>
-\fIgit config set\fR [<file\-option>] [\-\-type=<type>] [\-\-all] [\-\-value=<value>] [\-\-fixed\-value] <name> <value>
-\fIgit config unset\fR [<file\-option>] [\-\-all] [\-\-value=<value>] [\-\-fixed\-value] <name>
+\fIgit config get\fR [<file\-option>] [<display\-option>] [\-\-includes] [\-\-all] [\-\-regexp] [\-\-value=<pattern>] [\-\-fixed\-value] [\-\-default=<default>] [\-\-url=<url>] <name>
+\fIgit config set\fR [<file\-option>] [\-\-type=<type>] [\-\-all] [\-\-value=<pattern>] [\-\-fixed\-value] <name> <value>
+\fIgit config unset\fR [<file\-option>] [\-\-all] [\-\-value=<pattern>] [\-\-fixed\-value] <name>
 \fIgit config rename\-section\fR [<file\-option>] <old\-name> <new\-name>
 \fIgit config remove\-section\fR [<file\-option>] <name>
 \fIgit config edit\fR [<file\-option>]
@@ -45,7 +45,7 @@ git-config \- Get and set repository or global options
 .sp
 You can query/set/replace/unset options with this command\&. The name is actually the section and the key separated by a dot, and the value will be escaped\&.
 .sp
-Multiple lines can be added to an option by using the \fB\-\-append\fR option\&. If you want to update or unset an option which can occur on multiple lines, a \fBvalue\-pattern\fR (which is an extended regular expression, unless the \fB\-\-fixed\-value\fR option is given) needs to be given\&. Only the existing values that match the pattern are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the pattern, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq), but note that this only works when the \fB\-\-fixed\-value\fR option is not in use\&.
+Multiple lines can be added to an option by using the \fB\-\-append\fR option\&. If you want to update or unset an option which can occur on multiple lines, \fB\-\-value=\fR\fI<pattern>\fR (which is an extended regular expression, unless the \fB\-\-fixed\-value\fR option is given) needs to be given\&. Only the existing values that match the pattern are updated or unset\&. If you want to handle the lines that do \fBnot\fR match the pattern, just prepend a single exclamation mark in front (see also the section called \(lqEXAMPLES\(rq), but note that this only works when the \fB\-\-fixed\-value\fR option is not in use\&.
 .sp
 The \fB\-\-type=\fR\fI<type>\fR option instructs \fIgit config\fR to ensure that incoming and outgoing values are canonicalize\-able under the given <type>\&. If no \fB\-\-type=\fR\fI<type>\fR is given, no canonicalization will be performed\&. Callers may unset an existing \fB\-\-type\fR specifier with \fB\-\-no\-type\fR\&.
 .sp
@@ -192,8 +192,8 @@ Opens an editor to modify the specified config file; either
 .PP
 \-\-replace\-all
 .RS 4
-Default behavior is to replace at most one line\&. This replaces all lines matching the key (and optionally the
-\fBvalue\-pattern\fR)\&.
+Default behavior is to replace at most one line\&. This replaces all lines matching the key (and optionally
+\fB\-\-value=\fR\fI<pattern>\fR)\&.
 .RE
 .PP
 \-\-append
@@ -333,14 +333,29 @@ in the master branch\&. See "SPECIFYING REVISIONS" section in
 for a more complete list of ways to spell blob names\&.
 .RE
 .PP
+\fB\-\-value=\fR\fI<pattern>\fR, \fB\-\-no\-value\fR
+.RS 4
+With
+\fBget\fR,
+\fBset\fR, and
+\fBunset\fR, match only against
+\fI<pattern>\fR\&. The pattern is an extended regular expression unless
+\fB\-\-fixed\-value\fR
+is given\&.
+.sp
+Use
+\fB\-\-no\-value\fR
+to unset
+\fI<pattern>\fR\&.
+.RE
+.PP
 \-\-fixed\-value
 .RS 4
-When used with the
-\fBvalue\-pattern\fR
-argument, treat
-\fBvalue\-pattern\fR
-as an exact string instead of a regular expression\&. This will restrict the name/value pairs that are matched to only those where the value is exactly equal to the
-\fBvalue\-pattern\fR\&.
+When used with
+\fB\-\-value=\fR\fI<pattern>\fR, treat
+\fI<pattern>\fR
+as an exact string instead of a regular expression\&. This will restrict the name/value pairs that are matched to only those where the value is exactly equal to
+\fI<pattern>\fR\&.
 .RE
 .PP
 \-\-type <type>
@@ -475,6 +490,17 @@ Output only the names of config variables for
 \fBlist\fR
 or
 \fBget\fR\&.
+.RE
+.PP
+\fB\-\-show\-names\fR, \fB\-\-no\-show\-names\fR
+.RS 4
+With
+\fBget\fR, show config keys in addition to their values\&. The default is
+\fB\-\-no\-show\-names\fR
+unless
+\fB\-\-url\fR
+is given and there are no subsections in
+\fI<name>\fR\&.
 .RE
 .PP
 \-\-show\-origin
@@ -5242,6 +5268,18 @@ may improve the time it takes to create a pack by reusing objects from multiple 
 .\}
 \fBpack\&.usePathWalk\fR
 may speed up packfile creation and make the packfiles be significantly smaller in the presence of certain filename collisions with Git\(cqs default name\-hash\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBinit\&.defaultRefFormat=reftable\fR
+causes newly initialized repositories to use the reftable format for storing references\&. This new format solves issues with case\-insensitive filesystems, compresses better and performs significantly better with many use cases\&. Refer to Documentation/technical/reftable\&.adoc for more information on this new storage format\&.
 .RE
 .RE
 .PP
