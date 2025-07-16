@@ -2,12 +2,12 @@
 .\"     Title: git-send-email
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-07-14
+.\"      Date: 2025-07-16
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.1.271.gd30e120486
+.\"    Source: Git 2.50.1.319.g90c0775e97
 .\"  Language: English
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "2025-07-14" "Git 2\&.50\&.1\&.271\&.gd30e12" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "2025-07-16" "Git 2\&.50\&.1\&.319\&.g90c077" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -444,7 +444,15 @@ Legacy alias for
 \-\-smtp\-ssl\-cert\-path
 .RS 4
 Path to a store of trusted CA certificates for SMTP SSL/TLS certificate validation (either a directory that has been processed by
-\fBc_rehash\fR, or a single file containing one or more PEM format certificates concatenated together: see verify(1) \-CAfile and \-CApath for more information on these)\&. Set it to an empty string to disable certificate verification\&. Defaults to the value of the
+\fBc_rehash\fR, or a single file containing one or more PEM format certificates concatenated together: see the description of the
+\fB\-CAfile\fR
+\fI<file>\fR
+and the
+\fB\-CApath\fR
+\fI<dir>\fR
+options of
+\m[blue]\fBhttps://docs\&.openssl\&.org/master/man1/openssl\-verify/\fR\m[]
+[OpenSSL\(cqs verify(1) manual page] for more information on these)\&. Set it to an empty string to disable certificate verification\&. Defaults to the value of the
 \fBsendemail\&.smtpSSLCertPath\fR
 configuration variable, if set, or the backing SSL library\(cqs compiled\-in default otherwise (which should be the best choice on most platforms)\&.
 .RE
@@ -995,11 +1003,14 @@ documentation for the meaning of these values\&.
 .PP
 sendemail\&.mailmap
 .RS 4
-If true, makes
+If
+\fBtrue\fR, makes
 \fBgit-send-email\fR(1)
 assume
 \fB\-\-mailmap\fR, otherwise assume
-\fB\-\-no\-mailmap\fR\&. False by default\&.
+\fB\-\-no\-mailmap\fR\&.
+\fBFalse\fR
+by default\&.
 .RE
 .PP
 sendemail\&.mailmap\&.file
@@ -1094,6 +1105,20 @@ sendemail\&.annotate, sendemail\&.bcc, sendemail\&.cc, sendemail\&.ccCmd, sendem
 These configuration variables all provide a default for
 \fBgit-send-email\fR(1)
 command\-line options\&. See its documentation for details\&.
+.RE
+.PP
+sendemail\&.outlookidfix
+.RS 4
+If
+\fBtrue\fR, makes
+\fBgit-send-email\fR(1)
+assume
+\fB\-\-outlook\-id\-fix\fR, and if
+\fBfalse\fR
+assume
+\fB\-\-no\-outlook\-id\-fix\fR\&. If not specified, it will behave the same way as if
+\fB\-\-outlook\-id\-fix\fR
+is not specified\&.
 .RE
 .PP
 sendemail\&.signedOffCc (deprecated)
@@ -1245,15 +1270,83 @@ If you are using OAuth2\&.0 authentication, you need to use an access token in p
 (cross platform, dedicated helper for authenticating Yahoo accounts)
 .RE
 .sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\m[blue]\fBgit\-credential\-aol\fR\m[]\&\s-2\u[2]\d\s+2
+(cross platform, dedicated helper for authenticating AOL accounts)
+.RE
+.sp
 You can also see \fBgitcredentials\fR(7) for more OAuth based authentication helpers\&.
+.sp
+Proton Mail does not provide an SMTP server to send emails\&. If you are a paid customer of Proton Mail, you can use \m[blue]\fBProton Mail Bridge\fR\m[]\&\s-2\u[3]\d\s+2 officially provided by Proton Mail to create a local SMTP server for sending emails\&. For both free and paid users, community maintained projects like \m[blue]\fBgit\-protonmail\fR\m[]\&\s-2\u[2]\d\s+2 can be used\&.
 .sp
 Note: the following core Perl modules that may be installed with your distribution of Perl are required:
 .sp
-\m[blue]\fBMIME::Base64\fR\m[]\&\s-2\u[3]\d\s+2, \m[blue]\fBMIME::QuotedPrint\fR\m[]\&\s-2\u[4]\d\s+2, \m[blue]\fBNet::Domain\fR\m[]\&\s-2\u[5]\d\s+2 and \m[blue]\fBNet::SMTP\fR\m[]\&\s-2\u[6]\d\s+2\&.
+\m[blue]\fBMIME::Base64\fR\m[]\&\s-2\u[4]\d\s+2, \m[blue]\fBMIME::QuotedPrint\fR\m[]\&\s-2\u[5]\d\s+2, \m[blue]\fBNet::Domain\fR\m[]\&\s-2\u[6]\d\s+2 and \m[blue]\fBNet::SMTP\fR\m[]\&\s-2\u[7]\d\s+2\&.
 .sp
 These additional Perl modules are also required:
 .sp
-\m[blue]\fBAuthen::SASL\fR\m[]\&\s-2\u[7]\d\s+2 and \m[blue]\fBMail::Address\fR\m[]\&\s-2\u[8]\d\s+2\&.
+\m[blue]\fBAuthen::SASL\fR\m[]\&\s-2\u[8]\d\s+2 and \m[blue]\fBMail::Address\fR\m[]\&\s-2\u[9]\d\s+2\&.
+.SS "Exploiting the \fBsendmailCmd\fR option of \fBgit\fR \fBsend\-email\fR"
+.sp
+Apart from sending emails via an SMTP server, \fBgit\fR \fBsend\-email\fR can also send emails through any application that supports sendmail\-like commands\&. You can read documentation of \fB\-\-sendmail\-cmd=\fR\fI<command>\fR above for more information\&. This ability can be very useful if you want to use another application as an SMTP client for \fBgit\fR \fBsend\-email\fR, or if your email provider uses proprietary APIs instead of SMTP to send emails\&.
+.sp
+As an example, lets see how to configure \m[blue]\fBmsmtp\fR\m[]\&\s-2\u[10]\d\s+2, a popular SMTP client found in many Linux distributions\&. Edit \fB~/\&.gitconfig\fR to instruct \fBgit\-send\-email\fR to use it for sending emails\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[sendemail]
+        sendmailCmd = /usr/bin/msmtp # Change this to the path where msmtp is installed
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Links of a few such community maintained helpers are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\m[blue]\fBmsmtp\fR\m[]\&\s-2\u[10]\d\s+2
+(popular SMTP client with many features, available for Linux and macOS)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\m[blue]\fBgit\-protonmail\fR\m[]\&\s-2\u[2]\d\s+2
+(cross platform client that can send emails using the ProtonMail API)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\m[blue]\fBgit\-msgraph\fR\m[]\&\s-2\u[2]\d\s+2
+(cross platform client that can send emails using the Microsoft Graph API)
+.RE
 .SH "SEE ALSO"
 .sp
 \fBgit-format-patch\fR(1), \fBgit-imap-send\fR(1), mbox(5)
@@ -1272,32 +1365,42 @@ git-credential-gmail
 \%https://github.com/AdityaGarg8/git-credential-email
 .RE
 .IP " 3." 4
+Proton Mail Bridge
+.RS 4
+\%https://proton.me/mail/bridge
+.RE
+.IP " 4." 4
 MIME::Base64
 .RS 4
 \%https://metacpan.org/pod/MIME::Base64
 .RE
-.IP " 4." 4
+.IP " 5." 4
 MIME::QuotedPrint
 .RS 4
 \%https://metacpan.org/pod/MIME::QuotedPrint
 .RE
-.IP " 5." 4
+.IP " 6." 4
 Net::Domain
 .RS 4
 \%https://metacpan.org/pod/Net::Domain
 .RE
-.IP " 6." 4
+.IP " 7." 4
 Net::SMTP
 .RS 4
 \%https://metacpan.org/pod/Net::SMTP
 .RE
-.IP " 7." 4
+.IP " 8." 4
 Authen::SASL
 .RS 4
 \%https://metacpan.org/pod/Authen::SASL
 .RE
-.IP " 8." 4
+.IP " 9." 4
 Mail::Address
 .RS 4
 \%https://metacpan.org/pod/Mail::Address
+.RE
+.IP "10." 4
+msmtp
+.RS 4
+\%https://marlam.de/msmtp/
 .RE
