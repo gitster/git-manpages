@@ -2,12 +2,12 @@
 .\"     Title: git-pack-objects
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-07-16
+.\"      Date: 2025-07-21
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.1.319.g90c0775e97
+.\"    Source: Git 2.50.1.369.g3f2a94875d
 .\"  Language: English
 .\"
-.TH "GIT\-PACK\-OBJECTS" "1" "2025-07-16" "Git 2\&.50\&.1\&.319\&.g90c077" "Git Manual"
+.TH "GIT\-PACK\-OBJECTS" "1" "2025-07-21" "Git 2\&.50\&.1\&.369\&.g3f2a94" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -99,12 +99,16 @@ are specified to be included\&.
 Include unasked\-for annotated tags if the object they reference was included in the resulting packfile\&. This can be useful to send new tags to native Git clients\&.
 .RE
 .PP
-\-\-stdin\-packs
+\-\-stdin\-packs[=<mode>]
 .RS 4
 Read the basenames of packfiles (e\&.g\&.,
 \fBpack\-1234abcd\&.pack\fR) from the standard input, instead of object names or revision arguments\&. The resulting pack contains all objects listed in the included packs (those not beginning with
 \fB^\fR), excluding any objects listed in the excluded packs (beginning with
 \fB^\fR)\&.
+.sp
+When
+\fBmode\fR
+is "follow", objects from packs not listed on stdin receive special treatment\&. Objects within unlisted packs will be included if those objects are (1) reachable from the included packs, and (2) not found in any excluded packs\&. This mode is useful, for example, to resurrect once\-unreachable objects found in cruft packs to generate packs which are closed under reachability up to the boundary set by the excluded packs\&.
 .sp
 Incompatible with
 \fB\-\-revs\fR, or options that imply

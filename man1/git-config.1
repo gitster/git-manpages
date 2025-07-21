@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-07-16
+.\"      Date: 2025-07-21
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.1.319.g90c0775e97
+.\"    Source: Git 2.50.1.369.g3f2a94875d
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-07-16" "Git 2\&.50\&.1\&.319\&.g90c077" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-07-21" "Git 2\&.50\&.1\&.369\&.g3f2a94" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1421,10 +1421,12 @@ is expanded to the value of
 \fB~user/\fR
 to the specified user\(cqs home directory\&.
 .sp
-If a path starts with %(\fBprefix\fR)\fB/\fR, the remainder is interpreted as a path relative to Git\(cqs "runtime prefix", i\&.e\&. relative to the location where Git itself was installed\&. For example, %(\fBprefix\fR)\fB/bin/\fR
+If a path starts with
+\fB%\fR(\fBprefix\fR)\fB/\fR, the remainder is interpreted as a path relative to Git\(cqs "runtime prefix", i\&.e\&. relative to the location where Git itself was installed\&. For example,
+\fB%\fR(\fBprefix\fR)\fB/bin/\fR
 refers to the directory in which the Git executable itself lives\&. If Git was compiled without runtime prefix support, the compiled\-in prefix will be substituted instead\&. In the unlikely event that a literal path needs to be specified that should
 \fInot\fR
-be expanded, it needs to be prefixed by \&.\fB/\fR, like so: \&.\fB/\fR%(\fBprefix\fR)\fB/bin\fR\&.
+be expanded, it needs to be prefixed by \&.\fB/\fR, like so: \&.\fB/%\fR(\fBprefix\fR)\fB/bin\fR\&.
 .RE
 .SS "Variables"
 .sp
@@ -6205,9 +6207,7 @@ for description\&.
 .PP
 gpg\&.program
 .RS 4
-Use this custom program instead of "\fBgpg\fR" found on
-\fB$PATH\fR
-when making or verifying a PGP signature\&. The program must support the same command\-line interface as GPG, namely, to verify a detached signature, "\fBgpg\fR
+Pathname of the program to use instead of "\fBgpg\fR" when making or verifying a PGP signature\&. The program must support the same command\-line interface as GPG, namely, to verify a detached signature, "\fBgpg\fR
 \fB\-\-verify\fR
 \fB$signature\fR
 \fB\-\fR
@@ -7569,9 +7569,10 @@ When an interactive command (such as
 \fB\-\-patch\fR) shows a colorized diff, git will pipe the diff through the shell command defined by this configuration variable\&. The command may mark up the diff further for human consumption, provided that it retains a one\-to\-one correspondence with the lines in the original diff\&. Defaults to disabled (no filtering)\&.
 .RE
 .PP
-log\&.abbrevCommit
+\fBlog\&.abbrevCommit\fR
 .RS 4
-If true, makes
+If
+\fBtrue\fR, make
 \fBgit-log\fR(1),
 \fBgit-show\fR(1), and
 \fBgit-whatchanged\fR(1)
@@ -7580,12 +7581,13 @@ assume
 \fB\-\-no\-abbrev\-commit\fR\&.
 .RE
 .PP
-log\&.date
+\fBlog\&.date\fR
 .RS 4
 Set the default date\-time mode for the
-\fIlog\fR
+\fBlog\fR
 command\&. Setting a value for log\&.date is similar to using
-\fIgit log\fR\*(Aqs
+\fBgit\fR
+\fBlog\fR\*(Aqs
 \fB\-\-date\fR
 option\&. See
 \fBgit-log\fR(1)
@@ -7594,29 +7596,33 @@ for details\&.
 If the format is set to "auto:foo" and the pager is in use, format "foo" will be used for the date format\&. Otherwise, "default" will be used\&.
 .RE
 .PP
-log\&.decorate
+\fBlog\&.decorate\fR
 .RS 4
-Print out the ref names of any commits that are shown by the log command\&. If
-\fIshort\fR
-is specified, the ref name prefixes
-\fIrefs/heads/\fR,
-\fIrefs/tags/\fR
-and
-\fIrefs/remotes/\fR
-will not be printed\&. If
-\fIfull\fR
-is specified, the full ref name (including prefix) will be printed\&. If
-\fIauto\fR
-is specified, then if the output is going to a terminal, the ref names are shown as if
-\fIshort\fR
-were given, otherwise no ref names are shown\&. This is the same as the
+Print out the ref names of any commits that are shown by the log command\&. Possible values are:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+`short`;; the ref name prefixes `refs/heads/`, `refs/tags/` and
+        `refs/remotes/` are not printed\&.
+`full`;; the full ref name (including prefix) are printed\&.
+`auto`;; if the output is going to a terminal,
+        the ref names are shown as if `short` were given, otherwise no ref
+        names are shown\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This is the same as the
 \fB\-\-decorate\fR
 option of the
 \fBgit\fR
 \fBlog\fR\&.
 .RE
 .PP
-log\&.initialDecorationSet
+\fBlog\&.initialDecorationSet\fR
 .RS 4
 By default,
 \fBgit\fR
@@ -7626,7 +7632,7 @@ only shows decorations for certain known ref namespaces\&. If
 is specified, then show all refs as decorations\&.
 .RE
 .PP
-log\&.excludeDecoration
+\fBlog\&.excludeDecoration\fR
 .RS 4
 Exclude the specified patterns from the log decorations\&. This is similar to the
 \fB\-\-decorate\-refs\-exclude\fR
@@ -7635,7 +7641,7 @@ command\-line option, but the config option can be overridden by the
 option\&.
 .RE
 .PP
-log\&.diffMerges
+\fBlog\&.diffMerges\fR
 .RS 4
 Set diff format to be used when
 \fB\-\-diff\-merges=on\fR
@@ -7647,7 +7653,7 @@ for details\&. Defaults to
 \fBseparate\fR\&.
 .RE
 .PP
-log\&.follow
+\fBlog\&.follow\fR
 .RS 4
 If
 \fBtrue\fR,
@@ -7659,7 +7665,7 @@ option was used when a single <path> is given\&. This has the same limitations a
 \fB\-\-follow\fR, i\&.e\&. it cannot be used to follow multiple files and does not work well on non\-linear history\&.
 .RE
 .PP
-log\&.graphColors
+\fBlog\&.graphColors\fR
 .RS 4
 A list of colors, separated by commas, that can be used to draw history lines in
 \fBgit\fR
@@ -7667,7 +7673,7 @@ A list of colors, separated by commas, that can be used to draw history lines in
 \fB\-\-graph\fR\&.
 .RE
 .PP
-log\&.showRoot
+\fBlog\&.showRoot\fR
 .RS 4
 If true, the initial commit will be shown as a big creation event\&. This is equivalent to a diff against an empty tree\&. Tools like
 \fBgit-log\fR(1)
@@ -7675,7 +7681,7 @@ or
 \fBgit-whatchanged\fR(1), which normally hide the root commit will now show it\&. True by default\&.
 .RE
 .PP
-log\&.showSignature
+\fBlog\&.showSignature\fR
 .RS 4
 If true, makes
 \fBgit-log\fR(1),
@@ -7685,7 +7691,7 @@ assume
 \fB\-\-show\-signature\fR\&.
 .RE
 .PP
-log\&.mailmap
+\fBlog\&.mailmap\fR
 .RS 4
 If true, makes
 \fBgit-log\fR(1),
@@ -8871,14 +8877,18 @@ Alias for a \-\-pretty= format string, as specified in
 \fBgit\fR
 \fBconfig\fR
 \fBpretty\&.changelog\fR
-"format:* %H %s" would cause the invocation
+"format:*
+\fB%H\fR
+\fB%s\fR" would cause the invocation
 \fBgit\fR
 \fBlog\fR
 \fB\-\-pretty=changelog\fR
 to be equivalent to running
 \fBgit\fR
 \fBlog\fR
-"\-\-pretty=format:* %H %s"\&. Note that an alias with the same name as a built\-in format will be silently ignored\&.
+"\-\-pretty=format:*
+\fB%H\fR
+\fB%s\fR"\&. Note that an alias with the same name as a built\-in format will be silently ignored\&.
 .RE
 .PP
 promisor\&.quiet
@@ -9938,6 +9948,14 @@ when generating a cruft pack and the respective parameters are not given over th
 configuration variables for defaults and meaning\&.
 .RE
 .PP
+repack\&.midxMustContainCruft
+.RS 4
+When set to true,
+\fBgit-repack\fR(1)
+will unconditionally include cruft pack(s), if any, in the multi\-pack index when invoked with
+\fB\-\-write\-midx\fR\&. When false, cruft packs are only included in the MIDX when necessary (e\&.g\&., because they might be required to form a reachability closure with MIDX bitmaps)\&. Defaults to true\&.
+.RE
+.PP
 rerere\&.autoUpdate
 .RS 4
 When set to true,
@@ -10025,7 +10043,8 @@ the section called \(lqSCOPES\(rq)\&. This prevents untrusted repositories from 
 .sp
 The value of this setting is interpolated, i\&.e\&.
 \fB~/\fR\fI<path>\fR
-expands to a path relative to the home directory and %(\fBprefix\fR)\fB/\fR\fI<path>\fR
+expands to a path relative to the home directory and
+\fB%\fR(\fBprefix\fR)\fB/\fR\fI<path>\fR
 expands to a path relative to Git\(cqs (runtime) prefix\&.
 .sp
 To completely opt\-out of this security check, set

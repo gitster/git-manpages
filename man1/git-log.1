@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-07-16
+.\"      Date: 2025-07-21
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.1.319.g90c0775e97
+.\"    Source: Git 2.50.1.369.g3f2a94875d
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "2025-07-16" "Git 2\&.50\&.1\&.319\&.g90c077" "Git Manual"
+.TH "GIT\-LOG" "1" "2025-07-21" "Git 2\&.50\&.1\&.369\&.g3f2a94" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-log \- Show commit logs
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit log\fR [<options>] [<revision\-range>] [[\-\-] <path>\&...\:]
+\fBgit\fR \fBlog\fR [\fI<options>\fR] [\fI<revision\-range>\fR] [[\fB\-\-\fR] \fI<path>\fR\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -56,7 +56,7 @@ $ git log foo bar ^baz
 .sp
 means "list all the commits which are reachable from \fIfoo\fR or \fIbar\fR, but not from \fIbaz\fR"\&.
 .sp
-A special notation "\fI<commit1>\fR\&.\&.\fI<commit2>\fR" can be used as a short\-hand for "^\fI<commit1>\fR \fI<commit2>\fR"\&. For example, either of the following may be used interchangeably:
+A special notation "\fI<commit1>\fR\fB\&.\&.\fR\fI<commit2>\fR" can be used as a short\-hand for "\fB^\fR\fI<commit1>\fR \fI<commit2>\fR"\&. For example, either of the following may be used interchangeably:
 .sp
 .if n \{\
 .RS 4
@@ -69,7 +69,7 @@ $ git log HEAD ^origin
 .RE
 .\}
 .sp
-Another special notation is "\fI<commit1>\fR\&...\:\fI<commit2>\fR" which is useful for merges\&. The resulting set of commits is the symmetric difference between the two operands\&. The following two commands are equivalent:
+Another special notation is "\fI<commit1>\fR\fB\&.\&.\&.\fR\fI<commit2>\fR" which is useful for merges\&. The resulting set of commits is the symmetric difference between the two operands\&. The following two commands are equivalent:
 .sp
 .if n \{\
 .RS 4
@@ -85,27 +85,31 @@ $ git log A\&.\&.\&.B
 The command takes options applicable to the \fBgit-rev-list\fR(1) command to control what is shown and how, and options applicable to the \fBgit-diff\fR(1) command to control how the changes each commit introduces are shown\&.
 .SH "OPTIONS"
 .PP
-\-\-follow
+\fB\-\-follow\fR
 .RS 4
 Continue listing the history of a file beyond renames (works only for a single file)\&.
 .RE
 .PP
-\-\-no\-decorate, \-\-decorate[=short|full|auto|no]
+\fB\-\-no\-decorate\fR, \fB\-\-decorate\fR[\fB=\fR(\fBshort\fR|\fBfull\fR|\fBauto\fR|\fBno\fR)]
 .RS 4
-Print out the ref names of any commits that are shown\&. If
-\fIshort\fR
-is specified, the ref name prefixes
-\fIrefs/heads/\fR,
-\fIrefs/tags/\fR
-and
-\fIrefs/remotes/\fR
-will not be printed\&. If
-\fIfull\fR
-is specified, the full ref name (including prefix) will be printed\&. If
-\fIauto\fR
-is specified, then if the output is going to a terminal, the ref names are shown as if
-\fIshort\fR
-were given, otherwise no ref names are shown\&. The option
+Print out the ref names of any commits that are shown\&. Possible values are:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+`short`;; the ref name prefixes `refs/heads/`, `refs/tags/` and
+        `refs/remotes/` are not printed\&.
+`full`;; the full ref name (including prefix) is printed\&.
+`auto`:: if the output is going to a terminal, the ref names
+        are shown as if `short` were given, otherwise no ref names are
+        shown\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The option
 \fB\-\-decorate\fR
 is short\-hand for
 \fB\-\-decorate=short\fR\&. Default to configuration value of
@@ -114,11 +118,15 @@ if configured, otherwise,
 \fBauto\fR\&.
 .RE
 .PP
-\-\-decorate\-refs=<pattern>, \-\-decorate\-refs\-exclude=<pattern>
+\fB\-\-decorate\-refs=\fR\fI<pattern>\fR, \fB\-\-decorate\-refs\-exclude=\fR\fI<pattern>\fR
 .RS 4
-For each candidate reference, do not use it for decoration if it matches any patterns given to
+For each candidate reference, do not use it for decoration if it matches any of the
+\fI<pattern>\fR
+parameters given to
 \fB\-\-decorate\-refs\-exclude\fR
-or if it doesn\(cqt match any of the patterns given to
+or if it doesn\(cqt match any of the
+\fI<pattern>\fR
+parameters given to
 \fB\-\-decorate\-refs\fR\&. The
 \fBlog\&.excludeDecoration\fR
 config option allows excluding refs from the decorations, but an explicit
@@ -134,7 +142,7 @@ If none of these options or config settings are given, then references are used 
 \fBrefs/tags/\fR\&.
 .RE
 .PP
-\-\-clear\-decorations
+\fB\-\-clear\-decorations\fR
 .RS 4
 When specified, this option clears all previous
 \fB\-\-decorate\-refs\fR
@@ -146,43 +154,47 @@ is set to
 \fBall\fR\&.
 .RE
 .PP
-\-\-source
+\fB\-\-source\fR
 .RS 4
 Print out the ref name given on the command line by which each commit was reached\&.
 .RE
 .PP
-\-\-[no\-]mailmap, \-\-[no\-]use\-mailmap
+\fB\-\-\fR[\fBno\-\fR]\fBmailmap\fR, \fB\-\-\fR[\fBno\-\fR]\fBuse\-mailmap\fR
 .RS 4
 Use mailmap file to map author and committer names and email addresses to canonical real names and email addresses\&. See
 \fBgit-shortlog\fR(1)\&.
 .RE
 .PP
-\-\-full\-diff
+\fB\-\-full\-diff\fR
 .RS 4
 Without this flag,
 \fBgit\fR
 \fBlog\fR
 \fB\-p\fR
-\fI<path>\fR\&.\&.\&. shows commits that touch the specified paths, and diffs about the same specified paths\&. With this, the full diff is shown for commits that touch the specified paths; this means that "<path>\&...\:" limits only commits, and doesn\(cqt limit diff for those commits\&.
+\fI<path>\fR\&.\&.\&. shows commits that touch the specified paths, and diffs about the same specified paths\&. With this, the full diff is shown for commits that touch the specified paths; this means that "\fI<path>\fR\&.\&.\&." limits only commits, and doesn\(cqt limit diff for those commits\&.
 .sp
 Note that this affects all diff\-based output types, e\&.g\&. those produced by
 \fB\-\-stat\fR, etc\&.
 .RE
 .PP
-\-\-log\-size
+\fB\-\-log\-size\fR
 .RS 4
 Include a line
-\(lqlog size <number>\(rq
-in the output for each commit, where <number> is the length of that commit\(cqs message in bytes\&. Intended to speed up tools that read log messages from
+\fBlog\fR
+\fBsize\fR
+\fI<number>\fR
+in the output for each commit, where
+\fI<number>\fR
+is the length of that commit\(cqs message in bytes\&. Intended to speed up tools that read log messages from
 \fBgit\fR
 \fBlog\fR
 output by allowing them to allocate space in advance\&.
 .RE
 .PP
-\-L<start>,<end>:<file>, \-L:<funcname>:<file>
+\fB\-L\fR\fI<start>\fR\fB,\fR\fI<end>\fR\fB:\fR\fI<file>\fR, \fB\-L:\fR\fI<funcname>\fR\fB:\fR\fI<file>\fR
 .RS 4
 Trace the evolution of the line range given by
-\fI<start>,<end>\fR, or by the function name regex
+\fI<start>\fR\fB,\fR\fI<end>\fR, or by the function name regex
 \fI<funcname>\fR, within the
 \fI<file>\fR\&. You may not give any pathspec limiters\&. This is currently limited to a walk starting from a single revision, i\&.e\&., you may only give zero or one positive revision arguments, and
 \fI<start>\fR
@@ -214,7 +226,7 @@ can take one of these forms:
 .sp -1
 .IP \(bu 2.3
 .\}
-number
+\fI<number>\fR
 .sp
 If
 \fI<start>\fR
@@ -231,16 +243,17 @@ is a number, it specifies an absolute line number (lines count from 1)\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fB/regex/\fR
+\fB/\fR\fI<regex>\fR\fB/\fR
 .sp
-This form will use the first line matching the given POSIX regex\&. If
+This form will use the first line matching the given POSIX
+\fI<regex>\fR\&. If
 \fI<start>\fR
 is a regex, it will search from the end of the previous
 \fB\-L\fR
 range, if any, otherwise from the start of file\&. If
 \fI<start>\fR
 is
-\fB^/regex/\fR, it will search from the start of file\&. If
+\fB^/\fR\fI<regex>\fR\fB/\fR, it will search from the start of file\&. If
 \fI<end>\fR
 is a regex, it will search starting at the line given by
 \fI<start>\fR\&.
@@ -254,7 +267,9 @@ is a regex, it will search starting at the line given by
 .sp -1
 .IP \(bu 2.3
 .\}
-+offset or \-offset
+\fB+\fR\fI<offset>\fR
+or
+\fB\-\fR\fI<offset>\fR
 .sp
 This is only valid for
 \fI<end>\fR
@@ -283,21 +298,24 @@ in
 \fBgitattributes\fR(5))\&.
 .RE
 .PP
-<revision\-range>
+\fI<revision\-range>\fR
 .RS 4
-Show only commits in the specified revision range\&. When no <revision\-range> is specified, it defaults to
+Show only commits in the specified revision range\&. When no
+\fI<revision\-range>\fR
+is specified, it defaults to
 \fBHEAD\fR
 (i\&.e\&. the whole history leading to the current commit)\&.
 \fBorigin\fR\fB\&.\&.\fR\fBHEAD\fR
 specifies all the commits reachable from the current commit (i\&.e\&.
 \fBHEAD\fR), but not from
-\fBorigin\fR\&. For a complete list of ways to spell <revision\-range>, see the
+\fBorigin\fR\&. For a complete list of ways to spell
+\fI<revision\-range>\fR, see the
 \fISpecifying Ranges\fR
 section of
 \fBgitrevisions\fR(7)\&.
 .RE
 .PP
-[\-\-] <path>\&...\:
+[\fB\-\-\fR] \fI<path>\fR\&.\&.\&.
 .RS 4
 Show only commits that are enough to explain how the files that match the specified paths came to be\&. See
 \fIHistory Simplification\fR
@@ -315,52 +333,68 @@ Using more options generally further limits the output (e\&.g\&. \fB\-\-since=\f
 .sp
 Note that these are applied before commit ordering and formatting options, such as \fB\-\-reverse\fR\&.
 .PP
-\-<number>, \-n <number>, \-\-max\-count=<number>
+\fB\-\fR\fI<number>\fR, \fB\-n\fR \fI<number>\fR, \fB\-\-max\-count=\fR\fI<number>\fR
 .RS 4
-Limit the number of commits to output\&.
+Limit the output to
+\fI<number>\fR
+commits\&.
 .RE
 .PP
-\-\-skip=<number>
+\fB\-\-skip=\fR\fI<number>\fR
 .RS 4
 Skip
-\fInumber\fR
+\fI<number>\fR
 commits before starting to show the commit output\&.
 .RE
 .PP
-\-\-since=<date>, \-\-after=<date>
+\fB\-\-since=\fR\fI<date>\fR, \fB\-\-after=\fR\fI<date>\fR
 .RS 4
-Show commits more recent than a specific date\&.
+Show commits more recent than
+\fI<date>\fR\&.
 .RE
 .PP
-\-\-since\-as\-filter=<date>
+\fB\-\-since\-as\-filter=\fR\fI<date>\fR
 .RS 4
-Show all commits more recent than a specific date\&. This visits all commits in the range, rather than stopping at the first commit which is older than a specific date\&.
+Show all commits more recent than
+\fI<date>\fR\&. This visits all commits in the range, rather than stopping at the first commit which is older than
+\fI<date>\fR\&.
 .RE
 .PP
-\-\-until=<date>, \-\-before=<date>
+\fB\-\-until=\fR\fI<date>\fR, \fB\-\-before=\fR\fI<date>\fR
 .RS 4
-Show commits older than a specific date\&.
+Show commits older than
+\fI<date>\fR\&.
 .RE
 .PP
-\-\-author=<pattern>, \-\-committer=<pattern>
+\fB\-\-author=\fR\fI<pattern>\fR, \fB\-\-committer=\fR\fI<pattern>\fR
 .RS 4
-Limit the commits output to ones with author/committer header lines that match the specified pattern (regular expression)\&. With more than one
-\fB\-\-author=\fR\fI<pattern>\fR, commits whose author matches any of the given patterns are chosen (similarly for multiple
+Limit the commits output to ones with author/committer header lines that match the
+\fI<pattern>\fR
+regular expression\&. With more than one
+\fB\-\-author=\fR\fI<pattern>\fR, commits whose author matches any of the
+\fI<pattern>\fR
+are chosen (similarly for multiple
 \fB\-\-committer=\fR\fI<pattern>\fR)\&.
 .RE
 .PP
-\-\-grep\-reflog=<pattern>
+\fB\-\-grep\-reflog=\fR\fI<pattern>\fR
 .RS 4
-Limit the commits output to ones with reflog entries that match the specified pattern (regular expression)\&. With more than one
+Limit the commits output to ones with reflog entries that match the
+\fI<pattern>\fR
+regular expression\&. With more than one
 \fB\-\-grep\-reflog\fR, commits whose reflog message matches any of the given patterns are chosen\&. It is an error to use this option unless
 \fB\-\-walk\-reflogs\fR
 is in use\&.
 .RE
 .PP
-\-\-grep=<pattern>
+\fB\-\-grep=\fR\fI<pattern>\fR
 .RS 4
-Limit the commits output to ones with a log message that matches the specified pattern (regular expression)\&. With more than one
-\fB\-\-grep=\fR\fI<pattern>\fR, commits whose message matches any of the given patterns are chosen (but see
+Limit the commits output to ones with a log message that matches the
+\fI<pattern>\fR
+regular expression\&. With more than one
+\fB\-\-grep=\fR\fI<pattern>\fR, commits whose message matches any of the
+\fI<pattern>\fR
+are chosen (but see
 \fB\-\-all\-match\fR)\&.
 .sp
 When
@@ -368,63 +402,65 @@ When
 is in effect, the message from the notes is matched as if it were part of the log message\&.
 .RE
 .PP
-\-\-all\-match
+\fB\-\-all\-match\fR
 .RS 4
 Limit the commits output to ones that match all given
 \fB\-\-grep\fR, instead of ones that match at least one\&.
 .RE
 .PP
-\-\-invert\-grep
+\fB\-\-invert\-grep\fR
 .RS 4
-Limit the commits output to ones with a log message that do not match the pattern specified with
+Limit the commits output to ones with a log message that do not match the
+\fI<pattern>\fR
+specified with
 \fB\-\-grep=\fR\fI<pattern>\fR\&.
 .RE
 .PP
-\-i, \-\-regexp\-ignore\-case
+\fB\-i\fR, \fB\-\-regexp\-ignore\-case\fR
 .RS 4
 Match the regular expression limiting patterns without regard to letter case\&.
 .RE
 .PP
-\-\-basic\-regexp
+\fB\-\-basic\-regexp\fR
 .RS 4
 Consider the limiting patterns to be basic regular expressions; this is the default\&.
 .RE
 .PP
-\-E, \-\-extended\-regexp
+\fB\-E\fR, \fB\-\-extended\-regexp\fR
 .RS 4
 Consider the limiting patterns to be extended regular expressions instead of the default basic regular expressions\&.
 .RE
 .PP
-\-F, \-\-fixed\-strings
+\fB\-F\fR, \fB\-\-fixed\-strings\fR
 .RS 4
 Consider the limiting patterns to be fixed strings (don\(cqt interpret pattern as a regular expression)\&.
 .RE
 .PP
-\-P, \-\-perl\-regexp
+\fB\-P\fR, \fB\-\-perl\-regexp\fR
 .RS 4
 Consider the limiting patterns to be Perl\-compatible regular expressions\&.
 .sp
 Support for these types of regular expressions is an optional compile\-time dependency\&. If Git wasn\(cqt compiled with support for them providing this option will cause it to die\&.
 .RE
 .PP
-\-\-remove\-empty
+\fB\-\-remove\-empty\fR
 .RS 4
 Stop when a given path disappears from the tree\&.
 .RE
 .PP
-\-\-merges
+\fB\-\-merges\fR
 .RS 4
 Print only merge commits\&. This is exactly the same as
 \fB\-\-min\-parents=2\fR\&.
 .RE
 .PP
-\-\-no\-merges
+\fB\-\-no\-merges\fR
 .RS 4
 Do not print commits with more than one parent\&. This is exactly the same as
 \fB\-\-max\-parents=1\fR\&.
 .RE
 .PP
-\-\-min\-parents=<number>, \-\-max\-parents=<number>, \-\-no\-min\-parents, \-\-no\-max\-parents
+\fB\-\-min\-parents=\fR\fI<number>\fR, \fB\-\-max\-parents=\fR\fI<number>\fR, \fB\-\-no\-min\-parents\fR, \fB\-\-no\-max\-parents\fR
 .RS 4
 Show only commits which have at least (or at most) that many parent commits\&. In particular,
 \fB\-\-max\-parents=1\fR
@@ -448,7 +484,7 @@ reset these limits (to no limit) again\&. Equivalent forms are
 (negative numbers denote no upper limit)\&.
 .RE
 .PP
-\-\-first\-parent
+\fB\-\-first\-parent\fR
 .RS 4
 When finding commits to include, follow only the first parent commit upon seeing a merge commit\&. This option can give a better overview when viewing the evolution of a particular topic branch, because merges into a topic branch tend to be only about adjusting to updated upstream from time to time, and this option allows you to ignore the individual commits brought in to your history by such a merge\&.
 .sp
@@ -458,13 +494,13 @@ This option also changes default diff format for merge commits to
 for details\&.
 .RE
 .PP
-\-\-exclude\-first\-parent\-only
+\fB\-\-exclude\-first\-parent\-only\fR
 .RS 4
 When finding commits to exclude (with a
 \fI^\fR), follow only the first parent commit upon seeing a merge commit\&. This can be used to find the set of changes in a topic branch from the point where it diverged from the remote branch, given that arbitrary merges can be valid topic branch changes\&.
 .RE
 .PP
-\-\-not
+\fB\-\-not\fR
 .RS 4
 Reverses the meaning of the
 \fI^\fR
@@ -472,7 +508,7 @@ prefix (or lack thereof) for all following revision specifiers, up to the next
 \fB\-\-not\fR\&. When used on the command line before \-\-stdin, the revisions passed through stdin will not be affected by it\&. Conversely, when passed via standard input, the revisions passed on the command line will not be affected by it\&.
 .RE
 .PP
-\-\-all
+\fB\-\-all\fR
 .RS 4
 Pretend as if all the refs in
 \fBrefs/\fR, along with
@@ -480,14 +516,16 @@ Pretend as if all the refs in
 \fI<commit>\fR\&.
 .RE
 .PP
-\-\-branches[=<pattern>]
+\fB\-\-branches\fR[\fB=\fR\fI<pattern>\fR]
 .RS 4
 Pretend as if all the refs in
 \fBrefs/heads\fR
 are listed on the command line as
 \fI<commit>\fR\&. If
 \fI<pattern>\fR
-is given, limit branches to ones matching given shell glob\&. If pattern lacks
+is given, limit branches to ones matching given shell glob\&. If
+\fI<pattern>\fR
+lacks
 \fI?\fR,
 \fI*\fR, or
 \fI[\fR,
@@ -495,7 +533,7 @@ is given, limit branches to ones matching given shell glob\&. If pattern lacks
 at the end is implied\&.
 .RE
 .PP
-\-\-tags[=<pattern>]
+\fB\-\-tags\fR[\fB=\fR\fI<pattern>\fR]
 .RS 4
 Pretend as if all the refs in
 \fBrefs/tags\fR
@@ -510,7 +548,7 @@ is given, limit tags to ones matching given shell glob\&. If pattern lacks
 at the end is implied\&.
 .RE
 .PP
-\-\-remotes[=<pattern>]
+\fB\-\-remotes\fR[\fB=\fR\fI<pattern>\fR]
 .RS 4
 Pretend as if all the refs in
 \fBrefs/remotes\fR
@@ -525,7 +563,7 @@ is given, limit remote\-tracking branches to ones matching given shell glob\&. I
 at the end is implied\&.
 .RE
 .PP
-\-\-glob=<glob\-pattern>
+\fB\-\-glob=\fR\fI<glob\-pattern>\fR
 .RS 4
 Pretend as if all the refs matching shell glob
 \fI<glob\-pattern>\fR
@@ -539,7 +577,7 @@ are listed on the command line as
 at the end is implied\&.
 .RE
 .PP
-\-\-exclude=<glob\-pattern>
+\fB\-\-exclude=\fR\fI<glob\-pattern>\fR
 .RS 4
 Do not include refs matching
 \fI<glob\-pattern>\fR
@@ -574,7 +612,7 @@ or
 is intended, it must be given explicitly\&.
 .RE
 .PP
-\-\-exclude\-hidden=[fetch|receive|uploadpack]
+\fB\-\-exclude\-hidden=\fR(\fBfetch\fR|\fBreceive\fR|\fBuploadpack\fR)
 .RS 4
 Do not include refs that would be hidden by
 \fBgit\-fetch\fR,
@@ -596,13 +634,13 @@ or
 and is cleared after processing them\&.
 .RE
 .PP
-\-\-reflog
+\fB\-\-reflog\fR
 .RS 4
 Pretend as if all objects mentioned by reflogs are listed on the command line as
 \fI<commit>\fR\&.
 .RE
 .PP
-\-\-alternate\-refs
+\fB\-\-alternate\-refs\fR
 .RS 4
 Pretend as if all objects mentioned as ref tips of alternate repositories were listed on the command line\&. An alternate repository is any repository whose object directory is specified in
 \fBobjects/info/alternates\fR\&. The set of included objects may be modified by
@@ -610,7 +648,7 @@ Pretend as if all objects mentioned as ref tips of alternate repositories were l
 \fBgit-config\fR(1)\&.
 .RE
 .PP
-\-\-single\-worktree
+\fB\-\-single\-worktree\fR
 .RS 4
 By default, all working trees will be examined by the following options when there are more than one (see
 \fBgit-worktree\fR(1)):
@@ -620,12 +658,12 @@ and
 \fB\-\-indexed\-objects\fR\&. This option forces them to examine the current working tree only\&.
 .RE
 .PP
-\-\-ignore\-missing
+\fB\-\-ignore\-missing\fR
 .RS 4
 Upon seeing an invalid object name in the input, pretend as if the bad input was not given\&.
 .RE
 .PP
-\-\-bisect
+\fB\-\-bisect\fR
 .RS 4
 Pretend as if the bad bisection ref
 \fBrefs/bisect/bad\fR
@@ -636,7 +674,7 @@ and the good bisection refs
 on the command line\&.
 .RE
 .PP
-\-\-stdin
+\fB\-\-stdin\fR
 .RS 4
 In addition to getting arguments from the command line, read them from standard input as well\&. This accepts commits and pseudo\-options like
 \fB\-\-all\fR
@@ -648,7 +686,7 @@ separator is seen, the following input is treated as paths and used to limit the
 which are read via standard input are only respected for arguments passed in the same way and will not influence any subsequent command line arguments\&.
 .RE
 .PP
-\-\-cherry\-mark
+\fB\-\-cherry\-mark\fR
 .RS 4
 Like
 \fB\-\-cherry\-pick\fR
@@ -658,7 +696,7 @@ rather than omitting them, and inequivalent ones with
 \fB+\fR\&.
 .RE
 .PP
-\-\-cherry\-pick
+\fB\-\-cherry\-pick\fR
 .RS 4
 Omit any commit that introduces the same change as another commit on the
 \(lqother side\(rq
@@ -676,7 +714,7 @@ option)\&. However, it shows the commits that were cherry\-picked from the other
 may be cherry\-picked from branch A)\&. With this option, such pairs of commits are excluded from the output\&.
 .RE
 .PP
-\-\-left\-only, \-\-right\-only
+\fB\-\-left\-only\fR, \fB\-\-right\-only\fR
 .RS 4
 List only commits on the respective side of a symmetric difference, i\&.e\&. only those which would be marked < resp\&. > by
 \fB\-\-left\-right\fR\&.
@@ -703,7 +741,7 @@ commits from
 gives the exact list\&.
 .RE
 .PP
-\-\-cherry
+\fB\-\-cherry\fR
 .RS 4
 A synonym for
 \fB\-\-right\-only\fR
@@ -719,12 +757,12 @@ A synonym for
 \fBmybranch\fR\&.
 .RE
 .PP
-\-g, \-\-walk\-reflogs
+\fB\-g\fR, \fB\-\-walk\-reflogs\fR
 .RS 4
 Instead of walking the commit ancestry chain, walk reflog entries from the most recent one to older ones\&. When this option is used you cannot specify commits to exclude (that is,
-\fI^commit\fR,
-\fIcommit1\&.\&.commit2\fR, and
-\fIcommit1\&.\&.\&.commit2\fR
+\fB^\fR\fI<commit>\fR,
+\fI<commit1>\fR\fB\&.\&.\fR\fI<commit2>\fR, and
+\fI<commit1>\fR\fB\&.\&.\&.\fR\fI<commit2>\fR
 notations cannot be used)\&.
 .sp
 With
@@ -799,7 +837,7 @@ Under
 \fB\-\-pretty=reference\fR, this information will not be shown at all\&.
 .RE
 .PP
-\-\-merge
+\fB\-\-merge\fR
 .RS 4
 Show commits touching conflicted paths in the range
 \fBHEAD\fR\fB\&.\&.\&.\fR\fI<other>\fR, where
@@ -812,7 +850,7 @@ or
 \fBREBASE_HEAD\fR\&. Only works when the index has unmerged entries\&. This option can be used to show relevant commits when resolving conflicts from a 3\-way merge\&.
 .RE
 .PP
-\-\-boundary
+\fB\-\-boundary\fR
 .RS 4
 Output excluded boundary commits\&. Boundary commits are prefixed with
 \fB\-\fR\&.
@@ -823,12 +861,12 @@ Sometimes you are only interested in parts of the history, for example the commi
 .sp
 The following options select the commits to be shown:
 .PP
-<paths>
+\fI<paths>\fR
 .RS 4
 Commits modifying the given <paths> are selected\&.
 .RE
 .PP
-\-\-simplify\-by\-decoration
+\fB\-\-simplify\-by\-decoration\fR
 .RS 4
 Commits that are referred by some branch or tag are selected\&.
 .RE
@@ -837,51 +875,59 @@ Note that extra commits can be shown to give a meaningful history\&.
 .sp
 The following options affect the way the simplification is performed:
 .PP
-Default mode
+\fBDefault\fR \fBmode\fR
 .RS 4
 Simplifies the history to the simplest history explaining the final state of the tree\&. Simplest because it prunes some side branches if the end result is the same (i\&.e\&. merging branches with the same content)
 .RE
 .PP
-\-\-show\-pulls
+\fB\-\-show\-pulls\fR
 .RS 4
 Include all commits from the default mode, but also any merge commits that are not TREESAME to the first parent but are TREESAME to a later parent\&. This mode is helpful for showing the merge commits that "first introduced" a change to a branch\&.
 .RE
 .PP
-\-\-full\-history
+\fB\-\-full\-history\fR
 .RS 4
 Same as the default mode, but does not prune some history\&.
 .RE
 .PP
-\-\-dense
+\fB\-\-dense\fR
 .RS 4
 Only the selected commits are shown, plus some to have a meaningful history\&.
 .RE
 .PP
-\-\-sparse
+\fB\-\-sparse\fR
 .RS 4
 All commits in the simplified history are shown\&.
 .RE
 .PP
-\-\-simplify\-merges
+\fB\-\-simplify\-merges\fR
 .RS 4
 Additional option to
 \fB\-\-full\-history\fR
 to remove some needless merges from the resulting history, as there are no selected commits contributing to this merge\&.
 .RE
 .PP
-\-\-ancestry\-path[=<commit>]
+\fB\-\-ancestry\-path\fR[\fB=\fR\fI<commit>\fR]
 .RS 4
 When given a range of commits to display (e\&.g\&.
-\fIcommit1\&.\&.commit2\fR
+\fI<commit1>\fR\fB\&.\&.\fR\fI<commit2>\fR
 or
-\fIcommit2 ^commit1\fR), and a commit <commit> in that range, only display commits in that range that are ancestors of <commit>, descendants of <commit>, or <commit> itself\&. If no commit is specified, use
-\fIcommit1\fR
-(the excluded part of the range) as <commit>\&. Can be passed multiple times; if so, a commit is included if it is any of the commits given or if it is an ancestor or descendant of one of them\&.
+\fI<commit2>\fR
+\fB^\fR\fI<commit1>\fR), and a commit
+\fI<commit>\fR
+in that range, only display commits in that range that are ancestors of
+\fI<commit>\fR, descendants of
+\fI<commit>\fR, or
+\fI<commit>\fR
+itself\&. If no commit is specified, use
+\fI<commit1>\fR
+(the excluded part of the range) as
+\fI<commit>\fR\&. Can be passed multiple times; if so, a commit is included if it is any of the commits given or if it is an ancestor or descendant of one of them\&.
 .RE
 .sp
 A more detailed explanation follows\&.
 .sp
-Suppose you specified \fBfoo\fR as the <paths>\&. We shall call commits that modify \fBfoo\fR !TREESAME, and the rest TREESAME\&. (In a diff filtered for \fBfoo\fR, they look different and equal, respectively\&.)
+Suppose you specified \fBfoo\fR as the \fI<paths>\fR\&. We shall call commits that modify \fBfoo\fR !TREESAME, and the rest TREESAME\&. (In a diff filtered for \fBfoo\fR, they look different and equal, respectively\&.)
 .sp
 In the following, we will always refer to the same example history to illustrate the differences between simplification settings\&. We assume that you are filtering for a file \fBfoo\fR in this commit graph:
 .sp
@@ -913,10 +959,10 @@ The horizontal line of history A\-\-\-Q is taken to be the first parent of each 
 is the initial commit, in which
 \fBfoo\fR
 exists with contents
-\(lqasdf\(rq, and a file
+\fBasdf\fR, and a file
 \fBquux\fR
 exists with contents
-\(lqquux\(rq\&. Initial commits are compared to an empty tree, so
+\fBquux\fR\&. Initial commits are compared to an empty tree, so
 \fBI\fR
 is !TREESAME\&.
 .RE
@@ -933,7 +979,7 @@ In
 \fBA\fR,
 \fBfoo\fR
 contains just
-\(lqfoo\(rq\&.
+\fBfoo\fR\&.
 .RE
 .sp
 .RS 4
@@ -964,7 +1010,7 @@ does not change
 \fBfoo\fR, but its merge
 \fBN\fR
 changes it to
-\(lqfoobar\(rq, so it is not TREESAME to any parent\&.
+\fBfoobar\fR, so it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -979,14 +1025,14 @@ changes it to
 sets
 \fBfoo\fR
 to
-\(lqbaz\(rq\&. Its merge
+\fBbaz\fR\&. Its merge
 \fBO\fR
 combines the strings from
 \fBN\fR
 and
 \fBD\fR
 to
-\(lqfoobarbaz\(rq; i\&.e\&., it is not TREESAME to any parent\&.
+\fBfoobarbaz\fR; i\&.e\&., it is not TREESAME to any parent\&.
 .RE
 .sp
 .RS 4
@@ -1001,10 +1047,11 @@ to
 changes
 \fBquux\fR
 to
-\(lqxyzzy\(rq, and its merge
+\fBxyzzy\fR, and its merge
 \fBP\fR
 combines the strings to
-\(lqquux xyzzy\(rq\&.
+\fBquux\fR
+\fBxyzzy\fR\&.
 \fBP\fR
 is TREESAME to
 \fBO\fR, but not to
@@ -1073,7 +1120,7 @@ Parent/child relations are only visible with
 \fB\-\-parents\fR, but that does not affect the commits selected in default mode, so we have shown the parent lines\&.
 .RE
 .PP
-\-\-full\-history without parent rewriting
+\fB\-\-full\-history\fR without parent rewriting
 .RS 4
 This mode differs from the default in one point: always follow all parents of a merge, even if it is TREESAME to one of them\&. Even if more than one side of the merge has commits that are included, this does not imply that the merge itself is! In the example, we get
 .sp
@@ -1100,7 +1147,7 @@ was !TREESAME, so the others do not appear\&.
 Note that without parent rewriting, it is not really possible to talk about the parent/child relationships between the commits, so we show them disconnected\&.
 .RE
 .PP
-\-\-full\-history with parent rewriting
+\fB\-\-full\-history\fR with parent rewriting
 .RS 4
 Ordinary commits are only included if they are !TREESAME (though this can be changed, see
 \fB\-\-sparse\fR
@@ -1140,12 +1187,12 @@ and
 .sp
 In addition to the above settings, you can change whether TREESAME affects inclusion:
 .PP
-\-\-dense
+\fB\-\-dense\fR
 .RS 4
 Commits that are walked are included if they are not TREESAME to any parent\&.
 .RE
 .PP
-\-\-sparse
+\fB\-\-sparse\fR
 .RS 4
 All commits that are walked are included\&.
 .sp
@@ -1153,7 +1200,7 @@ Note that without
 \fB\-\-full\-history\fR, this still simplifies merges: if one of the parents is TREESAME, we follow only that one, so the other sides of the merge are never walked\&.
 .RE
 .PP
-\-\-simplify\-merges
+\fB\-\-simplify\-merges\fR
 .RS 4
 First, build a history graph in the same way that
 \fB\-\-full\-history\fR
@@ -1281,9 +1328,13 @@ was then removed completely, because it had one parent and is TREESAME\&.
 .sp
 There is another simplification mode available:
 .PP
-\-\-ancestry\-path[=<commit>]
+\fB\-\-ancestry\-path\fR[\fB=\fR\fI<commit>\fR]
 .RS 4
-Limit the displayed commits to those which are an ancestor of <commit>, or which are a descendant of <commit>, or are <commit> itself\&.
+Limit the displayed commits to those which are an ancestor of
+\fI<commit>\fR, or which are a descendant of
+\fI<commit>\fR, or are
+\fI<commit>\fR
+itself\&.
 .sp
 As an example use case, consider the following commit history:
 .sp
@@ -1308,8 +1359,10 @@ computes the set of commits that are ancestors of
 \fBD\fR\&. This is useful to see what happened to the history leading to
 \fBM\fR
 since
-\fBD\fR, in the sense that
-\(lqwhat does \fBM\fR have that did not exist in \fBD\fR\(rq\&. The result in this example would be all the commits, except
+\fBD\fR, in the sense that "what does
+\fBM\fR
+have that did not exist in
+\fBD\fR"\&. The result in this example would be all the commits, except
 \fBA\fR
 and
 \fBB\fR
@@ -1322,7 +1375,7 @@ When we want to find out what commits in
 are contaminated with the bug introduced by
 \fBD\fR
 and need fixing, however, we might want to view only the subset of
-\fID\&.\&.M\fR
+\fBD\fR\fB\&.\&.\fR\fBM\fR
 that are actually descendants of
 \fBD\fR, i\&.e\&. excluding
 \fBC\fR
@@ -1330,7 +1383,7 @@ and
 \fBK\fR\&. This is exactly what the
 \fB\-\-ancestry\-path\fR
 option does\&. Applied to the
-\fID\&.\&.M\fR
+\fBD\fR\fB\&.\&.\fR\fBM\fR
 range, it results in:
 .sp
 .if n \{\
@@ -1352,7 +1405,7 @@ We can also use
 instead of
 \fB\-\-ancestry\-path\fR
 which means the same thing when applied to the
-\fID\&.\&.M\fR
+\fBD\fR\fB\&.\&.\fR\fBM\fR
 range but is just more explicit\&.
 .sp
 If we instead are interested in a given topic within this range, and all commits affected by that topic, we may only want to view the subset of
@@ -1467,7 +1520,7 @@ The first issue is performance\&. Unlike any previous option, the \fB\-\-simplif
 .sp
 The second issue is one of auditing\&. When many contributors are working on the same repository, it is important which merge commits introduced a change into an important branch\&. The problematic merge \fBR\fR above is not likely to be the merge commit that was used to merge into an important branch\&. Instead, the merge \fBN\fR was used to merge \fBR\fR and \fBX\fR into the important branch\&. This commit may have information about why the change \fBX\fR came to override the changes from \fBA\fR and \fBB\fR in its commit message\&.
 .PP
-\-\-show\-pulls
+\fB\-\-show\-pulls\fR
 .RS 4
 In addition to the commits shown in the default history, show each merge commit that is not TREESAME to its first parent but is TREESAME to a later parent\&.
 .sp
@@ -1539,17 +1592,17 @@ The \fB\-\-simplify\-by\-decoration\fR option allows you to view only the big pi
 .sp
 By default, the commits are shown in reverse chronological order\&.
 .PP
-\-\-date\-order
+\fB\-\-date\-order\fR
 .RS 4
 Show no parents before all of its children are shown, but otherwise show commits in the commit timestamp order\&.
 .RE
 .PP
-\-\-author\-date\-order
+\fB\-\-author\-date\-order\fR
 .RS 4
 Show no parents before all of its children are shown, but otherwise show commits in the author timestamp order\&.
 .RE
 .PP
-\-\-topo\-order
+\fB\-\-topo\-order\fR
 .RS 4
 Show no parents before all of its children are shown, and avoid showing commits on multiple lines of history intermixed\&.
 .sp
@@ -1578,16 +1631,18 @@ With
 \fB\-\-topo\-order\fR, they would show 8 6 5 3 7 4 2 1 (or 8 7 4 2 6 5 3 1); some older commits are shown before newer ones in order to avoid showing the commits from two parallel development track mixed together\&.
 .RE
 .PP
-\-\-reverse
+\fB\-\-reverse\fR
 .RS 4
-Output the commits chosen to be shown (see Commit Limiting section above) in reverse order\&. Cannot be combined with
+Output the commits chosen to be shown (see
+\fICommit Limiting\fR
+section above) in reverse order\&. Cannot be combined with
 \fB\-\-walk\-reflogs\fR\&.
 .RE
 .SS "Object Traversal"
 .sp
 These options are mostly targeted for packing of Git repositories\&.
 .PP
-\-\-no\-walk[=(sorted|unsorted)]
+\fB\-\-no\-walk\fR[\fB=\fR(\fBsorted\fR|\fBunsorted\fR)]
 .RS 4
 Only show the given commits, but do not traverse their ancestors\&. This has no effect if a range is specified\&. If the argument
 \fBunsorted\fR
@@ -1597,66 +1652,87 @@ or no argument was given), the commits are shown in reverse chronological order 
 \fB\-\-graph\fR\&.
 .RE
 .PP
-\-\-do\-walk
+\fB\-\-do\-walk\fR
 .RS 4
 Overrides a previous
 \fB\-\-no\-walk\fR\&.
 .RE
 .SS "Commit Formatting"
 .PP
-\-\-pretty[=<format>], \-\-format=<format>
+\fB\-\-pretty\fR[\fB=\fR\fI<format>\fR], \fB\-\-format=\fR\fI<format>\fR
 .RS 4
 Pretty\-print the contents of the commit logs in a given format, where
 \fI<format>\fR
 can be one of
-\fIoneline\fR,
-\fIshort\fR,
-\fImedium\fR,
-\fIfull\fR,
-\fIfuller\fR,
-\fIreference\fR,
-\fIemail\fR,
-\fIraw\fR,
-\fIformat:<string>\fR
+\fBoneline\fR,
+\fBshort\fR,
+\fBmedium\fR,
+\fBfull\fR,
+\fBfuller\fR,
+\fBreference\fR,
+\fBemail\fR,
+\fBraw\fR,
+\fBformat:\fR\fI<string>\fR
 and
-\fItformat:<string>\fR\&. When
+\fBtformat:\fR\fI<string>\fR\&. When
 \fI<format>\fR
 is none of the above, and has
-\fI%placeholder\fR
+\fB%\fR\fI<placeholder>\fR
 in it, it acts as if
-\fI\-\-pretty=tformat:<format>\fR
+\fB\-\-pretty=tformat:\fR\fI<format>\fR
 were given\&.
 .sp
 See the "PRETTY FORMATS" section for some additional details for each format\&. When
-\fI=<format>\fR
+\fB=\fR\fI<format>\fR
 part is omitted, it defaults to
-\fImedium\fR\&.
+\fBmedium\fR\&.
+.if n \{\
 .sp
-Note: you can specify the default pretty format in the repository configuration (see
-\fBgit-config\fR(1))\&.
-.RE
-.PP
-\-\-abbrev\-commit
+.\}
 .RS 4
-Instead of showing the full 40\-byte hexadecimal commit object name, show a prefix that names the object uniquely\&. "\-\-abbrev=<n>" (which also modifies diff output, if it is displayed) option can be used to specify the minimum length of the prefix\&.
-.sp
-This should make "\-\-pretty=oneline" a whole lot more readable for people using 80\-column terminals\&.
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+you can specify the default pretty format in the repository configuration (see
+\fBgit-config\fR(1))\&.
+.sp .5v
+.RE
 .RE
 .PP
-\-\-no\-abbrev\-commit
+\fB\-\-abbrev\-commit\fR
+.RS 4
+Instead of showing the full 40\-byte hexadecimal commit object name, show a prefix that names the object uniquely\&.
+\fB\-\-abbrev=\fR\fI<n>\fR
+(which also modifies diff output, if it is displayed) option can be used to specify the minimum length of the prefix\&.
+.sp
+This should make
+\fB\-\-pretty=oneline\fR
+a whole lot more readable for people using 80\-column terminals\&.
+.RE
+.PP
+\fB\-\-no\-abbrev\-commit\fR
 .RS 4
 Show the full 40\-byte hexadecimal commit object name\&. This negates
-\fB\-\-abbrev\-commit\fR, either explicit or implied by other options such as "\-\-oneline"\&. It also overrides the
+\fB\-\-abbrev\-commit\fR, either explicit or implied by other options such as
+\fB\-\-oneline\fR\&. It also overrides the
 \fBlog\&.abbrevCommit\fR
 variable\&.
 .RE
 .PP
-\-\-oneline
+\fB\-\-oneline\fR
 .RS 4
-This is a shorthand for "\-\-pretty=oneline \-\-abbrev\-commit" used together\&.
+This is a shorthand for
+\fB\-\-pretty=oneline\fR
+\fB\-\-abbrev\-commit\fR
+used together\&.
 .RE
 .PP
-\-\-encoding=<encoding>
+\fB\-\-encoding=\fR\fI<encoding>\fR
 .RS 4
 Commit objects record the character encoding used for the log message in their encoding header; this option can be used to tell the command to re\-code the commit log message in the encoding preferred by the user\&. For non plumbing commands this defaults to UTF\-8\&. Note that if an object claims to be encoded in
 \fBX\fR
@@ -1664,7 +1740,7 @@ and we are outputting in
 \fBX\fR, we will output the object verbatim; this means that invalid sequences in the original commit may be copied to the output\&. Likewise, if iconv(3) fails to convert the commit, we will quietly output the original object verbatim\&.
 .RE
 .PP
-\-\-expand\-tabs=<n>, \-\-expand\-tabs, \-\-no\-expand\-tabs
+\fB\-\-expand\-tabs=\fR\fI<n>\fR, \fB\-\-expand\-tabs\fR, \fB\-\-no\-expand\-tabs\fR
 .RS 4
 Perform a tab expansion (replace each tab with enough spaces to fill to the next display column that is a multiple of
 \fI<n>\fR) in the log message before showing it in the output\&.
@@ -1676,12 +1752,12 @@ is a short\-hand for
 \fB\-\-expand\-tabs=0\fR, which disables tab expansion\&.
 .sp
 By default, tabs are expanded in pretty formats that indent the log message by 4 spaces (i\&.e\&.
-\fImedium\fR, which is the default,
-\fIfull\fR, and
-\fIfuller\fR)\&.
+\fBmedium\fR, which is the default,
+\fBfull\fR, and
+\fBfuller\fR)\&.
 .RE
 .PP
-\-\-notes[=<ref>]
+\fB\-\-notes\fR[\fB=\fR\fI<ref>\fR]
 .RS 4
 Show the notes (see
 \fBgit-notes\fR(1)) that annotate the commit, when showing the commit log message\&. This is the default for
@@ -1716,27 +1792,37 @@ and otherwise
 \fBrefs/notes/\fR
 is prefixed to form the full name of the ref\&.
 .sp
-Multiple \-\-notes options can be combined to control which notes are being displayed\&. Examples: "\-\-notes=foo" will show only notes from "refs/notes/foo"; "\-\-notes=foo \-\-notes" will show both notes from "refs/notes/foo" and from the default notes ref(s)\&.
+Multiple
+\fB\-\-notes\fR
+options can be combined to control which notes are being displayed\&. Examples: "\fB\-\-notes=foo\fR" will show only notes from
+\fBrefs/notes/foo\fR; "\fB\-\-notes=foo\fR
+\fB\-\-notes\fR" will show both notes from "refs/notes/foo" and from the default notes ref(s)\&.
 .RE
 .PP
-\-\-no\-notes
+\fB\-\-no\-notes\fR
 .RS 4
 Do not show notes\&. This negates the above
 \fB\-\-notes\fR
-option, by resetting the list of notes refs from which notes are shown\&. Options are parsed in the order given on the command line, so e\&.g\&. "\-\-notes \-\-notes=foo \-\-no\-notes \-\-notes=bar" will only show notes from "refs/notes/bar"\&.
+option, by resetting the list of notes refs from which notes are shown\&. Options are parsed in the order given on the command line, so e\&.g\&. "\fB\-\-notes\fR
+\fB\-\-notes=foo\fR
+\fB\-\-no\-notes\fR
+\fB\-\-notes=bar\fR" will only show notes from
+\fBrefs/notes/bar\fR\&.
 .RE
 .PP
-\-\-show\-notes\-by\-default
+\fB\-\-show\-notes\-by\-default\fR
 .RS 4
 Show the default notes unless options for displaying specific notes are given\&.
 .RE
 .PP
-\-\-show\-notes[=<ref>], \-\-[no\-]standard\-notes
+\fB\-\-show\-notes\fR[\fB=\fR\fI<ref>\fR], \fB\-\-standard\-notes\fR, \fB\-\-no\-standard\-notes\fR
 .RS 4
-These options are deprecated\&. Use the above \-\-notes/\-\-no\-notes options instead\&.
+These options are deprecated\&. Use the above
+\fB\-\-notes\fR/\fB\-\-no\-notes\fR
+options instead\&.
 .RE
 .PP
-\-\-show\-signature
+\fB\-\-show\-signature\fR
 .RS 4
 Check the validity of a signed commit object by passing the signature to
 \fBgpg\fR
@@ -1744,13 +1830,13 @@ Check the validity of a signed commit object by passing the signature to
 and show the output\&.
 .RE
 .PP
-\-\-relative\-date
+\fB\-\-relative\-date\fR
 .RS 4
 Synonym for
 \fB\-\-date=relative\fR\&.
 .RE
 .PP
-\-\-date=<format>
+\fB\-\-date=\fR\fI<format>\fR
 .RS 4
 Only takes effect for dates shown in human\-readable format, such as when using
 \fB\-\-pretty\fR\&.
@@ -1831,7 +1917,8 @@ shows the date as seconds since the epoch (1970\-01\-01 00:00:00 UTC), followed 
 or
 \fB\-\fR
 with four digits; the first two are hours, and the second two are minutes)\&. I\&.e\&., as if the timestamp were formatted with
-\fBstrftime\fR("%s %z"))\&. Note that the
+\fBstrftime\fR("%s
+\fB%z\fR"))\&. Note that the
 \fB\-local\fR
 option does not affect the seconds\-since\-epoch value (which is always measured in UTC), but does switch the accompanying timezone value\&.
 .sp
@@ -1844,15 +1931,19 @@ shows the date as a Unix epoch timestamp (seconds since 1970)\&. As with
 \fB\-local\fR
 has no effect\&.
 .sp
-\fB\-\-date=format:\&.\&.\fR\&. feeds the format
-\fB\&.\&.\&.\fR
+\fB\-\-date=format:\fR\fI<format>\fR
+feeds the
+\fI<format>\fR
 to your system
-\fBstrftime\fR, except for %s, %z, and %Z, which are handled internally\&. Use
-\fB\-\-date=format:\fR%c to show the date in your system locale\(cqs preferred format\&. See the
-\fBstrftime\fR
-manual for a complete list of format placeholders\&. When using
+\fBstrftime\fR, except for
+\fB%s\fR,
+\fB%z\fR, and
+\fB%Z\fR, which are handled internally\&. Use
+\fB\-\-date=format:%c\fR
+to show the date in your system locale\(cqs preferred format\&. See the
+\fBstrftime\fR(3) manual for a complete list of format placeholders\&. When using
 \fB\-local\fR, the correct syntax is
-\fB\-\-date=format\-local:\&.\&.\fR\&.\&.
+\fB\-\-date=format\-local:\fR\fI<format>\fR\&.
 .sp
 \fB\-\-date=default\fR
 is the default format, and is based on ctime(3) output\&. It shows a single line with three\-letter day of the week, three\-letter month, day\-of\-month, hour\-minute\-seconds in "HH:MM:SS" format, followed by 4\-digit year, plus timezone information, unless the local time zone is used, e\&.g\&.
@@ -1864,21 +1955,21 @@ is the default format, and is based on ctime(3) output\&. It shows a single line
 \fB+0000\fR\&.
 .RE
 .PP
-\-\-parents
+\fB\-\-parents\fR
 .RS 4
 Print also the parents of the commit (in the form "commit parent\&...\:")\&. Also enables parent rewriting, see
 \fIHistory Simplification\fR
 above\&.
 .RE
 .PP
-\-\-children
+\fB\-\-children\fR
 .RS 4
 Print also the children of the commit (in the form "commit child\&...\:")\&. Also enables parent rewriting, see
 \fIHistory Simplification\fR
 above\&.
 .RE
 .PP
-\-\-left\-right
+\fB\-\-left\-right\fR
 .RS 4
 Mark which side of a symmetric difference a commit is reachable from\&. Commits from the left side are prefixed with < and those from the right with >\&. If combined with
 \fB\-\-boundary\fR, those commits are prefixed with
@@ -1920,7 +2011,7 @@ you would get an output like this:
 .\}
 .RE
 .PP
-\-\-graph
+\fB\-\-graph\fR
 .RS 4
 Draw a text\-based graphical representation of the commit history on the left hand side of the output\&. This may cause extra lines to be printed in between commits, in order for the graph history to be drawn properly\&. Cannot be combined with
 \fB\-\-no\-walk\fR\&.
@@ -1936,17 +2027,19 @@ option by default, but the
 option may also be specified\&.
 .RE
 .PP
-\-\-show\-linear\-break[=<barrier>]
+\fB\-\-show\-linear\-break\fR[\fB=\fR\fI<barrier>\fR]
 .RS 4
-When \-\-graph is not used, all history branches are flattened which can make it hard to see that the two consecutive commits do not belong to a linear branch\&. This option puts a barrier in between them in that case\&. If
+When
+\fB\-\-graph\fR
+is not used, all history branches are flattened which can make it hard to see that the two consecutive commits do not belong to a linear branch\&. This option puts a barrier in between them in that case\&. If
 \fI<barrier>\fR
 is specified, it is the string that will be shown instead of the default one\&.
 .RE
 .SH "PRETTY FORMATS"
 .sp
-If the commit is a merge, and if the pretty\-format is not \fIoneline\fR, \fIemail\fR or \fIraw\fR, an additional line is inserted before the \fIAuthor:\fR line\&. This line begins with "Merge: " and the hashes of ancestral commits are printed, separated by spaces\&. Note that the listed commits may not necessarily be the list of the \fBdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file\&.
+If the commit is a merge, and if the pretty\-format is not \fBoneline\fR, \fBemail\fR or \fBraw\fR, an additional line is inserted before the \fBAuthor:\fR line\&. This line begins with "Merge: " and the hashes of ancestral commits are printed, separated by spaces\&. Note that the listed commits may not necessarily be the list of the \fIdirect\fR parent commits if you have limited your view of history: for example, if you are only interested in changes related to a certain directory or file\&.
 .sp
-There are several built\-in formats, and you can define additional formats by setting a pretty\&.<name> config option to either another format name, or a \fIformat:\fR string, as described below (see \fBgit-config\fR(1))\&. Here are the details of the built\-in formats:
+There are several built\-in formats, and you can define additional formats by setting a pretty\&.<name> config option to either another format name, or a \fBformat:\fR string, as described below (see \fBgit-config\fR(1))\&. Here are the details of the built\-in formats:
 .sp
 .RS 4
 .ie n \{\
@@ -1956,7 +2049,7 @@ There are several built\-in formats, and you can define additional formats by se
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIoneline\fR
+\fBoneline\fR
 .sp
 .if n \{\
 .RS 4
@@ -1979,7 +2072,7 @@ This is designed to be as compact as possible\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIshort\fR
+\fBshort\fR
 .sp
 .if n \{\
 .RS 4
@@ -2011,7 +2104,7 @@ Author: <author>
 .sp -1
 .IP \(bu 2.3
 .\}
-\fImedium\fR
+\fBmedium\fR
 .sp
 .if n \{\
 .RS 4
@@ -2054,7 +2147,7 @@ Date:   <author\-date>
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIfull\fR
+\fBfull\fR
 .sp
 .if n \{\
 .RS 4
@@ -2097,7 +2190,7 @@ Commit: <committer>
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIfuller\fR
+\fBfuller\fR
 .sp
 .if n \{\
 .RS 4
@@ -2142,7 +2235,7 @@ CommitDate: <committer\-date>
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIreference\fR
+\fBreference\fR
 .sp
 .if n \{\
 .RS 4
@@ -2155,7 +2248,9 @@ CommitDate: <committer\-date>
 .\}
 .sp
 This format is used to refer to another commit in a commit message and is the same as
-\fB\-\-pretty=\fR\*(Aqformat:%C(\fBauto\fR)%h (%s, %ad)\*(Aq\&. By default, the date is formatted with
+\fB\-\-pretty=\fR\*(Aqformat:%C(\fBauto\fR)\fB%h\fR
+(\fB%s\fR,
+\fB%ad\fR)\*(Aq\&. By default, the date is formatted with
 \fB\-\-date=short\fR
 unless another
 \fB\-\-date\fR
@@ -2175,7 +2270,7 @@ and
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIemail\fR
+\fBemail\fR
 .sp
 .if n \{\
 .RS 4
@@ -2209,10 +2304,10 @@ Subject: [PATCH] <title\-line>
 .sp -1
 .IP \(bu 2.3
 .\}
-\fImboxrd\fR
+\fBmboxrd\fR
 .sp
 Like
-\fIemail\fR, but lines in the commit message starting with "From " (preceded by zero or more ">") are quoted with ">" so they aren\(cqt confused as starting a new commit\&.
+\fBemail\fR, but lines in the commit message starting with "From " (preceded by zero or more ">") are quoted with ">" so they aren\(cqt confused as starting a new commit\&.
 .RE
 .sp
 .RS 4
@@ -2223,11 +2318,15 @@ Like
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIraw\fR
+\fBraw\fR
 .sp
 The
-\fIraw\fR
-format shows the entire commit exactly as stored in the commit object\&. Notably, the hashes are displayed in full, regardless of whether \-\-abbrev or \-\-no\-abbrev are used, and
+\fBraw\fR
+format shows the entire commit exactly as stored in the commit object\&. Notably, the hashes are displayed in full, regardless of whether
+\fB\-\-abbrev\fR
+or
+\fB\-\-no\-abbrev\fR
+are used, and
 \fIparents\fR
 information show the true parent commits, without taking grafts or history simplification into account\&. Note that this format affects the way commits are displayed, but not the way the diff is shown e\&.g\&. with
 \fBgit\fR
@@ -2244,14 +2343,14 @@ information show the true parent commits, without taking grafts or history simpl
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIformat:<format\-string>\fR
+\fBformat:\fR\fI<format\-string>\fR
 .sp
 The
-\fIformat:<format\-string>\fR
+\fBformat:\fR\fI<format\-string>\fR
 format allows you to specify which information you want to show\&. It works a little bit like printf format, with the notable exception that you get a newline with
-\fI%n\fR
+\fB%n\fR
 instead of
-\fI\en\fR\&.
+\fB\en\fR\&.
 .sp
 E\&.g,
 \fIformat:"The author of %h was %an, %ar%nThe title was >>%s<<%n"\fR
@@ -2280,20 +2379,20 @@ The placeholders are:
 .\}
 Placeholders that expand to a single literal character:
 .PP
-\fI%n\fR
+\fB%n\fR
 .RS 4
 newline
 .RE
 .PP
-\fI%%\fR
+\fB%%\fR
 .RS 4
 a raw
-\fI%\fR
+\fB%\fR
 .RE
 .PP
-\fI%x00\fR
+\fB%x00\fR
 .RS 4
-\fI%x\fR
+\fB%x\fR
 followed by two hexadecimal digits is replaced with a byte with the hexadecimal digits\*(Aq value (we will call this "literal formatting code" in the rest of this document)\&.
 .RE
 .RE
@@ -2308,27 +2407,27 @@ followed by two hexadecimal digits is replaced with a byte with the hexadecimal 
 .\}
 Placeholders that affect formatting of later placeholders:
 .PP
-\fI%Cred\fR
+\fB%Cred\fR
 .RS 4
 switch color to red
 .RE
 .PP
-\fI%Cgreen\fR
+\fB%Cgreen\fR
 .RS 4
 switch color to green
 .RE
 .PP
-\fI%Cblue\fR
+\fB%Cblue\fR
 .RS 4
 switch color to blue
 .RE
 .PP
-\fI%Creset\fR
+\fB%Creset\fR
 .RS 4
 reset color
 .RE
 .PP
-\fI%C(\&...\:)\fR
+\fB%C\fR(\fI<spec>\fR)
 .RS 4
 color specification, as described under Values in the "CONFIGURATION FILE" section of
 \fBgit-config\fR(1)\&. By default, colors are shown only when enabled for log output (by
@@ -2336,60 +2435,75 @@ color specification, as described under Values in the "CONFIGURATION FILE" secti
 \fBcolor\&.ui\fR, or
 \fB\-\-color\fR, and respecting the
 \fBauto\fR
-settings of the former if we are going to a terminal)\&. %C(\fBauto\fR,\fB\&.\&.\&.\fR) is accepted as a historical synonym for the default (e\&.g\&., %C(\fBauto\fR,red))\&. Specifying %C(\fBalways\fR,\fB\&.\&.\&.\fR) will show the colors even when color is not otherwise enabled (though consider just using
+settings of the former if we are going to a terminal)\&.
+\fB%C\fR(\fBauto\fR,\fI<spec>\fR) is accepted as a historical synonym for the default (e\&.g\&.,
+\fB%C\fR(\fBauto\fR,red))\&. Specifying
+\fB%C\fR(\fBalways\fR,\fI<spec>\fR) will show the colors even when color is not otherwise enabled (though consider just using
 \fB\-\-color=always\fR
 to enable color for the whole output, including this format and anything else git might color)\&.
 \fBauto\fR
-alone (i\&.e\&. %C(\fBauto\fR)) will turn on auto coloring on the next placeholders until the color is switched again\&.
+alone (i\&.e\&.
+\fB%C\fR(\fBauto\fR)) will turn on auto coloring on the next placeholders until the color is switched again\&.
 .RE
 .PP
-\fI%m\fR
+\fB%m\fR
 .RS 4
 left (<), right (>) or boundary (\fB\-\fR) mark
 .RE
 .PP
-\fI%w([<w>[,<i1>[,<i2>]]])\fR
+\fB%w\fR([\fI<w>\fR[\fB,\fR\fI<i1>\fR[\fB,\fR\fI<i2>\fR]]])
 .RS 4
-switch line wrapping, like the \-w option of
+switch line wrapping, like the
+\fB\-w\fR
+option of
 \fBgit-shortlog\fR(1)\&.
 .RE
 .PP
-\fI%<( <N> [,trunc|ltrunc|mtrunc])\fR
+\fB%\fR<(\fI<n>\fR[\fB,\fR(\fBtrunc\fR|\fBltrunc\fR|\fBmtrunc\fR)])
 .RS 4
 make the next placeholder take at least N column widths, padding spaces on the right if necessary\&. Optionally truncate (with ellipsis
-\fI\&.\&.\fR) at the left (ltrunc)
+\fB\&.\&.\fR) at the left (ltrunc)
 \fB\&.\&.\fR\fBft\fR, the middle (mtrunc)
 \fBmi\fR\fB\&.\&.\fR\fBle\fR, or the end (trunc)
-\fBrig\&.\&.\fR, if the output is longer than N columns\&. Note 1: that truncating only works correctly with N >= 2\&. Note 2: spaces around the N and M (see below) values are optional\&. Note 3: Emojis and other wide characters will take two display columns, which may over\-run column boundaries\&. Note 4: decomposed character combining marks may be misplaced at padding boundaries\&.
+\fBrig\&.\&.\fR, if the output is longer than
+\fI<n>\fR
+columns\&. Note 1: that truncating only works correctly with
+\fI<n>\fR
+>= 2\&. Note 2: spaces around the
+\fI<n>\fR
+and
+\fI<m>\fR
+(see below) values are optional\&. Note 3: Emojis and other wide characters will take two display columns, which may over\-run column boundaries\&. Note 4: decomposed character combining marks may be misplaced at padding boundaries\&.
 .RE
 .PP
-\fI%<|( <M> )\fR
+\fB%\fR<|(\fI<m>\fR )
 .RS 4
-make the next placeholder take at least until Mth display column, padding spaces on the right if necessary\&. Use negative M values for column positions measured from the right hand edge of the terminal window\&.
+make the next placeholder take at least until
+\fI<m>\fR
+th display column, padding spaces on the right if necessary\&. Use negative
+\fI<m>\fR
+values for column positions measured from the right hand edge of the terminal window\&.
 .RE
 .PP
-\fI%>( <N> )\fR, \fI%>|( <M> )\fR
-.RS 4
-similar to
-\fI%<( <N> )\fR,
-\fI%<|( <M> )\fR
-respectively, but padding spaces on the left
-.RE
-.PP
-\fI%>>( <N> )\fR, \fI%>>|( <M> )\fR
-.RS 4
-similar to
-\fI%>( <N> )\fR,
-\fI%>|( <M> )\fR
-respectively, except that if the next placeholder takes more spaces than given and there are spaces on its left, use those spaces
-.RE
-.PP
-\fI%><( <N> )\fR, \fI%><|( <M> )\fR
+\fB%\fR>(\fI<n>\fR), \fB%\fR>|(\fI<m>\fR)
 .RS 4
 similar to
-\fI%<( <N> )\fR,
-\fI%<|( <M> )\fR
-respectively, but padding both sides (i\&.e\&. the text is centered)
+\fB%\fR<(\fI<n>\fR),
+\fB%\fR<|(\fI<m>\fR) respectively, but padding spaces on the left
+.RE
+.PP
+\fB%\fR>>(\fI<n>\fR), \fB%\fR>>|(\fI<m>\fR)
+.RS 4
+similar to
+\fB%\fR>(\fI<n>\fR),
+\fB%\fR>|(\fI<m>\fR) respectively, except that if the next placeholder takes more spaces than given and there are spaces on its left, use those spaces
+.RE
+.PP
+\fB%\fR><(\fI<n>\fR), \fB%\fR><|(\fI<m>\fR)
+.RS 4
+similar to
+\fB%\fR<(\fI<n>\fR),
+\fB%\fR<|(\fI<m>\fR) respectively, but padding both sides (i\&.e\&. the text is centered)
 .RE
 .RE
 .sp
@@ -2403,42 +2517,42 @@ respectively, but padding both sides (i\&.e\&. the text is centered)
 .\}
 Placeholders that expand to information extracted from the commit:
 .PP
-\fI%H\fR
+\fB%H\fR
 .RS 4
 commit hash
 .RE
 .PP
-\fI%h\fR
+\fB%h\fR
 .RS 4
 abbreviated commit hash
 .RE
 .PP
-\fI%T\fR
+\fB%T\fR
 .RS 4
 tree hash
 .RE
 .PP
-\fI%t\fR
+\fB%t\fR
 .RS 4
 abbreviated tree hash
 .RE
 .PP
-\fI%P\fR
+\fB%P\fR
 .RS 4
 parent hashes
 .RE
 .PP
-\fI%p\fR
+\fB%p\fR
 .RS 4
 abbreviated parent hashes
 .RE
 .PP
-\fI%an\fR
+\fB%an\fR
 .RS 4
 author name
 .RE
 .PP
-\fI%aN\fR
+\fB%aN\fR
 .RS 4
 author name (respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
@@ -2446,12 +2560,12 @@ or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%ae\fR
+\fB%ae\fR
 .RS 4
 author email
 .RE
 .PP
-\fI%aE\fR
+\fB%aE\fR
 .RS 4
 author email (respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
@@ -2459,58 +2573,58 @@ or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%al\fR
+\fB%al\fR
 .RS 4
 author email local\-part (the part before the
-\fI@\fR
+\fB@\fR
 sign)
 .RE
 .PP
-\fI%aL\fR
+\fB%aL\fR
 .RS 4
 author local\-part (see
-\fI%al\fR) respecting \&.mailmap, see
+\fB%al\fR) respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
 or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%ad\fR
+\fB%ad\fR
 .RS 4
 author date (format respects \-\-date= option)
 .RE
 .PP
-\fI%aD\fR
+\fB%aD\fR
 .RS 4
 author date, RFC2822 style
 .RE
 .PP
-\fI%ar\fR
+\fB%ar\fR
 .RS 4
 author date, relative
 .RE
 .PP
-\fI%at\fR
+\fB%at\fR
 .RS 4
 author date, UNIX timestamp
 .RE
 .PP
-\fI%ai\fR
+\fB%ai\fR
 .RS 4
 author date, ISO 8601\-like format
 .RE
 .PP
-\fI%aI\fR
+\fB%aI\fR
 .RS 4
 author date, strict ISO 8601 format
 .RE
 .PP
-\fI%as\fR
+\fB%as\fR
 .RS 4
 author date, short format (\fBYYYY\-MM\-DD\fR)
 .RE
 .PP
-\fI%ah\fR
+\fB%ah\fR
 .RS 4
 author date, human style (like the
 \fB\-\-date=human\fR
@@ -2518,12 +2632,12 @@ option of
 \fBgit-rev-list\fR(1))
 .RE
 .PP
-\fI%cn\fR
+\fB%cn\fR
 .RS 4
 committer name
 .RE
 .PP
-\fI%cN\fR
+\fB%cN\fR
 .RS 4
 committer name (respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
@@ -2531,12 +2645,12 @@ or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%ce\fR
+\fB%ce\fR
 .RS 4
 committer email
 .RE
 .PP
-\fI%cE\fR
+\fB%cE\fR
 .RS 4
 committer email (respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
@@ -2544,58 +2658,58 @@ or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%cl\fR
+\fB%cl\fR
 .RS 4
 committer email local\-part (the part before the
-\fI@\fR
+\fB@\fR
 sign)
 .RE
 .PP
-\fI%cL\fR
+\fB%cL\fR
 .RS 4
 committer local\-part (see
-\fI%cl\fR) respecting \&.mailmap, see
+\fB%cl\fR) respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
 or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%cd\fR
+\fB%cd\fR
 .RS 4
 committer date (format respects \-\-date= option)
 .RE
 .PP
-\fI%cD\fR
+\fB%cD\fR
 .RS 4
 committer date, RFC2822 style
 .RE
 .PP
-\fI%cr\fR
+\fB%cr\fR
 .RS 4
 committer date, relative
 .RE
 .PP
-\fI%ct\fR
+\fB%ct\fR
 .RS 4
 committer date, UNIX timestamp
 .RE
 .PP
-\fI%ci\fR
+\fB%ci\fR
 .RS 4
 committer date, ISO 8601\-like format
 .RE
 .PP
-\fI%cI\fR
+\fB%cI\fR
 .RS 4
 committer date, strict ISO 8601 format
 .RE
 .PP
-\fI%cs\fR
+\fB%cs\fR
 .RS 4
 committer date, short format (\fBYYYY\-MM\-DD\fR)
 .RE
 .PP
-\fI%ch\fR
+\fB%ch\fR
 .RS 4
 committer date, human style (like the
 \fB\-\-date=human\fR
@@ -2603,22 +2717,22 @@ option of
 \fBgit-rev-list\fR(1))
 .RE
 .PP
-\fI%d\fR
+\fB%d\fR
 .RS 4
 ref names, like the \-\-decorate option of
 \fBgit-log\fR(1)
 .RE
 .PP
-\fI%D\fR
+\fB%D\fR
 .RS 4
 ref names without the " (", ")" wrapping\&.
 .RE
 .PP
-\fI%(decorate[:<options>])\fR
+\fB%\fR(\fBdecorate\fR[\fB:\fR\fI<option>\fR\fB,\fR\&.\&.\&.])
 .RS 4
 ref names with custom decorations\&. The
 \fBdecorate\fR
-string may be followed by a colon and zero or more comma\-separated options\&. Option values may contain literal formatting codes\&. These must be used for commas (%x2C) and closing parentheses (%x29), due to their role in the option syntax\&.
+string may be followed by a colon and zero or more comma\-separated options\&. Option values may contain literal formatting codes\&. These must be used for commas (\fB%x2C\fR) and closing parentheses (\fB%x29\fR), due to their role in the option syntax\&.
 .sp
 .RS 4
 .ie n \{\
@@ -2628,7 +2742,7 @@ string may be followed by a colon and zero or more comma\-separated options\&. O
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIprefix=<value>\fR: Shown before the list of ref names\&. Defaults to "\ \&("\&.
+\fBprefix=\fR\fI<value>\fR: Shown before the list of ref names\&. Defaults to "\ \&+(+"\&.
 .RE
 .sp
 .RS 4
@@ -2639,7 +2753,7 @@ string may be followed by a colon and zero or more comma\-separated options\&. O
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIsuffix=<value>\fR: Shown after the list of ref names\&. Defaults to ")"\&.
+\fBsuffix=\fR\fI<value>\fR: Shown after the list of ref names\&. Defaults to ")"\&.
 .RE
 .sp
 .RS 4
@@ -2650,7 +2764,7 @@ string may be followed by a colon and zero or more comma\-separated options\&. O
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIseparator=<value>\fR: Shown between ref names\&. Defaults to "\fB,\fR\ \&"\&.
+\fBseparator=\fR\fI<value>\fR: Shown between ref names\&. Defaults to "\fB,\fR\ \&"\&.
 .RE
 .sp
 .RS 4
@@ -2661,7 +2775,7 @@ string may be followed by a colon and zero or more comma\-separated options\&. O
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIpointer=<value>\fR: Shown between HEAD and the branch it points to, if any\&. Defaults to "\ \&\fB\-\fR>\ \&"\&.
+\fBpointer=\fR\fI<value>\fR: Shown between HEAD and the branch it points to, if any\&. Defaults to "\ \&+\(->+\ \&"\&.
 .RE
 .sp
 .RS 4
@@ -2672,16 +2786,17 @@ string may be followed by a colon and zero or more comma\-separated options\&. O
 .sp -1
 .IP \(bu 2.3
 .\}
-\fItag=<value>\fR: Shown before tag names\&. Defaults to "\fBtag:\fR\ \&"\&.
+\fBtag=\fR\fI<value>\fR: Shown before tag names\&. Defaults to "\fBtag:\fR\ \&"\&.
 .RE
 .RE
 .RE
 .sp
 For example, to produce decorations with no wrapping or tag annotations, and spaces as separators:
 .sp
-+ %(\fBdecorate:prefix=\fR,suffix=,tag=,separator= )
++
+\fB%\fR(\fBdecorate:prefix=\fR,suffix=,tag=,separator= )
 .PP
-\fI%(describe[:<options>])\fR
+\fB%\fR(\fBdescribe\fR[\fB:\fR\fI<option>\fR\fB,\fR\&.\&.\&.])
 .RS 4
 human\-readable name, like
 \fBgit-describe\fR(1); empty string for undescribable commits\&. The
@@ -2696,7 +2811,7 @@ string may be followed by a colon and zero or more comma\-separated options\&. D
 .sp -1
 .IP \(bu 2.3
 .\}
-\fItags[=<bool\-value>]\fR: Instead of only considering annotated tags, consider lightweight tags as well\&.
+\fBtags\fR[\fB=\fR\fI<bool\-value>\fR]: Instead of only considering annotated tags, consider lightweight tags as well\&.
 .RE
 .sp
 .RS 4
@@ -2707,7 +2822,7 @@ string may be followed by a colon and zero or more comma\-separated options\&. D
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIabbrev=<number>\fR: Instead of using the default number of hexadecimal digits (which will vary according to the number of objects in the repository with a default of 7) of the abbreviated object name, use <number> digits, or as many digits as needed to form a unique object name\&.
+\fBabbrev=\fR\fI<number>\fR: Instead of using the default number of hexadecimal digits (which will vary according to the number of objects in the repository with a default of 7) of the abbreviated object name, use <number> digits, or as many digits as needed to form a unique object name\&.
 .RE
 .sp
 .RS 4
@@ -2718,8 +2833,11 @@ string may be followed by a colon and zero or more comma\-separated options\&. D
 .sp -1
 .IP \(bu 2.3
 .\}
-\fImatch=<pattern>\fR: Only consider tags matching the given
-\fBglob\fR(\fB7\fR) pattern, excluding the "refs/tags/" prefix\&.
+\fBmatch=\fR\fI<pattern>\fR: Only consider tags matching the given
+\fBglob\fR(\fB7\fR)
+\fI<pattern>\fR, excluding the
+\fBrefs/tags/\fR
+prefix\&.
 .RE
 .sp
 .RS 4
@@ -2730,12 +2848,15 @@ string may be followed by a colon and zero or more comma\-separated options\&. D
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIexclude=<pattern>\fR: Do not consider tags matching the given
-\fBglob\fR(\fB7\fR) pattern, excluding the "refs/tags/" prefix\&.
+\fBexclude=\fR\fI<pattern>\fR: Do not consider tags matching the given
+\fBglob\fR(\fB7\fR)
+\fI<pattern>\fR, excluding the
+\fBrefs/tags/\fR
+prefix\&.
 .RE
 .RE
 .PP
-\fI%S\fR
+\fB%S\fR
 .RS 4
 ref name given on the command line by which the commit was reached (like
 \fBgit\fR
@@ -2745,72 +2866,72 @@ ref name given on the command line by which the commit was reached (like
 \fBlog\fR
 .RE
 .PP
-\fI%e\fR
+\fB%e\fR
 .RS 4
 encoding
 .RE
 .PP
-\fI%s\fR
+\fB%s\fR
 .RS 4
 subject
 .RE
 .PP
-\fI%f\fR
+\fB%f\fR
 .RS 4
 sanitized subject line, suitable for a filename
 .RE
 .PP
-\fI%b\fR
+\fB%b\fR
 .RS 4
 body
 .RE
 .PP
-\fI%B\fR
+\fB%B\fR
 .RS 4
 raw body (unwrapped subject and body)
 .RE
 .PP
-\fI%N\fR
+\fB%N\fR
 .RS 4
 commit notes
 .RE
 .PP
-\fI%GG\fR
+\fB%GG\fR
 .RS 4
 raw verification message from GPG for a signed commit
 .RE
 .PP
-\fI%G?\fR
+\fB%G\fR?
 .RS 4
 show "G" for a good (valid) signature, "B" for a bad signature, "U" for a good signature with unknown validity, "X" for a good signature that has expired, "Y" for a good signature made by an expired key, "R" for a good signature made by a revoked key, "E" if the signature cannot be checked (e\&.g\&. missing key) and "N" for no signature
 .RE
 .PP
-\fI%GS\fR
+\fB%GS\fR
 .RS 4
 show the name of the signer for a signed commit
 .RE
 .PP
-\fI%GK\fR
+\fB%GK\fR
 .RS 4
 show the key used to sign a signed commit
 .RE
 .PP
-\fI%GF\fR
+\fB%GF\fR
 .RS 4
 show the fingerprint of the key used to sign a signed commit
 .RE
 .PP
-\fI%GP\fR
+\fB%GP\fR
 .RS 4
 show the fingerprint of the primary key whose subkey was used to sign a signed commit
 .RE
 .PP
-\fI%GT\fR
+\fB%GT\fR
 .RS 4
 show the trust level for the key used to sign a signed commit
 .RE
 .PP
-\fI%gD\fR
+\fB%gD\fR
 .RS 4
 reflog selector, e\&.g\&.,
 \fBrefs/stash@\fR{1} or
@@ -2829,20 +2950,21 @@ would yield
 \fBrefs/heads/master@\fR{0})\&.
 .RE
 .PP
-\fI%gd\fR
+\fB%gd\fR
 .RS 4
-shortened reflog selector; same as %gD, but the refname portion is shortened for human readability (so
+shortened reflog selector; same as
+\fB%gD\fR, but the refname portion is shortened for human readability (so
 \fBrefs/heads/master\fR
 becomes just
 \fBmaster\fR)\&.
 .RE
 .PP
-\fI%gn\fR
+\fB%gn\fR
 .RS 4
 reflog identity name
 .RE
 .PP
-\fI%gN\fR
+\fB%gN\fR
 .RS 4
 reflog identity name (respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
@@ -2850,12 +2972,12 @@ or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%ge\fR
+\fB%ge\fR
 .RS 4
 reflog identity email
 .RE
 .PP
-\fI%gE\fR
+\fB%gE\fR
 .RS 4
 reflog identity email (respecting \&.mailmap, see
 \fBgit-shortlog\fR(1)
@@ -2863,12 +2985,12 @@ or
 \fBgit-blame\fR(1))
 .RE
 .PP
-\fI%gs\fR
+\fB%gs\fR
 .RS 4
 reflog subject
 .RE
 .PP
-\fI%(trailers[:<options>])\fR
+\fB%\fR(\fBtrailers\fR[\fB:\fR\fI<option>\fR\fB,\fR\&.\&.\&.])
 .RS 4
 display the trailers of the body as interpreted by
 \fBgit-interpret-trailers\fR(1)\&. The
@@ -2883,10 +3005,11 @@ string may be followed by a colon and zero or more comma\-separated options\&. I
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIkey=<key>\fR: only show trailers with specified <key>\&. Matching is done case\-insensitively and trailing colon is optional\&. If option is given multiple times trailer lines matching any of the keys are shown\&. This option automatically enables the
+\fBkey=\fR\fI<key>\fR: only show trailers with specified <key>\&. Matching is done case\-insensitively and trailing colon is optional\&. If option is given multiple times trailer lines matching any of the keys are shown\&. This option automatically enables the
 \fBonly\fR
 option so that non\-trailer lines in the trailer block are hidden\&. If that is not desired it can be disabled with
-\fBonly=false\fR\&. E\&.g\&., %(\fBtrailers:key=Reviewed\-by\fR) shows trailer lines with key
+\fBonly=false\fR\&. E\&.g\&.,
+\fB%\fR(\fBtrailers:key=Reviewed\-by\fR) shows trailer lines with key
 \fBReviewed\-by\fR\&.
 .RE
 .sp
@@ -2898,7 +3021,7 @@ option so that non\-trailer lines in the trailer block are hidden\&. If that is 
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIonly[=<bool>]\fR: select whether non\-trailer lines from the trailer block should be included\&.
+\fBonly\fR[\fB=\fR\fI<bool>\fR]: select whether non\-trailer lines from the trailer block should be included\&.
 .RE
 .sp
 .RS 4
@@ -2909,7 +3032,10 @@ option so that non\-trailer lines in the trailer block are hidden\&. If that is 
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIseparator=<sep>\fR: specify the separator inserted between trailer lines\&. Defaults to a line feed character\&. The string <sep> may contain the literal formatting codes described above\&. To use comma as separator one must use %x2C as it would otherwise be parsed as next option\&. E\&.g\&., %(\fBtrailers:key=Ticket\fR,separator=%x2C ) shows all trailer lines whose key is "Ticket" separated by a comma and a space\&.
+\fBseparator=\fR\fI<sep>\fR: specify the separator inserted between trailer lines\&. Defaults to a line feed character\&. The string <sep> may contain the literal formatting codes described above\&. To use comma as separator one must use
+\fB%x2C\fR
+as it would otherwise be parsed as next option\&. E\&.g\&.,
+\fB%\fR(\fBtrailers:key=Ticket\fR,separator=%x2C ) shows all trailer lines whose key is "Ticket" separated by a comma and a space\&.
 .RE
 .sp
 .RS 4
@@ -2920,9 +3046,10 @@ option so that non\-trailer lines in the trailer block are hidden\&. If that is 
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIunfold[=<bool>]\fR: make it behave as if interpret\-trailer\(cqs
+\fBunfold\fR[\fB=\fR\fI<bool>\fR]: make it behave as if interpret\-trailer\(cqs
 \fB\-\-unfold\fR
-option was given\&. E\&.g\&., %(\fBtrailers:only\fR,unfold=true) unfolds and shows all trailer lines\&.
+option was given\&. E\&.g\&.,
+\fB%\fR(\fBtrailers:only\fR,unfold=true) unfolds and shows all trailer lines\&.
 .RE
 .sp
 .RS 4
@@ -2933,7 +3060,7 @@ option was given\&. E\&.g\&., %(\fBtrailers:only\fR,unfold=true) unfolds and sho
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIkeyonly[=<bool>]\fR: only show the key part of the trailer\&.
+\fBkeyonly\fR[\fB=\fR\fI<bool>\fR]: only show the key part of the trailer\&.
 .RE
 .sp
 .RS 4
@@ -2944,7 +3071,7 @@ option was given\&. E\&.g\&., %(\fBtrailers:only\fR,unfold=true) unfolds and sho
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIvalueonly[=<bool>]\fR: only show the value part of the trailer\&.
+\fBvalueonly\fR[\fB=\fR\fI<bool>\fR]: only show the value part of the trailer\&.
 .RE
 .sp
 .RS 4
@@ -2955,8 +3082,8 @@ option was given\&. E\&.g\&., %(\fBtrailers:only\fR,unfold=true) unfolds and sho
 .sp -1
 .IP \(bu 2.3
 .\}
-\fIkey_value_separator=<sep>\fR: specify the separator inserted between the key and value of each trailer\&. Defaults to ": "\&. Otherwise it shares the same semantics as
-\fIseparator=<sep>\fR
+\fBkey_value_separator=\fR\fI<sep>\fR: specify the separator inserted between the key and value of each trailer\&. Defaults to ": "\&. Otherwise it shares the same semantics as
+\fBseparator=\fR\fI<sep>\fR
 above\&.
 .RE
 .RE
@@ -2974,17 +3101,17 @@ above\&.
 .ps -1
 .br
 .sp
-Some placeholders may depend on other options given to the revision traversal engine\&. For example, the %g* reflog options will insert an empty string unless we are traversing reflog entries (e\&.g\&., by \fBgit\fR \fBlog\fR \fB\-g\fR)\&. The %d and %D placeholders will use the "short" decoration format if \fB\-\-decorate\fR was not already provided on the command line\&.
+Some placeholders may depend on other options given to the revision traversal engine\&. For example, the \fB%g*\fR reflog options will insert an empty string unless we are traversing reflog entries (e\&.g\&., by \fBgit\fR \fBlog\fR \fB\-g\fR)\&. The \fB%d\fR and \fB%D\fR placeholders will use the "short" decoration format if \fB\-\-decorate\fR was not already provided on the command line\&.
 .sp .5v
 .RE
 .sp
-The boolean options accept an optional value [\fB=\fR\fI<bool\-value>\fR]\&. The values taken by \fB\-\-type=bool\fR git\-config[1], like \fByes\fR and \fBoff\fR, are all accepted\&. Giving a boolean option without \fB=\fR\fI<value>\fR is equivalent to giving it with \fB=true\fR\&.
+The boolean options accept an optional value [\fB=\fR\fI<bool\-value>\fR]\&. The values taken by \fB\-\-type=bool\fR \fBgit-config\fR(1), like \fByes\fR and \fBoff\fR, are all accepted\&. Giving a boolean option without \fB=\fR\fI<value>\fR is equivalent to giving it with \fB=true\fR\&.
 .sp
-If you add a \fB+\fR (plus sign) after \fI%\fR of a placeholder, a line\-feed is inserted immediately before the expansion if and only if the placeholder expands to a non\-empty string\&.
+If you add a \fB+\fR (plus sign) after \fB%\fR of a placeholder, a line\-feed is inserted immediately before the expansion if and only if the placeholder expands to a non\-empty string\&.
 .sp
-If you add a \fB\-\fR (minus sign) after \fI%\fR of a placeholder, all consecutive line\-feeds immediately preceding the expansion are deleted if and only if the placeholder expands to an empty string\&.
+If you add a \fB\-\fR (minus sign) after \fB%\fR of a placeholder, all consecutive line\-feeds immediately preceding the expansion are deleted if and only if the placeholder expands to an empty string\&.
 .sp
-If you add a ` ` (space) after \fI%\fR of a placeholder, a space is inserted immediately before the expansion if and only if the placeholder expands to a non\-empty string\&.
+If you add a \*(Aq \*(Aq (space) after \fB%\fR of a placeholder, a space is inserted immediately before the expansion if and only if the placeholder expands to a non\-empty string\&.
 .sp
 .RS 4
 .ie n \{\
@@ -2994,12 +3121,12 @@ If you add a ` ` (space) after \fI%\fR of a placeholder, a space is inserted imm
 .sp -1
 .IP \(bu 2.3
 .\}
-\fItformat:\fR
+\fBtformat:\fR
 .sp
 The
-\fItformat:\fR
+\fBtformat:\fR
 format works exactly like
-\fIformat:\fR, except that it provides "terminator" semantics instead of "separator" semantics\&. In other words, each commit has the message terminator character (usually a newline) appended, rather than a separator placed between entries\&. This means that the final entry of a single\-line format will be properly terminated with a new line, just as the "oneline" format does\&. For example:
+\fBformat:\fR, except that it provides "terminator" semantics instead of "separator" semantics\&. In other words, each commit has the message terminator character (usually a newline) appended, rather than a separator placed between entries\&. This means that the final entry of a single\-line format will be properly terminated with a new line, just as the "oneline" format does\&. For example:
 .sp
 .if n \{\
 .RS 4
@@ -3019,7 +3146,9 @@ $ git log \-2 \-\-pretty=tformat:%h 4da45bef \e
 .RE
 .\}
 .sp
-In addition, any unrecognized string that has a % in it is interpreted as if it has
+In addition, any unrecognized string that has a
+\fB%\fR
+in it is interpreted as if it has
 \fBtformat:\fR
 in front of it\&. For example, these two are equivalent:
 .sp
@@ -3057,7 +3186,7 @@ that show the patch by default to squelch their output, or to cancel the effect 
 earlier on the command line in an alias\&.
 .RE
 .PP
-\-m
+\fB\-m\fR
 .RS 4
 Show diffs for merge commits in the default format\&. This is similar to
 \fB\-\-diff\-merges=on\fR, except
@@ -3067,41 +3196,41 @@ will produce no output unless
 is given as well\&.
 .RE
 .PP
-\-c
+\fB\-c\fR
 .RS 4
 Produce combined diff output for merge commits\&. Shortcut for
 \fB\-\-diff\-merges=combined\fR
 \fB\-p\fR\&.
 .RE
 .PP
-\-\-cc
+\fB\-\-cc\fR
 .RS 4
 Produce dense combined diff output for merge commits\&. Shortcut for
 \fB\-\-diff\-merges=dense\-combined\fR
 \fB\-p\fR\&.
 .RE
 .PP
-\-\-dd
+\fB\-\-dd\fR
 .RS 4
 Produce diff with respect to first parent for both merge and regular commits\&. Shortcut for
 \fB\-\-diff\-merges=first\-parent\fR
 \fB\-p\fR\&.
 .RE
 .PP
-\-\-remerge\-diff
+\fB\-\-remerge\-diff\fR
 .RS 4
 Produce remerge\-diff output for merge commits\&. Shortcut for
 \fB\-\-diff\-merges=remerge\fR
 \fB\-p\fR\&.
 .RE
 .PP
-\-\-no\-diff\-merges
+\fB\-\-no\-diff\-merges\fR
 .RS 4
 Synonym for
 \fB\-\-diff\-merges=off\fR\&.
 .RE
 .PP
-\-\-diff\-merges=<format>
+\fB\-\-diff\-merges=\fR\fI<format>\fR
 .RS 4
 Specify diff format to be used for merge commits\&. Default is `off` unless
 \fB\-\-first\-parent\fR
@@ -3111,12 +3240,12 @@ is the default\&.
 .sp
 The following formats are supported:
 .PP
-off, none
+\fBoff\fR, \fBnone\fR
 .RS 4
 Disable output of diffs for merge commits\&. Useful to override implied value\&.
 .RE
 .PP
-on, m
+\fBon\fR, \fBm\fR
 .RS 4
 Make diff output for merge commits to be shown in the default format\&. The default format can be changed using
 \fBlog\&.diffMerges\fR
@@ -3124,39 +3253,39 @@ configuration variable, whose default value is
 \fBseparate\fR\&.
 .RE
 .PP
-first\-parent, 1
+\fBfirst\-parent\fR, \fB1\fR
 .RS 4
 Show full diff with respect to first parent\&. This is the same format as
 \fB\-\-patch\fR
 produces for non\-merge commits\&.
 .RE
 .PP
-separate
+\fBseparate\fR
 .RS 4
 Show full diff with respect to each of parents\&. Separate log entry and diff is generated for each parent\&.
 .RE
 .PP
-combined, c
+\fBcombined\fR, \fBc\fR
 .RS 4
 Show differences from each of the parents to the merge result simultaneously instead of showing pairwise diff between a parent and the result one at a time\&. Furthermore, it lists only files which were modified from all parents\&.
 .RE
 .PP
-dense\-combined, cc
+\fBdense\-combined\fR, \fBcc\fR
 .RS 4
 Further compress output produced by
 \fB\-\-diff\-merges=combined\fR
 by omitting uninteresting hunks whose contents in the parents have only two variants and the merge result picks one of them without modification\&.
 .RE
 .PP
-remerge, r
+\fBremerge\fR, \fBr\fR
 .RS 4
 Remerge two\-parent merge commits to create a temporary tree object\(em\:potentially containing files with conflict markers and such\&. A diff is then shown between that temporary tree and the actual merge commit\&.
+.RE
 .sp
 The output emitted when this option is used is subject to change, and so is its interaction with other options (unless explicitly documented)\&.
 .RE
-.RE
 .PP
-\-\-combined\-all\-paths
+\fB\-\-combined\-all\-paths\fR
 .RS 4
 Cause combined diffs (used for merge commits) to list the name of the file from all parents\&. It thus only has effect when
 \fB\-\-diff\-merges=\fR[\fBdense\-\fR]\fBcombined\fR
@@ -3724,7 +3853,8 @@ It affects the way a change that amounts to a total rewrite of a file not as a s
 controls this aspect of the
 \fB\-B\fR
 option (defaults to 60%)\&.
-\fB\-B/70\fR% specifies that less than 30% of the original should remain in the result for Git to consider it a total rewrite (i\&.e\&. otherwise the resulting patch will be a series of deletion and insertion mixed together with context lines)\&.
+\fB\-B/70%\fR
+specifies that less than 30% of the original should remain in the result for Git to consider it a total rewrite (i\&.e\&. otherwise the resulting patch will be a series of deletion and insertion mixed together with context lines)\&.
 .sp
 When used with
 \fB\-M\fR, a totally\-rewritten file is also considered as the source of a rename (usually
@@ -3734,7 +3864,8 @@ only considers a file that disappeared as the source of a rename), and the numbe
 controls this aspect of the
 \fB\-B\fR
 option (defaults to 50%)\&.
-\fB\-B20\fR% specifies that a change with addition and deletion compared to 20% or more of the file\(cqs size are eligible for being picked up as a possible source of a rename to another file\&.
+\fB\-B20%\fR
+specifies that a change with addition and deletion compared to 20% or more of the file\(cqs size are eligible for being picked up as a possible source of a rename to another file\&.
 .RE
 .PP
 \fB\-M\fR[\fI<n>\fR], \fB\-\-find\-renames\fR[\fB=\fR\fI<n>\fR]
@@ -3743,14 +3874,17 @@ If generating diffs, detect and report renames for each commit\&. For following 
 \fB\-\-follow\fR\&. If
 \fI<n>\fR
 is specified, it is a threshold on the similarity index (i\&.e\&. amount of addition/deletions compared to the file\(cqs size)\&. For example,
-\fB\-M90\fR% means Git should consider a delete/add pair to be a rename if more than 90% of the file hasn\(cqt changed\&. Without a % sign, the number is to be read as a fraction, with a decimal point before it\&. I\&.e\&.,
+\fB\-M90%\fR
+means Git should consider a delete/add pair to be a rename if more than 90% of the file hasn\(cqt changed\&. Without a
+\fB%\fR
+sign, the number is to be read as a fraction, with a decimal point before it\&. I\&.e\&.,
 \fB\-M5\fR
 becomes 0\&.5, and is thus the same as
-\fB\-M50\fR%\&. Similarly,
+\fB\-M50%\fR\&. Similarly,
 \fB\-M05\fR
 is the same as
-\fB\-M5\fR%\&. To limit detection to exact renames, use
-\fB\-M100\fR%\&. The default similarity index is 50%\&.
+\fB\-M5%\fR\&. To limit detection to exact renames, use
+\fB\-M100%\fR\&. The default similarity index is 50%\&.
 .RE
 .PP
 \fB\-C\fR[\fI<n>\fR], \fB\-\-find\-copies\fR[\fB=\fR\fI<n>\fR]
@@ -4498,17 +4632,17 @@ subdirectories
 \fBgit\fR \fBlog\fR \fB\-\-since=\fR"2 \fBweeks\fR \fBago\fR" \fB\-\-\fR \fBgitk\fR
 .RS 4
 Show the changes during the last two weeks to the file
-\fIgitk\fR\&. The
+\fBgitk\fR\&. The
 \fB\-\-\fR
 is necessary to avoid confusion with the
 \fBbranch\fR
 named
-\fIgitk\fR
+\fBgitk\fR
 .RE
 .PP
 \fBgit\fR \fBlog\fR \fB\-\-name\-status\fR \fBrelease\fR\fB\&.\&.\fR\fBtest\fR
 .RS 4
-Show the commits that are in the "test" branch but not yet in the "release" branch, along with the list of paths each commit modifies\&.
+Show the commits that are in the "\fBtest\fR" branch but not yet in the "\fBrelease\fR" branch, along with the list of paths each commit modifies\&.
 .RE
 .PP
 \fBgit\fR \fBlog\fR \fB\-\-follow\fR \fBbuiltin/rev\-list\&.c\fR
@@ -4520,7 +4654,7 @@ Shows the commits that changed
 \fBgit\fR \fBlog\fR \fB\-\-branches\fR \fB\-\-not\fR \fB\-\-remotes=origin\fR
 .RS 4
 Shows all commits that are in any of local branches but not in any of remote\-tracking branches for
-\fIorigin\fR
+\fBorigin\fR
 (what you have that origin doesn\(cqt)\&.
 .RE
 .PP
@@ -4675,7 +4809,7 @@ Note that we deliberately chose not to re\-code the commit log message when a co
 .sp
 See \fBgit-config\fR(1) for core variables and \fBgit-diff\fR(1) for settings related to diff generation\&.
 .PP
-format\&.pretty
+\fBformat\&.pretty\fR
 .RS 4
 Default for the
 \fB\-\-format\fR
@@ -4685,7 +4819,7 @@ above\&.) Defaults to
 \fBmedium\fR\&.
 .RE
 .PP
-i18n\&.logOutputEncoding
+\fBi18n\&.logOutputEncoding\fR
 .RS 4
 Encoding to use when displaying logs\&. (See
 \fIDiscussion\fR
@@ -4696,9 +4830,10 @@ if set, and UTF\-8 otherwise\&.
 .sp
 Everything above this line in this section isn\(cqt included from the \fBgit-config\fR(1) documentation\&. The content that follows is the same as what\(cqs found there:
 .PP
-log\&.abbrevCommit
+\fBlog\&.abbrevCommit\fR
 .RS 4
-If true, makes
+If
+\fBtrue\fR, make
 \fBgit-log\fR(1),
 \fBgit-show\fR(1), and
 \fBgit-whatchanged\fR(1)
@@ -4707,12 +4842,13 @@ assume
 \fB\-\-no\-abbrev\-commit\fR\&.
 .RE
 .PP
-log\&.date
+\fBlog\&.date\fR
 .RS 4
 Set the default date\-time mode for the
-\fIlog\fR
+\fBlog\fR
 command\&. Setting a value for log\&.date is similar to using
-\fIgit log\fR\*(Aqs
+\fBgit\fR
+\fBlog\fR\*(Aqs
 \fB\-\-date\fR
 option\&. See
 \fBgit-log\fR(1)
@@ -4721,29 +4857,33 @@ for details\&.
 If the format is set to "auto:foo" and the pager is in use, format "foo" will be used for the date format\&. Otherwise, "default" will be used\&.
 .RE
 .PP
-log\&.decorate
+\fBlog\&.decorate\fR
 .RS 4
-Print out the ref names of any commits that are shown by the log command\&. If
-\fIshort\fR
-is specified, the ref name prefixes
-\fIrefs/heads/\fR,
-\fIrefs/tags/\fR
-and
-\fIrefs/remotes/\fR
-will not be printed\&. If
-\fIfull\fR
-is specified, the full ref name (including prefix) will be printed\&. If
-\fIauto\fR
-is specified, then if the output is going to a terminal, the ref names are shown as if
-\fIshort\fR
-were given, otherwise no ref names are shown\&. This is the same as the
+Print out the ref names of any commits that are shown by the log command\&. Possible values are:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+`short`;; the ref name prefixes `refs/heads/`, `refs/tags/` and
+        `refs/remotes/` are not printed\&.
+`full`;; the full ref name (including prefix) are printed\&.
+`auto`;; if the output is going to a terminal,
+        the ref names are shown as if `short` were given, otherwise no ref
+        names are shown\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This is the same as the
 \fB\-\-decorate\fR
 option of the
 \fBgit\fR
 \fBlog\fR\&.
 .RE
 .PP
-log\&.initialDecorationSet
+\fBlog\&.initialDecorationSet\fR
 .RS 4
 By default,
 \fBgit\fR
@@ -4753,7 +4893,7 @@ only shows decorations for certain known ref namespaces\&. If
 is specified, then show all refs as decorations\&.
 .RE
 .PP
-log\&.excludeDecoration
+\fBlog\&.excludeDecoration\fR
 .RS 4
 Exclude the specified patterns from the log decorations\&. This is similar to the
 \fB\-\-decorate\-refs\-exclude\fR
@@ -4762,7 +4902,7 @@ command\-line option, but the config option can be overridden by the
 option\&.
 .RE
 .PP
-log\&.diffMerges
+\fBlog\&.diffMerges\fR
 .RS 4
 Set diff format to be used when
 \fB\-\-diff\-merges=on\fR
@@ -4774,7 +4914,7 @@ for details\&. Defaults to
 \fBseparate\fR\&.
 .RE
 .PP
-log\&.follow
+\fBlog\&.follow\fR
 .RS 4
 If
 \fBtrue\fR,
@@ -4786,7 +4926,7 @@ option was used when a single <path> is given\&. This has the same limitations a
 \fB\-\-follow\fR, i\&.e\&. it cannot be used to follow multiple files and does not work well on non\-linear history\&.
 .RE
 .PP
-log\&.graphColors
+\fBlog\&.graphColors\fR
 .RS 4
 A list of colors, separated by commas, that can be used to draw history lines in
 \fBgit\fR
@@ -4794,7 +4934,7 @@ A list of colors, separated by commas, that can be used to draw history lines in
 \fB\-\-graph\fR\&.
 .RE
 .PP
-log\&.showRoot
+\fBlog\&.showRoot\fR
 .RS 4
 If true, the initial commit will be shown as a big creation event\&. This is equivalent to a diff against an empty tree\&. Tools like
 \fBgit-log\fR(1)
@@ -4802,7 +4942,7 @@ or
 \fBgit-whatchanged\fR(1), which normally hide the root commit will now show it\&. True by default\&.
 .RE
 .PP
-log\&.showSignature
+\fBlog\&.showSignature\fR
 .RS 4
 If true, makes
 \fBgit-log\fR(1),
@@ -4812,7 +4952,7 @@ assume
 \fB\-\-show\-signature\fR\&.
 .RE
 .PP
-log\&.mailmap
+\fBlog\&.mailmap\fR
 .RS 4
 If true, makes
 \fBgit-log\fR(1),
