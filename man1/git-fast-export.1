@@ -2,12 +2,12 @@
 .\"     Title: git-fast-export
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-07-22
+.\"      Date: 2025-07-24
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.1.428.g0e8243a355
+.\"    Source: Git 2.50.1.461.ge4ef0485fd
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-EXPORT" "1" "2025-07-22" "Git 2\&.50\&.1\&.428\&.g0e8243" "Git Manual"
+.TH "GIT\-FAST\-EXPORT" "1" "2025-07-24" "Git 2\&.50\&.1\&.461\&.ge4ef04" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -75,6 +75,24 @@ should only be used if you know that no transformation affecting tags or any com
 Specify how to handle signed commits\&. Behaves exactly as
 \fI\-\-signed\-tags\fR, but for commits\&. Default is
 \fIstrip\fR, which is the same as how earlier versions of this command without this option behaved\&.
+.sp
+When exported, a signature starts with:
+.sp
+gpgsig <git\-hash\-algo> <signature\-format>
+.sp
+where <git\-hash\-algo> is the Git object hash so either "sha1" or "sha256", and <signature\-format> is the signature type, so "openpgp", "x509", "ssh" or "unknown"\&.
+.sp
+For example, an OpenPGP signature on a SHA\-1 commit starts with
+\fBgpgsig\fR
+\fBsha1\fR
+\fBopenpgp\fR, while an SSH signature on a SHA\-256 commit starts with
+\fBgpgsig\fR
+\fBsha256\fR
+\fBssh\fR\&.
+.sp
+While all the signatures of a commit are exported, an importer may choose to accept only some of them\&. For example
+\fBgit-fast-import\fR(1)
+currently stores at most one signature per Git hash algorithm in each commit\&.
 .if n \{\
 .sp
 .\}

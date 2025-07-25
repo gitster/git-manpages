@@ -2,12 +2,12 @@
 .\"     Title: git-fast-import
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-07-22
+.\"      Date: 2025-07-24
 .\"    Manual: Git Manual
-.\"    Source: Git 2.50.1.428.g0e8243a355
+.\"    Source: Git 2.50.1.461.ge4ef0485fd
 .\"  Language: English
 .\"
-.TH "GIT\-FAST\-IMPORT" "1" "2025-07-22" "Git 2\&.50\&.1\&.428\&.g0e8243" "Git Manual"
+.TH "GIT\-FAST\-IMPORT" "1" "2025-07-24" "Git 2\&.50\&.1\&.461\&.ge4ef04" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -411,7 +411,7 @@ Create or update a branch with a new commit, recording one logical change to the
         original\-oid?
         (\*(Aqauthor\*(Aq (SP <name>)? SP LT <email> GT SP <when> LF)?
         \*(Aqcommitter\*(Aq (SP <name>)? SP LT <email> GT SP <when> LF
-        (\*(Aqgpgsig\*(Aq SP <alg> LF data)?
+        (\*(Aqgpgsig\*(Aq SP <algo> SP <format> LF data)?
         (\*(Aqencoding\*(Aq SP <encoding> LF)?
         data
         (\*(Aqfrom\*(Aq SP <commit\-ish> LF)?
@@ -467,9 +467,56 @@ The time of the change is specified by \fI<when>\fR using the date format that w
 \fBgpgsig\fR
 .RS 4
 .sp
-The optional \fBgpgsig\fR command is used to include a PGP/GPG signature that signs the commit data\&.
+The optional \fBgpgsig\fR command is used to include a PGP/GPG signature or other cryptographic signature that signs the commit data\&.
 .sp
-Here <alg> specifies which hashing algorithm is used for this signature, either \fBsha1\fR or \fBsha256\fR\&.
+.if n \{\
+.RS 4
+.\}
+.nf
+        \*(Aqgpgsig\*(Aq SP <git\-hash\-algo> SP <signature\-format> LF data
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The \fBgpgsig\fR command takes two arguments:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fI<git\-hash\-algo>\fR
+specifies which Git object format this signature applies to, either
+\fBsha1\fR
+or
+\fBsha256\fR\&. This allows to know which representation of the commit was signed (the SHA\-1 or the SHA\-256 version) which helps with both signature verification and interoperability between repos with different hash functions\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fI<signature\-format>\fR
+specifies the type of signature, such as
+\fBopenpgp\fR,
+\fBx509\fR,
+\fBssh\fR, or
+\fBunknown\fR\&. This is a convenience for tools that process the stream, so they don\(cqt have to parse the ASCII armor to identify the signature type\&.
+.RE
+.sp
+A commit may have at most one signature for the SHA\-1 object format (stored in the "gpgsig" header) and one for the SHA\-256 object format (stored in the "gpgsig\-sha256" header)\&.
+.sp
+See below for a detailed description of the \fBdata\fR command which contains the raw signature data\&.
+.sp
+Signatures are not yet checked in the current implementation though\&. (Already setting the \fBextensions\&.compatObjectFormat\fR configuration option might help with verifying both SHA\-1 and SHA\-256 object format signatures when it will be implemented\&.)
 .if n \{\
 .sp
 .\}
@@ -483,7 +530,7 @@ Here <alg> specifies which hashing algorithm is used for this signature, either 
 .ps -1
 .br
 .sp
-This is highly experimental and the format of the data stream may change in the future without compatibility guarantees\&.
+This is highly experimental and the format of the \fBgpgsig\fR command may change in the future without compatibility guarantees\&.
 .sp .5v
 .RE
 .RE
