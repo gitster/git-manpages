@@ -2,12 +2,12 @@
 .\"     Title: git-reflog
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-08-17
+.\"      Date: 2025-08-21
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0
+.\"    Source: Git 2.51.0.68.g954d33a975
 .\"  Language: English
 .\"
-.TH "GIT\-REFLOG" "1" "2025-08-17" "Git 2\&.51\&.0" "Git Manual"
+.TH "GIT\-REFLOG" "1" "2025-08-21" "Git 2\&.51\&.0\&.68\&.g954d33a" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,15 +32,16 @@ git-reflog \- Manage reflog information
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit reflog\fR [show] [<log\-options>] [<ref>]
-\fIgit reflog list\fR
-\fIgit reflog expire\fR [\-\-expire=<time>] [\-\-expire\-unreachable=<time>]
-        [\-\-rewrite] [\-\-updateref] [\-\-stale\-fix]
-        [\-\-dry\-run | \-n] [\-\-verbose] [\-\-all [\-\-single\-worktree] | <refs>\&...\:]
-\fIgit reflog delete\fR [\-\-rewrite] [\-\-updateref]
-        [\-\-dry\-run | \-n] [\-\-verbose] <ref>@{<specifier>}\&...\:
-\fIgit reflog drop\fR [\-\-all [\-\-single\-worktree] | <refs>\&...\:]
-\fIgit reflog exists\fR <ref>
+\fBgit\fR \fBreflog\fR [\fBshow\fR] [\fI<log\-options>\fR] [\fI<ref>\fR]
+\fBgit\fR \fBreflog\fR \fBlist\fR
+\fBgit\fR \fBreflog\fR \fBexists\fR \fI<ref>\fR
+\fBgit\fR \fBreflog\fR \fBwrite\fR \fI<ref>\fR \fI<old\-oid>\fR \fI<new\-oid>\fR \fI<message>\fR
+\fBgit\fR \fBreflog\fR \fBdelete\fR [\fB\-\-rewrite\fR] [\fB\-\-updateref\fR]
+	[\fB\-\-dry\-run\fR | \fB\-n\fR] [\fB\-\-verbose\fR] \fI<ref>\fR\fB@\fR{\fI<specifier>\fR}\&...\:
+\fBgit\fR \fBreflog\fR \fBdrop\fR [\fB\-\-all\fR [\fB\-\-single\-worktree\fR] | \fI<refs>\fR\&...\:]
+\fBgit\fR \fBreflog\fR \fBexpire\fR [\fB\-\-expire=\fR\fI<time>\fR] [\fB\-\-expire\-unreachable=\fR\fI<time>\fR]
+	[\fB\-\-rewrite\fR] [\fB\-\-updateref\fR] [\fB\-\-stale\-fix\fR]
+	[\fB\-\-dry\-run\fR | \fB\-n\fR] [\fB\-\-verbose\fR] [\fB\-\-all\fR [\fB\-\-single\-worktree\fR] | \fI<refs>\fR\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -54,32 +55,50 @@ The "show" subcommand (which is also the default, in the absence of any subcomma
 .sp
 The "list" subcommand lists all refs which have a corresponding reflog\&.
 .sp
-The "expire" subcommand prunes older reflog entries\&. Entries older than \fBexpire\fR time, or entries older than \fBexpire\-unreachable\fR time and not reachable from the current tip, are removed from the reflog\&. This is typically not used directly by end users \(em instead, see \fBgit-gc\fR(1)\&.
+The "exists" subcommand checks whether a ref has a reflog\&. It exits with zero status if the reflog exists, and non\-zero status if it does not\&.
+.sp
+The "write" subcommand writes a single entry to the reflog of a given reference\&. This new entry is appended to the reflog and will thus become the most recent entry\&. The reference name must be fully qualified\&. Both the old and new object IDs must not be abbreviated and must point to existing objects\&. The reflog message gets normalized\&.
 .sp
 The "delete" subcommand deletes single entries from the reflog, but not the reflog itself\&. Its argument must be an \fIexact\fR entry (e\&.g\&. "\fBgit\fR \fBreflog\fR \fBdelete\fR \fBmaster@\fR{2}")\&. This subcommand is also typically not used directly by end users\&.
 .sp
 The "drop" subcommand completely removes the reflog for the specified references\&. This is in contrast to "expire" and "delete", both of which can be used to delete reflog entries, but not the reflog itself\&.
 .sp
-The "exists" subcommand checks whether a ref has a reflog\&. It exits with zero status if the reflog exists, and non\-zero status if it does not\&.
+The "expire" subcommand prunes older reflog entries\&. Entries older than \fBexpire\fR time, or entries older than \fBexpire\-unreachable\fR time and not reachable from the current tip, are removed from the reflog\&. This is typically not used directly by end users \(em instead, see \fBgit-gc\fR(1)\&.
 .SH "OPTIONS"
 .SS "Options for \fBshow\fR"
 .sp
 \fBgit\fR \fBreflog\fR \fBshow\fR accepts any of the options accepted by \fBgit\fR \fBlog\fR\&.
+.SS "Options for \fBdelete\fR"
+.sp
+\fBgit\fR \fBreflog\fR \fBdelete\fR accepts options \fB\-\-updateref\fR, \fB\-\-rewrite\fR, \fB\-n\fR, \fB\-\-dry\-run\fR, and \fB\-\-verbose\fR, with the same meanings as when they are used with \fBexpire\fR\&.
+.SS "Options for \fBdrop\fR"
+.PP
+\fB\-\-all\fR
+.RS 4
+Drop the reflogs of all references from all worktrees\&.
+.RE
+.PP
+\fB\-\-single\-worktree\fR
+.RS 4
+By default when
+\fB\-\-all\fR
+is specified, reflogs from all working trees are dropped\&. This option limits the processing to reflogs from the current working tree only\&.
+.RE
 .SS "Options for \fBexpire\fR"
 .PP
-\-\-all
+\fB\-\-all\fR
 .RS 4
 Process the reflogs of all references\&.
 .RE
 .PP
-\-\-single\-worktree
+\fB\-\-single\-worktree\fR
 .RS 4
 By default when
 \fB\-\-all\fR
 is specified, reflogs from all working trees are processed\&. This option limits the processing to reflogs from the current working tree only\&.
 .RE
 .PP
-\-\-expire=<time>
+\fB\-\-expire=\fR\fI<time>\fR
 .RS 4
 Prune entries older than the specified time\&. If this option is not specified, the expiration time is taken from the configuration setting
 \fBgc\&.reflogExpire\fR, which in turn defaults to 90 days\&.
@@ -90,7 +109,7 @@ turns off pruning of reachable entries (but see
 \fB\-\-expire\-unreachable\fR)\&.
 .RE
 .PP
-\-\-expire\-unreachable=<time>
+\fB\-\-expire\-unreachable=\fR\fI<time>\fR
 .RS 4
 Prune entries older than
 \fI<time>\fR
@@ -103,17 +122,17 @@ turns off early pruning of unreachable entries (but see
 \fB\-\-expire\fR)\&.
 .RE
 .PP
-\-\-updateref
+\fB\-\-updateref\fR
 .RS 4
 Update the reference to the value of the top reflog entry (i\&.e\&. <ref>@{0}) if the previous top entry was pruned\&. (This option is ignored for symbolic references\&.)
 .RE
 .PP
-\-\-rewrite
+\fB\-\-rewrite\fR
 .RS 4
 If a reflog entry\(cqs predecessor is pruned, adjust its "old" SHA\-1 to be equal to the "new" SHA\-1 field of the entry that now precedes it\&.
 .RE
 .PP
-\-\-stale\-fix
+\fB\-\-stale\-fix\fR
 .RS 4
 Prune any reflog entries that point to "broken commits"\&. A broken commit is a commit that is not reachable from any of the reference tips and that refers, directly or indirectly, to a missing commit, tree, or blob object\&.
 .sp
@@ -121,30 +140,14 @@ This computation involves traversing all the reachable objects, i\&.e\&. it has 
 \fIgit prune\fR\&. It is primarily intended to fix corruption caused by garbage collecting using older versions of Git, which didn\(cqt protect objects referred to by reflogs\&.
 .RE
 .PP
-\-n, \-\-dry\-run
+\fB\-n\fR, \fB\-\-dry\-run\fR
 .RS 4
 Do not actually prune any entries; just show what would have been pruned\&.
 .RE
 .PP
-\-\-verbose
+\fB\-\-verbose\fR
 .RS 4
 Print extra information on screen\&.
-.RE
-.SS "Options for \fBdelete\fR"
-.sp
-\fBgit\fR \fBreflog\fR \fBdelete\fR accepts options \fB\-\-updateref\fR, \fB\-\-rewrite\fR, \fB\-n\fR, \fB\-\-dry\-run\fR, and \fB\-\-verbose\fR, with the same meanings as when they are used with \fBexpire\fR\&.
-.SS "Options for \fBdrop\fR"
-.PP
-\-\-all
-.RS 4
-Drop the reflogs of all references from all worktrees\&.
-.RE
-.PP
-\-\-single\-worktree
-.RS 4
-By default when
-\fB\-\-all\fR
-is specified, reflogs from all working trees are dropped\&. This option limits the processing to reflogs from the current working tree only\&.
 .RE
 .SH "GIT"
 .sp
