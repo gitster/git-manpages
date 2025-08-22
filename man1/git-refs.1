@@ -2,12 +2,12 @@
 .\"     Title: git-refs
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-08-21
+.\"      Date: 2025-08-22
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.68.g954d33a975
+.\"    Source: Git 2.51.0.87.g1fa68948c3
 .\"  Language: English
 .\"
-.TH "GIT\-REFS" "1" "2025-08-21" "Git 2\&.51\&.0\&.68\&.g954d33a" "Git Manual"
+.TH "GIT\-REFS" "1" "2025-08-22" "Git 2\&.51\&.0\&.87\&.g1fa6894" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,6 +34,13 @@ git-refs \- Low\-level access to refs
 .nf
 \fBgit\fR \fBrefs\fR \fBmigrate\fR \fB\-\-ref\-format=\fR\fI<format>\fR [\fB\-\-no\-reflog\fR] [\fB\-\-dry\-run\fR]
 \fBgit\fR \fBrefs\fR \fBverify\fR [\fB\-\-strict\fR] [\fB\-\-verbose\fR]
+\fBgit\fR \fBrefs\fR \fBlist\fR [\fB\-\-count=\fR\fI<count>\fR] [\fB\-\-shell\fR|\fB\-\-perl\fR|\fB\-\-python\fR|\fB\-\-tcl\fR]
+		   [(\fB\-\-sort=\fR\fI<key>\fR)\&...\:] [\fB\-\-format=\fR\fI<format>\fR]
+		   [\fB\-\-include\-root\-refs\fR] [\fB\-\-points\-at=\fR\fI<object>\fR]
+		   [\fB\-\-merged\fR[\fB=\fR\fI<object>\fR]] [\fB\-\-no\-merged\fR[\fB=\fR\fI<object>\fR]]
+		   [\fB\-\-contains\fR[\fB=\fR\fI<object>\fR]] [\fB\-\-no\-contains\fR[\fB=\fR\fI<object>\fR]]
+		   [(\fB\-\-exclude=\fR\fI<pattern>\fR)\&...\:] [\fB\-\-start\-after=\fR\fI<marker>\fR]
+		   [ \fB\-\-stdin\fR | \fI<pattern>\fR\&...\: ]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -48,6 +55,13 @@ Migrate ref store between different formats\&.
 verify
 .RS 4
 Verify reference database consistency\&.
+.RE
+.PP
+list
+.RS 4
+List references in the repository with support for filtering, formatting, and sorting\&. This subcommand is an alias for
+\fBgit-for-each-ref\fR(1)
+and offers identical functionality\&.
 .RE
 .SH "OPTIONS"
 .sp
@@ -103,6 +117,152 @@ Enable stricter error checking\&. This will cause warnings to be reported as err
 \-\-verbose
 .RS 4
 When verifying the reference database consistency, be chatty\&.
+.RE
+.sp
+The following options are specific to \fIgit refs list\fR:
+.PP
+<pattern>\&...\:
+.RS 4
+If one or more patterns are given, only refs are shown that match against at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash\&.
+.RE
+.PP
+\-\-stdin
+.RS 4
+If
+\fB\-\-stdin\fR
+is supplied, then the list of patterns is read from standard input instead of from the argument list\&.
+.RE
+.PP
+\-\-count=<count>
+.RS 4
+By default the command shows all refs that match
+\fI<pattern>\fR\&. This option makes it stop after showing that many refs\&.
+.RE
+.PP
+\-\-sort=<key>
+.RS 4
+A field name to sort on\&. Prefix
+\fB\-\fR
+to sort in descending order of the value\&. When unspecified,
+\fBrefname\fR
+is used\&. You may use the \-\-sort=<key> option multiple times, in which case the last key becomes the primary key\&.
+.RE
+.PP
+\-\-format=<format>
+.RS 4
+A string that interpolates
+\fB%\fR(\fBfieldname\fR) from a ref being shown and the object it points at\&. In addition, the string literal
+\fB%%\fR
+renders as
+\fB%\fR
+and
+\fB%xx\fR
+\- where
+\fBxx\fR
+are hex digits \- renders as the character with hex code
+\fBxx\fR\&. For example,
+\fB%00\fR
+interpolates to
+\fB\e0\fR
+(NUL),
+\fB%09\fR
+to
+\fB\et\fR
+(TAB), and
+\fB%0a\fR
+to
+\fB\en\fR
+(LF)\&.
+.sp
+When unspecified,
+\fI<format>\fR
+defaults to
+\fB%\fR(\fBobjectname\fR)
+\fBSPC\fR
+\fB%\fR(\fBobjecttype\fR)
+\fBTAB\fR
+\fB%\fR(\fBrefname\fR)\&.
+.RE
+.PP
+\-\-color[=<when>]
+.RS 4
+Respect any colors specified in the
+\fB\-\-format\fR
+option\&. The
+\fI<when>\fR
+field must be one of
+\fBalways\fR,
+\fBnever\fR, or
+\fBauto\fR
+(if
+\fI<when>\fR
+is absent, behave as if
+\fBalways\fR
+was given)\&.
+.RE
+.PP
+\-\-shell, \-\-perl, \-\-python, \-\-tcl
+.RS 4
+If given, strings that substitute
+\fB%\fR(\fBfieldname\fR) placeholders are quoted as string literals suitable for the specified host language\&. This is meant to produce a scriptlet that can directly be `eval`ed\&.
+.RE
+.PP
+\-\-points\-at=<object>
+.RS 4
+Only list refs which points at the given object\&.
+.RE
+.PP
+\-\-merged[=<object>]
+.RS 4
+Only list refs whose tips are reachable from the specified commit (HEAD if not specified)\&.
+.RE
+.PP
+\-\-no\-merged[=<object>]
+.RS 4
+Only list refs whose tips are not reachable from the specified commit (HEAD if not specified)\&.
+.RE
+.PP
+\-\-contains[=<object>]
+.RS 4
+Only list refs which contain the specified commit (HEAD if not specified)\&.
+.RE
+.PP
+\-\-no\-contains[=<object>]
+.RS 4
+Only list refs which don\(cqt contain the specified commit (HEAD if not specified)\&.
+.RE
+.PP
+\-\-ignore\-case
+.RS 4
+Sorting and filtering refs are case insensitive\&.
+.RE
+.PP
+\-\-omit\-empty
+.RS 4
+Do not print a newline after formatted refs where the format expands to the empty string\&.
+.RE
+.PP
+\-\-exclude=<pattern>
+.RS 4
+If one or more patterns are given, only refs which do not match any excluded pattern(s) are shown\&. Matching is done using the same rules as
+\fI<pattern>\fR
+above\&.
+.RE
+.PP
+\-\-include\-root\-refs
+.RS 4
+List root refs (HEAD and pseudorefs) apart from regular refs\&.
+.RE
+.PP
+\-\-start\-after=<marker>
+.RS 4
+Allows paginating the output by skipping references up to and including the specified marker\&. When paging, it should be noted that references may be deleted, modified or added between invocations\&. Output will only yield those references which follow the marker lexicographically\&. Output begins from the first reference that would come after the marker alphabetically\&. Cannot be used with
+\fB\-\-sort=\fR\fI<key>\fR
+or
+\fB\-\-stdin\fR
+options, or the
+\fI<pattern>\fR
+argument(s) to limit the refs\&.
 .RE
 .SH "KNOWN LIMITATIONS"
 .sp
