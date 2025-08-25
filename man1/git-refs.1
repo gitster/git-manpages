@@ -2,12 +2,12 @@
 .\"     Title: git-refs
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-08-22
+.\"      Date: 2025-08-25
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.87.g1fa68948c3
+.\"    Source: Git 2.51.0.122.gf814da676a
 .\"  Language: English
 .\"
-.TH "GIT\-REFS" "1" "2025-08-22" "Git 2\&.51\&.0\&.87\&.g1fa6894" "Git Manual"
+.TH "GIT\-REFS" "1" "2025-08-25" "Git 2\&.51\&.0\&.122\&.gf814da" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,19 +40,19 @@ git-refs \- Low\-level access to refs
 		   [\fB\-\-merged\fR[\fB=\fR\fI<object>\fR]] [\fB\-\-no\-merged\fR[\fB=\fR\fI<object>\fR]]
 		   [\fB\-\-contains\fR[\fB=\fR\fI<object>\fR]] [\fB\-\-no\-contains\fR[\fB=\fR\fI<object>\fR]]
 		   [(\fB\-\-exclude=\fR\fI<pattern>\fR)\&...\:] [\fB\-\-start\-after=\fR\fI<marker>\fR]
-		   [ \fB\-\-stdin\fR | \fI<pattern>\fR\&...\: ]
+		   [ \fB\-\-stdin\fR | (\fI<pattern>\fR\fB\&.\&.\&.\fR)]
 .fi
 .SH "DESCRIPTION"
 .sp
 This command provides low\-level access to refs\&.
 .SH "COMMANDS"
 .PP
-migrate
+\fBmigrate\fR
 .RS 4
 Migrate ref store between different formats\&.
 .RE
 .PP
-verify
+\fBverify\fR
 .RS 4
 Verify reference database consistency\&.
 .RE
@@ -65,9 +65,9 @@ and offers identical functionality\&.
 .RE
 .SH "OPTIONS"
 .sp
-The following options are specific to \fIgit refs migrate\fR:
+The following options are specific to \fBgit\fR \fBrefs\fR \fBmigrate\fR:
 .PP
-\-\-ref\-format=<format>
+\fB\-\-ref\-format=\fR\fI<format>\fR
 .RS 4
 The ref format to migrate the ref store to\&. Can be one of:
 .sp
@@ -96,59 +96,64 @@ for the reftable format\&. This format is experimental and its internals are sub
 .RE
 .RE
 .PP
-\-\-dry\-run
+\fB\-\-dry\-run\fR
 .RS 4
 Perform the migration, but do not modify the repository\&. The migrated refs will be written into a separate directory that can be inspected separately\&. The name of the directory will be reported on stdout\&. This can be used to double check that the migration works as expected before performing the actual migration\&.
 .RE
 .PP
-\-\-reflog, \-\-no\-reflog
+\fB\-\-reflog\fR, \fB\-\-no\-reflog\fR
 .RS 4
 Choose between migrating the reflog data to the new backend, and discarding them\&. The default is "\-\-reflog", to migrate\&.
 .RE
 .sp
-The following options are specific to \fIgit refs verify\fR:
+The following options are specific to \fBgit\fR \fBrefs\fR \fBverify\fR:
 .PP
-\-\-strict
+\fB\-\-strict\fR
 .RS 4
 Enable stricter error checking\&. This will cause warnings to be reported as errors\&. See
 \fBgit-fsck\fR(1)\&.
 .RE
 .PP
-\-\-verbose
+\fB\-\-verbose\fR
 .RS 4
 When verifying the reference database consistency, be chatty\&.
 .RE
 .sp
 The following options are specific to \fIgit refs list\fR:
 .PP
-<pattern>\&...\:
+\fI<pattern>\fR\&.\&.\&.
 .RS 4
-If one or more patterns are given, only refs are shown that match against at least one pattern, either using fnmatch(3) or literally, in the latter case matching completely or from the beginning up to a slash\&.
+If one or more
+\fI<pattern>\fR
+parameters are given, only refs are shown that match against at least one pattern, either using
+\fBfnmatch\fR(3) or literally, in the latter case matching completely or from the beginning up to a slash\&.
 .RE
 .PP
-\-\-stdin
-.RS 4
-If
 \fB\-\-stdin\fR
-is supplied, then the list of patterns is read from standard input instead of from the argument list\&.
+.RS 4
+The list of patterns is read from standard input instead of from the argument list\&.
 .RE
 .PP
-\-\-count=<count>
+\fB\-\-count=\fR\fI<count>\fR
 .RS 4
-By default the command shows all refs that match
-\fI<pattern>\fR\&. This option makes it stop after showing that many refs\&.
+Stop after showing
+\fI<count>\fR
+refs\&.
 .RE
 .PP
-\-\-sort=<key>
+\fB\-\-sort=\fR\fI<key>\fR
 .RS 4
-A field name to sort on\&. Prefix
+Sort on the field name
+\fI<key>\fR\&. Prefix
 \fB\-\fR
 to sort in descending order of the value\&. When unspecified,
 \fBrefname\fR
-is used\&. You may use the \-\-sort=<key> option multiple times, in which case the last key becomes the primary key\&.
+is used\&. You may use the
+\fB\-\-sort=\fR\fI<key>\fR
+option multiple times, in which case the last key becomes the primary key\&.
 .RE
 .PP
-\-\-format=<format>
+\fB\-\-format\fR[\fB=\fR\fI<format>\fR]
 .RS 4
 A string that interpolates
 \fB%\fR(\fBfieldname\fR) from a ref being shown and the object it points at\&. In addition, the string literal
@@ -164,32 +169,25 @@ are hex digits \- renders as the character with hex code
 \fB%00\fR
 interpolates to
 \fB\e0\fR
-(NUL),
+(\fINUL\fR),
 \fB%09\fR
 to
 \fB\et\fR
-(TAB), and
+(\fITAB\fR), and
 \fB%0a\fR
 to
 \fB\en\fR
-(LF)\&.
-.sp
-When unspecified,
-\fI<format>\fR
-defaults to
-\fB%\fR(\fBobjectname\fR)
-\fBSPC\fR
-\fB%\fR(\fBobjecttype\fR)
-\fBTAB\fR
-\fB%\fR(\fBrefname\fR)\&.
+(\fILF\fR)\&.
 .RE
+.sp
+When unspecified, \fI<format>\fR defaults to \fB%\fR(\fBobjectname\fR) \fBSPC\fR \fB%\fR(\fBobjecttype\fR) \fBTAB\fR \fB%\fR(\fBrefname\fR)\&.
 .PP
-\-\-color[=<when>]
+\fB\-\-color\fR[\fB=\fR\fI<when>\fR]
 .RS 4
 Respect any colors specified in the
 \fB\-\-format\fR
 option\&. The
-\fI<when>\fR
+\fI<when_\fR
 field must be one of
 \fBalways\fR,
 \fBnever\fR, or
@@ -201,60 +199,73 @@ is absent, behave as if
 was given)\&.
 .RE
 .PP
-\-\-shell, \-\-perl, \-\-python, \-\-tcl
+\fB\-\-shell\fR, \fB\-\-perl\fR, \fB\-\-python\fR, \fB\-\-tcl\fR
 .RS 4
 If given, strings that substitute
-\fB%\fR(\fBfieldname\fR) placeholders are quoted as string literals suitable for the specified host language\&. This is meant to produce a scriptlet that can directly be `eval`ed\&.
+\fB%\fR(\fBfieldname\fR) placeholders are quoted as string literals suitable for the specified host language\&. This is meant to produce a scriptlet that can directly be "eval"ed\&.
 .RE
 .PP
-\-\-points\-at=<object>
+\fB\-\-points\-at=\fR\fI<object>\fR
 .RS 4
 Only list refs which points at the given object\&.
 .RE
 .PP
-\-\-merged[=<object>]
+\fB\-\-merged\fR[\fB=\fR\fI<object>\fR]
 .RS 4
-Only list refs whose tips are reachable from the specified commit (HEAD if not specified)\&.
+Only list refs whose tips are reachable from the specified commit (\fBHEAD\fR
+if not specified)\&.
 .RE
 .PP
-\-\-no\-merged[=<object>]
+\fB\-\-no\-merged\fR[\fB=\fR\fI<object>\fR]
 .RS 4
-Only list refs whose tips are not reachable from the specified commit (HEAD if not specified)\&.
+Only list refs whose tips are not reachable from
+\fI<object>\fR(\fBHEAD\fR
+if not specified)\&.
 .RE
 .PP
-\-\-contains[=<object>]
+\fB\-\-contains\fR[\fB=\fR\fI<object>\fR]
 .RS 4
-Only list refs which contain the specified commit (HEAD if not specified)\&.
+Only list refs which contain
+\fI<object>\fR(\fBHEAD\fR
+if not specified)\&.
 .RE
 .PP
-\-\-no\-contains[=<object>]
+\fB\-\-no\-contains\fR[\fB=\fR\fI<object>\fR]
 .RS 4
-Only list refs which don\(cqt contain the specified commit (HEAD if not specified)\&.
+Only list refs which don\(cqt contain
+\fI<object>\fR
+(\fBHEAD\fR
+if not specified)\&.
 .RE
 .PP
-\-\-ignore\-case
+\fB\-\-ignore\-case\fR
 .RS 4
 Sorting and filtering refs are case insensitive\&.
 .RE
 .PP
-\-\-omit\-empty
+\fB\-\-omit\-empty\fR
 .RS 4
 Do not print a newline after formatted refs where the format expands to the empty string\&.
 .RE
 .PP
-\-\-exclude=<pattern>
+\fB\-\-exclude=\fR\fI<excluded\-pattern>\fR
 .RS 4
-If one or more patterns are given, only refs which do not match any excluded pattern(s) are shown\&. Matching is done using the same rules as
+If one or more
+\fB\-\-exclude\fR
+options are given, only refs which do not match any
+\fI<excluded\-pattern>\fR
+parameters are shown\&. Matching is done using the same rules as
 \fI<pattern>\fR
 above\&.
 .RE
 .PP
-\-\-include\-root\-refs
+\fB\-\-include\-root\-refs\fR
 .RS 4
-List root refs (HEAD and pseudorefs) apart from regular refs\&.
+List root refs (\fBHEAD\fR
+and pseudorefs) apart from regular refs\&.
 .RE
 .PP
-\-\-start\-after=<marker>
+\fB\-\-start\-after=\fR\fI<marker>\fR
 .RS 4
 Allows paginating the output by skipping references up to and including the specified marker\&. When paging, it should be noted that references may be deleted, modified or added between invocations\&. Output will only yield those references which follow the marker lexicographically\&. Output begins from the first reference that would come after the marker alphabetically\&. Cannot be used with
 \fB\-\-sort=\fR\fI<key>\fR

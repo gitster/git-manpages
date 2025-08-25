@@ -1,0 +1,168 @@
+'\" t
+.\"     Title: git-repo
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2025-08-25
+.\"    Manual: Git Manual
+.\"    Source: Git 2.51.0.122.gf814da676a
+.\"  Language: English
+.\"
+.TH "GIT\-REPO" "1" "2025-08-25" "Git 2\&.51\&.0\&.122\&.gf814da" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-repo \- Retrieve information about the repository
+.SH "SYNOPSIS"
+.sp
+.nf
+\fBgit\fR \fBrepo\fR \fBinfo\fR [\fB\-\-format=\fR(\fBkeyvalue\fR|\fBnul\fR)] [\fI<key>\fR\&...\:]
+.fi
+.SH "DESCRIPTION"
+.sp
+Retrieve information about the repository\&.
+.sp
+THIS COMMAND IS EXPERIMENTAL\&. THE BEHAVIOR MAY CHANGE\&.
+.SH "COMMANDS"
+.PP
+\fBinfo\fR [\fB\-\-format=\fR(\fBkeyvalue\fR|\fBnul\fR)] [\fI<key>\fR\&.\&.\&.]
+.RS 4
+Retrieve metadata\-related information about the current repository\&. Only the requested data will be returned based on their keys (see "INFO KEYS" section below)\&.
+.sp
+The values are returned in the same order in which their respective keys were requested\&.
+.sp
+The output format can be chosen through the flag
+\fB\-\-format\fR\&. Two formats are supported:
+.PP
+\fBkeyvalue\fR
+.RS 4
+output key\-value pairs one per line using the
+\fB=\fR
+character as the delimiter between the key and the value\&. Values containing "unusual" characters are quoted as explained for the configuration variable
+\fBcore\&.quotePath\fR
+(see
+\fBgit-config\fR(1))\&. This is the default\&.
+.RE
+.PP
+\fBnul\fR
+.RS 4
+similar to
+\fBkeyvalue\fR, but using a newline character as the delimiter between the key and the value and using a NUL character after each value\&. This format is better suited for being parsed by another applications than
+\fBkeyvalue\fR\&. Unlike in the
+\fBkeyvalue\fR
+format, the values are never quoted\&.
+.RE
+.RE
+.SH "INFO KEYS"
+.sp
+In order to obtain a set of values from \fBgit\fR \fBrepo\fR \fBinfo\fR, you should provide the keys that identify them\&. Here\(cqs a list of the available keys and the values that they return:
+.PP
+\fBlayout\&.bare\fR
+.RS 4
+\fBtrue\fR
+if this is a bare repository, otherwise
+\fBfalse\fR\&.
+.RE
+.PP
+\fBlayout\&.shallow\fR
+.RS 4
+\fBtrue\fR
+if this is a shallow repository, otherwise
+\fBfalse\fR\&.
+.RE
+.PP
+\fBreferences\&.format\fR
+.RS 4
+The reference storage format\&. The valid values are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBfiles\fR
+for loose files with packed\-refs\&. This is the default\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBreftable\fR
+for the reftable format\&. This format is experimental and its internals are subject to change\&.
+.RE
+.RE
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Retrieves the reference format of the current repository:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git repo info references\&.format
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Retrieves whether the current repository is bare and whether it is shallow using the
+\fBnul\fR
+format:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git repo info \-\-format=nul layout\&.bare layout\&.shallow
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.SH "SEE ALSO"
+.sp
+\fBgit-rev-parse\fR(1)
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
