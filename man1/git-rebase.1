@@ -2,12 +2,12 @@
 .\"     Title: git-rebase
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-08-25
+.\"      Date: 2025-08-28
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.122.gf814da676a
+.\"    Source: Git 2.51.0.140.g42bc224495
 .\"  Language: English
 .\"
-.TH "GIT\-REBASE" "1" "2025-08-25" "Git 2\&.51\&.0\&.122\&.gf814da" "Git Manual"
+.TH "GIT\-REBASE" "1" "2025-08-28" "Git 2\&.51\&.0\&.140\&.g42bc22" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,35 +40,9 @@ git-rebase \- Reapply commits on top of another base tip
 .fi
 .SH "DESCRIPTION"
 .sp
-If \fI<branch>\fR is specified, \fBgit\fR \fBrebase\fR will perform an automatic \fBgit\fR \fBswitch\fR \fI<branch>\fR before doing anything else\&. Otherwise it remains on the current branch\&.
+Transplant a series of commits onto a different starting point\&. You can also use \fBgit\fR \fBrebase\fR to reorder or combine commits: see INTERACTIVE MODE below for how to do that\&.
 .sp
-If \fI<upstream>\fR is not specified, the upstream configured in \fBbranch\&.\fR\fI<name>\fR\fB\&.remote\fR and \fBbranch\&.\fR\fI<name>\fR\fB\&.merge\fR options will be used (see \fBgit-config\fR(1) for details) and the \fB\-\-fork\-point\fR option is assumed\&. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abort\&.
-.sp
-All changes made by commits in the current branch but that are not in \fI<upstream>\fR are saved to a temporary area\&. This is the same set of commits that would be shown by \fBgit\fR \fBlog\fR \fI<upstream>\fR\fB\&.\&.\fR\fBHEAD\fR; or by \fBgit\fR \fBlog\fR \*(Aqfork_point\*(Aq\fB\&.\&.\fR\fBHEAD\fR, if \fB\-\-fork\-point\fR is active (see the description on \fB\-\-fork\-point\fR below); or by \fBgit\fR \fBlog\fR \fBHEAD\fR, if the \fB\-\-root\fR option is specified\&.
-.sp
-The current branch is reset to \fI<upstream>\fR or \fI<newbase>\fR if the \fB\-\-onto\fR option was supplied\&. This has the exact same effect as \fBgit\fR \fBreset\fR \fB\-\-hard\fR \fI<upstream>\fR (or \fI<newbase>\fR)\&. \fBORIG_HEAD\fR is set to point at the tip of the branch before the reset\&.
-.if n \{\
-.sp
-.\}
-.RS 4
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.br
-.ps +1
-\fBNote\fR
-.ps -1
-.br
-.sp
-\fBORIG_HEAD\fR is not guaranteed to still point to the previous branch tip at the end of the rebase if other commands that write that pseudo\-ref (e\&.g\&. \fBgit\fR \fBreset\fR) are used during the rebase\&. The previous branch tip, however, is accessible using the reflog of the current branch (i\&.e\&. \fB@\fR{1}, see \fBgitrevisions\fR(7))\&.
-.sp .5v
-.RE
-.sp
-The commits that were previously saved into the temporary area are then reapplied to the current branch, one by one, in order\&. Note that any commits in \fBHEAD\fR which introduce the same textual changes as a commit in \fBHEAD\fR\fB\&.\&.\fR\fI<upstream>\fR are omitted (i\&.e\&., a patch already accepted upstream with a different commit message or timestamp will be skipped)\&.
-.sp
-It is possible that a merge failure will prevent this process from being completely automatic\&. You will have to resolve any such merge failure and run \fBgit\fR \fBrebase\fR \fB\-\-continue\fR\&. Another option is to bypass the commit that caused the merge failure with \fBgit\fR \fBrebase\fR \fB\-\-skip\fR\&. To check out the original \fI<branch>\fR and remove the \&.\fBgit/rebase\-apply\fR working files, use the command \fBgit\fR \fBrebase\fR \fB\-\-abort\fR instead\&.
-.sp
-Assume the following history exists and the current branch is "topic":
+For example, imagine that you have been working on the \fBtopic\fR branch in this history, and you want to "catch up" to the work done on the \fBmaster\fR branch\&.
 .sp
 .if n \{\
 .RS 4
@@ -82,20 +56,7 @@ Assume the following history exists and the current branch is "topic":
 .RE
 .\}
 .sp
-From this point, the result of either of the following commands:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git rebase master
-git rebase master topic
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-would be:
+You want to transplant the commits you made on \fBtopic\fR since it diverged from \fBmaster\fR (i\&.e\&. A, B, and C), on top of the current \fBmaster\fR\&. You can do this by running \fBgit\fR \fBrebase\fR \fBmaster\fR while the \fBtopic\fR branch is checked out\&. If you want to rebase \fBtopic\fR while on another branch, \fBgit\fR \fBrebase\fR \fBmaster\fR \fBtopic\fR is a shortcut for \fBgit\fR \fBcheckout\fR \fBtopic\fR && \fBgit\fR \fBrebase\fR \fBmaster\fR\&.
 .sp
 .if n \{\
 .RS 4
@@ -109,35 +70,161 @@ would be:
 .RE
 .\}
 .sp
-\fBNOTE:\fR The latter form is just a short\-hand of \fBgit\fR \fBcheckout\fR \fBtopic\fR followed by \fBgit\fR \fBrebase\fR \fBmaster\fR\&. When rebase exits \fBtopic\fR will remain the checked\-out branch\&.
+If there is a merge conflict during this process, \fBgit\fR \fBrebase\fR will stop at the first problematic commit and leave conflict markers\&. If this happens, you can do one of these things:
 .sp
-If the upstream branch already contains a change you have made (e\&.g\&., because you mailed a patch which was applied upstream), then that commit will be skipped and warnings will be issued (if the \fImerge\fR backend is used)\&. For example, running \fBgit\fR \fBrebase\fR \fBmaster\fR on the following history (in which \fBA\fR\*(Aq and \fBA\fR introduce the same set of changes, but have different committer information):
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Resolve the conflict\&. You can use
+\fBgit\fR
+\fBdiff\fR
+to find the markers (<<<<<<) and make edits to resolve the conflict\&. For each file you edit, you need to tell Git that the conflict has been resolved\&. You can mark the conflict as resolved with
+\fBgit\fR
+\fBadd\fR
+\fI<filename>\fR\&. After resolving all of the conflicts, you can continue the rebasing process with
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-          A\-\-\-B\-\-\-C topic
-         /
-    D\-\-\-E\-\-\-A\*(Aq\-\-\-F master
+git rebase \-\-continue
 .fi
 .if n \{\
 .RE
 .\}
+.RE
 .sp
-will result in:
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Stop the
+\fBgit\fR
+\fBrebase\fR
+and return your branch to its original state with
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-                   B\*(Aq\-\-\-C\*(Aq topic
-                  /
-    D\-\-\-E\-\-\-A\*(Aq\-\-\-F master
+git rebase \-\-abort
 .fi
 .if n \{\
 .RE
 .\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+Skip the commit that caused the merge conflict with
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git rebase \-\-skip
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+If you don\(cqt specify an \fI<upstream>\fR to rebase onto, the upstream configured in \fBbranch\&.\fR\fI<name>\fR\fB\&.remote\fR and \fBbranch\&.\fR\fI<name>\fR\fB\&.merge\fR options will be used (see \fBgit-config\fR(1) for details) and the \fB\-\-fork\-point\fR option is assumed\&. If you are currently not on any branch or if the current branch does not have a configured upstream, the rebase will abort\&.
+.sp
+Here is a simplified description of what \fBgit\fR \fBrebase\fR \fI<upstream>\fR does:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Make a list of all commits on your current branch since it branched off from
+\fI<upstream>\fR
+that do not have an equivalent commit in
+\fI<upstream>\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Check out
+\fI<upstream>\fR
+with the equivalent of
+\fBgit\fR
+\fBcheckout\fR
+\fB\-\-detach\fR
+\fI<upstream>\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+Replay the commits, one by one, in order\&. This is similar to running
+\fBgit\fR
+\fBcherry\-pick\fR
+\fI<commit>\fR
+for each commit\&. See REBASING MERGES for how merges are handled\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+Update your branch to point to the final commit with the equivalent of
+\fBgit\fR
+\fBcheckout\fR
+\fB\-B\fR
+\fI<branch>\fR\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+When starting the rebase, \fBORIG_HEAD\fR is set to point to the commit at the tip of the to\-be\-rebased branch\&. However, \fBORIG_HEAD\fR is not guaranteed to still point to that commit at the end of the rebase if other commands that change \fBORIG_HEAD\fR (like \fBgit\fR \fBreset\fR) are used during the rebase\&. The previous branch tip, however, is accessible using the reflog of the current branch (i\&.e\&. \fB@\fR{1}, see \fBgitrevisions\fR(7)\&.
+.sp .5v
+.RE
+.SH "TRANSPLANTING A TOPIC BRANCH WITH \-\-ONTO"
 .sp
 Here is how you would transplant a topic branch based on one branch to another, to pretend that you forked the topic branch from the latter branch, using \fBrebase\fR \fB\-\-onto\fR\&.
 .sp
@@ -268,42 +355,6 @@ would result in the removal of commits F and G:
 .\}
 .sp
 This is useful if F and G were flawed in some way, or should not be part of topicA\&. Note that the argument to \fB\-\-onto\fR and the \fI<upstream>\fR parameter can be any valid commit\-ish\&.
-.sp
-In case of conflict, \fBgit\fR \fBrebase\fR will stop at the first problematic commit and leave conflict markers in the tree\&. You can use \fBgit\fR \fBdiff\fR to locate the markers (<<<<<<) and make edits to resolve the conflict\&. For each file you edit, you need to tell Git that the conflict has been resolved, typically this would be done with
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git add <filename>
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-After resolving the conflict manually and updating the index with the desired resolution, you can continue the rebasing process with
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git rebase \-\-continue
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-Alternatively, you can undo the \fIgit rebase\fR with
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git rebase \-\-abort
-.fi
-.if n \{\
-.RE
-.\}
 .SH "MODE OPTIONS"
 .sp
 The options in this section cannot be used with any other option, including not with each other:
@@ -361,6 +412,8 @@ option is not specified, the starting point is
 .sp
 As a special case, you may use "A\&.\&.\&.B" as a shortcut for the merge base of A and B if there is exactly one merge base\&. You can leave out at most one of A and B, in which case it defaults to HEAD\&.
 .RE
+.sp
+See TRANSPLANTING A TOPIC BRANCH WITH \-\-ONTO above for examples\&.
 .PP
 \-\-keep\-base
 .RS 4
