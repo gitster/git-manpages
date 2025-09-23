@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-09-15
+.\"      Date: 2025-09-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.268.ga483264b01
+.\"    Source: Git 2.51.0.315.gbb69721404
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "2025-09-15" "Git 2\&.51\&.0\&.268\&.ga48326" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "2025-09-23" "Git 2\&.51\&.0\&.315\&.gbb6972" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1282,15 +1282,15 @@ This would allow for optimizing the common case of servers who\(cqd like to prov
 A client receiving such a response MAY assume that they can skip retrieving the header from a bundle at the indicated URI, and thus save themselves and the server(s) the request(s) needed to inspect the headers of that bundle or bundles\&.
 .RE
 .RE
-.SS "promisor\-remote=<pr\-infos>"
+.SS "promisor\-remote=<pr\-info>"
 .sp
-The server may advertise some promisor remotes it is using or knows about to a client which may want to use them as its promisor remotes, instead of this repository\&. In this case <pr\-infos> should be of the form:
+The server may advertise some promisor remotes it is using or knows about to a client which may want to use them as its promisor remotes, instead of this repository\&. In this case <pr\-info> should be of the form:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
-pr\-infos = pr\-info | pr\-infos ";" pr\-info
+pr\-info = pr\-fields | pr\-info ";" pr\-fields
 .fi
 .if n \{\
 .RE
@@ -1300,15 +1300,45 @@ pr\-infos = pr\-info | pr\-infos ";" pr\-info
 .RS 4
 .\}
 .nf
-pr\-info = "name=" pr\-name | "name=" pr\-name "," "url=" pr\-url
+pr\-fields = pr\-field | pr\-fields "," pr\-field
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-where \fBpr\-name\fR is the urlencoded name of a promisor remote, and \fBpr\-url\fR the urlencoded URL of that promisor remote\&.
+.if n \{\
+.RS 4
+.\}
+.nf
+pr\-field = field\-name "=" field\-value
+.fi
+.if n \{\
+.RE
+.\}
 .sp
-In this case, if the client decides to use one or more promisor remotes the server advertised, it can reply with "promisor\-remote=<pr\-names>" where <pr\-names> should be of the form:
+where all the \fBfield\-name\fR and \fBfield\-value\fR in a given \fBpr\-fields\fR are field names and values related to a single promisor remote\&. A given \fBfield\-name\fR MUST NOT appear more than once in given \fBpr\-fields\fR\&.
+.sp
+The server MUST advertise at least the "name" and "url" field names along with the associated field values, which are the name of a valid remote and its URL, in each \fBpr\-fields\fR\&. The "name" and "url" fields MUST appear first in each pr\-fields, in that order\&.
+.sp
+After these mandatory fields, the server MAY advertise the following optional fields in any order:
+.PP
+\fBpartialCloneFilter\fR
+.RS 4
+The filter specification used by the remote\&. Clients can use this to determine if the remote\(cqs filtering strategy is compatible with their needs (e\&.g\&., checking if both use "blob:none")\&. It corresponds to the "remote\&.<name>\&.partialCloneFilter" config setting\&.
+.RE
+.PP
+\fBtoken\fR
+.RS 4
+An authentication token that clients can use when connecting to the remote\&. It corresponds to the "remote\&.<name>\&.token" config setting\&.
+.RE
+.sp
+No other fields are defined by the protocol at this time\&. Field names are case\-sensitive and MUST be transmitted exactly as specified above\&. Clients MUST ignore fields they don\(cqt recognize to allow for future protocol extensions\&.
+.sp
+For now, the client can only use information transmitted through these fields to decide if it accepts the advertised promisor remote\&. In the future that information might be used for other purposes though\&.
+.sp
+Field values MUST be urlencoded\&.
+.sp
+If the client decides to use one or more promisor remotes the server advertised, it can reply with "promisor\-remote=<pr\-names>" where <pr\-names> should be of the form:
 .sp
 .if n \{\
 .RS 4
@@ -1322,13 +1352,13 @@ pr\-names = pr\-name | pr\-names ";" pr\-name
 .sp
 where \fBpr\-name\fR is the urlencoded name of a promisor remote the server advertised and the client accepts\&.
 .sp
-Note that, everywhere in this document, \fBpr\-name\fR MUST be a valid remote name, and the \fI;\fR and \fI,\fR characters MUST be encoded if they appear in \fBpr\-name\fR or \fBpr\-url\fR\&.
+Note that, everywhere in this document, the \fI;\fR and \fI,\fR characters MUST be encoded if they appear in \fBpr\-name\fR or \fBfield\-value\fR\&.
 .sp
 If the server doesn\(cqt know any promisor remote that could be good for a client to use, or prefers a client not to use any promisor remote it uses or knows about, it shouldn\(cqt advertise the "promisor\-remote" capability at all\&.
 .sp
 In this case, or if the client doesn\(cqt want to use any promisor remote the server advertised, the client shouldn\(cqt advertise the "promisor\-remote" capability at all in its reply\&.
 .sp
-The "promisor\&.advertise" and "promisor\&.acceptFromServer" configuration options can be used on the server and client side to control what they advertise or accept respectively\&. See the documentation of these configuration options for more information\&.
+On the server side, the "promisor\&.advertise" and "promisor\&.sendFields" configuration options can be used to control what it advertises\&. On the client side, the "promisor\&.acceptFromServer" configuration option can be used to control what it accepts\&. See the documentation of these configuration options for more information\&.
 .sp
 Note that in the future it would be nice if the "promisor\-remote" protocol capability could be used by the server, when responding to \fBgit\fR \fBfetch\fR or \fBgit\fR \fBclone\fR, to advertise better\-connected remotes that the client can use as promisor remotes, instead of this repository, so that the client can lazily fetch objects from these other better\-connected remotes\&. This would require the server to omit in its response the objects available on the better\-connected remotes that the client has accepted\&. This hasn\(cqt been implemented yet though\&. So for now this "promisor\-remote" capability is useful only when the server advertises some promisor remotes it already uses to borrow objects from\&.
 .SH "GIT"

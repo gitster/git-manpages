@@ -2,12 +2,12 @@
 .\"     Title: git-send-email
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-09-15
+.\"      Date: 2025-09-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.268.ga483264b01
+.\"    Source: Git 2.51.0.315.gbb69721404
 .\"  Language: English
 .\"
-.TH "GIT\-SEND\-EMAIL" "1" "2025-09-15" "Git 2\&.51\&.0\&.268\&.ga48326" "Git Manual"
+.TH "GIT\-SEND\-EMAIL" "1" "2025-09-23" "Git 2\&.51\&.0\&.315\&.gbb6972" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -469,6 +469,46 @@ or
 \-\-smtp\-debug=(0|1)
 .RS 4
 Enable (1) or disable (0) debug output\&. If enabled, SMTP commands and replies will be printed\&. Useful to debug TLS connection and authentication problems\&.
+.RE
+.PP
+\-\-imap\-sent\-folder=<folder>
+.RS 4
+Some email providers (e\&.g\&. iCloud) do not send a copy of the emails sent using SMTP to the
+\fBSent\fR
+folder or similar in your mailbox\&. Use this option to use
+\fBgit\fR
+\fBimap\-send\fR
+to send a copy of the emails to the folder specified using this option\&. You can run
+\fBgit\fR
+\fBimap\-send\fR
+\fB\-\-list\fR
+to get a list of valid folder names, including the correct name of the
+\fBSent\fR
+folder in your mailbox\&. You can also use this option to send emails to a dedicated IMAP folder of your choice\&.
+.sp
+This feature requires setting up
+\fBgit\fR
+\fBimap\-send\fR\&. See
+\fBgit-imap-send\fR(1)
+for instructions\&.
+.RE
+.PP
+\-\-use\-imap\-only, \-\-no\-use\-imap\-only
+.RS 4
+If this is set, all emails will only be copied to the IMAP folder specified with
+\fB\-\-imap\-sent\-folder\fR
+or
+\fBsendemail\&.imapSentFolder\fR
+and will not be sent to the recipients\&. Useful if you just want to create a draft of the emails and use another email client to send them\&. If disabled with
+\fB\-\-no\-use\-imap\-only\fR, the emails will be sent like usual\&. Disabled by default, but the
+\fBsendemail\&.useImapOnly\fR
+configuration variable can be used to enable it\&.
+.sp
+This feature requires setting up
+\fBgit\fR
+\fBimap\-send\fR\&. See
+\fBgit-imap-send\fR(1)
+for instructions\&.
 .RE
 .PP
 \-\-batch\-size=<num>
@@ -1100,7 +1140,7 @@ Warnings are printed on the standard error output for any explicitly unsupported
 .RE
 .RE
 .PP
-sendemail\&.annotate, sendemail\&.bcc, sendemail\&.cc, sendemail\&.ccCmd, sendemail\&.chainReplyTo, sendemail\&.envelopeSender, sendemail\&.from, sendemail\&.headerCmd, sendemail\&.signedOffByCc, sendemail\&.smtpPass, sendemail\&.suppressCc, sendemail\&.suppressFrom, sendemail\&.to, sendemail\&.toCmd, sendemail\&.smtpDomain, sendemail\&.smtpServer, sendemail\&.smtpServerPort, sendemail\&.smtpServerOption, sendemail\&.smtpUser, sendemail\&.thread, sendemail\&.transferEncoding, sendemail\&.validate, sendemail\&.xmailer
+sendemail\&.annotate, sendemail\&.bcc, sendemail\&.cc, sendemail\&.ccCmd, sendemail\&.chainReplyTo, sendemail\&.envelopeSender, sendemail\&.from, sendemail\&.headerCmd, sendemail\&.signedOffByCc, sendemail\&.smtpPass, sendemail\&.suppressCc, sendemail\&.suppressFrom, sendemail\&.to, sendemail\&.toCmd, sendemail\&.smtpDomain, sendemail\&.smtpServer, sendemail\&.smtpServerPort, sendemail\&.smtpServerOption, sendemail\&.smtpUser, sendemail\&.imapSentFolder, sendemail\&.useImapOnly, sendemail\&.thread, sendemail\&.transferEncoding, sendemail\&.validate, sendemail\&.xmailer
 .RS 4
 These configuration variables all provide a default for
 \fBgit-send-email\fR(1)
@@ -1163,10 +1203,10 @@ To use \fBgit\fR \fBsend\-email\fR to send your patches through the Gmail SMTP s
 .\}
 .nf
 [sendemail]
-        smtpEncryption = tls
+        smtpEncryption = ssl
         smtpServer = smtp\&.gmail\&.com
         smtpUser = yourname@gmail\&.com
-        smtpServerPort = 587
+        smtpServerPort = 465
 .fi
 .if n \{\
 .RE
@@ -1181,10 +1221,10 @@ Alternatively, instead of using an app\-specific password, you can use OAuth2\&.
 .\}
 .nf
 [sendemail]
-        smtpEncryption = tls
+        smtpEncryption = ssl
         smtpServer = smtp\&.gmail\&.com
         smtpUser = yourname@gmail\&.com
-        smtpServerPort = 587
+        smtpServerPort = 465
         smtpAuth = OAUTHBEARER
 .fi
 .if n \{\
