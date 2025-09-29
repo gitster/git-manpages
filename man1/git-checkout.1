@@ -2,12 +2,12 @@
 .\"     Title: git-checkout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-09-23
+.\"      Date: 2025-09-29
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.315.gbb69721404
+.\"    Source: Git 2.51.0.372.g821f583da6
 .\"  Language: English
 .\"
-.TH "GIT\-CHECKOUT" "1" "2025-09-23" "Git 2\&.51\&.0\&.315\&.gbb6972" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "2025-09-29" "Git 2\&.51\&.0\&.372\&.g821f58" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,23 +36,59 @@ git-checkout \- Switch branches or restore working tree files
 \fBgit\fR \fBcheckout\fR [\fB\-q\fR] [\fB\-f\fR] [\fB\-m\fR] \fB\-\-detach\fR [\fI<branch>\fR]
 \fBgit\fR \fBcheckout\fR [\fB\-q\fR] [\fB\-f\fR] [\fB\-m\fR] [\fB\-\-detach\fR] \fI<commit>\fR
 \fBgit\fR \fBcheckout\fR [\fB\-q\fR] [\fB\-f\fR] [\fB\-m\fR] [[\fB\-b\fR|\fB\-B\fR|\fB\-\-orphan\fR] \fI<new\-branch>\fR] [\fI<start\-point>\fR]
-\fBgit\fR \fBcheckout\fR [\fB\-f\fR] \fI<tree\-ish>\fR [\fB\-\-\fR] \fI<pathspec>\fR\&...\:
-\fBgit\fR \fBcheckout\fR [\fB\-f\fR] \fI<tree\-ish>\fR \fB\-\-pathspec\-from\-file=\fR\fI<file>\fR [\fB\-\-pathspec\-file\-nul\fR]
+\fBgit\fR \fBcheckout\fR \fI<tree\-ish>\fR [\fB\-\-\fR] \fI<pathspec>\fR\&...\:
+\fBgit\fR \fBcheckout\fR \fI<tree\-ish>\fR \fB\-\-pathspec\-from\-file=\fR\fI<file>\fR [\fB\-\-pathspec\-file\-nul\fR]
 \fBgit\fR \fBcheckout\fR [\fB\-f\fR|\fB\-\-ours\fR|\fB\-\-theirs\fR|\fB\-m\fR|\fB\-\-conflict=\fR\fI<style>\fR] [\fB\-\-\fR] \fI<pathspec>\fR\&...\:
 \fBgit\fR \fBcheckout\fR [\fB\-f\fR|\fB\-\-ours\fR|\fB\-\-theirs\fR|\fB\-m\fR|\fB\-\-conflict=\fR\fI<style>\fR] \fB\-\-pathspec\-from\-file=\fR\fI<file>\fR [\fB\-\-pathspec\-file\-nul\fR]
 \fBgit\fR \fBcheckout\fR (\fB\-p\fR|\fB\-\-patch\fR) [\fI<tree\-ish>\fR] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
-Updates files in the working tree to match the version in the index or the specified tree\&. If no pathspec was given, \fBgit\fR \fBcheckout\fR will also update \fBHEAD\fR to set the specified branch as the current branch\&.
+\fBgit\fR \fBcheckout\fR has two main modes:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+\fBSwitch branches\fR, with
+\fBgit\fR
+\fBcheckout\fR
+\fI<branch>\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+\fBRestore a different version of a file\fR, for example with
+\fBgit\fR
+\fBcheckout\fR
+\fI<commit>\fR
+\fI<filename>\fR
+or
+\fBgit\fR
+\fBcheckout\fR
+\fI<filename>\fR
+.RE
+.sp
+See ARGUMENT DISAMBIGUATION below for how Git decides which one to do\&.
 .PP
 \fBgit\fR \fBcheckout\fR [\fI<branch>\fR]
 .RS 4
-To prepare for working on
-\fI<branch>\fR, switch to it by updating the index and the files in the working tree, and by pointing
-\fBHEAD\fR
-at the branch\&. Local modifications to the files in the working tree are kept, so that they can be committed to the
-\fI<branch>\fR\&.
+Switch to
+\fI<branch>\fR\&. This sets the current branch to
+\fI<branch>\fR
+and updates the files in your working directory\&. The checkout will fail if there are uncommitted changes to any files where
+\fI<branch>\fR
+and your current commit have different content\&. Uncommitted changes will otherwise be kept\&.
 .sp
 If
 \fI<branch>\fR
@@ -71,68 +107,47 @@ $ git checkout \-b <branch> \-\-track <remote>/<branch>
 .RE
 .\}
 .sp
-You could omit
-\fI<branch>\fR, in which case the command degenerates to "check out the current branch", which is a glorified no\-op with rather expensive side\-effects to show only the tracking information, if it exists, for the current branch\&.
+Running
+\fBgit\fR
+\fBcheckout\fR
+without specifying a branch has no effect except to print out the tracking information for the current branch\&.
 .RE
 .PP
-\fBgit\fR \fBcheckout\fR (\fB\-b\fR|\fB\-B\fR) \fI<new\-branch>\fR [\fI<start\-point>\fR]
+\fBgit\fR \fBcheckout\fR \fB\-b\fR \fI<new\-branch>\fR [\fI<start\-point>\fR]
 .RS 4
-Specifying
-\fB\-b\fR
-causes a new branch to be created as if
-\fBgit-branch\fR(1)
-were called and then checked out\&. In this case you can use the
+Create a new branch named
+\fI<new\-branch>\fR, start it at
+\fI<start\-point>\fR
+(defaults to the current commit), and check out the new branch\&. You can use the
 \fB\-\-track\fR
 or
 \fB\-\-no\-track\fR
-options, which will be passed to
-\fBgit\fR
-\fBbranch\fR\&. As a convenience,
-\fB\-\-track\fR
-without
-\fB\-b\fR
-implies branch creation; see the description of
-\fB\-\-track\fR
-below\&.
+options to set the branch\(cqs upstream tracking information\&.
 .sp
-If
-\fB\-B\fR
-is given,
-\fI<new\-branch>\fR
-is created if it doesn\(cqt exist; otherwise, it is reset\&. This is the transactional equivalent of
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git branch \-f <branch> [<start\-point>]
-$ git checkout <branch>
-.fi
-.if n \{\
+This will fail if there\(cqs an error checking out
+\fI<new\-branch>\fR, for example if checking out the
+\fI<start\-point>\fR
+commit would overwrite your uncommitted changes\&.
 .RE
-.\}
-.sp
-that is to say, the branch is not reset/created unless "git checkout" is successful (e\&.g\&., when the branch is in use in another worktree, not just the current branch stays the same, but the branch is not reset to the start\-point, either)\&.
+.PP
+\fBgit\fR \fBcheckout\fR \fB\-B\fR \fI<branch>\fR [\fI<start\-point>\fR]
+.RS 4
+The same as
+\fB\-b\fR, except that if the branch already exists it resets
+\fB_\fR\fI<branch>\fR\fB_\fR
+to the start point instead of failing\&.
 .RE
 .PP
 \fBgit\fR \fBcheckout\fR \fB\-\-detach\fR [\fI<branch>\fR], \fBgit\fR \fBcheckout\fR [\fB\-\-detach\fR] \fI<commit>\fR
 .RS 4
-Prepare to work on top of
-\fI<commit>\fR, by detaching
-\fBHEAD\fR
-at it (see "DETACHED HEAD" section), and updating the index and the files in the working tree\&. Local modifications to the files in the working tree are kept, so that the resulting working tree will be the state recorded in the commit plus the local modifications\&.
-.sp
-When the
-\fI<commit>\fR
-argument is a branch name, the
-\fB\-\-detach\fR
-option can be used to detach
-\fBHEAD\fR
-at the tip of the branch (\fBgit\fR
+The same as
+\fBgit\fR
 \fBcheckout\fR
-\fI<branch>\fR
-would check out that branch without detaching
-\fBHEAD\fR)\&.
+\fI<branch>\fR, except that instead of pointing
+\fBHEAD\fR
+at the branch, it points
+\fBHEAD\fR
+at the commit ID\&. See the "DETACHED HEAD" section below for more\&.
 .sp
 Omitting
 \fI<branch>\fR
@@ -141,27 +156,51 @@ detaches
 at the tip of the current branch\&.
 .RE
 .PP
-\fBgit\fR \fBcheckout\fR [\fB\-f\fR|\fB\-\-ours\fR|\fB\-\-theirs\fR|\fB\-m\fR|\fB\-\-conflict=\fR\fI<style>\fR] [\fI<tree\-ish>\fR] [\fB\-\-\fR] \fI<pathspec>\fR\&.\&.\&., \fBgit\fR \fBcheckout\fR [\fB\-f\fR|\fB\-\-ours\fR|\fB\-\-theirs\fR|\fB\-m\fR|\fB\-\-conflict=\fR\fI<style>\fR] [\fI<tree\-ish>\fR] \fB\-\-pathspec\-from\-file=\fR\fI<file>\fR [\fB\-\-pathspec\-file\-nul\fR]
+\fBgit\fR \fBcheckout\fR \fI<tree\-ish>\fR [\fB\-\-\fR] \fI<pathspec>\fR\&.\&.\&., \fBgit\fR \fBcheckout\fR \fI<tree\-ish>\fR \fB\-\-pathspec\-from\-file=\fR\fI<file>\fR [\fB\-\-pathspec\-file\-nul\fR]
 .RS 4
-Overwrite the contents of the files that match the pathspec\&. When the
-\fI<tree\-ish>\fR
-(most often a commit) is not given, overwrite working tree with the contents in the index\&. When the
-\fI<tree\-ish>\fR
-is given, overwrite both the index and the working tree with the contents at the
-\fI<tree\-ish>\fR\&.
+Replace the specified files and/or directories with the version from the given commit or tree and add them to the index (also known as "staging area")\&.
 .sp
-The index may contain unmerged entries because of a previous failed merge\&. By default, if you try to check out such an entry from the index, the checkout operation will fail and nothing will be checked out\&. Using
+For example,
+\fBgit\fR
+\fBcheckout\fR
+\fBmain\fR
+\fBfile\&.txt\fR
+will replace
+\fBfile\&.txt\fR
+with the version from
+\fBmain\fR\&.
+.RE
+.PP
+\fBgit\fR \fBcheckout\fR [\fB\-f\fR|\fB\-\-ours\fR|\fB\-\-theirs\fR|\fB\-m\fR|\fB\-\-conflict=\fR\fI<style>\fR] [\fB\-\-\fR] \fI<pathspec>\fR\&.\&.\&., \fBgit\fR \fBcheckout\fR [\fB\-f\fR|\fB\-\-ours\fR|\fB\-\-theirs\fR|\fB\-m\fR|\fB\-\-conflict=\fR\fI<style>\fR] \fB\-\-pathspec\-from\-file=\fR\fI<file>\fR [\fB\-\-pathspec\-file\-nul\fR]
+.RS 4
+Replace the specified files and/or directories with the version from the index\&.
+.sp
+For example, if you check out a commit, edit
+\fBfile\&.txt\fR, and then decide those changes were a mistake,
+\fBgit\fR
+\fBcheckout\fR
+\fBfile\&.txt\fR
+will discard any unstaged changes to
+\fBfile\&.txt\fR\&.
+.sp
+This will fail if the file has a merge conflict and you haven\(cqt yet run
+\fBgit\fR
+\fBadd\fR
+\fBfile\&.txt\fR
+(or something equivalent) to mark it as resolved\&. You can use
 \fB\-f\fR
-will ignore these unmerged entries\&. The contents from a specific side of the merge can be checked out of the index by using
+to ignore the unmerged files instead of failing, use
 \fB\-\-ours\fR
 or
-\fB\-\-theirs\fR\&. With
-\fB\-m\fR, changes made to the working tree file can be discarded to re\-create the original conflicted merge result\&.
+\fB\-\-theirs\fR
+to replace them with the version from a specific side of the merge, or use
+\fB\-m\fR
+to replace them with the original conflicted merge result\&.
 .RE
 .PP
 \fBgit\fR \fBcheckout\fR (\fB\-p\fR|\fB\-\-patch\fR) [\fI<tree\-ish>\fR] [\fB\-\-\fR] [\fI<pathspec>\fR\&.\&.\&.]
 .RS 4
-This is similar to the previous mode, but lets you use the interactive interface to show the "diff" output and choose which hunks to use in the result\&. See below for the description of
+This is similar to the previous two modes, but lets you use the interactive interface to show the "diff" output and choose which hunks to use in the result\&. See below for the description of
 \fB\-\-patch\fR
 option\&.
 .RE
@@ -228,20 +267,10 @@ for details\&.
 .PP
 \fB\-B\fR \fI<new\-branch>\fR
 .RS 4
-Creates the branch
-\fI<new\-branch>\fR, start it at
-\fI<start\-point>\fR; if it already exists, then reset it to
-\fI<start\-point>\fR\&. And then check the resulting branch out\&. This is equivalent to running
-\fBgit\fR
-\fBbranch\fR
-with
-\fB\-f\fR
-followed by
-\fBgit\fR
-\fBcheckout\fR
-of that branch; see
-\fBgit-branch\fR(1)
-for details\&.
+The same as
+\fB\-b\fR, except that if the branch already exists it resets
+\fB_\fR\fI<branch>\fR\fB_\fR
+to the start point instead of failing\&.
 .RE
 .PP
 \fB\-t\fR, \fB\-\-track\fR[\fB=\fR(\fBdirect\fR|\fBinherit\fR)]
@@ -250,7 +279,7 @@ When creating a new branch, set up "upstream" configuration\&. See
 \fB\-\-track\fR
 in
 \fBgit-branch\fR(1)
-for details\&.
+for details\&. As a convenience, \-\-track without \-b implies branch creation\&.
 .sp
 If no
 \fB\-b\fR
@@ -775,7 +804,19 @@ $ git log \-g \-2 HEAD
 .\}
 .SH "ARGUMENT DISAMBIGUATION"
 .sp
-When there is only one argument given and it is not \fB\-\-\fR (e\&.g\&. \fBgit\fR \fBcheckout\fR \fBabc\fR), and when the argument is both a valid \fI<tree\-ish>\fR (e\&.g\&. a branch \fBabc\fR exists) and a valid \fI<pathspec>\fR (e\&.g\&. a file or a directory whose name is "abc" exists), Git would usually ask you to disambiguate\&. Because checking out a branch is so common an operation, however, \fBgit\fR \fBcheckout\fR \fBabc\fR takes "abc" as a \fI<tree\-ish>\fR in such a situation\&. Use \fBgit\fR \fBcheckout\fR \fB\-\-\fR \fI<pathspec>\fR if you want to checkout these paths out of the index\&.
+When you run \fBgit\fR \fBcheckout\fR \fI<something>\fR, Git tries to guess whether \fI<something>\fR is intended to be a branch, a commit, or a set of file(s), and then either switches to that branch or commit, or restores the specified files\&.
+.sp
+If there\(cqs any ambiguity, Git will treat \fI<something>\fR as a branch or commit, but you can use the double dash \fB\-\-\fR to force Git to treat the parameter as a list of files and/or directories, like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git checkout \-\- file\&.txt
+.fi
+.if n \{\
+.RE
+.\}
 .SH "EXAMPLES"
 .SS "1\&. Paths"
 .sp
