@@ -2,12 +2,12 @@
 .\"     Title: git-refs
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-09-29
+.\"      Date: 2025-10-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.372.g821f583da6
+.\"    Source: Git 2.51.0.414.g5099f64a82
 .\"  Language: English
 .\"
-.TH "GIT\-REFS" "1" "2025-09-29" "Git 2\&.51\&.0\&.372\&.g821f58" "Git Manual"
+.TH "GIT\-REFS" "1" "2025-10-02" "Git 2\&.51\&.0\&.414\&.g5099f6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,6 +42,7 @@ git-refs \- Low\-level access to refs
 		   [(\fB\-\-exclude=\fR\fI<pattern>\fR)\&...\:] [\fB\-\-start\-after=\fR\fI<marker>\fR]
 		   [ \fB\-\-stdin\fR | (\fI<pattern>\fR\fB\&.\&.\&.\fR)]
 \fBgit\fR \fBrefs\fR \fBexists\fR \fI<ref>\fR
+\fBgit\fR \fBrefs\fR \fBoptimize\fR [\fB\-\-all\fR] [\fB\-\-no\-prune\fR] [\fB\-\-auto\fR] [\fB\-\-include\fR \fI<pattern>\fR] [\fB\-\-exclude\fR \fI<pattern>\fR]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -68,6 +69,13 @@ and offers identical functionality\&.
 exists
 .RS 4
 Check whether the given reference exists\&. Returns an exit code of 0 if it does, 2 if it is missing, and 1 in case looking up the reference failed with an error other than the reference being missing\&. This does not verify whether the reference resolves to an actual object\&.
+.RE
+.PP
+optimize
+.RS 4
+Optimizes references to improve repository performance and reduce disk usage\&. This subcommand is an alias for
+\fBgit-pack-refs\fR(1)
+and offers identical functionality\&.
 .RE
 .SH "OPTIONS"
 .sp
@@ -280,6 +288,90 @@ or
 options, or the
 \fI<pattern>\fR
 argument(s) to limit the refs\&.
+.RE
+.sp
+The following options are specific to \fIgit refs optimize\fR:
+.PP
+\-\-all
+.RS 4
+The command by default packs all tags and refs that are already packed, and leaves other refs alone\&. This is because branches are expected to be actively developed and packing their tips does not help performance\&. This option causes all refs to be packed as well, with the exception of hidden refs, broken refs, and symbolic refs\&. Useful for a repository with many branches of historical interests\&.
+.RE
+.PP
+\-\-no\-prune
+.RS 4
+The command usually removes loose refs under
+\fB$GIT_DIR/refs\fR
+hierarchy after packing them\&. This option tells it not to\&.
+.RE
+.PP
+\-\-auto
+.RS 4
+Pack refs as needed depending on the current state of the ref database\&. The behavior depends on the ref format used by the repository and may change in the future\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"files": Loose references are packed into the
+\fBpacked\-refs\fR
+file based on the ratio of loose references to the size of the
+\fBpacked\-refs\fR
+file\&. The bigger the
+\fBpacked\-refs\fR
+file, the more loose references need to exist before we repack\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"reftable": Tables are compacted such that they form a geometric sequence\&. For two tables N and N+1, where N+1 is newer, this maintains the property that N is at least twice as big as N+1\&. Only tables that violate this property are compacted\&.
+.RE
+.RE
+.PP
+\-\-include <pattern>
+.RS 4
+Pack refs based on a
+\fBglob\fR(\fB7\fR) pattern\&. Repetitions of this option accumulate inclusion patterns\&. If a ref is both included in
+\fB\-\-include\fR
+and
+\fB\-\-exclude\fR,
+\fB\-\-exclude\fR
+takes precedence\&. Using
+\fB\-\-include\fR
+will preclude all tags from being included by default\&. Symbolic refs and broken refs will never be packed\&. When used with
+\fB\-\-all\fR, it will be a noop\&. Use
+\fB\-\-no\-include\fR
+to clear and reset the list of patterns\&.
+.RE
+.PP
+\-\-exclude <pattern>
+.RS 4
+Do not pack refs matching the given
+\fBglob\fR(\fB7\fR) pattern\&. Repetitions of this option accumulate exclusion patterns\&. Use
+\fB\-\-no\-exclude\fR
+to clear and reset the list of patterns\&. If a ref is already packed, including it with
+\fB\-\-exclude\fR
+will not unpack it\&.
+.sp
+When used with
+\fB\-\-all\fR, pack only loose refs which do not match any of the provided
+\fB\-\-exclude\fR
+patterns\&.
+.sp
+When used with
+\fB\-\-include\fR, refs provided to
+\fB\-\-include\fR, minus refs that are provided to
+\fB\-\-exclude\fR
+will be packed\&.
 .RE
 .SH "KNOWN LIMITATIONS"
 .sp
