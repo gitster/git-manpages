@@ -2,12 +2,12 @@
 .\"     Title: git-push
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-05
+.\"      Date: 2025-10-07
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.433.g45547b60ac
+.\"    Source: Git 2.51.0.463.g79cf913ea9
 .\"  Language: English
 .\"
-.TH "GIT\-PUSH" "1" "2025-10-05" "Git 2\&.51\&.0\&.433\&.g45547b" "Git Manual"
+.TH "GIT\-PUSH" "1" "2025-10-07" "Git 2\&.51\&.0\&.463\&.g79cf91" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -63,53 +63,53 @@ below)\&.
 .PP
 <refspec>\&...\:
 .RS 4
-Specify what destination ref to update with what source object\&. The format of a <refspec> parameter is an optional plus
-\fB+\fR, followed by the source object <src>, followed by a colon
-\fB:\fR, followed by the destination ref <dst>\&.
+Specify what destination ref to update with what source object\&.
 .sp
-The <src> is often the name of the branch you would want to push, but it can be any arbitrary "SHA\-1 expression", such as
-\fBmaster~4\fR
-or
-\fBHEAD\fR
-(see
+The format for a refspec is [+]<src>[:<dst>], for example
+\fBmain\fR,
+\fBmain:other\fR, or
+\fBHEAD^:refs/heads/main\fR\&.
+.sp
+The
+\fI<src>\fR
+is often the name of the local branch to push, but it can be any arbitrary "SHA\-1 expression" (see
 \fBgitrevisions\fR(7))\&.
 .sp
-The <dst> tells which ref on the remote side is updated with this push\&. Arbitrary expressions cannot be used here, an actual ref must be named\&. If
-\fBgit\fR
-\fBpush\fR
-[\fI<repository>\fR] without any
-\fI<refspec>\fR
-argument is set to update some ref at the destination with
+The
+\fI<dst>\fR
+determines what ref to update on the remote side\&. It must be the name of a branch, tag, or other ref, not an arbitrary expression\&.
+.sp
+The
+\fB+\fR
+is optional and does the same thing as
+\fB\-\-force\fR\&.
+.sp
+You can write a refspec using the fully expanded form (for example
+\fBrefs/heads/main:refs/heads/main\fR) which specifies the exact source and destination, or with a shorter form (for example
+\fBmain\fR
+or
+\fBmain:other\fR)\&. Here are the rules for how refspecs are expanded, as well as various other special refspec forms:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 \fI<src>\fR
-with
-\fBremote\&.\fR\fI<repository>\fR\fB\&.push\fR
-configuration variable,
-\fB:\fR\fI<dst>\fR
-part can be omitted\(em\:such a push will update a ref that
-\fI<src>\fR
-normally updates without any
-\fI<refspec>\fR
-on the command line\&. Otherwise, missing
+without a
 \fB:\fR\fI<dst>\fR
 means to update the same ref as the
-\fI<src>\fR\&.
-.sp
-If <dst> doesn\(cqt start with
-\fBrefs/\fR
-(e\&.g\&.
-\fBrefs/heads/master\fR) we will try to infer where in
-\fBrefs/*\fR
-on the destination <repository> it belongs based on the type of <src> being pushed and whether <dst> is ambiguous\&.
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-If <dst> unambiguously refers to a ref on the <repository> remote, then push to that ref\&.
+\fI<src>\fR, unless the
+\fBremote\&.\fR\fI<repository>\fR\fB\&.push\fR
+configuration specifies a different <dst>\&. For example, if
+\fBmain\fR
+is a branch, then the refspec
+\fBmain\fR
+expands to
+\fBmain:refs/heads/main\fR\&.
 .RE
 .sp
 .RS 4
@@ -120,7 +120,14 @@ If <dst> unambiguously refers to a ref on the <repository> remote, then push to 
 .sp -1
 .IP \(bu 2.3
 .\}
-If <src> resolves to a ref starting with refs/heads/ or refs/tags/, then prepend that to <dst>\&.
+If
+\fI<dst>\fR
+unambiguously refers to a ref on the <repository> remote, then expand it to that ref\&. For example, if
+\fBv1\&.0\fR
+is a tag on the remote, then
+\fBHEAD:v1\&.0\fR
+expands to
+\fBHEAD:refs/tags/v1\&.0\fR\&.
 .RE
 .sp
 .RS 4
@@ -131,78 +138,134 @@ If <src> resolves to a ref starting with refs/heads/ or refs/tags/, then prepend
 .sp -1
 .IP \(bu 2.3
 .\}
-Other ambiguity resolutions might be added in the future, but for now any other cases will error out with an error indicating what we tried, and depending on the
-\fBadvice\&.pushUnqualifiedRefname\fR
-configuration (see
-\fBgit-config\fR(1)) suggest what refs/ namespace you may have wanted to push to\&.
+If
+\fI<src>\fR
+resolves to a ref starting with
+\fBrefs/heads/\fR
+or
+\fBrefs/tags/\fR, then prepend that to <dst>\&. For example, if
+\fBmain\fR
+is a branch, then
+\fBmain:other\fR
+expands to
+\fBmain:refs/heads/other\fR
 .RE
 .sp
-The object referenced by <src> is used to update the <dst> reference on the remote side\&. Whether this is allowed depends on where in
-\fBrefs/*\fR
-the <dst> reference lives as described in detail below, in those sections "update" means any modifications except deletes, which as noted after the next few sections are treated differently\&.
-.sp
-The
-\fBrefs/heads/*\fR
-namespace will only accept commit objects, and updates only if they can be fast\-forwarded\&.
-.sp
-The
-\fBrefs/tags/*\fR
-namespace will accept any kind of object (as commits, trees and blobs can be tagged), and any updates to them will be rejected\&.
-.sp
-It\(cqs possible to push any type of object to any namespace outside of
-\fBrefs/\fR{tags,heads}/*\&. In the case of tags and commits, these will be treated as if they were the commits inside
-\fBrefs/heads/*\fR
-for the purposes of whether the update is allowed\&.
-.sp
-I\&.e\&. a fast\-forward of commits and tags outside
-\fBrefs/\fR{tags,heads}/* is allowed, even in cases where what\(cqs being fast\-forwarded is not a commit, but a tag object which happens to point to a new commit which is a fast\-forward of the commit the last tag (or commit) it\(cqs replacing\&. Replacing a tag with an entirely different tag is also allowed, if it points to the same commit, as well as pushing a peeled tag, i\&.e\&. pushing the commit that existing tag object points to, or a new tag object which an existing commit points to\&.
-.sp
-Tree and blob objects outside of
-\fBrefs/\fR{tags,heads}/* will be treated the same way as if they were inside
-\fBrefs/tags/*\fR, any update of them will be rejected\&.
-.sp
-All of the rules described above about what\(cqs not allowed as an update can be overridden by adding an the optional leading
-\fB+\fR
-to a refspec (or using
-\fB\-\-force\fR
-command line option)\&. The only exception to this is that no amount of forcing will make the
-\fBrefs/heads/*\fR
-namespace accept a non\-commit object\&. Hooks and configuration can also override or amend these rules, see e\&.g\&.
-\fBreceive\&.denyNonFastForwards\fR
-in
-\fBgit-config\fR(1)
-and
-\fBpre\-receive\fR
-and
-\fBupdate\fR
-in
-\fBgithooks\fR(5)\&.
-.sp
-Pushing an empty <src> allows you to delete the <dst> ref from the remote repository\&. Deletions are always accepted without a leading
-\fB+\fR
-in the refspec (or
-\fB\-\-force\fR), except when forbidden by configuration or hooks\&. See
-\fBreceive\&.denyDeletes\fR
-in
-\fBgit-config\fR(1)
-and
-\fBpre\-receive\fR
-and
-\fBupdate\fR
-in
-\fBgithooks\fR(5)\&.
-.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 The special refspec
 \fB:\fR
 (or
 \fB+:\fR
 to allow non\-fast\-forward updates) directs Git to push "matching" branches: for every branch that exists on the local side, the remote side is updated if a branch of the same name already exists on the remote side\&.
+.RE
 .sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+<src> may contain a * to indicate a simple pattern match\&. This works like a glob that matches any ref matching the pattern\&. There must be only one * in both the
+\fI<src>\fR
+and
+\fI<dst>\fR\&. It will map refs to the destination by replacing the * with the contents matched from the source\&. For example,
+\fBrefs/heads/*:refs/heads/*\fR
+will push all branches\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A refspec starting with
+\fB^\fR
+is a negative refspec\&. This specifies refs to exclude\&. A ref will be considered to match if it matches at least one positive refspec, and does not match any negative refspec\&. Negative refspecs can be pattern refspecs\&. They must only contain a
+\fI<src>\fR\&. Fully spelled out hex object names are also not supported\&. For example,
+\fBgit\fR
+\fBpush\fR
+\fBorigin\fR
+\*(Aqrefs/heads/*\*(Aq \*(Aq^refs/heads/dev\-*\*(Aq will push all branches except for those starting with
+\fBdev\-\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If
+\fI<src>\fR
+is empty, it deletes the
+\fI<dst>\fR
+ref from the remote repository\&. For example,
+\fBgit\fR
+\fBpush\fR
+\fBorigin\fR
+\fB:dev\fR
+will delete the
+\fBdev\fR
+branch\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
 \fBtag\fR
 \fI<tag>\fR
-means the same as
-\fBrefs/tags/\fR\fI<tag>\fR\fB:refs/tags/\fR\fI<tag>\fR\&.
+expands to
+\fBrefs/tags/\fR\fI<tag>\fR\fB:refs/tags/\fR\fI<tag>\fR\&. This is technically a special syntax for
+\fBgit\fR
+\fBpush\fR
+and not a refspec, since in
+\fBgit\fR
+\fBpush\fR
+\fBorigin\fR
+\fBtag\fR
+\fBv1\&.0\fR
+the arguments
+\fBtag\fR
+and
+\fBv1\&.0\fR
+are separate\&.
 .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If the refspec can\(cqt be expanded unambiguously, error out with an error indicating what was tried, and depending on the
+\fBadvice\&.pushUnqualifiedRefname\fR
+configuration (see
+\fBgit-config\fR(1)) suggest what refs/ namespace you may have wanted to push to\&.
+.RE
+.RE
+.sp
+Not all updates are allowed: see PUSH RULES below for the details\&.
 .PP
 \-\-all, \-\-branches
 .RS 4
@@ -431,11 +494,12 @@ as an ancillary option along with
 .PP
 \-f, \-\-force
 .RS 4
-Usually, the command refuses to update a remote ref that is not an ancestor of the local ref used to overwrite it\&. Also, when
-\fB\-\-force\-with\-lease\fR
-option is used, the command refuses to update a remote ref whose current value does not match what is expected\&.
+Usually,
+\fBgit\fR
+\fBpush\fR
+will refuse to update a branch that is not an ancestor of the commit being pushed\&.
 .sp
-This flag disables these checks, and can cause the remote repository to lose commits; use it with care\&.
+This flag disables that check, the other safety checks in PUSH RULES below, and the checks in \-\-force\-with\-lease\&. It can cause the remote repository to lose commits; use it with care\&.
 .sp
 Note that
 \fB\-\-force\fR
@@ -988,6 +1052,74 @@ reason
 .RS 4
 A human\-readable explanation\&. In the case of successfully pushed refs, no explanation is needed\&. For a failed ref, the reason for failure is described\&.
 .RE
+.SH "PUSH RULES"
+.sp
+As a safety feature, the \fBgit\fR \fBpush\fR command only allows certain kinds of updates to prevent you from accidentally losing data on the remote\&.
+.sp
+Because branches and tags are intended to be used differently, the safety rules for pushing to a branch are different from the rules for pushing to a tag\&. In the following rules "update" means any modifications except deletions and creations\&. Deletions and creations are always allowed, except when forbidden by configuration or hooks\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+If the push destination is a
+\fBbranch\fR
+(\fBrefs/heads/*\fR): only fast\-forward updates are allowed, which means the destination must be an ancestor of the source commit\&. The source must be a commit\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+If the push destination is a
+\fBtag\fR
+(\fBrefs/tags/*\fR): all updates will be rejected\&. The source can be any object\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+If the push destination is not a branch or tag:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If the source is a tree or blob object, any updates will be rejected
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If the source is a tag or commit object, any fast\-forward update is allowed, even in cases where what\(cqs being fast\-forwarded is not a commit, but a tag object which happens to point to a new commit which is a fast\-forward of the commit the last tag (or commit) it\(cqs replacing\&. Replacing a tag with an entirely different tag is also allowed, if it points to the same commit, as well as pushing a peeled tag, i\&.e\&. pushing the commit that existing tag object points to, or a new tag object which an existing commit points to\&.
+.RE
+.RE
+.sp
+You can override these rules by passing \fB\-\-force\fR or by adding the optional leading \fB+\fR to a refspec\&. The only exceptions are that no amount of forcing will make a branch accept a non\-commit object, and forcing won\(cqt make the remote repository accept a push that it\(cqs configured to deny\&.
+.sp
+Hooks and configuration can also override or amend these rules, see e\&.g\&. \fBreceive\&.denyNonFastForwards\fR and \fBreceive\&.denyDeletes\fR in \fBgit-config\fR(1) and \fBpre\-receive\fR and \fBupdate\fR in \fBgithooks\fR(5)\&.
 .SH "NOTE ABOUT FAST\-FORWARDS"
 .sp
 When an update changes a branch (or more in general, a ref) that used to point at commit A to point at another commit B, it is called a fast\-forward update if and only if B is a descendant of A\&.
