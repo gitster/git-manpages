@@ -2,12 +2,12 @@
 .\"     Title: git-fetch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-13
+.\"      Date: 2025-10-14
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.511.gac7d021f06
+.\"    Source: Git 2.51.0.573.gb660e2dcb9
 .\"  Language: English
 .\"
-.TH "GIT\-FETCH" "1" "2025-10-13" "Git 2\&.51\&.0\&.511\&.gac7d02" "Git Manual"
+.TH "GIT\-FETCH" "1" "2025-10-14" "Git 2\&.51\&.0\&.573\&.gb660e2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -853,6 +853,136 @@ git push uses:
 .if n \{\
 .RE
 .\}
+.SH "UPSTREAM BRANCHES"
+.sp
+Branches in Git can optionally have an upstream remote branch\&. Git defaults to using the upstream branch for remote operations, for example:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+It\(cqs the default for
+\fBgit\fR
+\fBpull\fR
+or
+\fBgit\fR
+\fBfetch\fR
+with no arguments\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+It\(cqs the default for
+\fBgit\fR
+\fBpush\fR
+with no arguments, with some exceptions\&. For example, you can use the
+\fBbranch\&.\fR\fI<name>\fR\fB\&.pushRemote\fR
+option to push to a different remote than you pull from, and by default with
+\fBpush\&.default=simple\fR
+the upstream branch you configure must have the same name\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Various commands, including
+\fBgit\fR
+\fBcheckout\fR
+and
+\fBgit\fR
+\fBstatus\fR, will show you how many commits have been added to your current branch and the upstream since you forked from it, for example "Your branch and
+\fIorigin/main\fR
+have diverged, and have 2 and 3 different commits each respectively"\&.
+.RE
+.sp
+The upstream is stored in \&.\fBgit/config\fR, in the "remote" and "merge" fields\&. For example, if \fBmain\fR\*(Aqs upstream is \fBorigin/main\fR:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[branch "main"]
+   remote = origin
+   merge = refs/heads/main
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+You can set an upstream branch explicitly with \fBgit\fR \fBpush\fR \fB\-\-set\-upstream\fR \fI<remote>\fR \fI<branch>\fR but Git will often automatically set the upstream for you, for example:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+When you clone a repository, Git will automatically set the upstream for the default branch\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+If you have the
+\fBpush\&.autoSetupRemote\fR
+configuration option set,
+\fBgit\fR
+\fBpush\fR
+will automatically set the upstream the first time you push a branch\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Checking out a remote\-tracking branch with
+\fBgit\fR
+\fBcheckout\fR
+\fI<branch>\fR
+will automatically create a local branch with that name and set the upstream to the remote branch\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+Upstream branches are sometimes referred to as "tracking information", as in "set the branch\(cqs tracking information"\&.
+.sp .5v
+.RE
 .SH "CONFIGURED REMOTE\-TRACKING BRANCHES"
 .sp
 You often interact with the same remote repository by regularly and repeatedly fetching from it\&. In order to keep track of the progress of such a remote repository, \fBgit\fR \fBfetch\fR allows you to configure \fBremote\&.\fR\fI<repository>\fR\fB\&.fetch\fR configuration variables\&.

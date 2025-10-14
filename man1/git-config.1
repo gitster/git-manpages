@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-13
+.\"      Date: 2025-10-14
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.0.511.gac7d021f06
+.\"    Source: Git 2.51.0.573.gb660e2dcb9
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2025-10-13" "Git 2\&.51\&.0\&.511\&.gac7d02" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2025-10-14" "Git 2\&.51\&.0\&.573\&.gb660e2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1427,6 +1427,9 @@ If a path starts with
 refers to the directory in which the Git executable itself lives\&. If Git was compiled without runtime prefix support, the compiled\-in prefix will be substituted instead\&. In the unlikely event that a literal path needs to be specified that should
 \fInot\fR
 be expanded, it needs to be prefixed by \&.\fB/\fR, like so: \&.\fB/%\fR(\fBprefix\fR)\fB/bin\fR\&.
+.sp
+If prefixed with
+\fB:\fR(\fBoptional\fR), the configuration variable is treated as if it does not exist, if the named path does not exist\&.
 .RE
 .SS "Variables"
 .sp
@@ -10574,7 +10577,7 @@ Except for the
 variant, command\-line parameters are likely to change as git gains new features\&.
 .RE
 .PP
-stash\&.index
+\fBstash\&.index\fR
 .RS 4
 If this is set to true,
 \fBgit\fR
@@ -10590,39 +10593,33 @@ was supplied\&. Defaults to false\&. See the descriptions in
 \fBgit-stash\fR(1)\&.
 .RE
 .PP
-stash\&.showIncludeUntracked
+\fBstash\&.showIncludeUntracked\fR
 .RS 4
 If this is set to true, the
 \fBgit\fR
 \fBstash\fR
 \fBshow\fR
-command will show the untracked files of a stash entry\&. Defaults to false\&. See the description of the
-\fIshow\fR
-command in
+command will show the untracked files of a stash entry\&. Defaults to false\&. See the description of the \*(Aqshow\*(Aq command in
 \fBgit-stash\fR(1)\&.
 .RE
 .PP
-stash\&.showPatch
+\fBstash\&.showPatch\fR
 .RS 4
 If this is set to true, the
 \fBgit\fR
 \fBstash\fR
 \fBshow\fR
-command without an option will show the stash entry in patch form\&. Defaults to false\&. See the description of the
-\fIshow\fR
-command in
+command without an option will show the stash entry in patch form\&. Defaults to false\&. See the description of the \*(Aqshow\*(Aq command in
 \fBgit-stash\fR(1)\&.
 .RE
 .PP
-stash\&.showStat
+\fBstash\&.showStat\fR
 .RS 4
 If this is set to true, the
 \fBgit\fR
 \fBstash\fR
 \fBshow\fR
-command without an option will show a diffstat of the stash entry\&. Defaults to true\&. See the description of the
-\fIshow\fR
-command in
+command without an option will show a diffstat of the stash entry\&. Defaults to true\&. See the description of the \*(Aqshow\*(Aq command in
 \fBgit-stash\fR(1)\&.
 .RE
 .PP
@@ -10957,22 +10954,29 @@ or
 \fBinfo\fR, and if there is an error with the computed alternate, the clone proceeds as if no alternate was specified\&.
 .RE
 .PP
-tag\&.forceSignAnnotated
+\fBtag\&.forceSignAnnotated\fR
 .RS 4
 A boolean to specify whether annotated tags created should be GPG signed\&. If
 \fB\-\-annotate\fR
 is specified on the command line, it takes precedence over this option\&.
 .RE
 .PP
-tag\&.sort
+\fBtag\&.sort\fR
 .RS 4
 This variable controls the sort ordering of tags when displayed by
-\fBgit-tag\fR(1)\&. Without the "\-\-sort=<value>" option provided, the value of this variable will be used as the default\&.
+\fBgit-tag\fR(1)\&. Without the
+\fB\-\-sort=\fR\fI<value>\fR
+option provided, the value of this variable will be used as the default\&.
 .RE
 .PP
-tag\&.gpgSign
+\fBtag\&.gpgSign\fR
 .RS 4
-A boolean to specify whether all tags should be GPG signed\&. Use of this option when running in an automated script can result in a large number of tags being signed\&. It is therefore convenient to use an agent to avoid typing your gpg passphrase several times\&. Note that this option doesn\(cqt affect tag signing behavior enabled by "\-u <keyid>" or "\-\-local\-user=<keyid>" options\&.
+A boolean to specify whether all tags should be GPG signed\&. Use of this option when running in an automated script can result in a large number of tags being signed\&. It is therefore convenient to use an agent to avoid typing your GPG passphrase several times\&. Note that this option doesn\(cqt affect tag signing behavior enabled by
+\fB\-u\fR
+\fI<keyid>\fR
+or
+\fB\-\-local\-user=\fR\fI<keyid>\fR
+options\&.
 .RE
 .PP
 tar\&.umask
@@ -11781,7 +11785,7 @@ and
 may use it\&.
 .RE
 .PP
-worktree\&.guessRemote
+\fBworktree\&.guessRemote\fR
 .RS 4
 If no branch is specified and neither
 \fB\-b\fR
@@ -11798,16 +11802,17 @@ defaults to creating a new branch from HEAD\&. If
 is set to true,
 \fBworktree\fR
 \fBadd\fR
-tries to find a remote\-tracking branch whose name uniquely matches the new branch name\&. If such a branch exists, it is checked out and set as "upstream" for the new branch\&. If no such match can be found, it falls back to creating a new branch from the current HEAD\&.
+tries to find a remote\-tracking branch whose name uniquely matches the new branch name\&. If such a branch exists, it is checked out and set as "upstream" for the new branch\&. If no such match can be found, it falls back to creating a new branch from the current
+\fBHEAD\fR\&.
 .RE
 .PP
-worktree\&.useRelativePaths
+\fBworktree\&.useRelativePaths\fR
 .RS 4
-Link worktrees using relative paths (when "true") or absolute paths (when "false")\&. This is particularly useful for setups where the repository and worktrees may be moved between different locations or environments\&. Defaults to "false"\&.
+Link worktrees using relative paths (when "\fBtrue\fR") or absolute paths (when "\fBfalse\fR")\&. This is particularly useful for setups where the repository and worktrees may be moved between different locations or environments\&. Defaults to "\fBfalse\fR"\&.
 .sp
 Note that setting
 \fBworktree\&.useRelativePaths\fR
-to "true" implies enabling the
+to "\fBtrue\fR" implies enabling the
 \fBextensions\&.relativeWorktrees\fR
 config (see
 \fBgit-config\fR(1)), thus making it incompatible with older versions of Git\&.
