@@ -2,12 +2,12 @@
 .\"     Title: gitformat-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-20
+.\"      Date: 2025-10-22
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.1.500.g133d151831
+.\"    Source: Git 2.51.1.523.gc54a18ef67
 .\"  Language: English
 .\"
-.TH "GITFORMAT\-PACK" "5" "2025-10-20" "Git 2\&.51\&.1\&.500\&.g133d15" "Git Manual"
+.TH "GITFORMAT\-PACK" "5" "2025-10-22" "Git 2\&.51\&.1\&.523\&.gc54a18" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -45,6 +45,8 @@ The pack format is also used over\-the\-wire, see e\&.g\&. \fBgitprotocol-v2\fR(
 .SH "CHECKSUMS AND OBJECT IDS"
 .sp
 In a repository using the traditional SHA\-1, pack checksums, index checksums, and object IDs (object names) mentioned below are all computed using SHA\-1\&. Similarly, in SHA\-256 repositories, these values are computed using SHA\-256\&.
+.sp
+CRC32 checksums are always computed over the entire packed object, including the header (n\-byte type and length); the base object name or offset, if any; and the entire compressed object\&. The CRC32 algorithm used is that of zlib\&.
 .SH "PACK\-*\&.PACK FILES HAVE THE FOLLOWING FORMAT:"
 .sp
 .RS 4
@@ -232,11 +234,18 @@ OBJ_REF_DELTA (7)
 .RE
 .sp
 Type 5 is reserved for future expansion\&. Type 0 is invalid\&.
+.SS "Object encoding"
+.sp
+Unlike loose objects, packed objects do not have a prefix containing the type, size, and a NUL byte\&. These are not necessary because they can be determined by the n\-byte type and length that prefixes the data and so they are omitted from the compressed and deltified data\&.
+.sp
+The computation of the object ID still uses this prefix by reconstructing it from the type and length as needed\&.
 .SS "Size encoding"
 .sp
 This document uses the following "size encoding" of non\-negative integers: From each byte, the seven least significant bits are used to form the resulting integer\&. As long as the most significant bit is 1, this process continues; the byte with MSB 0 provides the last seven bits\&. The seven\-bit chunks are concatenated\&. Later values are more significant\&.
 .sp
 This size encoding should not be confused with the "offset encoding", which is also used in this document\&.
+.sp
+When encoding the size of an undeltified object in a pack, the size is that of the uncompressed raw object\&. For deltified objects, it is the size of the uncompressed delta\&. The base object name or offset is not included in the size computation\&.
 .SS "Deltified representation"
 .sp
 Conceptually there are only four object types: commit, tree, tag and blob\&. However to save space, an object could be stored as a "delta" of another "base" object\&. These representations are assigned new types ofs\-delta and ref\-delta, which is only valid in a pack file\&.

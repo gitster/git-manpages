@@ -1,0 +1,55 @@
+'\" t
+.\"     Title: gitformat-loose
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2025-10-22
+.\"    Manual: Git Manual
+.\"    Source: Git 2.51.1.523.gc54a18ef67
+.\"  Language: English
+.\"
+.TH "GITFORMAT\-LOOSE" "5" "2025-10-22" "Git 2\&.51\&.1\&.523\&.gc54a18" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+gitformat-loose \- Git loose object format
+.SH "SYNOPSIS"
+.sp
+.nf
+$GIT_DIR/objects/[0\-9a\-f][0\-9a\-f]/*
+.fi
+.SH "DESCRIPTION"
+.sp
+Loose objects are how Git stores individual objects, where every object is written as a separate file\&.
+.sp
+Over the lifetime of a repository, objects are usually written as loose objects initially\&. Eventually, these loose objects will be compacted into packfiles via repository maintenance to improve disk space usage and speed up the lookup of these objects\&.
+.SH "LOOSE OBJECTS"
+.sp
+Each loose object contains a prefix, followed immediately by the data of the object\&. The prefix contains \fI<type>\fR \fI<size>\fR\fB\e0\fR\&. \fI<type>\fR is one of \fBblob\fR, \fBtree\fR, \fBcommit\fR, or \fBtag\fR and \fBsize\fR is the size of the data (without the prefix) as a decimal integer expressed in ASCII\&.
+.sp
+The entire contents, prefix and data concatenated, is then compressed with zlib and the compressed data is stored in the file\&. The object ID of the object is the SHA\-1 or SHA\-256 (as appropriate) hash of the uncompressed data\&.
+.sp
+The file for the loose object is stored under the \fBobjects\fR directory, with the first two hex characters of the object ID being the directory and the remaining characters being the file name\&. This is done to shard the data and avoid too many files being in one directory, since some file systems perform poorly with many items in a directory\&.
+.sp
+As an example, the empty tree contains the data (when uncompressed) \fBtree\fR \fB0\e0\fR and, in a SHA\-256 repository, would have the object ID \fB6ef19b41225c5369f1c104d45d8d85efa9b057b53b14b4b9b939dd74decc5321\fR and would be stored under \fB$GIT_DIR/objects/6e/f19b41225c5369f1c104d45d8d85efa9b057b53b14b4b9b939dd74decc5321\fR\&.
+.sp
+Similarly, a blob containing the contents \fBabc\fR would have the uncompressed data of \fBblob\fR \fB3\e0abc\fR\&.
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite

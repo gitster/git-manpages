@@ -2,12 +2,12 @@
 .\"     Title: git-pull
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-20
+.\"      Date: 2025-10-22
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.1.500.g133d151831
+.\"    Source: Git 2.51.1.523.gc54a18ef67
 .\"  Language: English
 .\"
-.TH "GIT\-PULL" "1" "2025-10-20" "Git 2\&.51\&.1\&.500\&.g133d15" "Git Manual"
+.TH "GIT\-PULL" "1" "2025-10-22" "Git 2\&.51\&.1\&.523\&.gc54a18" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,50 +36,112 @@ git-pull \- Fetch from and integrate with another repository or a local branch
 .fi
 .SH "DESCRIPTION"
 .sp
-Incorporates changes from a remote repository into the current branch\&. If the current branch is behind the remote, then by default it will fast\-forward the current branch to match the remote\&. If the current branch and the remote have diverged, the user needs to specify how to reconcile the divergent branches with \fB\-\-rebase\fR or \fB\-\-no\-rebase\fR (or the corresponding configuration option in \fBpull\&.rebase\fR)\&.
+Integrate changes from a remote repository into the current branch\&.
 .sp
-More precisely, \fBgit\fR \fBpull\fR runs \fBgit\fR \fBfetch\fR with the given parameters and then depending on configuration options or command line flags, will call either \fBgit\fR \fBrebase\fR or \fBgit\fR \fBmerge\fR to reconcile diverging branches\&.
+First, \fBgit\fR \fBpull\fR runs \fBgit\fR \fBfetch\fR with the same arguments (excluding merge options) to fetch remote branch(es)\&. Then it decides which remote branch to integrate: if you run \fBgit\fR \fBpull\fR with no arguments this defaults to the upstream for the current branch\&. Then it integrates that branch into the current branch\&.
 .sp
-<repository> should be the name of a remote repository as passed to \fBgit-fetch\fR(1)\&. <refspec> can name an arbitrary remote ref (for example, the name of a tag) or even a collection of refs with corresponding remote\-tracking branches (e\&.g\&., refs/heads/*:refs/remotes/origin/*), but usually it is the name of a branch in the remote repository\&.
+There are 4 main options for integrating the remote branch:
 .sp
-Default values for <repository> and <branch> are read from the "remote" and "merge" configuration for the current branch as set by \fBgit-branch\fR(1) \fB\-\-track\fR\&.
-.sp
-Assume the following history exists and the current branch is "\fBmaster\fR":
-.sp
-.if n \{\
 .RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
 .\}
-.nf
-          A\-\-\-B\-\-\-C master on origin
-         /
-    D\-\-\-E\-\-\-F\-\-\-G master
-        ^
-        origin/master in your repository
-.fi
-.if n \{\
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+\fBgit\fR
+\fBpull\fR
+\fB\-\-ff\-only\fR
+will only do "fast\-forward" updates: it fails if your local branch has diverged from the remote branch\&. This is the default\&.
 .RE
-.\}
 .sp
-Then "\fBgit\fR \fBpull\fR" will fetch and replay the changes from the remote \fBmaster\fR branch since it diverged from the local \fBmaster\fR (i\&.e\&., \fBE\fR) until its current commit (\fBC\fR) on top of \fBmaster\fR and record the result in a new commit along with the names of the two parent commits and a log message from the user describing the changes\&.
-.sp
-.if n \{\
 .RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
 .\}
-.nf
-          A\-\-\-B\-\-\-C origin/master
-         /         \e
-    D\-\-\-E\-\-\-F\-\-\-G\-\-\-H master
-.fi
-.if n \{\
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+\fBgit\fR
+\fBpull\fR
+\fB\-\-rebase\fR
+runs
+\fBgit\fR
+\fBrebase\fR
 .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
 .\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+\fBgit\fR
+\fBpull\fR
+\fB\-\-no\-rebase\fR
+runs
+\fBgit\fR
+\fBmerge\fR\&.
+.RE
 .sp
-See \fBgit-merge\fR(1) for details, including how conflicts are presented and handled\&.
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+\fBgit\fR
+\fBpull\fR
+\fB\-\-squash\fR
+runs
+\fBgit\fR
+\fBmerge\fR
+\fB\-\-squash\fR
+.RE
 .sp
-In Git 1\&.7\&.0 or later, to cancel a conflicting merge, use \fBgit\fR \fBreset\fR \fB\-\-merge\fR\&. \fBWarning\fR: In older versions of Git, running \fIgit pull\fR with uncommitted changes is discouraged: while possible, it leaves you in a state that may be hard to back out of in the case of a conflict\&.
+You can also set the configuration options \fBpull\&.rebase\fR, \fBpull\&.squash\fR, or \fBpull\&.ff\fR with your preferred behaviour\&.
 .sp
-If any of the remote changes overlap with local uncommitted changes, the merge will be automatically canceled and the work tree untouched\&. It is generally best to get any local changes in working order before pulling or stash them away with \fBgit-stash\fR(1)\&.
+If there\(cqs a merge conflict during the merge or rebase that you don\(cqt want to handle, you can safely abort it with \fBgit\fR \fBmerge\fR \fB\-\-abort\fR or \fBgit\fR \fB\-\-rebase\fR \fBabort\fR\&.
 .SH "OPTIONS"
+.PP
+<repository>
+.RS 4
+The "remote" repository to pull from\&. This can be either a URL (see the section
+GIT URLS
+below) or the name of a remote (see the section
+REMOTES
+below)\&.
+.sp
+Defaults to the configured upstream for the current branch, or
+\fBorigin\fR\&. See
+UPSTREAM BRANCHES
+below for more on how to configure upstreams\&.
+.RE
+.PP
+<refspec>
+.RS 4
+Which branch or other reference(s) to fetch and integrate into the current branch, for example
+\fBmain\fR
+in
+\fBgit\fR
+\fBpull\fR
+\fBorigin\fR
+\fBmain\fR\&. Defaults to the configured upstream for the current branch\&.
+.sp
+This can be a branch, tag, or other collection of reference(s)\&. See
+<refspec> below under "Options related to fetching" for the full syntax, and
+DEFAULT BEHAVIOUR
+below for how
+\fBgit\fR
+\fBpull\fR
+uses this argument to determine which remote branch to integrate\&.
+.RE
 .PP
 \-q, \-\-quiet
 .RS 4
