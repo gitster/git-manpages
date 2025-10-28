@@ -2,12 +2,12 @@
 .\"     Title: git-sparse-checkout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-26
+.\"      Date: 2025-10-28
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.2.535.g419c72cb8a
+.\"    Source: Git 2.51.2.560.g57da342c78
 .\"  Language: English
 .\"
-.TH "GIT\-SPARSE\-CHECKOUT" "1" "2025-10-26" "Git 2\&.51\&.2\&.535\&.g419c72" "Git Manual"
+.TH "GIT\-SPARSE\-CHECKOUT" "1" "2025-10-28" "Git 2\&.51\&.2\&.560\&.g57da34" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-sparse-checkout \- Reduce your working tree to a subset of tracked files
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit sparse\-checkout\fR (init | list | set | add | reapply | disable | check\-rules) [<options>]
+\fIgit sparse\-checkout\fR (init | list | set | add | reapply | disable | check\-rules | clean) [<options>]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -133,6 +133,44 @@ and
 flags, with the same meaning as the flags from the
 \fBset\fR
 command, in order to change which sparsity mode you are using without needing to also respecify all sparsity paths\&.
+.RE
+.PP
+\fIclean\fR
+.RS 4
+Opportunistically remove files outside of the sparse\-checkout definition\&. This command requires cone mode to use recursive directory matches to determine which files should be removed\&. A file is considered for removal if it is contained within a tracked directory that is outside of the sparse\-checkout definition\&.
+.sp
+Some special cases, such as merge conflicts or modified files outside of the sparse\-checkout definition could lead to keeping files that would otherwise be removed\&. Resolve conflicts, stage modifications, and use
+\fBgit\fR
+\fBsparse\-checkout\fR
+\fBreapply\fR
+in conjunction with
+\fBgit\fR
+\fBsparse\-checkout\fR
+\fBclean\fR
+to resolve these cases\&.
+.sp
+This command can be used to be sure the sparse index works efficiently, though it does not require enabling the sparse index feature via the
+\fBindex\&.sparse=true\fR
+configuration\&.
+.sp
+To prevent accidental deletion of worktree files, the
+\fBclean\fR
+subcommand will not delete any files without the
+\fB\-f\fR
+or
+\fB\-\-force\fR
+option, unless the
+\fBclean\&.requireForce\fR
+config option is set to
+\fBfalse\fR\&.
+.sp
+The
+\fB\-\-dry\-run\fR
+option will list the directories that would be removed without deleting them\&. Running in this mode can be helpful to predict the behavior of the clean comand or to determine which kinds of files are left in the sparse directories\&.
+.sp
+The
+\fB\-\-verbose\fR
+option will list every file within the directories that are considered for removal\&. This option is helpful to determine if those files are actually important or perhaps to explain why the directory is still present despite the current sparse\-checkout\&.
 .RE
 .PP
 \fIdisable\fR

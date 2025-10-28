@@ -2,12 +2,12 @@
 .\"     Title: git-tag
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-26
+.\"      Date: 2025-10-28
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.2.535.g419c72cb8a
+.\"    Source: Git 2.51.2.560.g57da342c78
 .\"  Language: English
 .\"
-.TH "GIT\-TAG" "1" "2025-10-26" "Git 2\&.51\&.2\&.535\&.g419c72" "Git Manual"
+.TH "GIT\-TAG" "1" "2025-10-28" "Git 2\&.51\&.2\&.560\&.g57da34" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,7 +28,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-tag \- Create, list, delete or verify a tag object signed with GPG
+git-tag \- Create, list, delete or verify tags
 .SH "SYNOPSIS"
 .sp
 .nf
@@ -54,9 +54,9 @@ If \fB\-m\fR \fI<msg>\fR or \fB\-F\fR \fI<file>\fR or \fB\-\-trailer\fR \fI<toke
 .sp
 Otherwise, a tag reference that points directly at the given object (i\&.e\&., a lightweight tag) is created\&.
 .sp
-A GnuPG signed tag object will be created when \fB\-s\fR or \fB\-u\fR \fI<key\-id>\fR is used\&. When \fB\-u\fR \fI<key\-id>\fR is not used, the committer identity for the current user is used to find the GnuPG key for signing\&. The configuration variable \fBgpg\&.program\fR is used to specify custom GnuPG binary\&.
+A cryptographically signed tag object will be created when \fB\-s\fR or \fB\-u\fR \fI<key\-id>\fR is used\&. The signing backend (GPG, X\&.509, SSH, etc\&.) is controlled by the \fBgpg\&.format\fR configuration variable, defaulting to OpenPGP\&. When \fB\-u\fR \fI<key\-id>\fR is not used, the committer identity for the current user is used to find the key for signing\&. The configuration variable \fBgpg\&.program\fR is used to specify a custom signing binary\&.
 .sp
-Tag objects (created with \fB\-a\fR, \fB\-s\fR, or \fB\-u\fR) are called "annotated" tags; they contain a creation date, the tagger name and e\-mail, a tagging message, and an optional GnuPG signature\&. Whereas a "lightweight" tag is simply a name for an object (usually a commit object)\&.
+Tag objects (created with \fB\-a\fR, \fB\-s\fR, or \fB\-u\fR) are called "annotated" tags; they contain a creation date, the tagger name and e\-mail, a tagging message, and an optional cryptographic signature\&. Whereas a "lightweight" tag is simply a name for an object (usually a commit object)\&.
 .sp
 Annotated tags are meant for release while lightweight tags are meant for private or temporary object labels\&. For this reason, some git commands for naming objects (like \fBgit\fR \fBdescribe\fR) will ignore lightweight tags by default\&.
 .SH "OPTIONS"
@@ -68,9 +68,9 @@ Make an unsigned, annotated tag object
 .PP
 \fB\-s\fR, \fB\-\-sign\fR
 .RS 4
-Make a GPG\-signed tag, using the default e\-mail address\(cqs key\&. The default behavior of tag GPG\-signing is controlled by
-\fBtag\&.gpgSign\fR
-configuration variable if it exists, or disabled otherwise\&. See
+Make a cryptographically signed tag, using the default signing key\&. The signing backend used depends on the
+\fBgpg\&.format\fR
+configuration variable\&. The default key is determined by the backend\&. For GPG, it\(cqs based on the committer\(cqs email address, while for SSH it may be a specific key file or agent identity\&. See
 \fBgit-config\fR(1)\&.
 .RE
 .PP
@@ -83,7 +83,10 @@ configuration variable that is set to force each and every tag to be signed\&.
 .PP
 \fB\-u\fR \fI<key\-id>\fR, \fB\-\-local\-user=\fR\fI<key\-id>\fR
 .RS 4
-Make a GPG\-signed tag, using the given key\&.
+Make a cryptographically signed tag using the given key\&. The format of the <key\-id> and the backend used depend on the
+\fBgpg\&.format\fR
+configuration variable\&. See
+\fBgit-config\fR(1)\&.
 .RE
 .PP
 \fB\-f\fR, \fB\-\-force\fR
@@ -98,7 +101,7 @@ Delete existing tags with the given names\&.
 .PP
 \fB\-v\fR, \fB\-\-verify\fR
 .RS 4
-Verify the GPG signature of the given tag names\&.
+Verify the cryptographic signature of the given tags\&.
 .RE
 .PP
 \fB\-n\fR\fI<num>\fR
@@ -350,13 +353,19 @@ By default, \fBgit\fR \fBtag\fR in sign\-with\-default mode (\fB\-s\fR) will use
 .\}
 .nf
 [user]
-    signingKey = <gpg\-key\-id>
+    signingKey = <key\-id>
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-\fBpager\&.tag\fR is only respected when listing tags, i\&.e\&., when \fB\-l\fR is used or implied\&. The default is to use a pager\&. See \fBgit-config\fR(1)\&.
+The signing backend can be chosen via the \fBgpg\&.format\fR configuration variable, which defaults to \fBopenpgp\fR\&. See \fBgit-config\fR(1) for a list of other supported formats\&.
+.sp
+The path to the program used for each signing backend can be specified with the \fBgpg\&.\fR\fI<format>\fR\fB\&.program\fR configuration variable\&. For the \fBopenpgp\fR backend, \fBgpg\&.program\fR can be used as a synonym for \fBgpg\&.openpgp\&.program\fR\&. See \fBgit-config\fR(1) for details\&.
+.sp
+\fBpager\&.tag\fR is only respected when listing tags, i\&.e\&., when \fB\-l\fR is used or implied\&. The default is to use a pager\&.
+.sp
+See \fBgit-config\fR(1) for more details and other configuration variables\&.
 .SH "DISCUSSION"
 .SS "On Re\-tagging"
 .sp
