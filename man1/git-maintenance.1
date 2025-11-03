@@ -2,12 +2,12 @@
 .\"     Title: git-maintenance
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-10-30
+.\"      Date: 2025-11-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.51.2.636.ga99f379adf
+.\"    Source: Git 2.52.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-MAINTENANCE" "1" "2025-10-30" "Git 2\&.51\&.2\&.636\&.ga99f37" "Git Manual"
+.TH "GIT\-MAINTENANCE" "1" "2025-11-02" "Git 2\&.52\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -517,17 +517,20 @@ is used as a fallback\&. Defaults to true if both are unset, meaning that the ma
 .PP
 maintenance\&.strategy
 .RS 4
-This string config option provides a way to specify one of a few recommended schedules for background maintenance\&. This only affects which tasks are run during
+This string config option provides a way to specify one of a few recommended strategies for repository maintenance\&. This affects which tasks are run during
 \fBgit\fR
 \fBmaintenance\fR
-\fBrun\fR
-\fB\-\-schedule=X\fR
-commands, provided no
+\fBrun\fR, provided no
 \fB\-\-task=\fR\fI<task>\fR
-arguments are provided\&. Further, if a
-\fBmaintenance\&.\fR\fI<task>\fR\fB\&.schedule\fR
-config value is set, then that value is used instead of the one provided by
-\fBmaintenance\&.strategy\fR\&. The possible strategy strings are:
+arguments are provided\&. This setting impacts manual maintenance, auto\-maintenance as well as scheduled maintenance\&. The tasks that run may be different depending on the maintenance type\&.
+.sp
+The maintenance strategy can be further tweaked by setting
+\fBmaintenance\&.\fR\fI<task>\fR\fB\&.enabled\fR
+and
+\fBmaintenance\&.\fR\fI<task>\fR\fB\&.schedule\fR\&. If set, these values are used instead of the defaults provided by
+\fBmaintenance\&.strategy\fR\&.
+.sp
+The possible strategies are:
 .sp
 .RS 4
 .ie n \{\
@@ -537,7 +540,35 @@ config value is set, then that value is used instead of the one provided by
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBnone\fR: This default setting implies no tasks are run at any schedule\&.
+\fBnone\fR: This strategy implies no tasks are run at all\&. This is the default strategy for scheduled maintenance\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBgc\fR: This strategy runs the
+\fBgc\fR
+task\&. This is the default strategy for manual maintenance\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBgeometric\fR: This strategy performs geometric repacking of packfiles and keeps auxiliary data structures up\-to\-date\&. The strategy expires data in the reflog and removes worktrees that cannot be located anymore\&. When the geometric repacking strategy would decide to do an all\-into\-one repack, then the strategy generates a cruft pack for all unreachable objects\&. Objects that are already part of a cruft pack will be expired\&.
+.sp
+This repacking strategy is a full replacement for the
+\fBgc\fR
+strategy and is recommended for large repositories\&.
 .RE
 .sp
 .RS 4
@@ -560,7 +591,9 @@ and
 \fBincremental\-repack\fR
 tasks daily, and the
 \fBpack\-refs\fR
-task weekly\&.
+task weekly\&. Manual repository maintenance uses the
+\fBgc\fR
+task\&.
 .RE
 .RE
 .PP
@@ -647,6 +680,31 @@ task will not run with the
 \fB\-\-auto\fR
 option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run when the number of pack\-files not in the multi\-pack\-index is at least the value of
 \fBmaintenance\&.incremental\-repack\&.auto\fR\&. The default value is 10\&.
+.RE
+.PP
+maintenance\&.geometric\-repack\&.auto
+.RS 4
+This integer config option controls how often the
+\fBgeometric\-repack\fR
+task should be run as part of
+\fBgit\fR
+\fBmaintenance\fR
+\fBrun\fR
+\fB\-\-auto\fR\&. If zero, then the
+\fBgeometric\-repack\fR
+task will not run with the
+\fB\-\-auto\fR
+option\&. A negative value will force the task to run every time\&. Otherwise, a positive value implies the command should run either when there are packfiles that need to be merged together to retain the geometric progression, or when there are at least this many loose objects that would be written into a new packfile\&. The default value is 100\&.
+.RE
+.PP
+maintenance\&.geometric\-repack\&.splitFactor
+.RS 4
+This integer config option controls the factor used for the geometric sequence\&. See the
+\fB\-\-geometric=\fR
+option in
+\fBgit-repack\fR(1)
+for more details\&. Defaults to
+\fB2\fR\&.
 .RE
 .PP
 maintenance\&.reflog\-expire\&.auto
