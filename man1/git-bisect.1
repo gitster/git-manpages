@@ -2,12 +2,12 @@
 .\"     Title: git-bisect
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-11-04
+.\"      Date: 2025-11-05
 .\"    Manual: Git Manual
-.\"    Source: Git 2.52.0.rc0.28.g4cf919bd7b
+.\"    Source: Git 2.52.0.rc1
 .\"  Language: English
 .\"
-.TH "GIT\-BISECT" "1" "2025-11-04" "Git 2\&.52\&.0\&.rc0\&.28\&.g4" "Git Manual"
+.TH "GIT\-BISECT" "1" "2025-11-05" "Git 2\&.52\&.0\&.rc1" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,32 +32,21 @@ git-bisect \- Use binary search to find the commit that introduced a bug
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit bisect\fR <subcommand> <options>
+\fIgit bisect\fR start [\-\-term\-(bad|new)=<term\-new> \-\-term\-(good|old)=<term\-old>]
+                   [\-\-no\-checkout] [\-\-first\-parent] [<bad> [<good>\&...\:]] [\-\-] [<pathspec>\&...\:]
+\fIgit bisect\fR (bad|new|<term\-new>) [<rev>]
+\fIgit bisect\fR (good|old|<term\-old>) [<rev>\&...\:]
+\fIgit bisect\fR terms [\-\-term\-(good|old) | \-\-term\-(bad|new)]
+\fIgit bisect\fR skip [(<rev>|<range>)\&...\:]
+\fIgit bisect\fR next
+\fIgit bisect\fR reset [<commit>]
+\fIgit bisect\fR (visualize|view)
+\fIgit bisect\fR replay <logfile>
+\fIgit bisect\fR log
+\fIgit bisect\fR run <cmd> [<arg>\&...\:]
+\fIgit bisect\fR help
 .fi
 .SH "DESCRIPTION"
-.sp
-The command takes various subcommands, and different options depending on the subcommand:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-git bisect start [\-\-term\-(bad|new)=<term\-new> \-\-term\-(good|old)=<term\-old>]
-	  [\-\-no\-checkout] [\-\-first\-parent] [<bad> [<good>\&.\&.\&.]] [\-\-] [<pathspec>\&.\&.\&.]
-git bisect (bad|new|<term\-new>) [<rev>]
-git bisect (good|old|<term\-old>) [<rev>\&.\&.\&.]
-git bisect terms [\-\-term\-(good|old) | \-\-term\-(bad|new)]
-git bisect skip [(<rev>|<range>)\&.\&.\&.]
-git bisect reset [<commit>]
-git bisect (visualize|view)
-git bisect replay <logfile>
-git bisect log
-git bisect run <cmd> [<arg>\&.\&.\&.]
-git bisect help
-.fi
-.if n \{\
-.RE
-.\}
 .sp
 This command uses a binary search algorithm to find which commit in your project\(cqs history introduced a bug\&. You use it by first telling it a "bad" commit that is known to contain the bug, and a "good" commit that is known to be before the bug was introduced\&. Then \fBgit\fR \fBbisect\fR picks a commit between those two endpoints and asks you whether the selected commit is "good" or "bad"\&. It continues narrowing down the range until it finds the exact commit that introduced the change\&.
 .sp
@@ -360,6 +349,21 @@ $ git bisect skip v2\&.5 v2\&.5\&.\&.v2\&.6
 .\}
 .sp
 This tells the bisect process that the commits between \fBv2\&.5\fR and \fBv2\&.6\fR (inclusive) should be skipped\&.
+.SS "Bisect next"
+.sp
+Normally, after marking a revision as good or bad, Git automatically computes and checks out the next revision to test\&. However, if you need to explicitly request the next bisection step, you can use:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git bisect next
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+You might use this to resume the bisection process after interrupting it by checking out a different revision\&.
 .SS "Cutting down bisection by giving more parameters to bisect start"
 .sp
 You can further cut down the number of trials, if you know what part of the tree is involved in the problem you are tracking down, by specifying pathspec parameters when issuing the \fBbisect\fR \fBstart\fR command:
