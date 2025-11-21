@@ -2,12 +2,12 @@
 .\"     Title: git-maintenance
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-11-19
+.\"      Date: 2025-11-21
 .\"    Manual: Git Manual
-.\"    Source: Git 2.52.0.38.g5e6e4854e0
+.\"    Source: Git 2.52.0.51.gdebbc87557
 .\"  Language: English
 .\"
-.TH "GIT\-MAINTENANCE" "1" "2025-11-19" "Git 2\&.52\&.0\&.38\&.g5e6e485" "Git Manual"
+.TH "GIT\-MAINTENANCE" "1" "2025-11-21" "Git 2\&.52\&.0\&.51\&.gdebbc87" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -35,6 +35,7 @@ git-maintenance \- Run tasks to optimize Git repository data
 \fIgit maintenance\fR run [<options>]
 \fIgit maintenance\fR start [\-\-scheduler=<scheduler>]
 \fIgit maintenance\fR (stop|register|unregister) [<options>]
+\fIgit maintenance\fR is\-needed [<options>]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -167,6 +168,21 @@ The
 subcommand will report an error if the current repository is not already registered\&. Use the
 \fB\-\-force\fR
 option to return success even when the current repository is not registered\&.
+.RE
+.PP
+is\-needed
+.RS 4
+Check whether maintenance needs to be run without actually running it\&. Exits with a 0 status code if maintenance needs to be run, 1 otherwise\&. Ideally used with the
+\fI\-\-auto\fR
+flag\&.
+.sp
+If one or more
+\fB\-\-task\fR
+options are specified, then those tasks are checked in that order\&. Otherwise, the tasks are determined by which
+\fBmaintenance\&.\fR\fI<task>\fR\fB\&.enabled\fR
+config options are true\&. By default, only
+\fBmaintenance\&.gc\&.enabled\fR
+is true\&.
 .RE
 .SH "TASKS"
 .PP
@@ -305,7 +321,9 @@ config setting, or when the number of pack\-files exceeds the
 \fBgc\&.autoPackLimit\fR
 config setting\&. Not compatible with the
 \fB\-\-schedule\fR
-option\&.
+option\&. When combined with the
+\fBis\-needed\fR
+subcommand, check if the required thresholds are met without actually running maintenance\&.
 .RE
 .PP
 \-\-schedule
