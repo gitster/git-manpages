@@ -2,12 +2,12 @@
 .\"     Title: git-replay
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-11-21
+.\"      Date: 2025-11-24
 .\"    Manual: Git Manual
-.\"    Source: Git 2.52.0.51.gdebbc87557
+.\"    Source: Git 2.52.0.84.g6ab38b7e9c
 .\"  Language: English
 .\"
-.TH "GIT\-REPLAY" "1" "2025-11-21" "Git 2\&.52\&.0\&.51\&.gdebbc87" "Git Manual"
+.TH "GIT\-REPLAY" "1" "2025-11-24" "Git 2\&.52\&.0\&.84\&.g6ab38b7" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,11 +32,11 @@ git-replay \- EXPERIMENTAL: Replay commits on a new base, works with bare repos 
 .SH "SYNOPSIS"
 .sp
 .nf
-(EXPERIMENTAL!) \fIgit replay\fR ([\-\-contained] \-\-onto <newbase> | \-\-advance <branch>) <revision\-range>\&...\:
+(EXPERIMENTAL!) \fIgit replay\fR ([\-\-contained] \-\-onto <newbase> | \-\-advance <branch>) [\-\-ref\-action[=<mode>]] <revision\-range>\&...\:
 .fi
 .SH "DESCRIPTION"
 .sp
-Takes ranges of commits and replays them onto a new location\&. Leaves the working tree and the index untouched, and updates no references\&. The output of this command is meant to be used as input to \fBgit\fR \fBupdate\-ref\fR \fB\-\-stdin\fR, which would update the relevant branches (see the OUTPUT section below)\&.
+Takes ranges of commits and replays them onto a new location\&. Leaves the working tree and the index untouched\&. By default, updates the relevant references using an atomic transaction (all refs update or none)\&. Use \fB\-\-ref\-action=print\fR to avoid automatic ref updates and instead get update commands that can be piped to \fBgit\fR \fBupdate\-ref\fR \fB\-\-stdin\fR (see the OUTPUT section below)\&.
 .sp
 THIS COMMAND IS EXPERIMENTAL\&. THE BEHAVIOR MAY CHANGE\&.
 .SH "OPTIONS"
@@ -47,7 +47,7 @@ Starting point at which to create the new commits\&. May be any valid commit, an
 .sp
 When
 \fB\-\-onto\fR
-is specified, the update\-ref command(s) in the output will update the branch(es) in the revision range to point at the new commits, similar to the way how
+is specified, the branch(es) in the revision range will be updated to point at the new commits, similar to the way
 \fBgit\fR
 \fBrebase\fR
 \fB\-\-update\-refs\fR
@@ -58,11 +58,43 @@ updates multiple branches in the affected range\&.
 .RS 4
 Starting point at which to create the new commits; must be a branch name\&.
 .sp
-When
-\fB\-\-advance\fR
-is specified, the update\-ref command(s) in the output will update the branch passed as an argument to
-\fB\-\-advance\fR
-to point at the new commits (in other words, this mimics a cherry\-pick operation)\&.
+The history is replayed on top of the <branch> and <branch> is updated to point at the tip of the resulting history\&. This is different from
+\fB\-\-onto\fR, which uses the target only as a starting point without updating it\&.
+.RE
+.PP
+\-\-ref\-action[=<mode>]
+.RS 4
+Control how references are updated\&. The mode can be:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBupdate\fR
+(default): Update refs directly using an atomic transaction\&. All refs are updated or none are (all\-or\-nothing behavior)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBprint\fR: Output update\-ref commands for pipeline use\&. This is the traditional behavior where output can be piped to
+\fBgit\fR
+\fBupdate\-ref\fR
+\fB\-\-stdin\fR\&.
+.RE
+.sp
+The default mode can be configured via the
+\fBreplay\&.refAction\fR
+configuration variable\&.
 .RE
 .PP
 <revision\-range>
@@ -1781,7 +1813,9 @@ is specified, it is the string that will be shown instead of the default one\&.
 .RE
 .SH "OUTPUT"
 .sp
-When there are no conflicts, the output of this command is usable as input to \fBgit\fR \fBupdate\-ref\fR \fB\-\-stdin\fR\&. It is of the form:
+By default, or with \fB\-\-ref\-action=update\fR, this command produces no output on success, as refs are updated directly using an atomic transaction\&.
+.sp
+When using \fB\-\-ref\-action=print\fR, the output is usable as input to \fBgit\fR \fBupdate\-ref\fR \fB\-\-stdin\fR\&. It is of the form:
 .sp
 .if n \{\
 .RS 4
@@ -1808,6 +1842,20 @@ To simply rebase \fBmybranch\fR onto \fBtarget\fR:
 .\}
 .nf
 $ git replay \-\-onto target origin/main\&.\&.mybranch
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The refs are updated atomically and no output is produced on success\&.
+.sp
+To see what would be updated without actually updating:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git replay \-\-ref\-action=print \-\-onto target origin/main\&.\&.mybranch
 update refs/heads/mybranch ${NEW_mybranch_HASH} ${OLD_mybranch_HASH}
 .fi
 .if n \{\
@@ -1821,13 +1869,12 @@ To cherry\-pick the commits from mybranch onto target:
 .\}
 .nf
 $ git replay \-\-advance target origin/main\&.\&.mybranch
-update refs/heads/target ${NEW_target_HASH} ${OLD_target_HASH}
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-Note that the first two examples replay the exact same commits and on top of the exact same new base, they only differ in that the first provides instructions to make mybranch point at the new commits and the second provides instructions to make target point at them\&.
+Note that the first two examples replay the exact same commits and on top of the exact same new base, they only differ in that the first updates mybranch to point at the new commits and the second updates target to point at them\&.
 .sp
 What if you have a stack of branches, one depending upon another, and you\(cqd really like to rebase the whole set?
 .sp
@@ -1836,13 +1883,12 @@ What if you have a stack of branches, one depending upon another, and you\(cqd r
 .\}
 .nf
 $ git replay \-\-contained \-\-onto origin/main origin/main\&.\&.tipbranch
-update refs/heads/branch1 ${NEW_branch1_HASH} ${OLD_branch1_HASH}
-update refs/heads/branch2 ${NEW_branch2_HASH} ${OLD_branch2_HASH}
-update refs/heads/tipbranch ${NEW_tipbranch_HASH} ${OLD_tipbranch_HASH}
 .fi
 .if n \{\
 .RE
 .\}
+.sp
+All three branches (\fBbranch1\fR, \fBbranch2\fR, and \fBtipbranch\fR) are updated atomically\&.
 .sp
 When calling \fBgit\fR \fBreplay\fR, one does not need to specify a range of commits to replay using the syntax \fBA\fR\fB\&.\&.\fR\fBB\fR; any range expression will do:
 .sp
@@ -1851,9 +1897,6 @@ When calling \fBgit\fR \fBreplay\fR, one does not need to specify a range of com
 .\}
 .nf
 $ git replay \-\-onto origin/main ^base branch1 branch2 branch3
-update refs/heads/branch1 ${NEW_branch1_HASH} ${OLD_branch1_HASH}
-update refs/heads/branch2 ${NEW_branch2_HASH} ${OLD_branch2_HASH}
-update refs/heads/branch3 ${NEW_branch3_HASH} ${OLD_branch3_HASH}
 .fi
 .if n \{\
 .RE
