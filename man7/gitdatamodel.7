@@ -1,0 +1,789 @@
+'\" t
+.\"     Title: gitdatamodel
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2025-11-30
+.\"    Manual: Git Manual
+.\"    Source: Git 2.52.0.154.gf0ef5b6d9b
+.\"  Language: English
+.\"
+.TH "GITDATAMODEL" "7" "2025-11-30" "Git 2\&.52\&.0\&.154\&.gf0ef5b" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+gitdatamodel \- Git\*(Aqs core data model
+.SH "SYNOPSIS"
+.sp
+gitdatamodel
+.SH "DESCRIPTION"
+.sp
+It\(cqs not necessary to understand Git\(cqs data model to use Git, but it\(cqs very helpful when reading Git\(cqs documentation so that you know what it means when the documentation says "object", "reference" or "index"\&.
+.sp
+Git\(cqs core operations use 4 kinds of data:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Objects: commits, trees, blobs, and tag objects
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+References: branches, tags, remote\-tracking branches, etc
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+The index, also known as the staging area
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+Reflogs: logs of changes to references ("ref log")
+.RE
+.SH "OBJECTS"
+.sp
+All of the commits and files in a Git repository are stored as "Git objects"\&. Git objects never change after they\(cqre created, and every object has an ID, like \fB1b61de420a21a2f1aaef93e38ecd0e45e8bc9f0a\fR\&.
+.sp
+This means that if you have an object\(cqs ID, you can always recover its exact contents as long as the object hasn\(cqt been deleted\&.
+.sp
+Every object has:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+an
+\fBID\fR
+(aka "object name"), which is a cryptographic hash of its type and contents\&. It\(cqs fast to look up a Git object using its ID\&. This is usually represented in hexadecimal, like
+\fB1b61de420a21a2f1aaef93e38ecd0e45e8bc9f0a\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+a
+\fBtype\fR\&. There are 4 types of objects:
+commits,
+trees,
+blobs, and
+tag objects\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+\fBcontents\fR\&. The structure of the contents depends on the type\&.
+.RE
+.sp
+Here\(cqs how each type of object is structured:
+.PP
+commit
+.RS 4
+A commit contains these required fields (though there are other optional fields):
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+The full directory structure of all the files in that version of the repository and each file\(cqs contents, stored as the
+\fBtree\fR
+ID of the commit\(cqs top\-level directory
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Its
+\fBparent commit ID(s)\fR\&. The first commit in a repository has 0 parents, regular commits have 1 parent, merge commits have 2 or more parents
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+An
+\fBauthor\fR
+and the time the commit was authored
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+A
+\fBcommitter\fR
+and the time the commit was committed
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 5.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  5." 4.2
+.\}
+A
+\fBcommit message\fR
+.sp
+Here\(cqs how an example commit is stored:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+tree 1b61de420a21a2f1aaef93e38ecd0e45e8bc9f0a
+parent 4ccb6d7b8869a86aae2e84c56523f8705b50c647
+author Maya <maya@example\&.com> 1759173425 \-0400
+committer Maya <maya@example\&.com> 1759173425 \-0400
+
+Add README
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Like all other objects, commits can never be changed after they\(cqre created\&. For example, "amending" a commit with
+\fBgit\fR
+\fBcommit\fR
+\fB\-\-amend\fR
+creates a new commit with the same parent\&.
+.sp
+Git does not store the diff for a commit: when you ask Git to show the commit with
+\fBgit-show\fR(1), it calculates the diff from its parent on the fly\&.
+.RE
+.RE
+.PP
+tree
+.RS 4
+A tree is how Git represents a directory\&. It can contain files or other trees (which are subdirectories)\&. It lists, for each item in the tree:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+The
+\fBfilename\fR, for example
+\fBhello\&.py\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+The
+\fBfile type\fR, which must be one of these five types:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBregular file\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBexecutable file\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBsymbolic link\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBdirectory\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBgitlink\fR
+(for use with submodules)
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+The
+\fBobject ID\fR
+with the contents of the file, directory, or gitlink\&.
+.sp
+For example, this is how a tree containing one directory (\fBsrc\fR) and one file (\fBREADME\&.md\fR) is stored:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+100644 blob 8728a858d9d21a8c78488c8b4e70e531b659141f README\&.md
+040000 tree 89b1d2e0495f66d6929f4ff76ff1bb07fc41947d src
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+In the output above, Git displays the file type of each tree entry using a format that\(cqs loosely modelled on Unix file modes (\fB100644\fR is "regular file", \fB100755\fR is "executable file", \fB120000\fR is "symbolic link", \fB040000\fR is "directory", and \fB160000\fR is "gitlink")\&. It also displays the object\(cqs type: \fBblob\fR for files and symlinks, \fBtree\fR for directories, and \fBcommit\fR for gitlinks\&.
+.sp .5v
+.RE
+.PP
+blob
+.RS 4
+A blob object contains a file\(cqs contents\&.
+.sp
+When you make a commit, Git stores the full contents of each file that you changed as a blob\&. For example, if you have a commit that changes 2 files in a repository with 1000 files, that commit will create 2 new blobs, and use the previous blob ID for the other 998 files\&. This means that commits can use relatively little disk space even in a very large repository\&.
+.RE
+.PP
+tag object
+.RS 4
+Tag objects contain these required fields (though there are other optional fields):
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+The
+\fBID\fR
+of the object it references
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+The
+\fBtype\fR
+of the object it references
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+The
+\fBtagger\fR
+and tag date
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+A
+\fBtag message\fR, similar to a commit message
+.RE
+.RE
+.sp
+Here\(cqs how an example tag object is stored:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+object 750b4ead9c87ceb3ddb7a390e6c7074521797fb3
+type commit
+tag v1\&.0\&.0
+tagger Maya <maya@example\&.com> 1759927359 \-0400
+
+Release version 1\&.0\&.0
+.fi
+.if n \{\
+.RE
+.\}
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+All of the examples in this section were generated with \fBgit\fR \fBcat\-file\fR \fB\-p\fR \fI<object\-id>\fR\&.
+.sp .5v
+.RE
+.SH "REFERENCES"
+.sp
+References are a way to give a name to a commit\&. It\(cqs easier to remember "the changes I\(cqm working on are on the \fBturtle\fR branch" than "the changes are in commit bb69721404348e"\&. Git often uses "ref" as shorthand for "reference"\&.
+.sp
+References can either refer to:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+An object ID, usually a
+commit
+ID
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Another reference\&. This is called a "symbolic reference"
+.RE
+.sp
+References are stored in a hierarchy, and Git handles references differently based on where they are in the hierarchy\&. Most references are under \fBrefs/\fR\&. Here are the main types:
+.PP
+branches: \fBrefs/heads/\fR\fI<name>\fR
+.RS 4
+A branch refers to a commit ID\&. That commit is the latest commit on the branch\&.
+.sp
+To get the history of commits on a branch, Git will start at the commit ID the branch references, and then look at the commit\(cqs parent(s), the parent\(cqs parent, etc\&.
+.RE
+.PP
+tags: \fBrefs/tags/\fR\fI<name>\fR
+.RS 4
+A tag refers to a commit ID, tag object ID, or other object ID\&. There are two types of tags:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+"Annotated tags", which reference a
+tag object
+ID which contains a tag message
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+"Lightweight tags", which reference a commit, blob, or tree ID directly
+.sp
+Even though branches and tags both refer to a commit ID, Git treats them very differently\&. Branches are expected to change over time: when you make a commit, Git will update your
+current branch
+to point to the new commit\&. Tags are usually not changed after they\(cqre created\&.
+.RE
+.RE
+.PP
+HEAD: \fBHEAD\fR
+.RS 4
+\fBHEAD\fR
+is where Git stores your current
+branch, if there is a current branch\&.
+\fBHEAD\fR
+can either be:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+A symbolic reference to your current branch, for example
+\fBref:\fR
+\fBrefs/heads/main\fR
+if your current branch is
+\fBmain\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+A direct reference to a commit ID\&. In this case there is no current branch\&. This is called "detached HEAD state", see the DETACHED HEAD section of
+\fBgit-checkout\fR(1)
+for more\&.
+.RE
+.RE
+.PP
+remote\-tracking branches: \fBrefs/remotes/\fR\fI<remote>\fR\fB/\fR\fI<branch>\fR
+.RS 4
+A remote\-tracking branch refers to a commit ID\&. It\(cqs how Git stores the last\-known state of a branch in a remote repository\&.
+\fBgit\fR
+\fBfetch\fR
+updates remote\-tracking branches\&. When
+\fBgit\fR
+\fBstatus\fR
+says "you\(cqre up to date with origin/main", it\(cqs looking at this\&.
+.sp
+\fBrefs/remotes/\fR\fI<remote>\fR\fB/HEAD\fR
+is a symbolic reference to the remote\(cqs default branch\&. This is the branch that
+\fBgit\fR
+\fBclone\fR
+checks out by default\&.
+.RE
+.PP
+Other references
+.RS 4
+Git tools may create references anywhere under
+\fBrefs/\fR\&. For example,
+\fBgit-stash\fR(1),
+\fBgit-bisect\fR(1), and
+\fBgit-notes\fR(1)
+all create their own references in
+\fBrefs/stash\fR,
+\fBrefs/bisect\fR, etc\&. Third\-party Git tools may also create their own references\&.
+.sp
+Git may also create references other than
+\fBHEAD\fR
+at the base of the hierarchy, like
+\fBORIG_HEAD\fR\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+Git may delete objects that aren\(cqt "reachable" from any reference or reflog\&. An object is "reachable" if we can find it by following tags to whatever they tag, commits to their parents or trees, and trees to the trees or blobs that they contain\&. For example, if you amend a commit with \fBgit\fR \fBcommit\fR \fB\-\-amend\fR, there will no longer be a branch that points at the old commit\&. The old commit is recorded in the current branch\(cqs reflog, so it is still "reachable", but when the reflog entry expires it may become unreachable and get deleted\&.
+.sp .5v
+.RE
+.sp
+the old commit will usually not be reachable, so it may be deleted eventually\&. Reachable objects will never be deleted\&.
+.SH "THE INDEX"
+.sp
+The index, also known as the "staging area", is a list of files and the contents of each file, stored as a blob\&. You can add files to the index or update the contents of a file in the index with \fBgit-add\fR(1)\&. This is called "staging" the file for commit\&.
+.sp
+Unlike a tree, the index is a flat list of files\&. When you commit, Git converts the list of files in the index to a directory tree and uses that tree in the new commit\&.
+.sp
+Each index entry has 4 fields:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+The
+\fBfile type\fR, which must be one of:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBregular file\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBexecutable file\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBsymbolic link\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBgitlink\fR
+(for use with submodules)
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+The
+\fBblob\fR
+ID of the file, or (rarely) the
+\fBcommit\fR
+ID of the submodule
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+The
+\fBstage number\fR, either 0, 1, 2, or 3\&. This is normally 0, but if there\(cqs a merge conflict there can be multiple versions of the same filename in the index\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+The
+\fBfile path\fR, for example
+\fBsrc/hello\&.py\fR
+.RE
+.sp
+It\(cqs extremely uncommon to look at the index directly: normally you\(cqd run \fBgit\fR \fBstatus\fR to see a list of changes between the index and HEAD\&. But you can use \fBgit\fR \fBls\-files\fR \fB\-\-stage\fR to see the index\&. Here\(cqs the output of \fBgit\fR \fBls\-files\fR \fB\-\-stage\fR in a repository with 2 files:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+100644 8728a858d9d21a8c78488c8b4e70e531b659141f 0 README\&.md
+100644 665c637a360874ce43bf74018768a96d2d4d219a 0 src/hello\&.py
+.fi
+.if n \{\
+.RE
+.\}
+.SH "REFLOGS"
+.sp
+Every time a branch, remote\-tracking branch, or HEAD is updated, Git updates a log called a "reflog" for that reference\&. This means that if you make a mistake and "lose" a commit, you can generally recover the commit ID by running \fBgit\fR \fBreflog\fR \fI<reference>\fR\&.
+.sp
+A reflog is a list of log entries\&. Each entry has:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+The
+\fBcommit ID\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+\fBTimestamp\fR
+when the change was made
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+\fBLog message\fR, for example
+\fBpull:\fR
+\fBFast\-forward\fR
+.RE
+.sp
+Reflogs only log changes made in your local repository\&. They are not shared with remotes\&.
+.sp
+You can view a reflog with \fBgit\fR \fBreflog\fR \fI<reference>\fR\&. For example, here\(cqs the reflog for a \fBmain\fR branch which has changed twice:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git reflog main \-\-date=iso \-\-no\-decorate
+750b4ea main@{2025\-09\-29 15:17:05 \-0400}: commit: Add README
+4ccb6d7 main@{2025\-09\-29 15:16:48 \-0400}: commit (initial): Initial commit
+.fi
+.if n \{\
+.RE
+.\}
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
