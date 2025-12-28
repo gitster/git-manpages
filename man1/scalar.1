@@ -2,12 +2,12 @@
 .\"     Title: scalar
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2025-12-22
+.\"      Date: 2025-12-28
 .\"    Manual: Git Manual
-.\"    Source: Git 2.52.0.292.gc8d76f7325
+.\"    Source: Git 2.52.0.330.g7c7698a654
 .\"  Language: English
 .\"
-.TH "SCALAR" "1" "2025-12-22" "Git 2\&.52\&.0\&.292\&.gc8d76f" "Git Manual"
+.TH "SCALAR" "1" "2025-12-28" "Git 2\&.52\&.0\&.330\&.g7c7698" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -262,6 +262,187 @@ directory\&.
 delete <enlistment>
 .RS 4
 This subcommand lets you delete an existing Scalar enlistment from your local file system, unregistering the repository\&.
+.RE
+.SH "RECOMMENDED CONFIG VALUES"
+.sp
+As part of both \fBscalar\fR \fBclone\fR and \fBscalar\fR \fBregister\fR, certain Git config values are set to optimize for large repositories or cross\-platform support\&. These options are updated in new Git versions according to the best known advice for large repositories, and users can get the latest recommendations by running \fBscalar\fR \fBreconfigure\fR [\fB\-\-all\fR]\&.
+.sp
+This section lists justifications for the config values that are set in the latest version\&.
+.PP
+am\&.keepCR=true
+.RS 4
+This setting is important for cross\-platform development across Windows and non\-Windows platforms and keeping carriage return (\fB\er\fR) characters in certain workflows\&.
+.RE
+.PP
+commitGraph\&.changedPaths=true
+.RS 4
+This setting helps the background maintenance steps that compute the serialized commit\-graph to also store changed\-path Bloom filters\&. This accelerates file history commands and allows users to automatically benefit without running a foreground command\&.
+.RE
+.PP
+commitGraph\&.generationVersion=1
+.RS 4
+While the preferred version is 2 for performance reasons, existing users that had version 1 by default will need special care in upgrading to version 2\&. This is likely to change in the future as the upgrade story solidifies\&.
+.RE
+.PP
+core\&.autoCRLF=false
+.RS 4
+This removes the transformation of worktree files to add CRLF line endings when only LF line endings exist\&. This is removed for performance reasons\&. Repositories that use tools that care about CRLF line endings should commit the necessary files with those line endings instead\&.
+.RE
+.PP
+core\&.logAllRefUpdates=true
+.RS 4
+This enables the reflog on all branches\&. While this is a performance cost for large repositories, it is frequently an important data source for users to get out of bad situations or to seek support from experts\&.
+.RE
+.PP
+core\&.safeCRLF=false
+.RS 4
+Similar to
+\fBcore\&.autoCRLF=false\fR, this disables checks around whether the CRLF conversion is reversible\&. This is a performance improvement, but can be dangerous if
+\fBcore\&.autoCRLF\fR
+is reenabled by the user\&.
+.RE
+.PP
+credential\&.https://dev\&.azure\&.com\&.useHttpPath=true
+.RS 4
+This setting enables the
+\fBcredential\&.useHttpPath\fR
+feature only for web URLs for Azure DevOps\&. This is important for users interacting with that service using multiple organizations and thus multiple credential tokens\&.
+.RE
+.PP
+feature\&.experimental=false
+.RS 4
+This disables the "experimental" optimizations grouped under this feature config\&. The expectation is that all valuable optimizations are also set explicitly by Scalar config, and any differences are intentional\&. Notable differences include several bitmap\-related config options which are disabled for client\-focused Scalar repos\&.
+.RE
+.PP
+feature\&.manyFiles=false
+.RS 4
+This disables the "many files" optimizations grouped under this feature config\&. The expectation is that all valuable optimizations are also set explicitly by Scalar config, and any differences are intentional\&.
+.RE
+.PP
+fetch\&.showForcedUpdates=false
+.RS 4
+This disables the check at the end of
+\fBgit\fR
+\fBfetch\fR
+that notifies the user if the ref update was a forced update (one where the previous position is not reachable from the latest position)\&. This check can be very expensive in large repositories, so is disabled and replaced with an advice message\&. Set
+\fBadvice\&.fetchShowForcedUpdates=false\fR
+to disable this advice message\&.
+.RE
+.PP
+fetch\&.unpackLimit=1
+.RS 4
+This setting prevents Git from unpacking packfiles into loose objects as they are downloaded from the server\&. The default limit of 100 was intended as a way to prevent performance issues from too many packfiles, but Scalar uses background maintenance to group packfiles and cover them with a multi\-pack\-index, removing this issue\&.
+.RE
+.PP
+fetch\&.writeCommitGraph=false
+.RS 4
+This config setting was created to help users automatically update their commit\-graph files as they perform fetches\&. However, this takes time from foreground fetches and pulls and Scalar uses background maintenance for this function instead\&.
+.RE
+.PP
+gc\&.auto=0
+.RS 4
+This disables automatic garbage collection, since Scalar uses background maintenance to keep the repository data in good shape\&.
+.RE
+.PP
+gui\&.GCWarning=false
+.RS 4
+Since Scalar disables garbage collection by setting
+\fBgc\&.auto=0\fR, the
+\fBgit\-gui\fR
+tool may start to warn about this setting\&. Disable this warning as Scalar\(cqs background maintenance configuration makes the warning irrelevant\&.
+.RE
+.PP
+index\&.skipHash=true
+.RS 4
+Disable computing the hash of the index contents as it is being written\&. This assists with performance, especially for large index files\&.
+.RE
+.PP
+index\&.threads=true
+.RS 4
+This tells Git to automatically detect how many threads it should use when reading the index due to the default value of
+\fBcore\&.preloadIndex\fR, which enables parallel index reads\&. This explicit setting also enables
+\fBindex\&.recordOffsetTable=true\fR
+to speed up parallel index reads\&.
+.RE
+.PP
+index\&.version=4
+.RS 4
+This index version adds compression to the path names, reducing the size of the index in a significant way for large repos\&. This is an important performance boost\&.
+.RE
+.PP
+log\&.excludeDecoration=refs/prefetch/*
+.RS 4
+Since Scalar enables background maintenance with the
+\fBincremental\fR
+strategy, this setting avoids polluting
+\fBgit\fR
+\fBlog\fR
+output with refs stored by the background prefetch operations\&.
+.RE
+.PP
+merge\&.renames=true
+.RS 4
+When computing merges in large repos, it is particularly important to detect renames to maximize the potential for a result that will validate correctly\&. Users performing merges locally are more likely to be doing so because a server\-side merge (via pull request or similar) resulted in conflicts\&. While this is the default setting, it is set specifically to override a potential change to
+\fBdiff\&.renames\fR
+which a user may set for performance reasons\&.
+.RE
+.PP
+merge\&.stat=false
+.RS 4
+This disables a diff output after computing a merge\&. This improves performance of
+\fBgit\fR
+\fBmerge\fR
+for large repos while reducing noisy output\&.
+.RE
+.PP
+pack\&.useBitmaps=false
+.RS 4
+This disables the use of \&.\fBbitmap\fR
+files attached to packfiles\&. Bitmap files are optimized for server\-side use, not client\-side use\&. Scalar disables this to avoid some performance issues that can occur if a user accidentally creates \&.\fBbitmap\fR
+files\&.
+.RE
+.PP
+pack\&.usePathWalk=true
+.RS 4
+This enables the
+\fB\-\-path\-walk\fR
+option to
+\fBgit\fR
+\fBpack\-objects\fR
+by default\&. This can accelerate the computation and compression of packfiles created by
+\fBgit\fR
+\fBpush\fR
+and other repack operations\&.
+.RE
+.PP
+receive\&.autoGC=false
+.RS 4
+Similar to
+\fBgc\&.auto\fR, this setting is disabled in preference of background maintenance\&.
+.RE
+.PP
+status\&.aheadBehind=false
+.RS 4
+This disables the ahead/behind calculation that would normally happen during a
+\fBgit\fR
+\fBstatus\fR
+command\&. This information is frequently ignored by users but can be expensive to calculate in large repos that receive thousands of commits per day\&. The calculation is replaced with an advice message that can be disabled by disabling the
+\fBadvice\&.statusAheadBehind\fR
+config\&.
+.RE
+.sp
+The following settings are different based on which platform is in use:
+.PP
+core\&.untrackedCache=(true|false)
+.RS 4
+The untracked cache feature is important for performance benefits on large repositories, but has demonstrated some bugs on Windows filesystems\&. Thus, this is set for other platforms but disabled on Windows\&.
+.RE
+.PP
+http\&.sslBackend=schannel
+.RS 4
+On Windows, the
+\fBopenssl\fR
+backend has some issues with certain types of remote providers and certificate types\&. Override the default setting to avoid these common problems\&.
 .RE
 .SH "SEE ALSO"
 .sp
