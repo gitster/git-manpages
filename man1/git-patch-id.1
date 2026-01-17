@@ -2,12 +2,12 @@
 .\"     Title: git-patch-id
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-01-15
+.\"      Date: 2026-01-16
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.rc0
+.\"    Source: Git 2.53.0.rc0.25.gb5c409c40f
 .\"  Language: English
 .\"
-.TH "GIT\-PATCH\-ID" "1" "2026-01-15" "Git 2\&.53\&.0\&.rc0" "Git Manual"
+.TH "GIT\-PATCH\-ID" "1" "2026-01-16" "Git 2\&.53\&.0\&.rc0\&.25\&.gb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,12 +42,15 @@ A "patch ID" is nothing but a sum of SHA\-1 of the file diffs associated with a 
 .sp
 The main usecase for this command is to look for likely duplicate commits\&.
 .sp
-When dealing with \fBgit\fR \fBdiff\-tree\fR output, it takes advantage of the fact that the patch is prefixed with the object name of the commit, and outputs two 40\-byte hexadecimal strings\&. The first string is the patch ID, and the second string is the commit ID\&. This can be used to make a mapping from patch ID to commit ID\&.
+When dealing with \fBgit\fR \fBdiff\-tree\fR \fB\-\-patch\fR output, it takes advantage of the fact that the patch is prefixed with the object name of the commit, and outputs two 40\-byte hexadecimal strings\&. The first string is the patch ID, and the second string is the commit ID\&. This can be used to make a mapping from patch ID to commit ID\&.
 .SH "OPTIONS"
 .PP
 \fB\-\-verbatim\fR
 .RS 4
-Calculate the patch\-id of the input as it is given, do not strip any whitespace\&.
+Calculate the patch ID of the input as it is given, do not strip any whitespace\&. Implies
+\fB\-\-stable\fR
+and forbids
+\fB\-\-unstable\fR\&.
 .sp
 This is the default if
 \fBpatchid\&.verbatim\fR
@@ -69,7 +72,7 @@ Use a "stable" sum of hashes as the patch ID\&. With this option:
 .\}
 Reordering file diffs that make up a patch does not affect the ID\&. In particular, two patches produced by comparing the same two trees with two different settings for
 \fB\-O\fR\fI<orderfile>\fR
-result in the same patch ID signature, thereby allowing the computed result to be used as a key to index some meta\-information about the change between the two trees;
+result in the same patch ID signature, thereby allowing the computed result to be used as a key to index some meta\-information about the change between the two trees\&.
 .RE
 .sp
 .RS 4
@@ -80,10 +83,10 @@ result in the same patch ID signature, thereby allowing the computed result to b
 .sp -1
 .IP \(bu 2.3
 .\}
-Result is different from the value produced by git 1\&.9 and older or produced when an "unstable" hash (see
+The result is different from the value produced by Git 1\&.9 and older or produced when an "unstable" hash (see
 \fB\-\-unstable\fR
 below) is configured \- even when used on a diff output taken without any use of
-\fB\-O\fR\fI<orderfile>\fR, thereby making existing databases storing such "unstable" or historical patch\-ids unusable\&.
+\fB\-O\fR\fI<orderfile>\fR, thereby making existing databases storing such "unstable" or historical patch IDs unusable\&.
 .RE
 .sp
 .RS 4
@@ -94,7 +97,7 @@ below) is configured \- even when used on a diff output taken without any use of
 .sp -1
 .IP \(bu 2.3
 .\}
-All whitespace within the patch is ignored and does not affect the id\&.
+All whitespace within the patch is ignored and does not affect the ID\&.
 .RE
 .sp
 This is the default if
@@ -105,7 +108,7 @@ is set to
 .PP
 \fB\-\-unstable\fR
 .RS 4
-Use an "unstable" hash as the patch ID\&. With this option, the result produced is compatible with the patch\-id value produced by git 1\&.9 and older and whitespace is ignored\&. Users with pre\-existing databases storing patch\-ids produced by git 1\&.9 and older (who do not deal with reordered patches) may want to use this option\&.
+Use an "unstable" hash as the patch ID\&. With this option, the result produced is compatible with the patch ID value produced by Git 1\&.9 and older and whitespace is ignored\&. Users with pre\-existing databases storing patch IDs produced by Git 1\&.9 and older (who do not deal with reordered patches) may want to use this option\&.
 .sp
 This is the default\&.
 .RE
