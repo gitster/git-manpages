@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-02-01
+.\"      Date: 2026-02-09
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0
+.\"    Source: Git 2.53.0.68.g864f55e190
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-02-01" "Git 2\&.53\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-02-09" "Git 2\&.53\&.0\&.68\&.g864f55e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -5203,6 +5203,82 @@ config set to
 \fBtrue\fR\&.
 .RE
 .PP
+submodulePathConfig
+.RS 4
+This extension is for the minority of users who:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Encounter errors like
+\fBrefusing\fR
+\fBto\fR
+\fBcreate\fR
+\fB\&.\&.\&.\fR
+\fBin\fR
+\fBanother\fR
+\fBsubmodule\fR\*(Aqs
+\fBgit\fR
+\fBdir\fR
+due to a number of reasons, like case\-insensitive filesystem conflicts when creating modules named
+\fBfoo\fR
+and
+\fBFoo\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Require more flexible submodule layouts, for example due to nested names like
+\fBfoo\fR,
+\fBfoo/bar\fR
+and
+\fBfoo/baz\fR
+not supported by the default gitdir mechanism which uses \&.\fBgit/modules/\fR\fI<plain\-name>\fR
+locations, causing further conflicts\&.
+.RE
+.sp
+When
+\fBextensions\&.submodulePathConfig\fR
+is enabled, the
+\fBsubmodule\&.\fR\fI<name>\fR\fB\&.gitdir\fR
+config becomes the single source of truth for all submodule gitdir paths and is automatically set for all new submodules both during clone and init operations\&.
+.sp
+Git will error out if a module does not have a corresponding
+\fBsubmodule\&.\fR\fI<name>\fR\fB\&.gitdir\fR
+set\&.
+.sp
+Existing (pre\-extension) submodules need to be migrated by adding the missing config entries\&. This can be done manually, e\&.g\&. for each submodule:
+\fBgit\fR
+\fBconfig\fR
+\fBsubmodule\&.\fR\fI<name>\fR\fB\&.gitdir\fR
+\fB\&.git/modules/\fR\fI<name>\fR, or via the
+\fBgit\fR
+\fBsubmodule\-\-helper\fR
+\fBmigrate\-gitdir\-configs\fR
+command which iterates over all submodules and attempts to migrate them\&.
+.sp
+The extension can be enabled automatically for new repositories by setting
+\fBinit\&.defaultSubmodulePathConfig\fR
+to
+\fBtrue\fR, for example by running
+\fBgit\fR
+\fBconfig\fR
+\fB\-\-global\fR
+\fBinit\&.defaultSubmodulePathConfig\fR
+\fBtrue\fR\&.
+.RE
+.PP
 worktreeConfig
 .RS 4
 If enabled, then worktrees will load config settings from the
@@ -7609,6 +7685,22 @@ in
 \fBgit-init\fR(1)\&. Both the command line option and the
 \fBGIT_DEFAULT_REF_FORMAT\fR
 environment variable take precedence over this config\&.
+.RE
+.PP
+init\&.defaultSubmodulePathConfig
+.RS 4
+A boolean that specifies if
+\fBgit\fR
+\fBinit\fR
+and
+\fBgit\fR
+\fBclone\fR
+should automatically set
+\fBextensions\&.submodulePathConfig\fR
+to
+\fBtrue\fR\&. This allows all new repositories to automatically use the submodule path extension\&. Defaults to
+\fBfalse\fR
+when unset\&.
 .RE
 .PP
 instaweb\&.browser
@@ -10914,6 +11006,15 @@ submodule\&.<name>\&.active
 .RS 4
 Boolean value indicating if the submodule is of interest to git commands\&. This config option takes precedence over the submodule\&.active config option\&. See
 \fBgitsubmodules\fR(7)
+for details\&.
+.RE
+.PP
+submodule\&.<name>\&.gitdir
+.RS 4
+This sets the gitdir path for submodule <name>\&. This configuration is respected when
+\fBextensions\&.submodulePathConfig\fR
+is enabled, otherwise it has no effect\&. When enabled, this config becomes the single source of truth for submodule gitdir paths and Git will error if it is missing\&. See
+\fBgit-config\fR(1)
 for details\&.
 .RE
 .PP
