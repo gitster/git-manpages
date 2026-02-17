@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-02-13
+.\"      Date: 2026-02-17
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.118.g852829b3dd
+.\"    Source: Git 2.53.0.144.g73fd77805f
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-02-13" "Git 2\&.53\&.0\&.118\&.g852829" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-02-17" "Git 2\&.53\&.0\&.144\&.g73fd77" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -3535,6 +3535,22 @@ command\-line option\&. The value can be an absolute path or relative to the pat
 Note that this variable is honored even when set in a configuration file in a "\&.git" subdirectory of a directory and its value differs from the latter directory (e\&.g\&. "/path/to/\&.git/config" has core\&.worktree set to "/different/path"), which is most likely a misconfiguration\&. Running Git commands in the "/path/to" directory will still use "/different/path" as the root of the work tree and can cause confusion unless you know what you are doing (e\&.g\&. you are creating a read\-only snapshot of the same index to a location different from the repository\(cqs usual working tree)\&.
 .RE
 .PP
+core\&.lockfilePid
+.RS 4
+If true, Git will create a PID file alongside lock files\&. When a lock acquisition fails and a PID file exists, Git can provide additional diagnostic information about the process holding the lock, including whether it is still running\&. Defaults to
+\fBfalse\fR\&.
+.sp
+The PID file is named by inserting
+\fB~pid\fR
+before the \&.\fBlock\fR
+suffix\&. For example, if the lock file is
+\fBindex\&.lock\fR, the PID file will be
+\fBindex~pid\&.lock\fR\&. The file contains a single line in the format
+\fBpid\fR
+\fI<value>\fR
+followed by a newline\&.
+.RE
+.PP
 core\&.logAllRefUpdates
 .RS 4
 Enable the reflog\&. Updates to a ref <ref> is logged to the file "\fB$GIT_DIR/logs/\fR\fI<ref>\fR", by appending the new and old SHA\-1, the date/time and the reason of the update, but only when the file exists\&. If this configuration variable is set to
@@ -5162,28 +5178,14 @@ setting\&.
 refStorage
 .RS 4
 Specify the ref storage format to use\&. The acceptable values are:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
+.PP
 \fBfiles\fR
+.RS 4
 for loose files with packed\-refs\&. This is the default\&.
 .RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
+.PP
 \fBreftable\fR
+.RS 4
 for the reftable format\&. This format is experimental and its internals are subject to change\&.
 .RE
 .sp
