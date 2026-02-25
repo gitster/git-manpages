@@ -2,12 +2,12 @@
 .\"     Title: git-am
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-02-17
+.\"      Date: 2026-02-25
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.144.g73fd77805f
+.\"    Source: Git 2.53.0.187.g7b2bccb0d5
 .\"  Language: English
 .\"
-.TH "GIT\-AM" "1" "2026-02-17" "Git 2\&.53\&.0\&.144\&.g73fd77" "Git Manual"
+.TH "GIT\-AM" "1" "2026-02-25" "Git 2\&.53\&.0\&.187\&.g7b2bcc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -382,6 +382,8 @@ a line that begins with "Index: "
 .sp
 is taken as the beginning of a patch, and the commit log message is terminated before the first occurrence of such a line\&.
 .sp
+This means that the contents of the commit message can inadvertently interrupt the processing (see the CAVEATS section below)\&.
+.sp
 When initially invoking \fBgit\fR \fBam\fR, you give it the names of the mailboxes to process\&. Upon seeing the first patch that does not apply, it aborts in the middle\&. You can recover from this in one of two ways:
 .sp
 .RS 4
@@ -413,6 +415,17 @@ option\&.
 The command refuses to process new mailboxes until the current operation is finished, so if you decide to start over from scratch, run \fBgit\fR \fBam\fR \fB\-\-abort\fR before running the command with mailbox names\&.
 .sp
 Before any patches are applied, ORIG_HEAD is set to the tip of the current branch\&. This is useful if you have problems with multiple commits, like running \fIgit am\fR on the wrong branch or an error in the commits that is more easily fixed by changing the mailbox (e\&.g\&. errors in the "From:" lines)\&.
+.SH "CAVEATS"
+.sp
+The output from \fBgit-format-patch\fR(1) can lead to a different commit message when applied with \fBgit-am\fR(1)\&. The patch that is applied may also be different from the one that was generated, or patch application may fail outright\&. See the DISCUSSION section above for the syntactic rules\&.
+.sp
+Note that this is especially problematic for unindented diffs that occur in the commit message; the diff in the commit message might get applied along with the patch section, or the patch application machinery might trip up because the patch target doesn\(cqt apply\&. This could for example be caused by a diff in a Markdown code block\&.
+.sp
+The solution for this is to indent the diff or other text that could cause problems\&.
+.sp
+This loss of fidelity might be simple to notice if you are applying patches directly from a mailbox\&. However, changes originating from Git could be applied in bulk, in which case this would be much harder to notice\&. This could for example be a Linux distribution which uses patch files to apply changes on top of the commits from the upstream repositories\&. This goes to show that this behavior does not only impact email workflows\&.
+.sp
+Given these limitations, one might be tempted to use a general\-purpose utility like patch(1) instead\&. However, patch(1) will not only look for unindented diffs (like \fBgit-am\fR(1)) but will try to apply indented diffs as well\&.
 .SH "HOOKS"
 .sp
 This command can run \fBapplypatch\-msg\fR, \fBpre\-applypatch\fR, and \fBpost\-applypatch\fR hooks\&. See \fBgithooks\fR(5) for more information\&.

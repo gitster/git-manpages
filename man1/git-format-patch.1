@@ -2,12 +2,12 @@
 .\"     Title: git-format-patch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-02-17
+.\"      Date: 2026-02-25
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.144.g73fd77805f
+.\"    Source: Git 2.53.0.187.g7b2bccb0d5
 .\"  Language: English
 .\"
-.TH "GIT\-FORMAT\-PATCH" "1" "2026-02-17" "Git 2\&.53\&.0\&.144\&.g73fd77" "Git Manual"
+.TH "GIT\-FORMAT\-PATCH" "1" "2026-02-25" "Git 2\&.53\&.0\&.187\&.g7b2bcc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1831,6 +1831,54 @@ $ git format\-patch \-3
 .SH "CAVEATS"
 .sp
 Note that \fBformat\-patch\fR will omit merge commits from the output, even if they are part of the requested range\&. A simple "patch" does not include enough information for the receiving end to reproduce the same merge commit\&.
+.SS "PATCH APPLICATION"
+.sp
+The output from \fBgit-format-patch\fR(1) can lead to a different commit message when applied with \fBgit-am\fR(1)\&. The patch that is applied may also be different from the one that was generated, or patch application may fail outright\&.
+.sp
+Any line that is of the form:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+three\-dashes and end\-of\-line, or
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+a line that begins with "diff \-", or
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+a line that begins with "Index: "
+.RE
+.sp
+is taken as the beginning of a patch, and the commit log message is terminated before the first occurrence of such a line\&.
+.sp
+Note that this is especially problematic for unindented diffs that occur in the commit message; the diff in the commit message might get applied along with the patch section, or the patch application machinery might trip up because the patch target doesn\(cqt apply\&. This could for example be caused by a diff in a Markdown code block\&.
+.sp
+The solution for this is to indent the diff or other text that could cause problems\&.
+.sp
+This loss of fidelity might be simple to notice if you are applying patches directly from a mailbox\&. However, changes originating from Git could be applied in bulk, in which case this would be much harder to notice\&. This could for example be a Linux distribution which uses patch files to apply changes on top of the commits from the upstream repositories\&. This goes to show that this behavior does not only impact email workflows\&.
+.sp
+Given these limitations, one might be tempted to use a general\-purpose utility like patch(1) instead\&. However, patch(1) will not only look for unindented diffs (like \fBgit-am\fR(1)) but will try to apply indented diffs as well\&.
 .SH "SEE ALSO"
 .sp
 \fBgit-am\fR(1), \fBgit-send-email\fR(1)

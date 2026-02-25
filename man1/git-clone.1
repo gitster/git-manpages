@@ -2,12 +2,12 @@
 .\"     Title: git-clone
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-02-17
+.\"      Date: 2026-02-25
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.144.g73fd77805f
+.\"    Source: Git 2.53.0.187.g7b2bccb0d5
 .\"  Language: English
 .\"
-.TH "GIT\-CLONE" "1" "2026-02-17" "Git 2\&.53\&.0\&.144\&.g73fd77" "Git Manual"
+.TH "GIT\-CLONE" "1" "2026-02-25" "Git 2\&.53\&.0\&.187\&.g7b2bcc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -252,15 +252,31 @@ command can be used to grow the working directory as needed\&.
 Use the partial clone feature and request that the server sends a subset of reachable objects according to a given object filter\&. When using
 \fB\-\-filter\fR, the supplied
 \fI<filter\-spec>\fR
-is used for the partial clone filter\&. For example,
+is used for the partial clone filter\&.
+.sp
+If
+\fB\-\-filter=auto\fR
+is used the filter specification is determined automatically through the
+\fIpromisor\-remote\fR
+protocol (see
+\fBgitprotocol-v2\fR(5)) by combining the filter specifications advertised by the server for the promisor remotes that the client accepts (see the
+\fBpromisor\&.acceptFromServer\fR
+configuration option in
+\fBgit-config\fR(1))\&. This allows the server to suggest the optimal filter for the available promisor remotes\&.
+.sp
+As with other filter specifications, the "auto" value is persisted in the configuration\&. This ensures that future fetches will continue to adapt to the server\(cqs current recommendation\&.
+.sp
+For details on all other available filter specifications, see the
+\fB\-\-filter=\fR\fI<filter\-spec>\fR
+option in
+\fBgit-rev-list\fR(1)\&.
+.sp
+For example,
 \fB\-\-filter=blob:none\fR
 will filter out all blobs (file contents) until needed by Git\&. Also,
 \fB\-\-filter=blob:limit=\fR\fI<size>\fR
 will filter out all blobs of size at least
-\fI<size>\fR\&. For more details on filter specifications, see the
-\fB\-\-filter\fR
-option in
-\fBgit-rev-list\fR(1)\&.
+\fI<size>\fR\&.
 .RE
 .PP
 \fB\-\-also\-filter\-submodules\fR
