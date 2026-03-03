@@ -2,12 +2,12 @@
 .\"     Title: git-patch-id
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-02-27
+.\"      Date: 2026-03-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.238.g2cc7191751
+.\"    Source: Git 2.53.0.290.g4805bb9930
 .\"  Language: English
 .\"
-.TH "GIT\-PATCH\-ID" "1" "2026-02-27" "Git 2\&.53\&.0\&.238\&.g2cc719" "Git Manual"
+.TH "GIT\-PATCH\-ID" "1" "2026-03-02" "Git 2\&.53\&.0\&.290\&.g4805bb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,7 +28,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-patch-id \- Compute unique ID for a patch
+git-patch-id \- Compute unique IDs for patches
 .SH "SYNOPSIS"
 .sp
 .nf
@@ -36,13 +36,13 @@ git-patch-id \- Compute unique ID for a patch
 .fi
 .SH "DESCRIPTION"
 .sp
-Read a patch from the standard input and compute the patch ID for it\&.
+Read patches from standard input and compute the patch IDs\&.
 .sp
 A "patch ID" is nothing but a sum of SHA\-1 of the file diffs associated with a patch, with line numbers ignored\&. As such, it\(cqs "reasonably stable", but at the same time also reasonably unique, i\&.e\&., two patches that have the same "patch ID" are almost guaranteed to be the same thing\&.
 .sp
 The main usecase for this command is to look for likely duplicate commits\&.
 .sp
-When dealing with \fBgit\fR \fBdiff\-tree\fR \fB\-\-patch\fR output, it takes advantage of the fact that the patch is prefixed with the object name of the commit, and outputs two 40\-byte hexadecimal strings\&. The first string is the patch ID, and the second string is the commit ID\&. This can be used to make a mapping from patch ID to commit ID\&.
+When dealing with \fBgit\fR \fBdiff\-tree\fR \fB\-\-patch\fR output, it takes advantage of the fact that the patch is prefixed with the object name of the commit, and outputs two 40\-byte hexadecimal strings\&. The first string is the patch ID, and the second string is the commit ID\&. This can be used to make a mapping from patch ID to commit ID for a set or range of commits\&.
 .SH "OPTIONS"
 .PP
 \fB\-\-verbatim\fR
@@ -112,6 +112,48 @@ Use an "unstable" hash as the patch ID\&. With this option, the result produced 
 .sp
 This is the default\&.
 .RE
+.SH "EXAMPLES"
+.sp
+\fBgit-cherry\fR(1) shows what commits from a branch have patch ID equivalent commits in some upstream branch\&. But it only tells you whether such a commit exists or not\&. What if you wanted to know the relevant commits in the upstream? We can use this command to make a mapping between your branch and the upstream branch:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+#!/bin/sh
+
+upstream="$1"
+branch="$2"
+test \-z "$branch" && branch=HEAD
+limit="$3"
+if test \-n "$limit"
+then
+    tail_opts="$limit"\&.\&."$upstream"
+else
+    since=$(git log \-\-format=%aI "$upstream"\&.\&."$branch" | tail \-1)
+    tail_opts=\-\-since="$since"\*(Aq \*(Aq"$upstream"
+fi
+for_branch=$(mktemp)
+for_upstream=$(mktemp)
+
+git rev\-list \-\-no\-merges "$upstream"\&.\&."$branch" |
+    git diff\-tree \-\-patch \-\-stdin |
+    git patch\-id  \-\-stable | sort >"$for_branch"
+git rev\-list \-\-no\-merges $tail_opts |
+    git diff\-tree \-\-patch \-\-stdin |
+    git patch\-id  \-\-stable | sort >"$for_upstream"
+join \-a1 "$for_branch" "$for_upstream" | cut \-d\*(Aq \*(Aq \-f2,3
+rm "$for_branch"
+rm "$for_upstream"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Now the first column shows the commit from your branch and the second column shows the patch ID equivalent commit, if it exists\&.
+.SH "SEE ALSO"
+.sp
+\fBgit-cherry\fR(1)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

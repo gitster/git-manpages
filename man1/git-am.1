@@ -2,12 +2,12 @@
 .\"     Title: git-am
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-02-27
+.\"      Date: 2026-03-02
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.238.g2cc7191751
+.\"    Source: Git 2.53.0.290.g4805bb9930
 .\"  Language: English
 .\"
-.TH "GIT\-AM" "1" "2026-02-27" "Git 2\&.53\&.0\&.238\&.g2cc719" "Git Manual"
+.TH "GIT\-AM" "1" "2026-03-02" "Git 2\&.53\&.0\&.290\&.g4805bb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-am \- Apply a series of patches from a mailbox
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit am\fR [\-\-signoff] [\-\-keep] [\-\-[no\-]keep\-cr] [\-\-[no\-]utf8] [\-\-no\-verify]
+\fIgit am\fR [\-\-signoff] [\-\-keep] [\-\-[no\-]keep\-cr] [\-\-[no\-]utf8] [\-\-[no\-]verify]
          [\-\-[no\-]3way] [\-\-interactive] [\-\-committer\-date\-is\-author\-date]
          [\-\-ignore\-date] [\-\-ignore\-space\-change | \-\-ignore\-whitespace]
          [\-\-whitespace=<action>] [\-C<n>] [\-p<n>] [\-\-directory=<dir>]
@@ -57,7 +57,8 @@ The list of mailbox files to read patches from\&. If you do not supply this argu
 .RS 4
 Add a
 \fBSigned\-off\-by\fR
-trailer to the commit message, using the committer identity of yourself\&. See the signoff option in
+trailer to the commit message (see
+\fBgit-interpret-trailers\fR(1)), using the committer identity of yourself\&. See the signoff option in
 \fBgit-commit\fR(1)
 for more information\&.
 .RE
@@ -67,9 +68,7 @@ for more information\&.
 Pass
 \fB\-k\fR
 flag to
-\fIgit mailinfo\fR
-(see
-\fBgit-mailinfo\fR(1))\&.
+\fBgit-mailinfo\fR(1)\&.
 .RE
 .PP
 \-\-keep\-non\-patch
@@ -77,18 +76,15 @@ flag to
 Pass
 \fB\-b\fR
 flag to
-\fIgit mailinfo\fR
-(see
-\fBgit-mailinfo\fR(1))\&.
+\fBgit-mailinfo\fR(1)\&.
 .RE
 .PP
 \-\-keep\-cr, \-\-no\-keep\-cr
 .RS 4
 With
 \fB\-\-keep\-cr\fR, call
-\fIgit mailsplit\fR
-(see
-\fBgit-mailsplit\fR(1)) with the same option, to prevent it from stripping CR at the end of lines\&.
+\fBgit-mailsplit\fR(1)
+with the same option, to prevent it from stripping CR at the end of lines\&.
 \fBam\&.keepcr\fR
 configuration variable can be used to specify the default behaviour\&.
 \fB\-\-no\-keep\-cr\fR
@@ -113,9 +109,7 @@ Ignore scissors lines (see
 \-\-quoted\-cr=<action>
 .RS 4
 This flag will be passed down to
-\fIgit mailinfo\fR
-(see
-\fBgit-mailinfo\fR(1))\&.
+\fBgit-mailinfo\fR(1)\&.
 .RE
 .PP
 \-\-empty=(drop|keep|stop)
@@ -145,9 +139,10 @@ session\&. This is the default behavior\&.
 Pass the
 \fB\-m\fR
 flag to
-\fIgit mailinfo\fR
-(see
-\fBgit-mailinfo\fR(1)), so that the Message\-ID header is added to the commit message\&. The
+\fBgit-mailinfo\fR(1), so that the
+\fBMessage\-ID\fR
+header is added as a trailer (see
+\fBgit-interpret-trailers\fR(1))\&. The
 \fBam\&.messageid\fR
 configuration variable can be used to specify the default behaviour\&.
 .RE
@@ -170,9 +165,7 @@ Be quiet\&. Only print error messages\&.
 Pass
 \fB\-u\fR
 flag to
-\fIgit mailinfo\fR
-(see
-\fBgit-mailinfo\fR(1))\&. The proposed commit log message taken from the e\-mail is re\-coded into UTF\-8 encoding (configuration variable
+\fBgit-mailinfo\fR(1)\&. The proposed commit log message taken from the e\-mail is re\-coded into UTF\-8 encoding (configuration variable
 \fBi18n\&.commitEncoding\fR
 can be used to specify the project\(cqs preferred encoding if it is not UTF\-8)\&.
 .sp
@@ -186,9 +179,7 @@ to override this\&.
 Pass
 \fB\-n\fR
 flag to
-\fIgit mailinfo\fR
-(see
-\fBgit-mailinfo\fR(1))\&.
+\fBgit-mailinfo\fR(1)\&.
 .RE
 .PP
 \-3, \-\-3way, \-\-no\-3way
@@ -212,9 +203,8 @@ did and catch potential mismerges, before committing the result to the index wit
 \-\-ignore\-space\-change, \-\-ignore\-whitespace, \-\-whitespace=<action>, \-C<n>, \-p<n>, \-\-directory=<dir>, \-\-exclude=<path>, \-\-include=<path>, \-\-reject
 .RS 4
 These flags are passed to the
-\fIgit apply\fR
-(see
-\fBgit-apply\fR(1)) program that applies the patch\&.
+\fBgit-apply\fR(1)
+program that applies the patch\&.
 .sp
 Valid <action> for the
 \fB\-\-whitespace\fR
@@ -236,14 +226,21 @@ By default the command will try to detect the patch format automatically\&. This
 Run interactively\&.
 .RE
 .PP
-\-n, \-\-no\-verify
+\-\-verify, \-n, \-\-no\-verify
 .RS 4
-By default, the pre\-applypatch and applypatch\-msg hooks are run\&. When any of
-\fB\-\-no\-verify\fR
-or
+Run the
+\fBpre\-applypatch\fR
+and
+\fBapplypatch\-msg\fR
+hooks\&. This is the default\&. Skip these hooks with
 \fB\-n\fR
-is given, these are bypassed\&. See also
+or
+\fB\-\-no\-verify\fR\&. See also
 \fBgithooks\fR(5)\&.
+.sp
+Note that
+\fBpost\-applypatch\fR
+cannot be skipped\&.
 .RE
 .PP
 \-\-committer\-date\-is\-author\-date
@@ -300,9 +297,9 @@ When a patch failure occurs, <msg> will be printed to the screen before exiting\
 or
 \fB\-\-skip\fR
 to handle the failure\&. This is solely for internal use between
-\fIgit rebase\fR
+\fBgit-rebase\fR(1)
 and
-\fIgit am\fR\&.
+\fBgit-am\fR(1)\&.
 .RE
 .PP
 \-\-abort
@@ -324,8 +321,7 @@ Try to apply the last conflicting patch again\&. This is generally only useful f
 \-\-show\-current\-patch[=(diff|raw)]
 .RS 4
 Show the message at which
-\fBgit\fR
-\fBam\fR
+\fBgit-am\fR(1)
 has stopped due to conflicts\&. If
 \fBraw\fR
 is specified, show the raw contents of the e\-mail message; if
@@ -384,7 +380,7 @@ is taken as the beginning of a patch, and the commit log message is terminated b
 .sp
 This means that the contents of the commit message can inadvertently interrupt the processing (see the CAVEATS section below)\&.
 .sp
-When initially invoking \fBgit\fR \fBam\fR, you give it the names of the mailboxes to process\&. Upon seeing the first patch that does not apply, it aborts in the middle\&. You can recover from this in one of two ways:
+When initially invoking \fBgit-am\fR(1), you give it the names of the mailboxes to process\&. Upon seeing the first patch that does not apply, it aborts in the middle\&. You can recover from this in one of two ways:
 .sp
 .RS 4
 .ie n \{\
@@ -414,7 +410,7 @@ option\&.
 .sp
 The command refuses to process new mailboxes until the current operation is finished, so if you decide to start over from scratch, run \fBgit\fR \fBam\fR \fB\-\-abort\fR before running the command with mailbox names\&.
 .sp
-Before any patches are applied, ORIG_HEAD is set to the tip of the current branch\&. This is useful if you have problems with multiple commits, like running \fIgit am\fR on the wrong branch or an error in the commits that is more easily fixed by changing the mailbox (e\&.g\&. errors in the "From:" lines)\&.
+Before any patches are applied, ORIG_HEAD is set to the tip of the current branch\&. This is useful if you have problems with multiple commits, like running \fBgit-am\fR(1) on the wrong branch or an error in the commits that is more easily fixed by changing the mailbox (e\&.g\&. errors in the "From:" lines)\&.
 .SH "CAVEATS"
 .sp
 The output from \fBgit-format-patch\fR(1) can lead to a different commit message when applied with \fBgit-am\fR(1)\&. The patch that is applied may also be different from the one that was generated, or patch application may fail outright\&. See the DISCUSSION section above for the syntactic rules\&.
@@ -429,36 +425,53 @@ Given these limitations, one might be tempted to use a general\-purpose utility 
 .SH "HOOKS"
 .sp
 This command can run \fBapplypatch\-msg\fR, \fBpre\-applypatch\fR, and \fBpost\-applypatch\fR hooks\&. See \fBgithooks\fR(5) for more information\&.
+.sp
+See the \fB\-\-verify\fR/\fB\-n\fR/\fB\-\-no\-verify\fR options\&.
 .SH "CONFIGURATION"
 .sp
 Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
 .PP
 am\&.keepcr
 .RS 4
-If true, git\-am will call git\-mailsplit for patches in mbox format with parameter
-\fB\-\-keep\-cr\fR\&. In this case git\-mailsplit will not remove
+If true,
+\fBgit-am\fR(1)
+will call
+\fBgit-mailsplit\fR(1)
+for patches in mbox format with parameter
+\fB\-\-keep\-cr\fR\&. In this case
+\fBgit-mailsplit\fR(1)
+will not remove
 \fB\er\fR
 from lines ending with
 \fB\er\en\fR\&. Can be overridden by giving
 \fB\-\-no\-keep\-cr\fR
-from the command line\&. See
-\fBgit-am\fR(1),
-\fBgit-mailsplit\fR(1)\&.
+from the command line\&.
 .RE
 .PP
 am\&.threeWay
 .RS 4
 By default,
-\fBgit\fR
-\fBam\fR
+\fBgit-am\fR(1)
 will fail if the patch does not apply cleanly\&. When set to true, this setting tells
-\fBgit\fR
-\fBam\fR
+\fBgit-am\fR(1)
 to fall back on 3\-way merge if the patch records the identity of blobs it is supposed to apply to and we have those blobs available locally (equivalent to giving the
 \fB\-\-3way\fR
 option from the command line)\&. Defaults to
-\fBfalse\fR\&. See
-\fBgit-am\fR(1)\&.
+\fBfalse\fR\&.
+.RE
+.PP
+am\&.messageId
+.RS 4
+Add a
+\fBMessage\-ID\fR
+trailer based on the email header to the commit when using
+\fBgit-am\fR(1)
+(see
+\fBgit-interpret-trailers\fR(1))\&. See also the
+\fB\-\-message\-id\fR
+and
+\fB\-\-no\-message\-id\fR
+options\&.
 .RE
 .SH "SEE ALSO"
 .sp
