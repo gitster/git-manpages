@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-03
+.\"      Date: 2026-03-04
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.308.g50d063e335
+.\"    Source: Git 2.53.0.381.g628a66ccf6
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-03-03" "Git 2\&.53\&.0\&.308\&.g50d063" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-03-04" "Git 2\&.53\&.0\&.381\&.g628a66" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -446,6 +446,13 @@ from the command line to let your shell do the expansion\&.)
 .IP \(bu 2.3
 .\}
 \fIcolor\fR: When getting a value, canonicalize by converting to an ANSI color escape sequence\&. When setting a value, a sanity\-check is performed to ensure that the given value is canonicalize\-able as an ANSI color, but it is written as\-is\&.
+.sp
+If the command is in
+\fBlist\fR
+mode, then the
+\fB\-\-type\fR
+\fI<type>\fR
+argument will apply to each listed config value\&. If the value does not successfully parse in that format, then it will be omitted from the list\&.
 .RE
 .RE
 .PP
@@ -5111,7 +5118,37 @@ setting\&.
 .PP
 refStorage
 .RS 4
-Specify the ref storage format to use\&. The acceptable values are:
+Specify the ref storage format and a corresponding payload\&. The value can be either a format name or a URI:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A format name alone (e\&.g\&.,
+\fBreftable\fR
+or
+\fBfiles\fR)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A URI format
+\fI<format>\fR\fB://\fR\fI<payload>\fR
+explicitly specifies both the format and payload (e\&.g\&.,
+\fBreftable:///foo/bar\fR)\&.
+.RE
+.sp
+Supported format names are:
 .PP
 \fBfiles\fR
 .RS 4
@@ -5122,6 +5159,9 @@ for loose files with packed\-refs\&. This is the default\&.
 .RS 4
 for the reftable format\&. This format is experimental and its internals are subject to change\&.
 .RE
+.sp
+The payload is passed directly to the reference backend\&. For the files and reftable backends, this must be a filesystem path where the references will be stored\&. Defaulting to the commondir when no payload is provided\&. Relative paths are resolved relative to the
+\fB$GIT_DIR\fR\&. Future backends may support other payload schemes, e\&.g\&., postgres://127\&.0\&.0\&.1:5432?database=myrepo\&.
 .sp
 Note that this setting should only be set by
 \fBgit-init\fR(1)
@@ -7924,7 +7964,7 @@ The possible strategies are:
 .\}
 \fBgc\fR: This strategy runs the
 \fBgc\fR
-task\&. This is the default strategy for manual maintenance\&.
+task\&.
 .RE
 .sp
 .RS 4
@@ -7939,7 +7979,7 @@ task\&. This is the default strategy for manual maintenance\&.
 .sp
 This repacking strategy is a full replacement for the
 \fBgc\fR
-strategy and is recommended for large repositories\&.
+strategy and is recommended for large repositories\&. This is the default strategy for manual maintenance\&.
 .RE
 .sp
 .RS 4
