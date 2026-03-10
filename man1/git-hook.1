@@ -2,12 +2,12 @@
 .\"     Title: git-hook
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-09
+.\"      Date: 2026-03-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.439.gd181b9354c
+.\"    Source: Git 2.53.0.474.g7f19e4e1b6
 .\"  Language: English
 .\"
-.TH "GIT\-HOOK" "1" "2026-03-09" "Git 2\&.53\&.0\&.439\&.gd181b9" "Git Manual"
+.TH "GIT\-HOOK" "1" "2026-03-10" "Git 2\&.53\&.0\&.474\&.g7f19e4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,17 +33,122 @@ git-hook \- Run git hooks
 .sp
 .nf
 \fIgit hook\fR run [\-\-ignore\-missing] [\-\-to\-stdin=<path>] <hook\-name> [\-\- <hook\-args>]
+\fIgit hook\fR list [\-z] <hook\-name>
 .fi
 .SH "DESCRIPTION"
 .sp
 A command interface for running git hooks (see \fBgithooks\fR(5)), for use by other scripted git commands\&.
+.sp
+This command parses the default configuration files for sets of configs like so:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[hook "linter"]
+  event = pre\-commit
+  command = ~/bin/linter \-\-cpp20
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+In this example, [\fBhook\fR "linter"] represents one script \- \fB~/bin/linter\fR \fB\-\-cpp20\fR \- which can be shared by many repos, and even by many hook events, if appropriate\&.
+.sp
+To add an unrelated hook which runs on a different event, for example a spell\-checker for your commit messages, you would write a configuration like so:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[hook "linter"]
+  event = pre\-commit
+  command = ~/bin/linter \-\-cpp20
+[hook "spellcheck"]
+  event = commit\-msg
+  command = ~/bin/spellchecker
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+With this config, when you run \fIgit commit\fR, first \fB~/bin/linter\fR \fB\-\-cpp20\fR will have a chance to check your files to be committed (during the \fBpre\-commit\fR hook event`), and then \fB~/bin/spellchecker\fR will have a chance to check your commit message (during the \fBcommit\-msg\fR hook event)\&.
+.sp
+Commands are run in the order Git encounters their associated \fBhook\&.\fR\fI<name>\fR\fB\&.event\fR configs during the configuration parse (see \fBgit-config\fR(1))\&. Although multiple \fBhook\&.linter\&.event\fR configs can be added, only one \fBhook\&.linter\&.command\fR event is valid \- Git uses "last\-one\-wins" to determine which command to run\&.
+.sp
+So if you wanted your linter to run when you commit as well as when you push, you would configure it like so:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[hook "linter"]
+  event = pre\-commit
+  event = pre\-push
+  command = ~/bin/linter \-\-cpp20
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+With this config, \fB~/bin/linter\fR \fB\-\-cpp20\fR would be run by Git before a commit is generated (during \fBpre\-commit\fR) as well as before a push is performed (during \fBpre\-push\fR)\&.
+.sp
+And if you wanted to run your linter as well as a secret\-leak detector during only the "pre\-commit" hook event, you would configure it instead like so:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[hook "linter"]
+  event = pre\-commit
+  command = ~/bin/linter \-\-cpp20
+[hook "no\-leaks"]
+  event = pre\-commit
+  command = ~/bin/leak\-detector
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+With this config, before a commit is generated (during \fBpre\-commit\fR), Git would first start \fB~/bin/linter\fR \fB\-\-cpp20\fR and second start \fB~/bin/leak\-detector\fR\&. It would evaluate the output of each when deciding whether to proceed with the commit\&.
+.sp
+For a full list of hook events which you can set your \fBhook\&.\fR\fI<name>\fR\fB\&.event\fR to, and how hooks are invoked during those events, see \fBgithooks\fR(5)\&.
+.sp
+Git will ignore any \fBhook\&.\fR\fI<name>\fR\fB\&.event\fR that specifies an event it doesn\(cqt recognize\&. This is intended so that tools which wrap Git can use the hook infrastructure to run their own hooks; see "WRAPPERS" for more guidance\&.
+.sp
+In general, when instructions suggest adding a script to \&.\fBgit/hooks/\fR\fI<hook\-event>\fR, you can specify it in the config instead by running:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git config set hook\&.<some\-name>\&.command <path\-to\-script>
+git config set \-\-append hook\&.<some\-name>\&.event <hook\-event>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This way you can share the script between multiple repos\&. That is, \fBcp\fR \fB~/my\-script\&.sh\fR \fB~/project/\&.git/hooks/pre\-commit\fR would become:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git config set hook\&.my\-script\&.command ~/my\-script\&.sh
+git config set \-\-append hook\&.my\-script\&.event pre\-commit
+.fi
+.if n \{\
+.RE
+.\}
 .SH "SUBCOMMANDS"
 .PP
 run
 .RS 4
-Run the
+Runs hooks configured for
+\fI<hook\-name>\fR, in the order they are discovered during the config parse\&. The default
 \fI<hook\-name>\fR
-hook\&. See
+from the hookdir is run last\&. See
 \fBgithooks\fR(5)
 for supported hook names\&.
 .sp
@@ -55,6 +160,15 @@ Any positional arguments to the hook should be passed after a mandatory
 \fBgithooks\fR(5)
 for arguments hooks might expect (if any)\&.
 .RE
+.PP
+list [\-z]
+.RS 4
+Print a list of hooks which will be run on
+\fI<hook\-name>\fR
+event\&. If no hooks are configured for that event, print a warning and return 1\&. Use
+\fB\-z\fR
+to terminate output lines with NUL instead of newlines\&.
+.RE
 .SH "OPTIONS"
 .PP
 \-\-to\-stdin
@@ -65,6 +179,86 @@ For "run"; specify a file which will be streamed into the hook\(cqs stdin\&. The
 \-\-ignore\-missing
 .RS 4
 Ignore any missing hook by quietly returning zero\&. Used for tools that want to do a blind one\-shot run of a hook that may or may not be present\&.
+.RE
+.PP
+\-z
+.RS 4
+Terminate "list" output lines with NUL instead of newlines\&.
+.RE
+.SH "WRAPPERS"
+.sp
+\fBgit\fR \fBhook\fR \fBrun\fR has been designed to make it easy for tools which wrap Git to configure and execute hooks using the Git hook infrastructure\&. It is possible to provide arguments and stdin via the command line, as well as specifying parallel or series execution if the user has provided multiple hooks\&.
+.sp
+Assuming your wrapper wants to support a hook named "mywrapper\-start\-tests", you can have your users specify their hooks like so:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[hook "setup\-test\-dashboard"]
+  event = mywrapper\-start\-tests
+  command = ~/mywrapper/setup\-dashboard\&.py \-\-tap
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Then, in your \fImywrapper\fR tool, you can invoke any users\*(Aq configured hooks by running:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git hook run mywrapper\-start\-tests \e
+  # providing something to stdin
+  \-\-stdin some\-tempfile\-123 \e
+  # execute hooks in serial
+  # plus some arguments of your own\&.\&.\&.
+  \-\- \e
+  \-\-testname bar \e
+  baz
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Take care to name your wrapper\(cqs hook events in a way which is unlikely to overlap with Git\(cqs native hooks (see \fBgithooks\fR(5)) \- a hook event named \fBmywrappertool\-validate\-commit\fR is much less likely to be added to native Git than a hook event named \fBvalidate\-commit\fR\&. If Git begins to use a hook event named the same thing as your wrapper hook, it may invoke your users\*(Aq hooks in unintended and unsupported ways\&.
+.SH "CONFIGURATION"
+.PP
+hook\&.<name>\&.command
+.RS 4
+The command to execute for
+\fBhook\&.\fR\fI<name>\fR\&.
+\fI<name>\fR
+is a unique "friendly" name that identifies this hook\&. (The hook events that trigger the command are configured with
+\fBhook\&.\fR\fI<name>\fR\fB\&.event\fR\&.) The value can be an executable path or a shell oneliner\&. If more than one value is specified for the same
+\fI<name>\fR, only the last value parsed is used\&. See
+\fBgit-hook\fR(1)\&.
+.RE
+.PP
+hook\&.<name>\&.event
+.RS 4
+The hook events that trigger
+\fBhook\&.\fR\fI<name>\fR\&. The value is the name of a hook event, like "pre\-commit" or "update"\&. (See
+\fBgithooks\fR(5)
+for a complete list of hook events\&.) On the specified event, the associated
+\fBhook\&.\fR\fI<name>\fR\fB\&.command\fR
+is executed\&. This is a multi\-valued key\&. To run
+\fBhook\&.\fR\fI<name>\fR
+on multiple events, specify the key more than once\&. An empty value resets the list of events, clearing any previously defined events for
+\fBhook\&.\fR\fI<name>\fR\&. See
+\fBgit-hook\fR(1)\&.
+.RE
+.PP
+hook\&.<name>\&.enabled
+.RS 4
+Whether the hook
+\fBhook\&.\fR\fI<name>\fR
+is enabled\&. Defaults to
+\fBtrue\fR\&. Set to
+\fBfalse\fR
+to disable the hook without removing its configuration\&. This is particularly useful when a hook is defined in a system or global config file and needs to be disabled for a specific repository\&. See
+\fBgit-hook\fR(1)\&.
 .RE
 .SH "SEE ALSO"
 .sp

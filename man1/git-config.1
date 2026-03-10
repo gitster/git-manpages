@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-09
+.\"      Date: 2026-03-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.439.gd181b9354c
+.\"    Source: Git 2.53.0.474.g7f19e4e1b6
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-03-09" "Git 2\&.53\&.0\&.439\&.gd181b9" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-03-10" "Git 2\&.53\&.0\&.474\&.g7f19e4" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1813,15 +1813,160 @@ $ git config \-\-global alias\&.last\&.command "cat\-file commit HEAD"
 .if n \{\
 .RE
 .\}
+.sp
+\fBgit\fR
+\fBlast\fR
+is equivalent to
+\fBgit\fR
+\fBcat\-file\fR
+\fBcommit\fR
+\fBHEAD\fR\&.
+.sp
+To avoid confusion and troubles with script usage, aliases that hide existing Git commands are ignored except for deprecated commands\&. Arguments are split by spaces, the usual shell quoting and escaping are supported\&. A quote pair or a backslash can be used to quote them\&.
+.sp
+Note that the first word of an alias does not necessarily have to be a command\&. It can be a command\-line option that will be passed into the invocation of
+\fBgit\fR\&. In particular, this is useful when used with
+\fB\-c\fR
+to pass in one\-time configurations or
+\fB\-p\fR
+to force pagination\&. For example,
+\fBloud\-rebase\fR
+\fB=\fR
+\fB\-c\fR
+\fBcommit\&.verbose=true\fR
+\fBrebase\fR
+can be defined such that running
+\fBgit\fR
+\fBloud\-rebase\fR
+would be equivalent to
+\fBgit\fR
+\fB\-c\fR
+\fBcommit\&.verbose=true\fR
+\fBrebase\fR\&. Also,
+\fBps\fR
+\fB=\fR
+\fB\-p\fR
+\fBstatus\fR
+would be a helpful alias since
+\fBgit\fR
+\fBps\fR
+would paginate the output of
+\fBgit\fR
+\fBstatus\fR
+where the original command does not\&.
+.sp
+If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command\&. For example, defining
+\fBalias\&.new\fR
+\fB=\fR
+!gitk
+\fB\-\-all\fR
+\fB\-\-not\fR
+\fBORIG_HEAD\fR, the invocation
+\fBgit\fR
+\fBnew\fR
+is equivalent to running the shell command
+\fBgitk\fR
+\fB\-\-all\fR
+\fB\-\-not\fR
+\fBORIG_HEAD\fR\&. Note:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Shell commands will be executed from the top\-level directory of a repository, which may not necessarily be the current directory\&.
 .RE
 .sp
-\fBgit\fR \fBlast\fR is equivalent to \fBgit\fR \fBcat\-file\fR \fBcommit\fR \fBHEAD\fR\&. To avoid confusion and troubles with script usage, aliases that hide existing Git commands are ignored except for deprecated commands\&. Arguments are split by spaces, the usual shell quoting and escaping are supported\&. A quote pair or a backslash can be used to quote them\&.
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBGIT_PREFIX\fR
+is set as returned by running
+\fBgit\fR
+\fBrev\-parse\fR
+\fB\-\-show\-prefix\fR
+from the original current directory\&. See
+\fBgit-rev-parse\fR(1)\&.
+.RE
 .sp
-+ Note that the first word of an alias does not necessarily have to be a command\&. It can be a command\-line option that will be passed into the invocation of \fBgit\fR\&. In particular, this is useful when used with \fB\-c\fR to pass in one\-time configurations or \fB\-p\fR to force pagination\&. For example, \fBloud\-rebase\fR \fB=\fR \fB\-c\fR \fBcommit\&.verbose=true\fR \fBrebase\fR can be defined such that running \fBgit\fR \fBloud\-rebase\fR would be equivalent to \fBgit\fR \fB\-c\fR \fBcommit\&.verbose=true\fR \fBrebase\fR\&. Also, \fBps\fR \fB=\fR \fB\-p\fR \fBstatus\fR would be a helpful alias since \fBgit\fR \fBps\fR would paginate the output of \fBgit\fR \fBstatus\fR where the original command does not\&.
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Shell command aliases always receive any extra arguments provided to the Git command\-line as positional arguments\&.
 .sp
-+ If the alias expansion is prefixed with an exclamation point, it will be treated as a shell command\&. For example, defining \fBalias\&.new\fR \fB=\fR !gitk \fB\-\-all\fR \fB\-\-not\fR \fBORIG_HEAD\fR, the invocation \fBgit\fR \fBnew\fR is equivalent to running the shell command \fBgitk\fR \fB\-\-all\fR \fB\-\-not\fR \fBORIG_HEAD\fR\&. Note:
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Care should be taken if your shell alias is a "one\-liner" script with multiple commands (e\&.g\&. in a pipeline), references multiple arguments, or is otherwise not able to handle positional arguments added at the end\&. For example:
+\fBalias\&.cmd\fR
+\fB=\fR
+"!echo
+\fB$1\fR
+|
+\fBgrep\fR
+\fB$2\fR" called as
+\fBgit\fR
+\fBcmd\fR
+\fB1\fR
+\fB2\fR
+will be executed as
+\fIecho $1 | grep $2 1 2\fR, which is not what you want\&.
+.RE
 .sp
-+ * Shell commands will be executed from the top\-level directory of a repository, which may not necessarily be the current directory\&. * \fBGIT_PREFIX\fR is set as returned by running \fBgit\fR \fBrev\-parse\fR \fB\-\-show\-prefix\fR from the original current directory\&. See \fBgit-rev-parse\fR(1)\&. * Shell command aliases always receive any extra arguments provided to the Git command\-line as positional arguments\&. \fB Care should be taken if your shell alias is a "one\-liner" script with multiple commands (e\&.g\&. in a pipeline), references multiple arguments, or is otherwise not able to handle positional arguments added at the end\&. For example: \fR\fB\fBalias\&.cmd\fR\fR\fB \fR\fB\fB=\fR\fR\fB "!echo \fR\fB\fB$1\fR\fR\fB | \fR\fB\fBgrep\fR\fR\fB \fR\fB\fB$2\fR\fR\fB" called as \fR\fB\fBgit\fR\fR\fB \fR\fB\fBcmd\fR\fR\fB \fR\fB\fB1\fR\fR\fB \fR\fB\fB2\fR\fR\fB will be executed as \fR\fB\fIecho $1 | grep $2 1 2\fR\fR\fB, which is not what you want\&. \fR A convenient way to deal with this is to write your script operations in an inline function that is then called with any arguments from the command\-line\&. For example \fBalias\&.cmd\fR \fB=\fR "!c() { \fBecho\fR \fB$1\fR | \fBgrep\fR \fB$2\fR ; }; \fBc\fR" will correctly execute the prior example\&. ** Setting \fBGIT_TRACE=1\fR can help you debug the command being run for your alias\&.
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A convenient way to deal with this is to write your script operations in an inline function that is then called with any arguments from the command\-line\&. For example
+\fBalias\&.cmd\fR
+\fB=\fR
+"!c() {
+\fBecho\fR
+\fB$1\fR
+|
+\fBgrep\fR
+\fB$2\fR
+; };
+\fBc\fR" will correctly execute the prior example\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Setting
+\fBGIT_TRACE=1\fR
+can help you debug the command being run for your alias\&.
+.RE
+.RE
+.RE
 .PP
 am\&.keepcr
 .RS 4
