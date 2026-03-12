@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-10
+.\"      Date: 2026-03-12
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.474.g7f19e4e1b6
+.\"    Source: Git 2.53.0.522.g67006b9db8
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-PACK" "5" "2026-03-10" "Git 2\&.53\&.0\&.474\&.g7f19e4" "Git Manual"
+.TH "GITPROTOCOL\-PACK" "5" "2026-03-12" "Git 2\&.53\&.0\&.522\&.g67006b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -58,14 +58,16 @@ An error packet is a special pkt\-line that contains an error string\&.
 Throughout the protocol, where \fBPKT\-LINE\fR(\fB\&.\&.\&.\fR) is expected, an error packet MAY be sent\&. Once this packet is sent by a client or a server, the data transfer process defined in this protocol is terminated\&.
 .SH "TRANSPORTS"
 .sp
-There are three transports over which the packfile protocol is initiated\&. The Git transport is a simple, unauthenticated server that takes the command (almost always \fIupload\-pack\fR, though Git servers can be configured to be globally writable, in which \fIreceive\- pack\fR initiation is also allowed) with which the client wishes to communicate and executes it and connects it to the requesting process\&.
+There are three transports over which the packfile protocol is initiated\&.
+.sp
+The Git transport is a simple, unauthenticated server that takes the command (almost always \fIupload\-pack\fR, though Git servers can be configured to be globally writable, in which \fIreceive\- pack\fR initiation is also allowed) with which the client wishes to communicate and executes it and connects it to the requesting process\&.
 .sp
 In the SSH transport, the client just runs the \fIupload\-pack\fR or \fIreceive\-pack\fR process on the server over the SSH protocol and then communicates with that invoked process over the SSH connection\&.
 .sp
 The file:// transport runs the \fIupload\-pack\fR or \fIreceive\-pack\fR process locally and communicates with it over a pipe\&.
 .SH "EXTRA PARAMETERS"
 .sp
-The protocol provides a mechanism in which clients can send additional information in its first message to the server\&. These are called "Extra Parameters", and are supported by the Git, SSH, and HTTP protocols\&.
+The protocol provides a mechanism in which clients can send additional information in their first message to the server\&. These are called "Extra Parameters", and are supported by the Git, SSH, and HTTP protocols\&.
 .sp
 Each Extra Parameter takes the form of \fI<key>\fR\fB=\fR\fI<value>\fR or \fI<key>\fR\&.
 .sp
@@ -130,7 +132,7 @@ $ echo \-e \-n \e
 .\}
 .SH "SSH TRANSPORT"
 .sp
-Initiating the upload\-pack or receive\-pack processes over SSH is executing the binary on the server via SSH remote execution\&. It is basically equivalent to running this:
+Initiating the \fIupload\-pack\fR or \fIreceive\-pack\fR processes over SSH is executing the binary on the server via SSH remote execution\&. It is basically equivalent to running this:
 .sp
 .if n \{\
 .RS 4
@@ -144,7 +146,7 @@ $ ssh git\&.example\&.com "git\-upload\-pack \*(Aq/project\&.git\*(Aq"
 .sp
 For a server to support Git pushing and pulling for a given user over SSH, that user needs to be able to execute one or both of those commands via the SSH shell that they are provided on login\&. On some systems, that shell access is limited to only being able to run those two commands, or even just one of them\&.
 .sp
-In an ssh:// format URI, it\(cqs absolute in the URI, so the \fI/\fR after the host name (or port number) is sent as an argument, which is then read by the remote git\-upload\-pack exactly as is, so it\(cqs effectively an absolute path in the remote filesystem\&.
+In an ssh:// format URI, it\(cqs absolute in the URI, so the \fI/\fR after the host name (or port number) is sent as an argument, which is then read by the remote \fIgit\-upload\-pack\fR exactly as is, so it\(cqs effectively an absolute path in the remote filesystem\&.
 .sp
 .if n \{\
 .RS 4
@@ -201,7 +203,8 @@ A few things to remember here:
 .sp -1
 .IP \(bu 2.3
 .\}
-The "command name" is spelled with dash (e\&.g\&. git\-upload\-pack), but this can be overridden by the client;
+The "command name" is spelled with dash (e\&.g\&.
+\fIgit\-upload\-pack\fR), but this can be overridden by the client;
 .RE
 .sp
 .RS 4
@@ -316,7 +319,7 @@ Otherwise, it enters the negotiation phase, where the client and server determin
 .RE
 .\}
 .sp
-Clients MUST send all the obj\-ids it wants from the reference discovery phase as \fIwant\fR lines\&. Clients MUST send at least one \fIwant\fR command in the request body\&. Clients MUST NOT mention an obj\-id in a \fIwant\fR command which did not appear in the response obtained through ref discovery\&.
+Clients MUST send all the obj\-ids they want from the reference discovery phase as \fIwant\fR lines\&. Clients MUST send at least one \fIwant\fR command in the request body\&. Clients MUST NOT mention an obj\-id in a \fIwant\fR command which did not appear in the response obtained through ref discovery\&.
 .sp
 The client MUST write all obj\-ids which it only has shallow copies of (meaning that it does not have the parents of a commit) as \fIshallow\fR lines so that the server is aware of the limitations of the client\(cqs history\&.
 .sp
@@ -439,7 +442,8 @@ Without either multi_ack or multi_ack_detailed:
 .sp -1
 .IP \(bu 2.3
 .\}
-upload\-pack sends "ACK obj\-id" on the first common object it finds\&. After that it says nothing until the client gives it a "done"\&.
+\fIupload\-pack\fR
+sends "ACK obj\-id" on the first common object it finds\&. After that it says nothing until the client gives it a "done"\&.
 .RE
 .sp
 .RS 4
@@ -450,7 +454,8 @@ upload\-pack sends "ACK obj\-id" on the first common object it finds\&. After th
 .sp -1
 .IP \(bu 2.3
 .\}
-upload\-pack sends "NAK" on a flush\-pkt if no common object has been found yet\&. If one has been found, and thus an ACK was already sent, it\(cqs silent on the flush\-pkt\&.
+\fIupload\-pack\fR
+sends "NAK" on a flush\-pkt if no common object has been found yet\&. If one has been found, and thus an ACK was already sent, it\(cqs silent on the flush\-pkt\&.
 .RE
 .sp
 After the client has gotten enough ACK responses that it can determine that the server has enough information to send an efficient packfile (in the canonical implementation, this is determined when it has received enough ACKs that it can color everything left in the \-\-date\-order queue as common with the server, or the \-\-date\-order queue is empty), or the client determines that it wants to give up (in the canonical implementation, this is determined when the client sends 256 \fIhave\fR lines without getting any of them ACKed by the server \- meaning there is nothing in common and the server should just send all of its objects), then the client will send a \fIdone\fR command\&. The \fIdone\fR command signals to the server that the client is ready to receive its packfile data\&.
