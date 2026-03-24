@@ -2,12 +2,12 @@
 .\"     Title: git-history
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-21
+.\"      Date: 2026-03-24
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.627.g6e8d538aab
+.\"    Source: Git 2.53.0.692.gce74208c2f
 .\"  Language: English
 .\"
-.TH "GIT\-HISTORY" "1" "2026-03-21" "Git 2\&.53\&.0\&.627\&.g6e8d53" "Git Manual"
+.TH "GIT\-HISTORY" "1" "2026-03-24" "Git 2\&.53\&.0\&.692\&.gce7420" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,6 +33,7 @@ git-history \- EXPERIMENTAL: Rewrite history
 .sp
 .nf
 \fBgit\fR \fBhistory\fR \fBreword\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)]
+\fBgit\fR \fBhistory\fR \fBsplit\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -96,6 +97,22 @@ The following commands are available to rewrite history in different ways:
 .RS 4
 Rewrite the commit message of the specified commit\&. All the other details of this commit remain unchanged\&. This command will spawn an editor with the current message of that commit\&.
 .RE
+.PP
+\fBsplit\fR \fI<commit>\fR [\fB\-\-\fR] [\fI<pathspec>\fR\&.\&.\&.]
+.RS 4
+Interactively split up <commit> into two commits by choosing hunks introduced by it that will be moved into the new split\-out commit\&. These hunks will then be written into a new commit that becomes the parent of the previous commit\&. The original commit stays intact, except that its parent will be the newly split\-out commit\&.
+.sp
+The commit messages of the split\-up commits will be asked for by launching the configured editor\&. Authorship of the commit will be the same as for the original commit\&.
+.sp
+If passed,
+\fI<pathspec>\fR
+can be used to limit which changes shall be split out of the original commit\&. Files not matching any of the pathspecs will remain part of the original commit\&. For more details, see the
+\fIpathspec\fR
+entry in
+\fBgitglossary\fR(7)\&.
+.sp
+It is invalid to select either all or no hunks, as that would lead to one of the commits becoming empty\&.
+.RE
 .SH "OPTIONS"
 .PP
 \fB\-\-dry\-run\fR
@@ -113,6 +130,49 @@ Control which references will be updated by the command, if any\&. With
 reference will be rewritten\&. Defaults to
 \fBbranches\fR\&.
 .RE
+.SH "EXAMPLES"
+.SS "Split a commit"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git log \-\-stat \-\-oneline
+3f81232 (HEAD \-> main) original
+ bar | 1 +
+ foo | 1 +
+ 2 files changed, 2 insertions(+)
+
+$ git history split HEAD
+diff \-\-git a/bar b/bar
+new file mode 100644
+index 0000000\&.\&.5716ca5
+\-\-\- /dev/null
++++ b/bar
+@@ \-0,0 +1 @@
++bar
+(1/1) Stage addition [y,n,q,a,d,p,?]? y
+
+diff \-\-git a/foo b/foo
+new file mode 100644
+index 0000000\&.\&.257cc56
+\-\-\- /dev/null
++++ b/foo
+@@ \-0,0 +1 @@
++foo
+(1/1) Stage addition [y,n,q,a,d,p,?]? n
+
+$ git log \-\-stat \-\-oneline
+7cebe64 (HEAD \-> main) original
+ foo | 1 +
+ 1 file changed, 1 insertion(+)
+d1582f3 split\-out commit
+ bar | 1 +
+ 1 file changed, 1 insertion(+)
+.fi
+.if n \{\
+.RE
+.\}
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
