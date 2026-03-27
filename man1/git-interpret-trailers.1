@@ -2,12 +2,12 @@
 .\"     Title: git-interpret-trailers
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-25
+.\"      Date: 2026-03-27
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.719.g41688c1a23
+.\"    Source: Git 2.53.0.749.g5361983c07
 .\"  Language: English
 .\"
-.TH "GIT\-INTERPRET\-TRAILERS" "1" "2026-03-25" "Git 2\&.53\&.0\&.719\&.g41688c" "Git Manual"
+.TH "GIT\-INTERPRET\-TRAILERS" "1" "2026-03-27" "Git 2\&.53\&.0\&.749\&.g536198" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,9 +32,9 @@ git-interpret-trailers \- Add or parse structured information in commit messages
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit interpret\-trailers\fR [\-\-in\-place] [\-\-trim\-empty]
-                        [(\-\-trailer (<key>|<key\-alias>)[(=|:)<value>])\&...\:]
-                        [\-\-parse] [<file>\&...\:]
+\fBgit\fR \fBinterpret\-trailers\fR [\fB\-\-in\-place\fR] [\fB\-\-trim\-empty\fR]
+			[(\fB\-\-trailer\fR (\fI<key>\fR|\fI<key\-alias>\fR)[(\fB=\fR|\fB:\fR)\fI<value>\fR])\&...\:]
+			[\fB\-\-parse\fR] [\fI<file>\fR\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -55,17 +55,17 @@ Signed\-off\-by: Bob <bob@example\&.com>
 .RE
 .\}
 .sp
-the last two lines starting with "Signed\-off\-by" are trailers\&.
+the last two lines starting with \fBSigned\-off\-by\fR are trailers\&.
 .sp
-This command reads commit messages from either the <file> arguments or the standard input if no <file> is specified\&. If \fB\-\-parse\fR is specified, the output consists of the parsed trailers coming from the input, without influencing them with any command line options or configuration variables\&.
+This command reads commit messages from either the \fI<file>\fR arguments or the standard input if no \fI<file>\fR is specified\&. If \fB\-\-parse\fR is specified, the output consists of the parsed trailers coming from the input, without influencing them with any command line options or configuration variables\&.
 .sp
-Otherwise, this command applies \fBtrailer\&.*\fR configuration variables (which could potentially add new trailers, as well as reposition them), as well as any command line arguments that can override configuration variables (such as \fB\-\-trailer=\&.\&.\fR\&. which could also add new trailers), to each input file\&. The result is emitted on the standard output\&.
+Otherwise, this command applies \fBtrailer\&.\fR\fI<key\-alias>\fR configuration variables (which could potentially add new trailers, as well as reposition them), as well as any command line arguments that can override configuration variables (such as \fB\-\-trailer=\&.\&.\fR\&. which could also add new trailers), to each input file\&. The result is emitted on the standard output\&.
 .sp
-This command can also operate on the output of \fBgit-format-patch\fR(1), which is more elaborate than a plain commit message\&. Namely, such output includes a commit message (as above), a "\-\-\-" divider line, and a patch part\&. For these inputs, the divider and patch parts are not modified by this command and are emitted as is on the output, unless \fB\-\-no\-divider\fR is specified\&.
+This command can also operate on the output of \fBgit-format-patch\fR(1), which is more elaborate than a plain commit message\&. Namely, such output includes a commit message (as above), a \fB\-\-\-\fR divider line, and a patch part\&. For these inputs, the divider and patch parts are not modified by this command and are emitted as is on the output, unless \fB\-\-no\-divider\fR is specified\&.
 .sp
 Some configuration variables control the way the \fB\-\-trailer\fR arguments are applied to each input and the way any existing trailer in the input is changed\&. They also make it possible to automatically add some trailers\&.
 .sp
-By default, a \fI<key>=<value>\fR or \fI<key>:<value>\fR argument given using \fB\-\-trailer\fR will be appended after the existing trailers only if the last trailer has a different (<key>, <value>) pair (or if there is no existing trailer)\&. The <key> and <value> parts will be trimmed to remove starting and trailing whitespace, and the resulting trimmed <key> and <value> will appear in the output like this:
+By default, a \fI<key>\fR\fB=\fR\fI<value>\fR or \fI<key>\fR\fB:\fR\fI<value>\fR argument given using \fB\-\-trailer\fR will be appended after the existing trailers only if the last trailer has a different (\fI<key>\fR, \fI<value>\fR) pair (or if there is no existing trailer)\&. The \fI<key>\fR and \fI<value>\fR parts will be trimmed to remove starting and trailing whitespace, and the resulting trimmed \fI<key>\fR and \fI<value>\fR will appear in the output like this:
 .sp
 .if n \{\
 .RS 4
@@ -77,9 +77,9 @@ key: value
 .RE
 .\}
 .sp
-This means that the trimmed <key> and <value> will be separated by \*(Aq: \*(Aq (one colon followed by one space)\&.
+This means that the trimmed \fI<key>\fR and \fI<value>\fR will be separated by "\fB:\fR\ \&" (one colon followed by one space)\&.
 .sp
-For convenience, a <key\-alias> can be configured to make using \fB\-\-trailer\fR shorter to type on the command line\&. This can be configured using the \fItrailer\&.<key\-alias>\&.key\fR configuration variable\&. The <keyAlias> must be a prefix of the full <key> string, although case sensitivity does not matter\&. For example, if you have
+For convenience, a \fI<key\-alias>\fR can be configured to make using \fB\-\-trailer\fR shorter to type on the command line\&. This can be configured using the \fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.key\fR configuration variable\&. The \fI<key\-alias>\fR must be a prefix of the full \fI<key>\fR string, although case sensitivity does not matter\&. For example, if you have
 .sp
 .if n \{\
 .RS 4
@@ -95,9 +95,9 @@ in your configuration, you only need to specify \fB\-\-trailer=\fR"sign: \fBfoo\
 .sp
 By default the new trailer will appear at the end of all the existing trailers\&. If there is no existing trailer, the new trailer will appear at the end of the input\&. A blank line will be added before the new trailer if there isn\(cqt one already\&.
 .sp
-Existing trailers are extracted from the input by looking for a group of one or more lines that (i) is all trailers, or (ii) contains at least one Git\-generated or user\-configured trailer and consists of at least 25% trailers\&. The group must be preceded by one or more empty (or whitespace\-only) lines\&. The group must either be at the end of the input or be the last non\-whitespace lines before a line that starts with \fI\-\-\-\fR (followed by a space or the end of the line)\&.
+Existing trailers are extracted from the input by looking for a group of one or more lines that (i) is all trailers, or (ii) contains at least one Git\-generated or user\-configured trailer and consists of at least 25% trailers\&. The group must be preceded by one or more empty (or whitespace\-only) lines\&. The group must either be at the end of the input or be the last non\-whitespace lines before a line that starts with \fB\-\-\-\fR (followed by a space or the end of the line)\&.
 .sp
-When reading trailers, there can be no whitespace before or inside the <key>, but any number of regular space and tab characters are allowed between the <key> and the separator\&. There can be whitespaces before, inside or after the <value>\&. The <value> may be split over multiple lines with each subsequent line starting with at least one whitespace, like the "folding" in RFC 822\&. Example:
+When reading trailers, there can be no whitespace before or inside the \fI<key>\fR, but any number of regular space and tab characters are allowed between the \fI<key>\fR and the separator\&. There can be whitespaces before, inside or after the \fI<value>\fR\&. The \fI<value>\fR may be split over multiple lines with each subsequent line starting with at least one whitespace, like the "folding" in RFC 822\&. Example:
 .sp
 .if n \{\
 .RS 4
@@ -113,151 +113,186 @@ key: This is a very long value, with spaces and
 Note that trailers do not follow (nor are they intended to follow) many of the rules for RFC 822 headers\&. For example they do not follow the encoding rule\&.
 .SH "OPTIONS"
 .PP
-\-\-in\-place
+\fB\-\-in\-place\fR, \fB\-\-no\-in\-place\fR
 .RS 4
-Edit the files in place\&.
+Edit the files in place\&. The default is
+\fB\-\-no\-in\-place\fR\&.
 .RE
 .PP
-\-\-trim\-empty
+\fB\-\-trim\-empty\fR, \fB\-\-no\-trim\-empty\fR
 .RS 4
-If the <value> part of any trailer contains only whitespace, the whole trailer will be removed from the output\&. This applies to existing trailers as well as new trailers\&.
+If the
+\fI<value>\fR
+part of any trailer contains only whitespace, the whole trailer will be removed from the output\&. This applies to existing trailers as well as new trailers\&.
+.sp
+The default is
+\fB\-\-no\-trim\-empty\fR\&.
 .RE
 .PP
-\-\-trailer <key>[(=|:)<value>]
+\fB\-\-trailer=\fR\fI<key>\fR[(\fB=\fR|\fB:\fR)\fI<value>\fR], \fB\-\-no\-trailer\fR
 .RS 4
-Specify a (<key>, <value>) pair that should be applied as a trailer to the inputs\&. See the description of this command\&.
+Specify a (\fI<key>\fR,
+\fI<value>\fR) pair that should be applied as a trailer to the inputs\&. See the description of this command\&. Can be given multiple times\&.
+.sp
+Use
+\fB\-\-no\-trailer\fR
+to reset the list\&.
 .RE
 .PP
-\-\-where <placement>, \-\-no\-where
+\fB\-\-where=\fR\fI<placement>\fR, \fB\-\-no\-where\fR
 .RS 4
 Specify where all new trailers will be added\&. A setting provided with
-\fI\-\-where\fR
+\fB\-\-where\fR
 overrides the
 \fBtrailer\&.where\fR
 and any applicable
-\fBtrailer\&.\fR\fI<keyAlias>\fR\fB\&.where\fR
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.where\fR
 configuration variables and applies to all
-\fI\-\-trailer\fR
+\fB\-\-trailer\fR
 options until the next occurrence of
-\fI\-\-where\fR
+\fB\-\-where\fR
 or
-\fI\-\-no\-where\fR\&. Upon encountering
-\fI\-\-no\-where\fR, clear the effect of any previous use of
-\fI\-\-where\fR, such that the relevant configuration variables are no longer overridden\&. Possible placements are
+\fB\-\-no\-where\fR\&. Possible placements are
 \fBafter\fR,
 \fBbefore\fR,
 \fBend\fR
 or
 \fBstart\fR\&.
+.sp
+Use
+\fB\-\-no\-where\fR
+to clear the effect of any previous use of
+\fB\-\-where\fR, such that the relevant configuration variables are no longer overridden\&.
 .RE
 .PP
-\-\-if\-exists <action>, \-\-no\-if\-exists
+\fB\-\-if\-exists=\fR\fI<action>\fR, \fB\-\-no\-if\-exists\fR
 .RS 4
-Specify what action will be performed when there is already at least one trailer with the same <key> in the input\&. A setting provided with
-\fI\-\-if\-exists\fR
+Specify what action will be performed when there is already at least one trailer with the same
+\fI<key>\fR
+in the input\&. A setting provided with
+\fB\-\-if\-exists\fR
 overrides the
 \fBtrailer\&.ifExists\fR
 and any applicable
-\fBtrailer\&.\fR\fI<keyAlias>\fR\fB\&.ifExists\fR
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.ifExists\fR
 configuration variables and applies to all
-\fI\-\-trailer\fR
+\fB\-\-trailer\fR
 options until the next occurrence of
-\fI\-\-if\-exists\fR
+\fB\-\-if\-exists\fR
 or
-\fI\-\-no\-if\-exists\fR\&. Upon encountering
-\fI\-\-no\-if\-exists\fR, clear the effect of any previous use of
-\fI\-\-if\-exists\fR, such that the relevant configuration variables are no longer overridden\&. Possible actions are
+\fB\-\-no\-if\-exists\fR\&. Possible actions are
 \fBaddIfDifferent\fR,
 \fBaddIfDifferentNeighbor\fR,
 \fBadd\fR,
 \fBreplace\fR
 and
 \fBdoNothing\fR\&.
+.sp
+Use
+\fB\-\-no\-if\-exists\fR
+to clear the effect of any previous use of
+\fB\-\-if\-exists\fR, such that the relevant configuration variables are no longer overridden\&.
 .RE
 .PP
-\-\-if\-missing <action>, \-\-no\-if\-missing
+\fB\-\-if\-missing=\fR\fI<action>\fR, \fB\-\-no\-if\-missing\fR
 .RS 4
-Specify what action will be performed when there is no other trailer with the same <key> in the input\&. A setting provided with
-\fI\-\-if\-missing\fR
+Specify what action will be performed when there is no other trailer with the same
+\fI<key>\fR
+in the input\&. A setting provided with
+\fB\-\-if\-missing\fR
 overrides the
 \fBtrailer\&.ifMissing\fR
 and any applicable
-\fBtrailer\&.\fR\fI<keyAlias>\fR\fB\&.ifMissing\fR
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.ifMissing\fR
 configuration variables and applies to all
-\fI\-\-trailer\fR
+\fB\-\-trailer\fR
 options until the next occurrence of
-\fI\-\-if\-missing\fR
+\fB\-\-if\-missing\fR
 or
-\fI\-\-no\-if\-missing\fR\&. Upon encountering
-\fI\-\-no\-if\-missing\fR, clear the effect of any previous use of
-\fI\-\-if\-missing\fR, such that the relevant configuration variables are no longer overridden\&. Possible actions are
+\fB\-\-no\-if\-missing\fR\&. Possible actions are
 \fBdoNothing\fR
 or
 \fBadd\fR\&.
+.sp
+Use
+\fB\-\-no\-if\-missing\fR
+to clear the effect of any previous use of
+\fB\-\-if\-missing\fR, such that the relevant configuration variables are no longer overridden\&.
 .RE
 .PP
-\-\-only\-trailers
+\fB\-\-only\-trailers\fR, \fB\-\-no\-only\-trailers\fR
 .RS 4
-Output only the trailers, not any other parts of the input\&.
+Output only the trailers, not any other parts of the input\&. The default is
+\fB\-\-no\-only\-trailers\fR\&.
 .RE
 .PP
-\-\-only\-input
+\fB\-\-only\-input\fR, \fB\-\-no\-only\-input\fR
 .RS 4
 Output only trailers that exist in the input; do not add any from the command\-line or by applying
-\fBtrailer\&.*\fR
-configuration variables\&.
+\fBtrailer\&.\fR\fI<key\-alias>\fR
+configuration variables\&. The default is
+\fB\-\-no\-only\-input\fR\&.
 .RE
 .PP
-\-\-unfold
+\fB\-\-unfold\fR, \fB\-\-no\-unfold\fR
 .RS 4
-If a trailer has a value that runs over multiple lines (aka "folded"), reformat the value into a single line\&.
+If a trailer has a value that runs over multiple lines (aka "folded"), reformat the value into a single line\&. The default is
+\fB\-\-no\-unfold\fR\&.
 .RE
 .PP
-\-\-parse
+\fB\-\-parse\fR
 .RS 4
 A convenience alias for
 \fB\-\-only\-trailers\fR
 \fB\-\-only\-input\fR
-\fB\-\-unfold\fR\&. This makes it easier to only see the trailers coming from the input without influencing them with any command line options or configuration variables, while also making the output machine\-friendly with \-\-unfold\&.
+\fB\-\-unfold\fR\&. This makes it easier to only see the trailers coming from the input without influencing them with any command line options or configuration variables, while also making the output machine\-friendly with
+\fB\-\-unfold\fR\&.
+.sp
+There is no convenience alias to negate this alias\&.
 .RE
 .PP
-\-\-no\-divider
+\fB\-\-divider\fR, \fB\-\-no\-divider\fR
 .RS 4
-Do not treat
+Treat
 \fB\-\-\-\fR
-as the end of the commit message\&. Use this when you know your input contains just the commit message itself (and not an email or the output of
-\fBgit\fR
-\fBformat\-patch\fR)\&.
+as the end of the commit message\&. This is the default\&. Use
+\fB\-\-no\-divider\fR
+when you know your input contains just the commit message itself (and not an email or the output of
+\fBgit-format-patch\fR(1))\&.
 .RE
 .SH "CONFIGURATION VARIABLES"
 .sp
 Everything below this line in this section is selectively included from the \fBgit-config\fR(1) documentation\&. The content is the same as what\(cqs found there:
 .PP
-trailer\&.separators
+\fBtrailer\&.separators\fR
 .RS 4
 This option tells which characters are recognized as trailer separators\&. By default only
-\fI:\fR
+\fB:\fR
 is recognized as a trailer separator, except that
-\fI=\fR
+\fB=\fR
 is always accepted on the command line for compatibility with other git commands\&.
 .sp
 The first character given by this option will be the default character used when another separator is not specified in the config for this trailer\&.
 .sp
-For example, if the value for this option is "%=$", then only lines using the format
+For example, if the value for this option is
+\fB%=$\fR, then only lines using the format
 \fI<key><sep><value>\fR
-with <sep> containing
-\fI%\fR,
-\fI=\fR
+with
+\fI<sep>\fR
+containing
+\fB%\fR,
+\fB=\fR
 or
-\fI$\fR
+\fB$\fR
 and then spaces will be considered trailers\&. And
-\fI%\fR
+\fB%\fR
 will be the default separator used, so by default trailers will appear like:
-\fI<key>% <value>\fR
+\fI<key>\fR\fB%\fR
+\fI<value>\fR
 (one percent sign and one space will appear between the key and the value)\&.
 .RE
 .PP
-trailer\&.where
+\fBtrailer\&.where\fR
 .RS 4
 This option tells where a new trailer will be added\&.
 .sp
@@ -275,15 +310,19 @@ If it is
 \fBstart\fR, then each new trailer will appear at the start, instead of the end, of the existing trailers\&.
 .sp
 If it is
-\fBafter\fR, then each new trailer will appear just after the last trailer with the same <key>\&.
+\fBafter\fR, then each new trailer will appear just after the last trailer with the same
+\fI<key>\fR\&.
 .sp
 If it is
-\fBbefore\fR, then each new trailer will appear just before the first trailer with the same <key>\&.
+\fBbefore\fR, then each new trailer will appear just before the first trailer with the same
+\fI<key>\fR\&.
 .RE
 .PP
-trailer\&.ifexists
+\fBtrailer\&.ifexists\fR
 .RS 4
-This option makes it possible to choose what action will be performed when there is already at least one trailer with the same <key> in the input\&.
+This option makes it possible to choose what action will be performed when there is already at least one trailer with the same
+\fI<key>\fR
+in the input\&.
 .sp
 The valid values for this option are:
 \fBaddIfDifferentNeighbor\fR
@@ -295,24 +334,34 @@ or
 \fBdoNothing\fR\&.
 .sp
 With
-\fBaddIfDifferentNeighbor\fR, a new trailer will be added only if no trailer with the same (<key>, <value>) pair is above or below the line where the new trailer will be added\&.
+\fBaddIfDifferentNeighbor\fR, a new trailer will be added only if no trailer with the same (\fI<key>\fR,
+\fI<value>\fR) pair is above or below the line where the new trailer will be added\&.
 .sp
 With
-\fBaddIfDifferent\fR, a new trailer will be added only if no trailer with the same (<key>, <value>) pair is already in the input\&.
+\fBaddIfDifferent\fR, a new trailer will be added only if no trailer with the same (\fI<key>\fR,
+\fI<value>\fR) pair is already in the input\&.
 .sp
 With
-\fBadd\fR, a new trailer will be added, even if some trailers with the same (<key>, <value>) pair are already in the input\&.
+\fBadd\fR, a new trailer will be added, even if some trailers with the same (\fI<key>\fR,
+\fI<value>\fR) pair are already in the input\&.
 .sp
 With
-\fBreplace\fR, an existing trailer with the same <key> will be deleted and the new trailer will be added\&. The deleted trailer will be the closest one (with the same <key>) to the place where the new one will be added\&.
+\fBreplace\fR, an existing trailer with the same
+\fI<key>\fR
+will be deleted and the new trailer will be added\&. The deleted trailer will be the closest one (with the same
+\fI<key>\fR) to the place where the new one will be added\&.
 .sp
 With
-\fBdoNothing\fR, nothing will be done; that is no new trailer will be added if there is already one with the same <key> in the input\&.
+\fBdoNothing\fR, nothing will be done; that is no new trailer will be added if there is already one with the same
+\fI<key>\fR
+in the input\&.
 .RE
 .PP
-trailer\&.ifmissing
+\fBtrailer\&.ifmissing\fR
 .RS 4
-This option makes it possible to choose what action will be performed when there is not yet any trailer with the same <key> in the input\&.
+This option makes it possible to choose what action will be performed when there is not yet any trailer with the same
+\fI<key>\fR
+in the input\&.
 .sp
 The valid values for this option are:
 \fBadd\fR
@@ -326,80 +375,126 @@ With
 \fBdoNothing\fR, nothing will be done\&.
 .RE
 .PP
-trailer\&.<keyAlias>\&.key
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.key\fR
 .RS 4
-Defines a <keyAlias> for the <key>\&. The <keyAlias> must be a prefix (case does not matter) of the <key>\&. For example, in
+Defines a
+\fI<key\-alias>\fR
+for the
+\fI<key>\fR\&. The
+\fI<key\-alias>\fR
+must be a prefix (case does not matter) of the
+\fI<key>\fR\&. For example, in
 \fBgit\fR
 \fBconfig\fR
 \fBtrailer\&.ack\&.key\fR
-"Acked\-by" the "Acked\-by" is the <key> and the "ack" is the <keyAlias>\&. This configuration allows the shorter
+"Acked\-by" the
+\fBAcked\-by\fR
+is the
+\fI<key>\fR
+and the
+\fBack\fR
+is the
+\fI<key\-alias>\fR\&. This configuration allows the shorter
 \fB\-\-trailer\fR
-"ack:\fB\&.\&.\&.\fR" invocation on the command line using the "ack" <keyAlias> instead of the longer
+"ack:\fB\&.\&.\&.\fR" invocation on the command line using the "ack"
+\fI<key\-alias>\fR
+instead of the longer
 \fB\-\-trailer\fR
 "Acked\-by:\fB\&.\&.\&.\fR"\&.
 .sp
-At the end of the <key>, a separator can appear and then some space characters\&. By default the only valid separator is
-\fI:\fR, but this can be changed using the
+At the end of the
+\fI<key>\fR, a separator can appear and then some space characters\&. By default the only valid separator is
+\fB:\fR, but this can be changed using the
 \fBtrailer\&.separators\fR
 config variable\&.
 .sp
 If there is a separator in the key, then it overrides the default separator when adding the trailer\&.
 .RE
 .PP
-trailer\&.<keyAlias>\&.where
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.where\fR
 .RS 4
 This option takes the same values as the
-\fItrailer\&.where\fR
-configuration variable and it overrides what is specified by that option for trailers with the specified <keyAlias>\&.
+\fBtrailer\&.where\fR
+configuration variable and it overrides what is specified by that option for trailers with the specified
+\fI<key\-alias>\fR\&.
 .RE
 .PP
-trailer\&.<keyAlias>\&.ifexists
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.ifexists\fR
 .RS 4
 This option takes the same values as the
-\fItrailer\&.ifexists\fR
-configuration variable and it overrides what is specified by that option for trailers with the specified <keyAlias>\&.
+\fBtrailer\&.ifexists\fR
+configuration variable and it overrides what is specified by that option for trailers with the specified
+\fI<key\-alias>\fR\&.
 .RE
 .PP
-trailer\&.<keyAlias>\&.ifmissing
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.ifmissing\fR
 .RS 4
 This option takes the same values as the
-\fItrailer\&.ifmissing\fR
-configuration variable and it overrides what is specified by that option for trailers with the specified <keyAlias>\&.
+\fBtrailer\&.ifmissing\fR
+configuration variable and it overrides what is specified by that option for trailers with the specified
+\fI<key\-alias>\fR\&.
 .RE
 .PP
-trailer\&.<keyAlias>\&.command
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.command\fR
 .RS 4
 Deprecated in favor of
-\fItrailer\&.<keyAlias>\&.cmd\fR\&. This option behaves in the same way as
-\fItrailer\&.<keyAlias>\&.cmd\fR, except that it doesn\(cqt pass anything as argument to the specified command\&. Instead the first occurrence of substring $ARG is replaced by the <value> that would be passed as argument\&.
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.cmd\fR\&. This option behaves in the same way as
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.cmd\fR, except that it doesn\(cqt pass anything as argument to the specified command\&. Instead the first occurrence of substring
+\fB$ARG\fR
+is replaced by the
+\fI<value>\fR
+that would be passed as argument\&.
 .sp
-Note that $ARG in the user\(cqs command is only replaced once and that the original way of replacing $ARG is not safe\&.
+Note that
+\fB$ARG\fR
+in the user\(cqs command is only replaced once and that the original way of replacing
+\fB$ARG\fR
+is not safe\&.
 .sp
 When both
-\fItrailer\&.<keyAlias>\&.cmd\fR
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.cmd\fR
 and
-\fItrailer\&.<keyAlias>\&.command\fR
-are given for the same <keyAlias>,
-\fItrailer\&.<keyAlias>\&.cmd\fR
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.command\fR
+are given for the same
+\fI<key\-alias>\fR,
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.cmd\fR
 is used and
-\fItrailer\&.<keyAlias>\&.command\fR
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.command\fR
 is ignored\&.
 .RE
 .PP
-trailer\&.<keyAlias>\&.cmd
+\fBtrailer\&.\fR\fI<key\-alias>\fR\fB\&.cmd\fR
 .RS 4
-This option can be used to specify a shell command that will be called once to automatically add a trailer with the specified <keyAlias>, and then called each time a
-\fI\-\-trailer <keyAlias>=<value>\fR
-argument is specified to modify the <value> of the trailer that this option would produce\&.
+This option can be used to specify a shell command that will be called once to automatically add a trailer with the specified
+\fI<key\-alias>\fR, and then called each time a
+\fB\-\-trailer\fR
+\fI<key\-alias>\fR\fB=\fR\fI<value>\fR
+argument is specified to modify the
+\fI<value>\fR
+of the trailer that this option would produce\&.
 .sp
-When the specified command is first called to add a trailer with the specified <keyAlias>, the behavior is as if a special
-\fI\-\-trailer <keyAlias>=<value>\fR
-argument was added at the beginning of the "git interpret\-trailers" command, where <value> is taken to be the standard output of the command with any leading and trailing whitespace trimmed off\&.
+When the specified command is first called to add a trailer with the specified
+\fI<key\-alias>\fR, the behavior is as if a special
+\fB\-\-trailer\fR
+\fI<key\-alias>\fR\fB=\fR\fI<value>\fR
+argument was added at the beginning of
+\fBgit-interpret-trailers\fR(1), where
+\fI<value>\fR
+is taken to be the standard output of the command with any leading and trailing whitespace trimmed off\&.
 .sp
 If some
-\fI\-\-trailer <keyAlias>=<value>\fR
-arguments are also passed on the command line, the command is called again once for each of these arguments with the same <keyAlias>\&. And the <value> part of these arguments, if any, will be passed to the command as its first argument\&. This way the command can produce a <value> computed from the <value> passed in the
-\fI\-\-trailer <keyAlias>=<value>\fR
+\fB\-\-trailer\fR
+\fI<key\-alias>\fR\fB=\fR\fI<value>\fR
+arguments are also passed on the command line, the command is called again once for each of these arguments with the same
+\fI<key\-alias>\fR\&. And the
+\fI<value>\fR
+part of these arguments, if any, will be passed to the command as its first argument\&. This way the command can produce a
+\fI<value>\fR
+computed from the
+\fI<value>\fR
+passed in the
+\fB\-\-trailer\fR
+\fI<key\-alias>\fR\fB=\fR\fI<value>\fR
 argument\&.
 .RE
 .SH "EXAMPLES"
@@ -413,9 +508,9 @@ argument\&.
 .IP \(bu 2.3
 .\}
 Configure a
-\fIsign\fR
+\fBsign\fR
 trailer with a
-\fISigned\-off\-by\fR
+\fBSigned\-off\-by\fR
 key, and then add two of these trailers to a commit message file:
 .sp
 .if n \{\
@@ -485,9 +580,9 @@ Acked\-by: Alice <alice@example\&.com>
 .IP \(bu 2.3
 .\}
 Extract the last commit as a patch, and add a
-\fICc\fR
+\fBCc\fR
 and a
-\fIReviewed\-by\fR
+\fBReviewed\-by\fR
 trailer to it:
 .sp
 .if n \{\
@@ -512,8 +607,8 @@ $ git interpret\-trailers \-\-trailer \*(AqCc: Alice <alice@example\&.com>\*(Aq 
 .IP \(bu 2.3
 .\}
 Configure a
-\fIsign\fR
-trailer with a command to automatically add a \*(AqSigned\-off\-by: \*(Aq with the author information only if there is no \*(AqSigned\-off\-by: \*(Aq already, and show how it works:
+\fBsign\fR
+trailer with a command to automatically add a "\fBSigned\-off\-by:\fR\ \&" with the author information only if there is no "\fBSigned\-off\-by:\fR\ \&" already, and show how it works:
 .sp
 .if n \{\
 .RS 4
@@ -560,10 +655,8 @@ Signed\-off\-by: Alice <alice@example\&.com>
 .IP \(bu 2.3
 .\}
 Configure a
-\fIfix\fR
-trailer with a key that contains a
-\fI#\fR
-and no space after this character, and show how it works:
+\fBfix\fR
+trailer with a key that contains a # and no space after this character, and show how it works:
 .sp
 .if n \{\
 .RS 4
@@ -590,7 +683,7 @@ Fix #42
 .IP \(bu 2.3
 .\}
 Configure a
-\fIhelp\fR
+\fBhelp\fR
 trailer with a cmd use a script
 \fBglog\-find\-author\fR
 which search specified author identity from git log in git repository and show how it works:
@@ -631,7 +724,7 @@ Helped\-by: Christian Couder <christian\&.couder@gmail\&.com>
 .IP \(bu 2.3
 .\}
 Configure a
-\fIref\fR
+\fBref\fR
 trailer with a cmd use a script
 \fBglog\-grep\fR
 to grep last relevant commit from git log in the git repository and show how it works:
@@ -671,7 +764,7 @@ Reference\-to: 8bc9a0c769 (Add copyright notices\&., 2005\-04\-07)
 .IP \(bu 2.3
 .\}
 Configure a
-\fIsee\fR
+\fBsee\fR
 trailer with a command to show the subject of a commit that is related, and show how it works:
 .sp
 .if n \{\
@@ -711,10 +804,8 @@ See\-also: fe3187489d69c4 (subject of related commit)
 .sp -1
 .IP \(bu 2.3
 .\}
-Configure a commit template with some trailers with empty values (using sed to show and keep the trailing spaces at the end of the trailers), then configure a commit\-msg hook that uses
-\fIgit interpret\-trailers\fR
-to remove trailers with empty values and to add a
-\fIgit\-version\fR
+Configure a commit template with some trailers with empty values (using sed to show and keep the trailing spaces at the end of the trailers), then configure a commit\-msg hook that uses git\-interpret\-trailers(1) to remove trailers with empty values and to add a
+\fBgit\-version\fR
 trailer:
 .sp
 .if n \{\

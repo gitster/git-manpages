@@ -2,12 +2,12 @@
 .\"     Title: githooks
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-25
+.\"      Date: 2026-03-27
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.719.g41688c1a23
+.\"    Source: Git 2.53.0.749.g5361983c07
 .\"  Language: English
 .\"
-.TH "GITHOOKS" "5" "2026-03-25" "Git 2\&.53\&.0\&.719\&.g41688c" "Git Manual"
+.TH "GITHOOKS" "5" "2026-03-27" "Git 2\&.53\&.0\&.749\&.g536198" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -338,9 +338,20 @@ When enabled, the default \fIpost\-update\fR hook runs \fBgit\fR \fBupdate\-serv
 Both standard output and standard error output are forwarded to \fBgit\fR \fBsend\-pack\fR on the other end, so you can simply \fBecho\fR messages for the user\&.
 .SS "reference\-transaction"
 .sp
-This hook is invoked by any Git command that performs reference updates\&. It executes whenever a reference transaction is prepared, committed or aborted and may thus get called multiple times\&. The hook also supports symbolic reference updates\&.
+This hook is invoked by any Git command that performs reference updates\&. It executes whenever a reference transaction is preparing, prepared, committed or aborted and may thus get called multiple times\&. The hook also supports symbolic reference updates\&.
 .sp
 The hook takes exactly one argument, which is the current state the given reference transaction is in:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"preparing": All reference updates have been queued to the transaction but references are not yet locked on disk\&.
+.RE
 .sp
 .RS 4
 .ie n \{\
@@ -387,11 +398,11 @@ For each reference update that was added to the transaction, the hook receives o
 .RE
 .\}
 .sp
-where \fI<old\-value>\fR is the old object name passed into the reference transaction, \fI<new\-value>\fR is the new object name to be stored in the ref and \fI<ref\-name>\fR is the full name of the ref\&. When force updating the reference regardless of its current value or when the reference is to be created anew, \fI<old\-value>\fR is the all\-zeroes object name\&. To distinguish these cases, you can inspect the current value of \fI<ref\-name>\fR via \fBgit\fR \fBrev\-parse\fR\&.
+where \fI<old\-value>\fR is the old object name passed into the reference transaction, \fI<new\-value>\fR is the new object name to be stored in the ref and \fI<ref\-name>\fR is the full name of the ref\&. When force updating the reference regardless of its current value or when the reference is to be created anew, \fI<old\-value>\fR is the all\-zeroes object name\&. To distinguish these cases, you can inspect the current value of \fI<ref\-name>\fR via \fBgit\fR \fBrev\-parse\fR\&. During the "preparing" state, symbolic references are not resolved: \fI<ref\-name>\fR will reflect the symbolic reference itself rather than the object it points to\&.
 .sp
 For symbolic reference updates the <old_value> and \fI<new\-value>\fR fields could denote references instead of objects\&. A reference will be denoted with a \fIref:\fR prefix, like \fBref:\fR\fI<ref\-target>\fR\&.
 .sp
-The exit status of the hook is ignored for any state except for the "prepared" state\&. In the "prepared" state, a non\-zero exit status will cause the transaction to be aborted\&. The hook will not be called with "aborted" state in that case\&.
+The exit status of the hook is ignored for any state except for the "preparing" and "prepared" states\&. In these states, a non\-zero exit status will cause the transaction to be aborted\&. The hook will not be called with "aborted" state in that case\&.
 .SS "push\-to\-checkout"
 .sp
 This hook is invoked by \fBgit-receive-pack\fR(1) when it reacts to \fBgit\fR \fBpush\fR and updates reference(s) in its repository, and when the push tries to update the branch that is currently checked out and the \fBreceive\&.denyCurrentBranch\fR configuration variable is set to \fBupdateInstead\fR\&. Such a push by default is refused if the working tree and the index of the remote repository has any difference from the currently checked out commit; when both the working tree and the index match the current commit, they are updated to match the newly pushed tip of the branch\&. This hook is to be used to override the default behaviour\&.
