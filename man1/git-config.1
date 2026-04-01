@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-03-30
+.\"      Date: 2026-04-01
 .\"    Manual: Git Manual
-.\"    Source: Git 2.53.0.764.g270e10ad6d
+.\"    Source: Git 2.53.0.794.gcf2139f8e1
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-03-30" "Git 2\&.53\&.0\&.764\&.g270e10" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-04-01" "Git 2\&.53\&.0\&.794\&.gcf2139" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -7505,6 +7505,40 @@ http\&.keepAliveCount
 Specifies how many TCP keepalive probes to send before giving up and terminating the connection (if supported by the OS)\&. If unset, curl\(cqs default value is used\&. Can be overridden by the
 \fBGIT_HTTP_KEEPALIVE_COUNT\fR
 environment variable\&.
+.RE
+.PP
+http\&.retryAfter
+.RS 4
+Default wait time in seconds before retrying when a server returns HTTP 429 (Too Many Requests) without a Retry\-After header\&. Defaults to 0 (retry immediately)\&. When a Retry\-After header is present, its value takes precedence over this setting; however, automatic use of the server\-provided
+\fBRetry\-After\fR
+header requires libcurl 7\&.66\&.0 or later\&. On older versions, configure this setting manually to control the retry delay\&. Can be overridden by the
+\fBGIT_HTTP_RETRY_AFTER\fR
+environment variable\&. See also
+\fBhttp\&.maxRetries\fR
+and
+\fBhttp\&.maxRetryTime\fR\&.
+.RE
+.PP
+http\&.maxRetries
+.RS 4
+Maximum number of times to retry after receiving HTTP 429 (Too Many Requests) responses\&. Set to 0 (the default) to disable retries\&. Can be overridden by the
+\fBGIT_HTTP_MAX_RETRIES\fR
+environment variable\&. See also
+\fBhttp\&.retryAfter\fR
+and
+\fBhttp\&.maxRetryTime\fR\&.
+.RE
+.PP
+http\&.maxRetryTime
+.RS 4
+Maximum time in seconds to wait for a single retry attempt when handling HTTP 429 (Too Many Requests) responses\&. If the server requests a delay (via Retry\-After header) or if
+\fBhttp\&.retryAfter\fR
+is configured with a value that exceeds this maximum, Git will fail immediately rather than waiting\&. Default is 300 seconds (5 minutes)\&. Can be overridden by the
+\fBGIT_HTTP_MAX_RETRY_TIME\fR
+environment variable\&. See also
+\fBhttp\&.retryAfter\fR
+and
+\fBhttp\&.maxRetries\fR\&.
 .RE
 .PP
 http\&.noEPSV
