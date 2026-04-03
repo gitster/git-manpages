@@ -2,12 +2,12 @@
 .\"     Title: git-format-patch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-04-01
+.\"      Date: 2026-04-03
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.rc0
+.\"    Source: Git 2.54.0.rc0.52.g8de2f1b07a
 .\"  Language: English
 .\"
-.TH "GIT\-FORMAT\-PATCH" "1" "2026-04-01" "Git 2\&.54\&.0\&.rc0" "Git Manual"
+.TH "GIT\-FORMAT\-PATCH" "1" "2026-04-03" "Git 2\&.54\&.0\&.rc0\&.52\&.g8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -47,6 +47,7 @@ git-format-patch \- Prepare patches for e\-mail submission
                    [(\-\-reroll\-count|\-v) <n>]
                    [\-\-to=<email>] [\-\-cc=<email>]
                    [\-\-[no\-]cover\-letter] [\-\-quiet]
+                   [\-\-commit\-list\-format=<format\-spec>]
                    [\-\-[no\-]encode\-email\-headers]
                    [\-\-no\-notes | \-\-notes[=<ref>]]
                    [\-\-interdiff=<previous>]
@@ -1104,7 +1105,35 @@ discards
 .PP
 \-\-cover\-letter, \-\-no\-cover\-letter
 .RS 4
-In addition to the patches, generate a cover letter file containing the branch description, shortlog and the overall diffstat\&. You can fill in a description in the file before sending it out\&.
+In addition to the patches, generate a cover letter file containing the branch description, commit list and the overall diffstat\&. You can fill in a description in the file before sending it out\&.
+.RE
+.PP
+\-\-commit\-list\-format=<format\-spec>
+.RS 4
+Specify the format in which to generate the commit list of the patch series\&. The accepted values for format\-spec are
+\fBshortlog\fR,
+\fBmodern\fR
+or a format\-string prefixed with
+\fBlog:\fR\&. E\&.g\&.
+\fBlog:\fR
+\fB%s\fR
+(\fB%an\fR)\&.
+\fBmodern\fR
+is the same as
+\fBlog:%w\fR(\fB72\fR)[\fB%\fR(\fBcount\fR)\fB/%\fR(\fBtotal\fR)]
+\fB%s\fR\&. The
+\fBlog:\fR
+prefix can be omitted if the format\-string has a
+\fB%\fR
+in it (expecting that it is part of
+\fB%\fR\fI<placeholder>\fR)\&. Defaults to the
+\fBformat\&.commitListFormat\fR
+configuration variable, if set, or
+\fBshortlog\fR\&. This option given from the command\-line implies the use of
+\fB\-\-cover\-letter\fR
+unless
+\fB\-\-no\-cover\-letter\fR
+is given\&.
 .RE
 .PP
 \-\-encode\-email\-headers, \-\-no\-encode\-email\-headers
@@ -1258,6 +1287,7 @@ You can specify extra mail header lines to be added to each message, defaults fo
         signOff = true
         outputDirectory = <directory>
         coverLetter = auto
+        commitListFormat = shortlog
         coverFromDescription = auto
 .fi
 .if n \{\

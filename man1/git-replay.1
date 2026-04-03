@@ -2,12 +2,12 @@
 .\"     Title: git-replay
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-04-01
+.\"      Date: 2026-04-03
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.rc0
+.\"    Source: Git 2.54.0.rc0.52.g8de2f1b07a
 .\"  Language: English
 .\"
-.TH "GIT\-REPLAY" "1" "2026-04-01" "Git 2\&.54\&.0\&.rc0" "Git Manual"
+.TH "GIT\-REPLAY" "1" "2026-04-03" "Git 2\&.54\&.0\&.rc0\&.52\&.g8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-replay \- EXPERIMENTAL: Replay commits on a new base, works with bare repos 
 .SH "SYNOPSIS"
 .sp
 .nf
-(EXPERIMENTAL!) \fIgit replay\fR ([\-\-contained] \-\-onto <newbase> | \-\-advance <branch>) [\-\-ref\-action[=<mode>]] <revision\-range>
+(EXPERIMENTAL!) \fIgit replay\fR ([\-\-contained] \-\-onto <newbase> | \-\-advance <branch> | \-\-revert <branch>) [\-\-ref\-action[=<mode>]] <revision\-range>
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -60,6 +60,35 @@ Starting point at which to create the new commits; must be a branch name\&.
 .sp
 The history is replayed on top of the <branch> and <branch> is updated to point at the tip of the resulting history\&. This is different from
 \fB\-\-onto\fR, which uses the target only as a starting point without updating it\&.
+.RE
+.PP
+\-\-revert <branch>
+.RS 4
+Starting point at which to create the reverted commits; must be a branch name\&.
+.sp
+When
+\fB\-\-revert\fR
+is specified, the commits in the revision range are reverted (their changes are undone) and the reverted commits are created on top of <branch>\&. The <branch> is then updated to point at the new commits\&. This is the same as running
+\fBgit\fR
+\fBrevert\fR
+\fI<revision\-range>\fR
+but does not update the working tree\&.
+.sp
+The commit messages follow
+\fBgit\fR
+\fBrevert\fR
+conventions: they are prefixed with "Revert" and include "This reverts commit <hash>\&." When reverting a commit whose message starts with "Revert", the new message uses "Reapply" instead\&. Unlike cherry\-pick which preserves the original author, revert commits use the current user as the author, matching the behavior of
+\fBgit\fR
+\fBrevert\fR\&.
+.sp
+This option is mutually exclusive with
+\fB\-\-onto\fR
+and
+\fB\-\-advance\fR\&. It is also incompatible with
+\fB\-\-contained\fR
+(which is a modifier for
+\fB\-\-onto\fR
+only)\&.
 .RE
 .PP
 \-\-contained
@@ -109,7 +138,10 @@ Range of commits to replay; see "Specifying Ranges" in
 \fBgit-rev-parse\fR(1)\&. In
 \fB\-\-advance\fR
 \fI<branch>\fR
-mode, the range should have a single tip, so that it\(cqs clear to which tip the advanced <branch> should point\&. Any commits in the range whose changes are already present in the branch the commits are being replayed onto will be dropped\&.
+or
+\fB\-\-revert\fR
+\fI<branch>\fR
+mode, the range should have a single tip, so that it\(cqs clear to which tip the advanced or reverted <branch> should point\&. Any commits in the range whose changes are already present in the branch the commits are being replayed onto will be dropped\&.
 .RE
 .SS "Commit Limiting"
 .sp
@@ -1461,7 +1493,7 @@ update refs/heads/branch3 ${NEW_branch3_HASH} ${OLD_branch3_HASH}
 .RE
 .\}
 .sp
-where the number of refs updated depends on the arguments passed and the shape of the history being replayed\&. When using \fB\-\-advance\fR, the number of refs updated is always one, but for \fB\-\-onto\fR, it can be one or more (rebasing multiple branches simultaneously is supported)\&.
+where the number of refs updated depends on the arguments passed and the shape of the history being replayed\&. When using \fB\-\-advance\fR or \fB\-\-revert\fR, the number of refs updated is always one, but for \fB\-\-onto\fR, it can be one or more (rebasing multiple branches simultaneously is supported)\&.
 .sp
 There is no stderr output on conflicts; see the EXIT STATUS section below\&.
 .SH "EXIT STATUS"
@@ -1537,6 +1569,36 @@ $ git replay \-\-onto origin/main ^base branch1 branch2 branch3
 .\}
 .sp
 This will simultaneously rebase \fBbranch1\fR, \fBbranch2\fR, and \fBbranch3\fR, all commits they have since \fBbase\fR, playing them on top of \fBorigin/main\fR\&. These three branches may have commits on top of \fBbase\fR that they have in common, but that does not need to be the case\&.
+.sp
+To revert commits on a branch:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git replay \-\-revert main topic~2\&.\&.topic
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This reverts the last two commits from \fBtopic\fR, creating revert commits on top of \fBmain\fR, and updates \fBmain\fR to point at the result\&. This is useful when commits from \fBtopic\fR were previously merged or cherry\-picked into \fBmain\fR and need to be undone\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+For reverting an entire merge request as a single commit (rather than commit\-by\-commit), consider using \fBgit\fR \fBmerge\-tree\fR \fB\-\-merge\-base\fR \fB$TIP\fR \fBHEAD\fR \fB$BASE\fR which can avoid unnecessary merge conflicts\&.
+.sp .5v
+.RE
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
