@@ -4,10 +4,10 @@
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
 .\"      Date: 2026-04-08
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.rc1
+.\"    Source: Git 2.54.0.rc1.32.gb15384c06f
 .\"  Language: English
 .\"
-.TH "GIT\-REPLAY" "1" "2026-04-08" "Git 2\&.54\&.0\&.rc1" "Git Manual"
+.TH "GIT\-REPLAY" "1" "2026-04-08" "Git 2\&.54\&.0\&.rc1\&.32\&.gb" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,8 @@ git-replay \- EXPERIMENTAL: Replay commits on a new base, works with bare repos 
 .SH "SYNOPSIS"
 .sp
 .nf
-(EXPERIMENTAL!) \fIgit replay\fR ([\-\-contained] \-\-onto <newbase> | \-\-advance <branch> | \-\-revert <branch>) [\-\-ref\-action[=<mode>]] <revision\-range>
+(EXPERIMENTAL!) \fIgit replay\fR ([\-\-contained] \-\-onto=<newbase> | \-\-advance=<branch> | \-\-revert=<branch>)
+                             [\-\-ref=<ref>] [\-\-ref\-action=<mode>] <revision\-range>
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -41,7 +42,7 @@ Takes a range of commits and replays them onto a new location\&. Leaves the work
 THIS COMMAND IS EXPERIMENTAL\&. THE BEHAVIOR MAY CHANGE\&.
 .SH "OPTIONS"
 .PP
-\-\-onto <newbase>
+\-\-onto=<newbase>
 .RS 4
 Starting point at which to create the new commits\&. May be any valid commit, and not just an existing branch name\&.
 .sp
@@ -54,7 +55,7 @@ is specified, the branch(es) in the revision range will be updated to point at t
 updates multiple branches in the affected range\&.
 .RE
 .PP
-\-\-advance <branch>
+\-\-advance=<branch>
 .RS 4
 Starting point at which to create the new commits; must be a branch name\&.
 .sp
@@ -62,7 +63,7 @@ The history is replayed on top of the <branch> and <branch> is updated to point 
 \fB\-\-onto\fR, which uses the target only as a starting point without updating it\&.
 .RE
 .PP
-\-\-revert <branch>
+\-\-revert=<branch>
 .RS 4
 Starting point at which to create the reverted commits; must be a branch name\&.
 .sp
@@ -95,6 +96,18 @@ only)\&.
 .RS 4
 Update all branches that point at commits in <revision\-range>\&. Requires
 \fB\-\-onto\fR\&.
+.RE
+.PP
+\-\-ref=<ref>
+.RS 4
+Override which reference is updated with the result of the replay\&. The ref must be fully qualified\&. When used with
+\fB\-\-onto\fR, the
+\fI<revision\-range>\fR
+should have a single tip and only the specified reference is updated instead of inferring refs from the revision range\&. When used with
+\fB\-\-advance\fR
+or
+\fB\-\-revert\fR, the specified reference is updated instead of the branch given to those options\&. This option is incompatible with
+\fB\-\-contained\fR\&.
 .RE
 .PP
 \-\-ref\-action[=<mode>]
@@ -136,11 +149,9 @@ configuration variable\&.
 .RS 4
 Range of commits to replay; see "Specifying Ranges" in
 \fBgit-rev-parse\fR(1)\&. In
-\fB\-\-advance\fR
-\fI<branch>\fR
+\fB\-\-advance=\fR\fI<branch>\fR
 or
-\fB\-\-revert\fR
-\fI<branch>\fR
+\fB\-\-revert=\fR\fI<branch>\fR
 mode, the range should have a single tip, so that it\(cqs clear to which tip the advanced or reverted <branch> should point\&. Any commits in the range whose changes are already present in the branch the commits are being replayed onto will be dropped\&.
 .RE
 .SS "Commit Limiting"
@@ -1507,7 +1518,7 @@ To simply rebase \fBmybranch\fR onto \fBtarget\fR:
 .RS 4
 .\}
 .nf
-$ git replay \-\-onto target origin/main\&.\&.mybranch
+$ git replay \-\-onto=target origin/main\&.\&.mybranch
 .fi
 .if n \{\
 .RE
@@ -1521,7 +1532,7 @@ To see what would be updated without actually updating:
 .RS 4
 .\}
 .nf
-$ git replay \-\-ref\-action=print \-\-onto target origin/main\&.\&.mybranch
+$ git replay \-\-ref\-action=print \-\-onto=target origin/main\&.\&.mybranch
 update refs/heads/mybranch ${NEW_mybranch_HASH} ${OLD_mybranch_HASH}
 .fi
 .if n \{\
@@ -1534,7 +1545,7 @@ To cherry\-pick the commits from mybranch onto target:
 .RS 4
 .\}
 .nf
-$ git replay \-\-advance target origin/main\&.\&.mybranch
+$ git replay \-\-advance=target origin/main\&.\&.mybranch
 .fi
 .if n \{\
 .RE
@@ -1548,7 +1559,7 @@ What if you have a stack of branches, one depending upon another, and you\(cqd r
 .RS 4
 .\}
 .nf
-$ git replay \-\-contained \-\-onto origin/main origin/main\&.\&.tipbranch
+$ git replay \-\-contained \-\-onto=origin/main origin/main\&.\&.tipbranch
 .fi
 .if n \{\
 .RE
@@ -1562,7 +1573,7 @@ When calling \fBgit\fR \fBreplay\fR, one does not need to specify a range of com
 .RS 4
 .\}
 .nf
-$ git replay \-\-onto origin/main ^base branch1 branch2 branch3
+$ git replay \-\-onto=origin/main ^base branch1 branch2 branch3
 .fi
 .if n \{\
 .RE
@@ -1576,7 +1587,7 @@ To revert commits on a branch:
 .RS 4
 .\}
 .nf
-$ git replay \-\-revert main topic~2\&.\&.topic
+$ git replay \-\-revert=main topic~2\&.\&.topic
 .fi
 .if n \{\
 .RE
@@ -1599,6 +1610,20 @@ This reverts the last two commits from \fBtopic\fR, creating revert commits on t
 For reverting an entire merge request as a single commit (rather than commit\-by\-commit), consider using \fBgit\fR \fBmerge\-tree\fR \fB\-\-merge\-base\fR \fB$TIP\fR \fBHEAD\fR \fB$BASE\fR which can avoid unnecessary merge conflicts\&.
 .sp .5v
 .RE
+.sp
+To replay onto a specific commit while updating a different reference:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git replay \-\-onto=112233 \-\-ref=refs/heads/mybranch aabbcc\&.\&.ddeeff
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+This replays the range \fBaabbcc\fR\fB\&.\&.\fR\fBddeeff\fR onto commit \fB112233\fR and updates \fBrefs/heads/mybranch\fR to point at the result\&. This can be useful when you want to use bare commit IDs instead of branch names\&.
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite
