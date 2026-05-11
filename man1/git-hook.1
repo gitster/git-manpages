@@ -2,12 +2,12 @@
 .\"     Title: git-hook
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-04-19
+.\"      Date: 2026-05-11
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0
+.\"    Source: Git 2.54.0.60.g8a101334b3
 .\"  Language: English
 .\"
-.TH "GIT\-HOOK" "1" "2026-04-19" "Git 2\&.54\&.0" "Git Manual"
+.TH "GIT\-HOOK" "1" "2026-05-11" "Git 2\&.54\&.0\&.60\&.g8a10133" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,8 @@ git-hook \- Run git hooks
 .SH "SYNOPSIS"
 .sp
 .nf
-\fIgit hook\fR run [\-\-allow\-unknown\-hook\-name] [\-\-ignore\-missing] [\-\-to\-stdin=<path>] <hook\-name> [\-\- <hook\-args>]
+\fIgit hook\fR run [\-\-allow\-unknown\-hook\-name] [\-\-ignore\-missing] [\-\-to\-stdin=<path>] [(\-j|\-\-jobs) <n>]
+        <hook\-name> [\-\- <hook\-args>]
 \fIgit hook\fR list [\-\-allow\-unknown\-hook\-name] [\-z] [\-\-show\-scope] <hook\-name>
 .fi
 .SH "DESCRIPTION"
@@ -217,6 +218,32 @@ For "list"; prefix each configured hook\(cqs friendly name with a tab\-separated
 \fBconfig\fR
 \fB\-\-show\-scope\fR\&. Traditional hooks from the hookdir are unaffected\&.
 .RE
+.PP
+\-j, \-\-jobs
+.RS 4
+Only valid for
+\fBrun\fR\&.
+.sp
+Specify how many hooks to run simultaneously\&. If this flag is not specified, the value of the
+\fBhook\&.jobs\fR
+config is used, see
+\fBgit-config\fR(1)\&. If neither is specified, defaults to 1 (serial execution)\&.
+.sp
+When greater than 1, it overrides the per\-hook
+\fBhook\&.\fR\fI<friendly\-name>\fR\fB\&.parallel\fR
+setting, allowing all hooks for the event to run concurrently, even if they are not individually marked as parallel\&.
+.sp
+Some hooks always run sequentially regardless of this flag or the
+\fBhook\&.jobs\fR
+config, because git knows they cannot safely run in parallel:
+\fBapplypatch\-msg\fR,
+\fBpre\-commit\fR,
+\fBprepare\-commit\-msg\fR,
+\fBcommit\-msg\fR,
+\fBpost\-commit\fR,
+\fBpost\-checkout\fR, and
+\fBpush\-to\-checkout\fR\&.
+.RE
 .SH "WRAPPERS"
 .sp
 \fBgit\fR \fBhook\fR \fBrun\fR has been designed to make it easy for tools which wrap Git to configure and execute hooks using the Git hook infrastructure\&. It is possible to provide arguments and stdin via the command line, as well as specifying parallel or series execution if the user has provided multiple hooks\&.
@@ -244,7 +271,8 @@ Then, in your \fImywrapper\fR tool, you can invoke any users\*(Aq configured hoo
 git hook run \-\-allow\-unknown\-hook\-name mywrapper\-start\-tests \e
   # providing something to stdin
   \-\-stdin some\-tempfile\-123 \e
-  # execute hooks in serial
+  # execute multiple hooks in parallel
+  \-\-jobs 3 \e
   # plus some arguments of your own\&.\&.\&.
   \-\- \e
   \-\-testname bar \e
@@ -280,6 +308,16 @@ is executed\&. This is a multi\-valued key\&. To run
 on multiple events, specify the key more than once\&. An empty value resets the list of events, clearing any previously defined events for
 \fBhook\&.\fR\fI<friendly\-name>\fR\&. See
 \fBgit-hook\fR(1)\&.
+.sp
+The
+\fI<friendly\-name>\fR
+must not be the same as a known hook event name (e\&.g\&. do not use
+\fBhook\&.pre\-commit\&.event\fR)\&. Using a known event name as a friendly\-name is a fatal error because it creates an ambiguity with
+\fBhook\&.\fR\fI<event>\fR\fB\&.enabled\fR
+and
+\fBhook\&.\fR\fI<event>\fR\fB\&.jobs\fR\&. For unknown event names, a warning is issued when
+\fI<friendly\-name>\fR
+matches the event value\&.
 .RE
 .PP
 hook\&.<friendly\-name>\&.enabled
@@ -291,6 +329,102 @@ is enabled\&. Defaults to
 \fBfalse\fR
 to disable the hook without removing its configuration\&. This is particularly useful when a hook is defined in a system or global config file and needs to be disabled for a specific repository\&. See
 \fBgit-hook\fR(1)\&.
+.RE
+.PP
+hook\&.<friendly\-name>\&.parallel
+.RS 4
+Whether the hook
+\fBhook\&.\fR\fI<friendly\-name>\fR
+may run in parallel with other hooks for the same event\&. Defaults to
+\fBfalse\fR\&. Set to
+\fBtrue\fR
+only when the hook script is safe to run concurrently with other hooks for the same event\&. If any hook for an event does not have this set to
+\fBtrue\fR, all hooks for that event run sequentially regardless of
+\fBhook\&.jobs\fR\&. Only configured (named) hooks need to declare this\&. Traditional hooks found in the hooks directory do not need to, and run in parallel when the effective job count is greater than 1\&. See
+\fBgit-hook\fR(1)\&.
+.RE
+.PP
+hook\&.<event>\&.enabled
+.RS 4
+Switch to enable or disable all hooks for the
+\fI<event>\fR
+hook event\&. When set to
+\fBfalse\fR, no hooks fire for that event, regardless of any per\-hook
+\fBhook\&.\fR\fI<friendly\-name>\fR\fB\&.enabled\fR
+settings\&. Defaults to
+\fBtrue\fR\&. See
+\fBgit-hook\fR(1)\&.
+.sp
+Note on naming:
+\fI<event>\fR
+must be the event name (e\&.g\&.
+\fBpre\-commit\fR), not a hook friendly\-name\&. Since using a known event name as a friendly\-name is disallowed (see
+\fBhook\&.\fR\fI<friendly\-name>\fR\fB\&.event\fR
+above), there is no ambiguity between event\-level and per\-hook \&.\fBenabled\fR
+settings for known events\&. For unknown events, if a friendly\-name matches the event name despite the warning, \&.\fBenabled\fR
+is treated as per\-hook only\&.
+.RE
+.PP
+hook\&.<event>\&.jobs
+.RS 4
+Specifies how many hooks can be run simultaneously for the
+\fI<event>\fR
+hook event (e\&.g\&.
+\fBhook\&.post\-receive\&.jobs\fR
+\fB=\fR
+\fB4\fR)\&. Overrides
+\fBhook\&.jobs\fR
+for this specific event\&. The same parallelism restrictions apply: this setting has no effect unless all configured hooks for the event have
+\fBhook\&.\fR\fI<friendly\-name>\fR\fB\&.parallel\fR
+set to
+\fBtrue\fR\&. Set to
+\fB\-1\fR
+to use the number of available CPU cores\&. Must be a positive integer or
+\fB\-1\fR; zero is rejected with a warning\&. See
+\fBgit-hook\fR(1)\&.
+.sp
+Note on naming: although this key resembles
+\fBhook\&.\fR\fI<friendly\-name>\fR\fB\&.*\fR
+(a per\-hook setting),
+\fI<event>\fR
+must be the event name, not a hook friendly name\&. The key component is stored literally and looked up by event name at runtime with no translation between the two namespaces\&. A key like
+\fBhook\&.my\-hook\&.jobs\fR
+is stored under "my\-hook" but the lookup at runtime uses the event name (e\&.g\&. "post\-receive"), so
+\fBhook\&.my\-hook\&.jobs\fR
+is silently ignored even when
+\fBmy\-hook\fR
+is registered for that event\&. Use
+\fBhook\&.post\-receive\&.jobs\fR
+or any other valid event name when setting
+\fBhook\&.\fR\fI<event>\fR\fB\&.jobs\fR\&.
+.RE
+.PP
+hook\&.jobs
+.RS 4
+Specifies how many hooks can be run simultaneously during parallelized hook execution\&. If unspecified, defaults to 1 (serial execution)\&. Set to
+\fB\-1\fR
+to use the number of available CPU cores\&. Can be overridden on a per\-event basis with
+\fBhook\&.\fR\fI<event>\fR\fB\&.jobs\fR\&. Some hooks always run sequentially regardless of this setting because they operate on shared data and cannot safely be parallelized:
+.PP
+\fBapplypatch\-msg\fR, \fBprepare\-commit\-msg\fR, \fBcommit\-msg\fR
+.RS 4
+Receive a commit message file and may rewrite it in place\&.
+.RE
+.PP
+\fBpre\-commit\fR, \fBpost\-checkout\fR, \fBpush\-to\-checkout\fR, \fBpost\-commit\fR
+.RS 4
+Access the working tree, index, or repository state\&.
+.RE
+.sp
+This setting has no effect unless all configured hooks for the event have
+\fBhook\&.\fR\fI<friendly\-name>\fR\fB\&.parallel\fR
+set to
+\fBtrue\fR\&.
+.sp
+For
+\fBpre\-push\fR
+hooks, which normally keep stdout and stderr separate, setting this to a value greater than 1 (or passing
+\fB\-j\fR) will merge stdout into stderr to allow correct de\-interleaving of parallel output\&.
 .RE
 .SH "SEE ALSO"
 .sp
