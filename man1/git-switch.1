@@ -2,12 +2,12 @@
 .\"     Title: git-switch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-05-13
+.\"      Date: 2026-05-17
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.105.g59ff4886a5
+.\"    Source: Git 2.54.0.128.g68aca6b912
 .\"  Language: English
 .\"
-.TH "GIT\-SWITCH" "1" "2026-05-13" "Git 2\&.54\&.0\&.105\&.g59ff48" "Git Manual"
+.TH "GIT\-SWITCH" "1" "2026-05-17" "Git 2\&.54\&.0\&.128\&.g68aca6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -202,15 +202,18 @@ is specified, submodule content is also restored to match the switching target\&
 .PP
 \fB\-m\fR, \fB\-\-merge\fR
 .RS 4
-If you have local modifications to one or more files that are different between the current branch and the branch to which you are switching, the command refuses to switch branches in order to preserve your modifications in context\&. However, with this option, a three\-way merge between the current branch, your working tree contents, and the new branch is done, and you will be on the new branch\&.
-.sp
-When a merge conflict happens, the index entries for conflicting paths are left unmerged, and you need to resolve the conflicts and mark the resolved paths with
+If you have local modifications to one or more files that are different between the current branch and the branch to which you are switching, the command normally refuses to switch branches in order to preserve your modifications in context\&. However, with this option, the conflicting local changes are automatically stashed before the switch and reapplied afterwards\&. If the local changes do not overlap with the differences between branches, the switch proceeds without stashing\&. If reapplying the stash results in conflicts, the entry is saved to the stash list\&. Resolve the conflicts and run
 \fBgit\fR
-\fBadd\fR
-(or
+\fBstash\fR
+\fBdrop\fR
+when done, or clear the working tree (e\&.g\&. with
 \fBgit\fR
-\fBrm\fR
-if the merge should result in deletion of the path)\&.
+\fBreset\fR
+\fB\-\-hard\fR) before running
+\fBgit\fR
+\fBstash\fR
+\fBpop\fR
+later to re\-apply your changes\&.
 .RE
 .PP
 \fB\-\-conflict=\fR\fI<style>\fR
@@ -331,20 +334,23 @@ error: You have local changes to \*(Aqfrotz\*(Aq; not switching branches\&.
 .RE
 .\}
 .sp
-You can give the \fB\-m\fR flag to the command, which would try a three\-way merge:
+You can give the \fB\-m\fR flag to the command, which will carry your local changes to the new branch:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
 $ git switch \-m mytopic
-Auto\-merging frotz
+Applied autostash\&.
+Switched to branch \*(Aqmytopic\*(Aq
+The following paths have local changes:
+M       frotz
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-After this three\-way merge, the local modifications are \fInot\fR registered in your index file, so \fBgit\fR \fBdiff\fR would show you what changes you made since the tip of the new branch\&.
+After the switch, the local modifications are reapplied and are \fInot\fR registered in your index file, so \fBgit\fR \fBdiff\fR would show you what changes you made since the tip of the new branch\&.
 .sp
 To switch back to the previous branch before we switched to mytopic (i\&.e\&. "master" branch):
 .sp

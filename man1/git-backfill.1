@@ -2,12 +2,12 @@
 .\"     Title: git-backfill
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-05-13
+.\"      Date: 2026-05-17
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.105.g59ff4886a5
+.\"    Source: Git 2.54.0.128.g68aca6b912
 .\"  Language: English
 .\"
-.TH "GIT\-BACKFILL" "1" "2026-05-13" "Git 2\&.54\&.0\&.105\&.g59ff48" "Git Manual"
+.TH "GIT\-BACKFILL" "1" "2026-05-17" "Git 2\&.54\&.0\&.128\&.g68aca6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,7 +32,7 @@ git-backfill \- Download missing objects in a partial clone
 .SH "SYNOPSIS"
 .sp
 .nf
-\fBgit\fR \fBbackfill\fR [\fB\-\-min\-batch\-size=\fR\fI<n>\fR] [\fB\-\-\fR[\fBno\-\fR]\fBsparse\fR]
+\fBgit\fR \fBbackfill\fR [\fB\-\-min\-batch\-size=\fR\fI<n>\fR] [\fB\-\-\fR[\fBno\-\fR]\fBsparse\fR] [\fB\-\-\fR[\fBno\-\fR]\fBinclude\-edges\fR] [\fI<revision\-range>\fR]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -44,7 +44,7 @@ The \fBgit\fR \fBbackfill\fR command provides a way for the user to request that
 .sp
 In this way, \fBgit\fR \fBbackfill\fR provides a mechanism to break a large clone into smaller chunks\&. Starting with a blobless partial clone with \fBgit\fR \fBclone\fR \fB\-\-filter=blob:none\fR and then running \fBgit\fR \fBbackfill\fR in the local repository provides a way to download all reachable objects in several smaller network calls than downloading the entire repository at clone time\&.
 .sp
-By default, \fBgit\fR \fBbackfill\fR downloads all blobs reachable from the \fBHEAD\fR commit\&. This set can be restricted or expanded using various options\&.
+By default, \fBgit\fR \fBbackfill\fR downloads all blobs reachable from the \fBHEAD\fR commit\&. This set can be restricted or expanded using various options below\&.
 .sp
 THIS COMMAND IS EXPERIMENTAL\&. ITS BEHAVIOR MAY CHANGE IN THE FUTURE\&.
 .SH "OPTIONS"
@@ -61,8 +61,40 @@ Only download objects if they appear at a path that matches the current sparse\-
 is assumed and can be disabled with
 \fB\-\-no\-sparse\fR\&.
 .RE
+.PP
+\fB\-\-include\-edges\fR, \fB\-\-no\-include\-edges\fR
+.RS 4
+Include blobs from boundary commits in the backfill\&. Useful in preparation for commands like
+\fBgit\fR
+\fBlog\fR
+\fB\-p\fR
+\fBA\fR\fB\&.\&.\fR\fBB\fR
+or
+\fBgit\fR
+\fBreplay\fR
+\fB\-\-onto\fR
+\fBTARGET\fR
+\fBA\fR\fB\&.\&.\fR\fBB\fR, where A\&.\&.B normally excludes A but you need the blobs from A as well\&.
+\fB\-\-include\-edges\fR
+is the default\&.
+.RE
+.PP
+\fI<revision\-range>\fR
+.RS 4
+Backfill only blobs reachable from commits in the specified revision range\&. When no
+\fI<revision\-range>\fR
+is specified, it defaults to
+\fBHEAD\fR
+(i\&.e\&. the whole history leading to the current commit)\&. For a complete list of ways to spell
+\fI<revision\-range>\fR, see the "Specifying Ranges" section of
+\fBgitrevisions\fR(7)\&.
 .sp
-You may also specify the commit limiting options from \fBgit-rev-list\fR(1)\&.
+You may also use commit\-limiting options understood by
+\fBgit-rev-list\fR(1)
+such as
+\fB\-\-first\-parent\fR,
+\fB\-\-since\fR, or pathspecs\&.
+.RE
 .SH "SEE ALSO"
 .sp
 \fBgit-clone\fR(1), \fBgit-rev-list\fR(1)

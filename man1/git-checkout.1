@@ -2,12 +2,12 @@
 .\"     Title: git-checkout
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-05-13
+.\"      Date: 2026-05-17
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.105.g59ff4886a5
+.\"    Source: Git 2.54.0.128.g68aca6b912
 .\"  Language: English
 .\"
-.TH "GIT\-CHECKOUT" "1" "2026-05-13" "Git 2\&.54\&.0\&.105\&.g59ff48" "Git Manual"
+.TH "GIT\-CHECKOUT" "1" "2026-05-17" "Git 2\&.54\&.0\&.128\&.g68aca6" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -404,20 +404,20 @@ and sparse patterns in
 .PP
 \fB\-m\fR, \fB\-\-merge\fR
 .RS 4
-When switching branches, if you have local modifications to one or more files that are different between the current branch and the branch to which you are switching, the command refuses to switch branches in order to preserve your modifications in context\&. However, with this option, a three\-way merge between the current branch, your working tree contents, and the new branch is done, and you will be on the new branch\&.
-.sp
-When a merge conflict happens, the index entries for conflicting paths are left unmerged, and you need to resolve the conflicts and mark the resolved paths with
+When switching branches, if you have local modifications to one or more files that are different between the current branch and the branch to which you are switching, the command refuses to switch branches in order to preserve your modifications in context\&. With this option, the conflicting local changes are automatically stashed before the switch and reapplied afterwards\&. If the local changes do not overlap with the differences between branches, the switch proceeds without stashing\&. If reapplying the stash results in conflicts, the entry is saved to the stash list\&. Resolve the conflicts and run
 \fBgit\fR
-\fBadd\fR
-(or
+\fBstash\fR
+\fBdrop\fR
+when done, or clear the working tree (e\&.g\&. with
 \fBgit\fR
-\fBrm\fR
-if the merge should result in deletion of the path)\&.
+\fBreset\fR
+\fB\-\-hard\fR) before running
+\fBgit\fR
+\fBstash\fR
+\fBpop\fR
+later to re\-apply your changes\&.
 .sp
 When checking out paths from the index, this option lets you recreate the conflicted merge in the specified paths\&. This option cannot be used when checking out paths from a tree\-ish\&.
-.sp
-When switching branches with
-\fB\-\-merge\fR, staged changes may be lost\&.
 .RE
 .PP
 \fB\-\-conflict=\fR\fI<style>\fR
@@ -908,45 +908,37 @@ error: You have local changes to \*(Aqfrotz\*(Aq; not switching branches\&.
 .RE
 .\}
 .sp
-You can give the \fB\-m\fR flag to the command, which would try a three\-way merge:
+You can give the \fB\-m\fR flag to the command, which will carry your local changes to the new branch:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
 $ git checkout \-m mytopic
-Auto\-merging frotz
+Applied autostash\&.
+Switched to branch \*(Aqmytopic\*(Aq
+The following paths have local changes:
+M       frotz
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-After this three\-way merge, the local modifications are \fInot\fR registered in your index file, so \fBgit\fR \fBdiff\fR would show you what changes you made since the tip of the new branch\&.
+After the switch, the local modifications are reapplied and are \fInot\fR registered in your index file, so \fBgit\fR \fBdiff\fR would show you what changes you made since the tip of the new branch\&.
 .SS "3\&. Merge conflict"
 .sp
-When a merge conflict happens during switching branches with the \fB\-m\fR option, you would see something like this:
+When the \fB\-\-merge\fR (\fB\-m\fR) option is given and the local changes overlap with the changes in the branch we\(cqre switching to, the changes are stashed and reapplied after the switch\&. If this process results in conflicts, the stash entry is saved and a message is printed:
 .sp
 .if n \{\
 .RS 4
 .\}
 .nf
 $ git checkout \-m mytopic
-Auto\-merging frotz
-ERROR: Merge conflict in frotz
-fatal: merge program failed
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-At this point, \fBgit\fR \fBdiff\fR shows the changes cleanly merged as in the previous example, as well as the changes in the conflicted files\&. Edit and resolve the conflict and mark it resolved with \fBgit\fR \fBadd\fR as usual:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ edit frotz
-$ git add frotz
+Your local changes are stashed, however applying them
+resulted in conflicts\&.  You can either resolve the conflicts
+and then discard the stash with "git stash drop", or, if you
+do not want to resolve them now, run "git reset \-\-hard" and
+apply the local changes later by running "git stash pop"\&.
 .fi
 .if n \{\
 .RE
