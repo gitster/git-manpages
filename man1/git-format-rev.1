@@ -1,0 +1,322 @@
+'\" t
+.\"     Title: git-format-rev
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2026-05-18
+.\"    Manual: Git Manual
+.\"    Source: Git 2.54.0.159.g7bcaabddcf
+.\"  Language: English
+.\"
+.TH "GIT\-FORMAT\-REV" "1" "2026-05-18" "Git 2\&.54\&.0\&.159\&.g7bcaab" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-format-rev \- EXPERIMENTAL: Pretty format revisions on demand
+.SH "SYNOPSIS"
+.sp
+.nf
+(\fBEXPERIMENTAL\fR!) \fBgit\fR \fBformat\-rev\fR \fB\-\-stdin\-mode=\fR\fI<mode>\fR \fB\-\-format=\fR\fI<pretty>\fR [\fB\-\-\fR[\fBno\-\fR]\fBnotes=\fR\fI<ref>\fR] [\fB\-z\fR] [\fB\-\-\fR[\fBno\-\fR]\fBnull\-output\fR] [\fB\-\-\fR[\fBno\-\fR]\fBnull\-input\fR]
+.fi
+.SH "DESCRIPTION"
+.sp
+Pretty format revisions from standard input\&.
+.sp
+THIS COMMAND IS EXPERIMENTAL\&. THE BEHAVIOR MAY CHANGE\&.
+.SH "OPTIONS"
+.PP
+\fB\-\-stdin\-mode=\fR\fI<mode>\fR
+.RS 4
+How to interpret standard input data:
+.PP
+\fBrevs\fR
+.RS 4
+Each line or record (see the
+INPUT AND OUTPUT FORMATS
+section) is interpreted as a commit\&. Any kind of revision expression can be used (see
+\fBgitrevisions\fR(7))\&. Annotated tags are peeled (see
+\fBgitglossary\fR(7))\&.
+.sp
+The argument
+\fBrev\fR
+is also accepted\&.
+.RE
+.PP
+\fBtext\fR
+.RS 4
+Formats all commit object names found in freeform text\&. These must the full object names, i\&.e\&. abbreviated hexidecimal object names will not be interpreted\&.
+.sp
+Anything that is parsed as an object name but that is not found to be a commit object name is left alone (echoed)\&.
+.RE
+.RE
+.PP
+\fB\-\-format=\fR\fI<pretty>\fR
+.RS 4
+Pretty format string\&.
+.RE
+.PP
+\fB\-\-notes=\fR\fI<ref>\fR, \fB\-\-no\-notes\fR
+.RS 4
+Custom notes ref\&. Notes are displayed when using the
+\fB%N\fR
+atom\&. See
+\fBgit-notes\fR(1)\&.
+.RE
+.PP
+\fB\-z\fR, \fB\-\-null\fR
+.RS 4
+Use
+\fINUL\fR
+character to terminate both input and output instead of newline\&. This option cannot be negated\&.
+.sp
+This is useful if both the input and output could contain newlines or if the input to this command also uses
+\fINUL\fR
+character termination; see the
+INPUT AND OUTPUT FORMATS
+section below\&.
+.sp
+The mode
+\fB\-\-stdin\-mode=text\fR
+can have use for this option when it needs to process input like for example
+\fBgit\fR
+\fBlast\-modified\fR
+\fB\-z\fR; see the
+EXAMPLES
+section below\&.
+.RE
+.PP
+\fB\-\-null\-output\fR, \fB\-\-no\-null\-output\fR
+.RS 4
+Use
+\fINUL\fR
+character to terminate output instead of newline\&. The default is
+\fB\-\-no\-null\-output\fR\&.
+.sp
+This is useful if the output could contain newlines, for example if the
+\fB%n\fR
+(newline) atom is used\&.
+.RE
+.PP
+\fB\-\-null\-input\fR, \fB\-\-no\-null\-input\fR
+.RS 4
+Use
+\fINUL\fR
+character to terminate input instead of newline\&. The default is
+\fB\-\-no\-null\-input\fR\&.
+.sp
+This is useful if the input revision expressions could contain newlines\&.
+.RE
+.SH "INPUT AND OUTPUT FORMAT"
+.sp
+The command uses newlines for both input and output termination by default\&. See the \fB\-z\fR, \fB\-\-null\-output\fR, and \fB\-\-null\-input\fR options for using \fINUL\fR character as the terminator\&.
+.sp
+The mode \fB\-\-stdin\-mode=revs\fR outputs one formatted commit followed by the terminator\&. This could either be called a \fIline\fR or a \fIrecord\fR in case "line" is too suggestive of newline termination\&.
+.sp
+Note that this means that the terminator character (newline or \fINUL\fR) acts as a \fIterminator\fR, not a \fIseparator\fR\&. In other words, the final line or record is also terminated by the terminator character\&.
+.sp
+The mode \fB\-\-stdin\-mode=text\fR replaces each object name with the formatted commit, i\&.e\&. the format \fB%s\fR would transform some commit object name to \fI<subject>\fR without any termination\&. Like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+Did we not fix this in "<subject>"?
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+It is safe to interactively read and write from this command since each record is immediately flushed\&.
+.SH "EXAMPLES"
+.sp
+The command \fBgit-last-modified\fR(1) shows the commit that each file was last modified in\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git last\-modified \-\- README\&.md Makefile
+7798034171030be0909c56377a4e0e10e6d2df93        Makefile
+c50fbb2dd225e7e82abba4380423ae105089f4d7        README\&.md
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+We can pipe the result to this command in order to replace the object name with the commit author\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git last\-modified \-\- README\&.md Makefile |
+    git format\-rev \-\-stdin\-mode=text \-\-format=%an
+Junio C Hamano  Makefile
+Todd Zullinger  README\&.md
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Another example is \fIformatting commits in commit messages\fR\&. Given this commit message:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+Fix off\-by\-one error
+
+Fix off\-by\-one error introduced in
+e83c5163316f89bfbde7d9ab23ca2e25604af290\&.
+
+We thought we fixed this in 5569bf9bbedd63a00780fc5c110e0cfab3aa97b9 but
+that only covered 1/3 of the faulty cases\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+We can format the commits and use par(1) to reflow the text, say in a \fBcommit\-msg\fR hook:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git config set hook\&.reference\-commits\&.event commit\-msg
+$ git config set hook\&.reference\-commits\&.command reference\-commits
+$ cat $(which reference\-commits)
+#/bin/sh
+
+msg="$1"
+rewritten=$(mktemp)
+git format\-rev \-\-stdin\-mode=text \-\-format=reference <"$msg" |
+    par >"$rewritten"
+mv "$rewritten" "$msg"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Which will produce something like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+Fix off\-by\-one error
+
+Fix off\-by\-one error introduced in e83c5163316 (Implement better memory
+allocator, 2005\-04\-07)\&.
+
+We thought we fixed this in 5569bf9bbed (Fix memory allocator,
+2005\-06\-22) but that only covered 1/3 of the faulty cases\&.
+.fi
+.if n \{\
+.RE
+.\}
+.SH "DISCUSSION"
+.sp
+This command lets you format any number of revisions in any order through one command invocation\&. Consider the \fBgit-last-modified\fR(1) case from the EXAMPLES section above:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+There might be hundreds of files
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Commits can be repeated, i\&.e\&. two or more files were last modified in the same commit
+.RE
+.sp
+Two widely\-used commands which pretty formats commits are \fBgit-log\fR(1) and \fBgit-show\fR(1)\&. It turns out that they are not a good fit for the above use case\&.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The output of
+\fBgit-last-modified\fR(1)
+would have to be processed in stages since you need to transform the first column separately and then link the author to the filename\&. But this is surmountable\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+You can feed each commit to
+\fBgit\fR
+\fBshow\fR
+or
+\fBgit\fR
+\fBlog\fR
+\fB\-\-no\-walk\fR
+\fB\-1\fR\&. But that means that you need to create a process for each line\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Let\(cqs say that you want to use one process, not one per line\&. So you want to feed all the commits to the command\&. Now you face the problem that you have to feed all the commits to the commands before you get any output (this is also the case for the
+\fB\-\-stdin\fR
+modes)\&. In other words, you cannot loop through each line, get the author for the commit, and output the author and the filename\&. You need to feed all the commits, get back all the output, and match the output with the filename\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+But the next problem is that commands will deduplicate the input and only output one commit one single time only\&. Thus you cannot make the output order match the input order, since a commit could have been repeated in the original input\&.
+.RE
+.sp
+In short, it is straightforward to use these two commands if you use one process per line\&. It is much more work if you just want to use one process, but still doable\&. In contrast, this problem is solved with just another shell pipeline with this command\&.
+.SH "SEE ALSO"
+.sp
+\fBgit-name-rev\fR(1), \fBgit-log\fR(1)\&.
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
