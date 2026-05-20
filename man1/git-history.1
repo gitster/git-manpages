@@ -2,12 +2,12 @@
 .\"     Title: git-history
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-05-18
+.\"      Date: 2026-05-20
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.159.g7bcaabddcf
+.\"    Source: Git 2.54.0.198.g1c00d2d839
 .\"  Language: English
 .\"
-.TH "GIT\-HISTORY" "1" "2026-05-18" "Git 2\&.54\&.0\&.159\&.g7bcaab" "Git Manual"
+.TH "GIT\-HISTORY" "1" "2026-05-20" "Git 2\&.54\&.0\&.198\&.g1c00d2" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,6 +32,7 @@ git-history \- EXPERIMENTAL: Rewrite history
 .SH "SYNOPSIS"
 .sp
 .nf
+\fBgit\fR \fBhistory\fR \fBfixup\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-reedit\-message\fR] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)]
 \fBgit\fR \fBhistory\fR \fBreword\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)]
 \fBgit\fR \fBhistory\fR \fBsplit\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
 .fi
@@ -51,8 +52,11 @@ This command is related to \fBgit-rebase\fR(1) in that both commands can be used
 .sp -1
 .IP \(bu 2.3
 .\}
+Most subcommands of
 \fBgit-history\fR(1)
-can work in a bare repository as it does not need to touch either the index or the worktree\&.
+can work in a bare repository as they do not need to touch either the index or the worktree\&. The
+\fBfixup\fR
+subcommand is an exception to this, as it reads staged changes from the index\&.
 .RE
 .sp
 .RS 4
@@ -89,9 +93,29 @@ Use \fBgit-rebase\fR(1) if you want to reapply a range of commits onto a differe
 This command does not (yet) work with histories that contain merges\&. You should use \fBgit-rebase\fR(1) with the \fB\-\-rebase\-merges\fR flag instead\&.
 .sp
 Furthermore, the command does not support operations that can result in merge conflicts\&. This limitation is by design as history rewrites are not intended to be stateful operations\&. The limitation can be lifted once (if) Git learns about first\-class conflicts\&.
+.sp
+When using \fBfixup\fR with \fB\-\-empty=drop\fR, dropping the root commit is not yet supported\&.
 .SH "COMMANDS"
 .sp
 The following commands are available to rewrite history in different ways:
+.PP
+\fBfixup\fR \fI<commit>\fR
+.RS 4
+Apply the currently staged changes to the specified commit\&. This is similar in nature to
+\fBgit\fR
+\fBcommit\fR
+\fB\-\-fixup=\fR\fI<commit>\fR
+followed by
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-autosquash\fR
+\fI<commit>\fR\fB~\fR\&. Changes are applied to the target commit by performing a three\-way merge between the HEAD commit, the target commit and the tree generated from staged changes\&.
+.sp
+The commit message and authorship of the target commit are preserved by default, unless you specify
+\fB\-\-reedit\-message\fR\&.
+.sp
+If applying the staged changes would result in a conflict, the command aborts with an error\&. All branches that are descendants of the original commit are updated to point to the rewritten history\&.
+.RE
 .PP
 \fBreword\fR \fI<commit>\fR
 .RS 4
@@ -121,6 +145,48 @@ Do not update any references, but instead print any ref updates in a format that
 \fBgit-update-ref\fR(1)\&. Necessary new objects will be written into the repository, so applying these printed ref updates is generally safe\&.
 .RE
 .PP
+\fB\-\-reedit\-message\fR
+.RS 4
+Open an editor to modify the target commit\(cqs message\&.
+.RE
+.PP
+\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)
+.RS 4
+Control what happens when a commit becomes empty as a result of the fixup\&. This can happen in two situations:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The fixup target itself becomes empty because the staged changes exactly cancel out all changes introduced by that commit\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+A descendant commit becomes empty during replay because it introduced the same change that was just fixed up into an ancestor\&.
+.RE
+.sp
+With
+\fBdrop\fR
+(the default), empty commits are removed from the rewritten history\&. Descendants of a dropped target commit are replayed directly onto the target\(cqs parent\&. Note that dropping the root commit is not supported; see LIMITATIONS\&.
+.sp
+With
+\fBkeep\fR, empty commits are retained in the rewritten history as\-is\&.
+.sp
+With
+\fBabort\fR, the command stops with an error if any commit would become empty\&.
+.RE
+.PP
 \fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)
 .RS 4
 Control which references will be updated by the command, if any\&. With
@@ -131,6 +197,38 @@ reference will be rewritten\&. Defaults to
 \fBbranches\fR\&.
 .RE
 .SH "EXAMPLES"
+.SS "Fixup a commit"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git log \-\-oneline \-\-stat
+abc1234 (HEAD \-> main) third
+ third\&.txt | 1 +
+def5678 second
+ second\&.txt | 1 +
+ghi9012 first
+ first\&.txt | 1 +
+
+$ echo "change" >>unrelated\&.txt
+$ git add unrelated\&.txt
+$ git history fixup ghi9012
+
+$ git log \-\-oneline \-\-stat
+jkl3456 (HEAD \-> main) third
+ third\&.txt | 1 +
+mno7890 second
+ second\&.txt | 1 +
+pqr1234 first
+ first\&.txt     | 1 +
+ unrelated\&.txt | 1 +
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The staged addition of \fBunrelated\&.txt\fR has been incorporated into the \fBfirst\fR commit\&. All descendant commits have been replayed on top of the rewritten history\&.
 .SS "Split a commit"
 .sp
 .if n \{\
