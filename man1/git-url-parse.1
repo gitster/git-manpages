@@ -1,0 +1,138 @@
+'\" t
+.\"     Title: git-url-parse
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2026-05-21
+.\"    Manual: Git Manual
+.\"    Source: Git 2.54.0.246.gaec3f58750
+.\"  Language: English
+.\"
+.TH "GIT\-URL\-PARSE" "1" "2026-05-21" "Git 2\&.54\&.0\&.246\&.gaec3f5" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-url-parse \- Parse and extract git URL components
+.SH "SYNOPSIS"
+.sp
+.nf
+\fBgit\fR \fBurl\-parse\fR [\fB\-c\fR \fI<component>\fR] [\fB\-\-\fR] \fI<url>\fR\&...\:
+.fi
+.SH "DESCRIPTION"
+.sp
+Git supports many ways to specify URLs, some of them non\-standard\&. For example, git supports the scp style [user@]host:[path] format\&. This command eases interoperability with git URLs by enabling the parsing and extraction of the components of all git URLs\&.
+.sp
+Any syntactically valid URL is parsed, even if the scheme is not one git supports for fetching or pushing\&.
+.SH "OPTIONS"
+.PP
+\fB\-c\fR \fI<component>\fR, \fB\-\-component\fR \fI<component>\fR
+.RS 4
+Extract the
+\fI<component>\fR
+component from the given Git URLs\&.
+\fI<component>\fR
+can be one of:
+\fBscheme\fR,
+\fBuser\fR,
+\fBpassword\fR,
+\fBhost\fR,
+\fBport\fR,
+\fBpath\fR\&.
+.RE
+.SH "OUTPUT"
+.sp
+When \fB\-\-component\fR is given, the requested component of each URL is printed on its own line, in the order the URLs were given\&. If the URL has no such component (for example, a port in a URL that does not specify one), an empty line is printed in its place\&.
+.sp
+When \fB\-\-component\fR is not given, no output is produced\&. The exit status is zero if every URL parses successfully and non\-zero otherwise, allowing the command to be used purely as a validator\&.
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Print the host name:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git url\-parse \-\-component host https://example\&.com/user/repo
+example\&.com
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Print the path:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git url\-parse \-\-component path https://example\&.com/user/repo
+/user/repo
+$ git url\-parse \-\-component path example\&.com:~user/repo
+~user/repo
+$ git url\-parse \-\-component path example\&.com:user/repo
+/user/repo
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Validate URLs without outputting anything:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git url\-parse https://example\&.com/user/repo example\&.com:~user/repo
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.SH "SEE ALSO"
+.sp
+\fBgit-clone\fR(1), \fBgit-fetch\fR(1), \fBgit-config\fR(1)
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
