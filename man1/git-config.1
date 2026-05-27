@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-05-22
+.\"      Date: 2026-05-27
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.254.g6a4418c36d
+.\"    Source: Git 2.54.0.380.gc69baaf57b
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-05-22" "Git 2\&.54\&.0\&.254\&.g6a4418" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-05-27" "Git 2\&.54\&.0\&.380\&.gc69baa" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -2108,11 +2108,10 @@ If all groups are the same size, it is possible that groups containing newer com
 .PP
 bitmapPseudoMerge\&.<name>\&.sampleRate
 .RS 4
-Determines the proportion of non\-bitmapped commits (among reference tips) which are selected for inclusion in an unstable pseudo\-merge bitmap\&. Must be between
+Determines the proportion of non\-bitmapped commits (among reference tips) which are selected for inclusion in an unstable pseudo\-merge bitmap\&. Must be greater than
 \fB0\fR
-and
-\fB1\fR
-(inclusive)\&. The default is
+and less than or equal to
+\fB1\fR\&. The default is
 \fB1\fR\&.
 .RE
 .PP
@@ -5726,7 +5725,7 @@ to error out\&.
 See also the
 \fB\-\-negotiate\-only\fR
 and
-\fB\-\-negotiation\-tip\fR
+\fB\-\-negotiation\-restrict\fR
 options to
 \fBgit-fetch\fR(1)\&.
 .RE
@@ -10420,6 +10419,67 @@ in a repository) to clear the values inherited from a lower priority configurati
 \fB$HOME/\&.gitconfig\fR)\&.
 .RE
 .PP
+remote\&.<name>\&.negotiationRestrict
+.RS 4
+When negotiating with this remote during
+\fBgit\fR
+\fBfetch\fR, restrict the commits advertised as "have" lines to only those reachable from refs matching the given patterns\&. This multi\-valued config option behaves like
+\fB\-\-negotiation\-restrict\fR
+on the command line\&.
+.sp
+Each value is either an exact ref name (e\&.g\&.
+\fBrefs/heads/release\fR) or a glob pattern (e\&.g\&.
+\fBrefs/heads/release/*\fR)\&. The pattern syntax is the same as for
+\fB\-\-negotiation\-restrict\fR\&.
+.sp
+These config values are used as defaults for the
+\fB\-\-negotiation\-restrict\fR
+command\-line option\&. If
+\fB\-\-negotiation\-restrict\fR
+(or its synonym
+\fB\-\-negotiation\-tip\fR) is specified on the command line, then the config values are not used\&.
+.sp
+These values also influence negotiation during
+\fBgit\fR
+\fBpush\fR
+if
+\fBpush\&.negotiate\fR
+is enabled\&.
+.sp
+Blank values signal to ignore all previous values, allowing a reset of the list from broader config scenarios\&.
+.RE
+.PP
+remote\&.<name>\&.negotiationInclude
+.RS 4
+When negotiating with this remote during
+\fBgit\fR
+\fBfetch\fR, the client advertises a list of commits that exist locally\&. In repos with many references, this list of "haves" can be truncated\&. Depending on data shape, dropping certain references may be expensive\&. This multi\-valued config option specifies references, commit hashes, or ref pattern globs whose tips should always be sent as "have" commits during fetch negotiation with this remote\&.
+.sp
+Each value is either an exact ref name (e\&.g\&.
+\fBrefs/heads/release\fR), a commit hash, or a glob pattern (e\&.g\&.
+\fBrefs/heads/release/*\fR)\&. The pattern syntax is the same as for
+\fB\-\-negotiation\-include\fR\&.
+.sp
+These config values are used as defaults for the
+\fB\-\-negotiation\-include\fR
+command\-line option\&. If
+\fB\-\-negotiation\-include\fR
+is specified on the command line, then the config values are not used\&.
+.sp
+This option is additive with the normal negotiation process: the negotiation algorithm still runs and advertises its own selected commits, but the refs matching
+\fBremote\&.\fR\fI<name>\fR\fB\&.negotiationInclude\fR
+are sent unconditionally on top of those heuristically selected commits\&.
+.sp
+These values also influence negotiation during
+\fBgit\fR
+\fBpush\fR
+if
+\fBpush\&.negotiate\fR
+is enabled\&.
+.sp
+Blank values signal to ignore all previous values, allowing a reset of the list from broader config scenarios\&.
+.RE
+.PP
 remote\&.<name>\&.followRemoteHEAD
 .RS 4
 How
@@ -10515,6 +10575,30 @@ When set to true,
 \fBgit-repack\fR(1)
 will unconditionally include cruft pack(s), if any, in the multi\-pack index when invoked with
 \fB\-\-write\-midx\fR\&. When false, cruft packs are only included in the MIDX when necessary (e\&.g\&., because they might be required to form a reachability closure with MIDX bitmaps)\&. Defaults to true\&.
+.RE
+.PP
+repack\&.midxSplitFactor
+.RS 4
+The factor used in the geometric merging condition when compacting incremental MIDX layers during
+\fBgit\fR
+\fBrepack\fR
+when invoked with the
+\fB\-\-write\-midx=incremental\fR
+option\&.
+.sp
+Adjacent layers are merged when the accumulated object count of the newer layer exceeds
+\fB1/\fR\fI<N>\fR
+of the object count of the next deeper layer\&. Must be at least 2\&. Defaults to 2\&.
+.RE
+.PP
+repack\&.midxNewLayerThreshold
+.RS 4
+The minimum number of packs in the tip MIDX layer before those packs are considered as candidates for geometric repacking during
+\fBgit\fR
+\fBrepack\fR
+\fB\-\-write\-midx=incremental\fR\&.
+.sp
+When the tip layer has fewer packs than this threshold, those packs are excluded from the geometric repack entirely, and are thus left unmodified\&. Must be at least 1\&. Defaults to 8\&.
 .RE
 .PP
 rerere\&.autoUpdate

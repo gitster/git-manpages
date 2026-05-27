@@ -2,12 +2,12 @@
 .\"     Title: git-repack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-05-22
+.\"      Date: 2026-05-27
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.254.g6a4418c36d
+.\"    Source: Git 2.54.0.380.gc69baaf57b
 .\"  Language: English
 .\"
-.TH "GIT\-REPACK" "1" "2026-05-22" "Git 2\&.54\&.0\&.254\&.g6a4418" "Git Manual"
+.TH "GIT\-REPACK" "1" "2026-05-27" "Git 2\&.54\&.0\&.380\&.gc69baa" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,7 @@ git-repack \- Pack unpacked objects in a repository
 .nf
 \fIgit repack\fR [\-a] [\-A] [\-d] [\-f] [\-F] [\-l] [\-n] [\-q] [\-b] [\-m]
         [\-\-window=<n>] [\-\-depth=<n>] [\-\-threads=<n>] [\-\-keep\-pack=<pack\-name>]
-        [\-\-write\-midx] [\-\-name\-hash\-version=<n>] [\-\-path\-walk]
+        [\-\-write\-midx[=<mode>]] [\-\-name\-hash\-version=<n>] [\-\-path\-walk]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -323,10 +323,35 @@ selects the largest resulting pack as the preferred pack for object selection by
 \fBgit-multi-pack-index\fR(1))\&.
 .RE
 .PP
-\-m, \-\-write\-midx
+\-m, \-\-write\-midx[=<mode>]
 .RS 4
 Write a multi\-pack index (see
-\fBgit-multi-pack-index\fR(1)) containing the non\-redundant packs\&.
+\fBgit-multi-pack-index\fR(1)) containing the non\-redundant packs\&. The following modes are available:
+.PP
+\fBdefault\fR
+.RS 4
+Write a single MIDX covering all packs\&. This is the default when
+\fB\-\-write\-midx\fR
+is given without an explicit mode\&.
+.RE
+.PP
+\fBincremental\fR
+.RS 4
+Write an incremental MIDX chain instead of a single flat MIDX\&.
+.sp
+Without
+\fB\-\-geometric\fR, a new MIDX layer is appended to the existing chain (or a new chain is started) containing whatever packs were written by the repack\&. Existing layers are preserved as\-is\&.
+.sp
+When combined with
+\fB\-\-geometric\fR, the incremental mode maintains a chain of MIDX layers that is compacted over time using a geometric merging strategy\&. Each repack creates a new tip layer containing the newly written pack(s)\&. Adjacent layers are then merged whenever the newer layer\(cqs object count exceeds
+\fB1/repack\&.midxSplitFactor\fR
+of the next deeper layer\(cqs count\&. Layers that do not meet this condition are retained as\-is\&.
+.sp
+The result is that newer (tip) layers tend to contain many small packs with relatively few objects, while older (deeper) layers contain fewer, larger packs covering more objects\&. Because compaction is driven by the tip of the chain, newer layers are also rewritten more frequently than older ones, which are only touched when enough objects have accumulated to justify merging into them\&. This keeps the total number of layers logarithmic relative to the total number of objects\&.
+.sp
+Only packs in the tip MIDX layer are considered as candidates for the geometric repack; packs in deeper layers are left untouched\&. If the tip layer contains fewer packs than
+\fBrepack\&.midxNewLayerThreshold\fR, those packs are excluded from the geometry entirely, and a new layer is created for any new pack(s) without disturbing the existing chain\&.
+.RE
 .RE
 .PP
 \-\-name\-hash\-version=<n>
