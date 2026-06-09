@@ -2,12 +2,12 @@
 .\"     Title: git-push
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-06-07
+.\"      Date: 2026-06-09
 .\"    Manual: Git Manual
-.\"    Source: Git 2.54.0.472.g600fe74302
+.\"    Source: Git 2.54.0.502.g1ff279f340
 .\"  Language: English
 .\"
-.TH "GIT\-PUSH" "1" "2026-06-07" "Git 2\&.54\&.0\&.472\&.g600fe7" "Git Manual"
+.TH "GIT\-PUSH" "1" "2026-06-09" "Git 2\&.54\&.0\&.502\&.g1ff279" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -41,9 +41,23 @@ git-push \- Update remote refs along with associated objects
 .fi
 .SH "DESCRIPTION"
 .sp
-Updates one or more branches, tags, or other references in a remote repository from your local repository, and sends all necessary data that isn\(cqt already on the remote\&.
+Updates one or more branches, tags, or other references in one or more remote repositories from your local repository, and sends all necessary data that isn\(cqt already on the remote\&.
 .sp
 The simplest way to push is \fBgit\fR \fBpush\fR \fI<remote>\fR \fI<branch>\fR\&. \fBgit\fR \fBpush\fR \fBorigin\fR \fBmain\fR will push the local \fBmain\fR branch to the \fBmain\fR branch on the remote named \fBorigin\fR\&.
+.sp
+You can also push to multiple remotes at once by using a remote group\&. A remote group is a named list of remotes configured via \fBremotes\&.\fR\fI<name>\fR in your git config:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git config remotes\&.all\-remotes "origin gitlab backup"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Then \fBgit\fR \fBpush\fR \fBall\-remotes\fR will push to \fBorigin\fR, \fBgitlab\fR, and \fBbackup\fR in turn, as if you had run \fBgit\fR \fBpush\fR against each one individually\&. Each remote is pushed independently using its own push mapping configuration\&. There is a \fBremotes\&.\fR\fI<group>\fR entry in the configuration file\&. (See \fBgit-config\fR(1))\&.
 .sp
 The \fI<repository>\fR argument defaults to the upstream for the current branch, or \fBorigin\fR if there\(cqs no configured upstream\&.
 .sp
@@ -111,8 +125,10 @@ You can make interesting things happen to a repository every time you push into 
 .RS 4
 The "remote" repository that is the destination of a push operation\&. This parameter can be either a URL (see the section
 GIT URLS
-below) or the name of a remote (see the section
+below), the name of a remote (see the section
 REMOTES
+below), or the name of a remote group (see the section
+REMOTE GROUPS
 below)\&.
 .RE
 .PP
@@ -1177,6 +1193,56 @@ will automatically create a local branch with that name and set the upstream to 
 Upstream branches are sometimes referred to as "tracking information", as in "set the branch\(cqs tracking information"\&.
 .sp .5v
 .RE
+.SH "REMOTE GROUPS"
+.sp
+A remote group is a named list of remotes configured via \fBremotes\&.\fR\fI<name>\fR in your git config:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git config remotes\&.all\-remotes "r1 r2 r3"
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+When a group name is given as the \fI<repository>\fR argument, the push is performed to each member remote in turn\&. The defining principle is:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git push <options> all\-remotes <args>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+is exactly equivalent to:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+git push <options> r1 <args>
+git push <options> r2 <args>
+\&.\&.\&.
+git push <options> rN <args>
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+where r1, r2, \&...\:, rN are the members of \fBall\-remotes\fR\&. No special behaviour is added or removed \(em the group is purely a shorthand for running the same push command against each member remote individually\&.
+.sp
+When pushing to a group of more than one remote, Git spawns a separate \fBgit\fR \fBpush\fR subprocess for each member remote in sequence\&. Each subprocess receives the same flags and refspecs as the original invocation\&. This means that per\-remote push mappings configured via \fBremote\&.\fR\fI<name>\fR\fB\&.push\fR and mirror mode (\fBremote\&.\fR\fI<name>\fR\fB\&.mirror\fR) are evaluated independently for each remote, and a mirror remote in the group cannot affect the push behaviour of other non\-mirror remotes in the same group\&.
+.sp
+The \fB\-\-atomic\fR option is not supported for group pushes, because atomicity can only be guaranteed within a single transport connection to a single remote\&. Git will refuse the invocation with an error if \fB\-\-atomic\fR is combined with a group name\&.
+.sp
+If any member remote fails whether due to a push rejection (e\&.g\&. a non\-fast\-forward update, a server\-side hook refusing a ref) or a connection error (e\&.g\&. the repository does not exist, authentication fails, or the network is unreachable), Git reports the error and continues pushing to the remaining remotes in the group\&. The overall exit code is non\-zero if any member push fails\&.
+.sp
+This means the user is responsible for ensuring that the sequence of individual pushes makes sense\&. If \fBgit\fR \fBpush\fR \fBr1\fR` would fail for a given set of options and arguments, then \fBgit\fR \fBpush\fR \fBall\-remotes\fR will fail in the same way when it reaches r1\&. The group push does not do anything special to make a failing individual push succeed\&.
 .SH "OUTPUT"
 .sp
 The output of "git push" depends on the transport method used; this section describes the output when pushing over the Git protocol (either locally or via ssh)\&.
@@ -1692,8 +1758,7 @@ this is a deprecated synonym for
 .RS 4
 push the current branch with the same name on the remote\&.
 .sp
-If you are working on a centralized workflow (pushing to the same repository you pull from, which is typically
-\fBorigin\fR), then you need to configure an upstream branch with the same name\&.
+This mode requires that the remote repository to be pushed to is known\&. When pushing back to the same remote you pull from, the current branch must also have an upstream tracking branch with the same name\&.
 .sp
 This mode is the default since Git 2\&.0, and is the safest option suited for beginners\&.
 .RE
