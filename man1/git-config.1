@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-06-29
+.\"      Date: 2026-07-06
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0
+.\"    Source: Git 2.55.0.122.gf85a7e6620
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-06-29" "Git 2\&.55\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-07-06" "Git 2\&.55\&.0\&.122\&.gf85a7e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1514,6 +1514,15 @@ to move to the detached HEAD state, to tell the user how to create a local branc
 diverging
 .RS 4
 Shown when a fast\-forward is not possible\&.
+.RE
+.PP
+fetchRemoteHEADWarn
+.RS 4
+Shown when
+\fBgit-fetch\fR(1)
+reveals that a remote
+\fBHEAD\fR
+differs from what is set locally and the user has opted into receiving a warning in this situation\&.
 .RE
 .PP
 fetchShowForcedUpdates
@@ -5821,6 +5830,43 @@ The creation token values are chosen by the provider serving the specific bundle
 value before fetching\&.
 .RE
 .PP
+\fBfetch\&.followRemoteHEAD\fR
+.RS 4
+When fetching using a default refspec, this setting determines how to handle differences between a fetched remote\(cqs
+\fBHEAD\fR
+and the local
+\fBremotes/\fR\fI<name>\fR\fB/HEAD\fR
+symbolic\-ref\&. Its value is one of
+.PP
+\fBcreate\fR
+.RS 4
+Create
+\fBremotes/\fR\fI<name>\fR\fB/HEAD\fR
+if a ref exists on the remote, but not locally\&. An existing symbolic\-ref will not be touched\&. This is the default value\&.
+.RE
+.PP
+\fBwarn\fR
+.RS 4
+Display a warning if the remote advertises a different
+\fBHEAD\fR
+than what is set locally\&. Behaves like "create" if the local symbolic\-ref doesn\(cqt exist\&.
+.RE
+.PP
+\fBalways\fR
+.RS 4
+Silently update
+\fBremotes/\fR\fI<name>\fR\fB/HEAD\fR
+whenever the remote advertises a new value\&.
+.RE
+.PP
+\fBnever\fR
+.RS 4
+Never create or modify the
+\fBremotes/\fR\fI<name>\fR\fB/HEAD\fR
+symbolic\-ref\&.
+.RE
+.RE
+.PP
 filter\&.<driver>\&.clean
 .RS 4
 The command which is used to convert the content of a worktree file to a blob upon checkin\&. See
@@ -8232,7 +8278,7 @@ If
 will act as if the
 \fB\-\-follow\fR
 option was used when a single <path> is given\&. This has the same limitations as
-\fB\-\-follow\fR, i\&.e\&. it cannot be used to follow multiple files and does not work well on non\-linear history\&.
+\fB\-\-follow\fR, i\&.e\&. it cannot be used to follow multiple files\&.
 .RE
 .PP
 \fBlog\&.graphColors\fR
@@ -9554,7 +9600,202 @@ This list has no effect unless the "promisor\&.advertise" config variable is set
 .PP
 promisor\&.acceptFromServer
 .RS 4
-If set to "all", a client will accept all the promisor remotes a server might advertise using the "promisor\-remote" capability\&. If set to "knownName" the client will accept promisor remotes which are already configured on the client and have the same name as those advertised by the client\&. This is not very secure, but could be used in a corporate setup where servers and clients are trusted to not switch name and URLs\&. If set to "knownUrl", the client will accept promisor remotes which have both the same name and the same URL configured on the client as the name and URL advertised by the server\&. This is more secure than "all" or "knownName", so it should be used if possible instead of those options\&. Default is "none", which means no promisor remote advertised by a server will be accepted\&. By accepting a promisor remote, the client agrees that the server might omit objects that are lazily fetchable from this promisor remote from its responses to "fetch" and "clone" requests from the client\&. Name and URL comparisons are case sensitive\&. See
+Controls which promisor remotes advertised by a server (using the "promisor\-remote" protocol capability) a client will accept\&. By accepting a promisor remote, the client agrees that the server might omit objects that are lazily fetchable from this promisor remote from its responses to "fetch" and "clone" requests\&.
+.sp
+Note that this option does not cause new remotes to be automatically created in the client\(cqs configuration\&. It only allows remotes which are somehow already configured to be trusted for the current operation, or their fields to be updated (if
+\fBpromisor\&.storeFields\fR
+is set and the remote already exists locally)\&. To allow Git to automatically create and persist new remotes from server advertisements, use
+\fBpromisor\&.acceptFromServerUrl\fR\&.
+.sp
+The available options are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBnone\fR
+(default): No promisor remote advertised by a server will be accepted\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBknownUrl\fR: The client will accept promisor remotes that are already configured on the client and have both the same name and the same URL as advertised by the server\&. This is more secure than
+\fBall\fR
+or
+\fBknownName\fR, and should be used if possible instead of those options\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBknownName\fR: The client will accept promisor remotes that are already configured on the client and have the same name as those advertised by the server\&. This is not very secure, but could be used in a corporate setup where servers and clients are trusted to not switch names and URLs\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBall\fR: The client will accept all the promisor remotes a server might advertise\&. This is the least secure option and should only be used in fully trusted environments\&.
+.sp
+Name and URL comparisons are case\-sensitive\&. See
+\fBgitprotocol-v2\fR(5)
+for protocol details\&.
+.RE
+.RE
+.PP
+promisor\&.acceptFromServerUrl
+.RS 4
+A glob pattern to specify which server\-advertised URLs a client is allowed to act on\&. When a URL matches, the client will accept the advertised remote as a promisor remote, may automatically create a new remote configuration for it and may automatically accept field updates (such as authentication tokens) from the server, even if
+\fBpromisor\&.acceptFromServer\fR
+is set to
+\fBnone\fR
+(the default)\&.
+.sp
+This option can appear multiple times in config files\&. An advertised URL will be accepted if it matches
+\fIANY\fR
+glob pattern specified by this option in
+\fIANY\fR
+config file read by Git\&.
+.sp
+When both
+\fBpromisor\&.acceptFromServer\fR
+and
+\fBpromisor\&.acceptFromServerUrl\fR
+are set,
+\fBpromisor\&.acceptFromServerUrl\fR
+is consulted first and takes precedence: if a matching pattern leads to acceptance (either by auto\-configuring an unknown remote or by accepting field updates for a known remote whose URL matches both the local configuration and the allowlist), the advertised remote is accepted regardless of the
+\fBpromisor\&.acceptFromServer\fR
+setting\&. If no pattern in
+\fBpromisor\&.acceptFromServerUrl\fR
+triggers acceptance, the decision is left to
+\fBpromisor\&.acceptFromServer\fR\&.
+.sp
+Note however that, even when an advertised URL matches a pattern in
+\fBpromisor\&.acceptFromServerUrl\fR, an already\-existing remote on the client whose name matches the advertised name but whose configured URL differs from the advertised one will
+\fINOT\fR
+be accepted through
+\fBpromisor\&.acceptFromServerUrl\fR\&. This prevents a server from silently re\-pointing an existing client\-side remote at a different URL\&. (Such a remote may still be accepted through
+\fBpromisor\&.acceptFromServer=all\fR
+or
+\fB=knownName\fR, which have their own, looser semantics; see the documentation of that option\&.)
+.sp
+Be
+\fIVERY\fR
+careful with these patterns:
+\fB*\fR
+matches any sequence of characters within the
+\fIhost\fR
+and
+\fIpath\fR
+parts of a URL (but cannot cross part boundaries)\&. An overly broad pattern is a major security risk, as a matching URL allows a server to auto\-configure new remotes and to update fields (such as authentication tokens) on known remotes without further confirmation\&. To minimize security risks, follow these guidelines:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Start with a secure protocol scheme, like
+\fBhttps://\fR
+or
+\fBssh://\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Only allow domain names or paths where you control and trust
+\fIALL\fR
+the content\&. Be especially careful with shared hosting platforms like
+\fBgithub\&.com\fR
+or
+\fBgitlab\&.com\fR\&. A broad pattern like
+\fBhttps://gitlab\&.com/*\fR
+is dangerous because it trusts every repository on the entire platform\&. Always restrict such patterns to your specific organization or namespace (e\&.g\&.,
+\fBhttps://gitlab\&.com/your\-org/*\fR)\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+Never use globs at the end of domain names\&. For example,
+\fBhttps://cdn\&.your\-org\&.com/*\fR
+might be safe, but
+\fBhttps://cdn\&.your\-org\&.com*/*\fR
+is a major security risk because the latter matches
+\fBhttps://cdn\&.your\-org\&.com\&.hacker\&.net/repo\fR\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+Be careful using globs at the beginning of domain names\&. While the code ensures a
+\fB*\fR
+in the host cannot cross into the path, a pattern like
+\fBhttps://*\&.example\&.com/*\fR
+will still match any subdomain\&. This is extremely dangerous on shared hosting platforms (e\&.g\&.,
+\fBhttps://*\&.github\&.io/*\fR
+trusts every user\(cqs site on the entire platform)\&.
+.RE
+.sp
+Before matching, both the advertised URL and the pattern are normalized: the scheme and host are lowercased, percent\-encoded characters are decoded where possible, and path segments like
+\fB\&.\&.\fR
+are resolved\&. The port must also match exactly (e\&.g\&.,
+\fBhttps://example\&.com:8080/*\fR
+will not match a URL advertised on port 9999)\&. The username and password components of the URL are ignored during matching\&. Note that embedding credentials in URLs is discouraged\&. Passing authentication tokens via the
+\fBtoken\fR
+field of the
+\fBpromisor\-remote\fR
+capability is strongly preferred\&.
+.sp
+The glob pattern can optionally be prefixed with a remote name and an equals sign (e\&.g\&.,
+\fBcdn=https://cdn\&.example\&.com/*\fR)\&. If such a prefix is provided, accepted remotes will be saved under that name\&. If no such prefix is provided, a safe remote name will be automatically generated by sanitizing the URL and prefixing it with
+\fBpromisor\-auto\-\fR\&.
+.sp
+If a remote with the chosen name already exists but points to a different URL, Git will append a numeric suffix (e\&.g\&.,
+\fB\-1\fR,
+\fB\-2\fR) to the name to prevent overwriting existing configurations\&. You should make sure that this doesn\(cqt happen often though, as remotes will be rejected if the numeric suffix increases too much\&. In all cases, the original name advertised by the server is recorded in the
+\fBremote\&.\fR\fI<name>\fR\fB\&.advertisedAs\fR
+configuration variable for tracing and debugging purposes\&.
+.sp
+For the security implications of accepting a promisor remote, see the documentation of
+\fBpromisor\&.acceptFromServer\fR\&. For details on the protocol, see
 \fBgitprotocol-v2\fR(5)\&.
 .RE
 .PP
@@ -10568,6 +10809,14 @@ remote\&.<name>\&.promisor
 When set to true, this remote will be used to fetch promisor objects\&.
 .RE
 .PP
+remote\&.<name>\&.advertisedAs
+.RS 4
+When a promisor remote is automatically configured using information advertised by a server through the
+\fBpromisor\-remote\fR
+protocol capability (see
+\fBpromisor\&.acceptFromServerUrl\fR), the server\(cqs originally advertised name is saved in this variable\&. This is for information, tracing and debugging purposes\&. Users should not typically modify or create such configuration entries\&.
+.RE
+.PP
 remote\&.<name>\&.partialclonefilter
 .RS 4
 The filter that will be applied when fetching from this promisor remote\&. Changing or clearing this value will only affect fetches for new commits\&. To fetch associated objects for commits already present in the local object database, use the
@@ -10650,19 +10899,20 @@ Blank values signal to ignore all previous values, allowing a reset of the list 
 .PP
 remote\&.<name>\&.followRemoteHEAD
 .RS 4
-How
-\fBgit-fetch\fR(1)
-should handle updates to
-\fBremotes/\fR\fI<name>\fR\fB/HEAD\fR
-when fetching using the configured refspecs of a remote\&. The default value is "create", which will create
-\fBremotes/\fR\fI<name>\fR\fB/HEAD\fR
-if it exists on the remote, but not locally; this will not touch an already existing local reference\&. Setting it to "warn" will print a message if the remote has a different value than the local one; in case there is no local reference, it behaves like "create"\&. A variant on "warn" is "warn\-if\-not\-$branch", which behaves like "warn", but if
+When fetching this remote using its default refspec, this setting determines how to handle differences between the remote\(cqs
 \fBHEAD\fR
-on the remote is
-\fB$branch\fR
-it will be silent\&. Setting it to "always" will silently update
+and the local
 \fBremotes/\fR\fI<name>\fR\fB/HEAD\fR
-to the value on the remote\&. Finally, setting it to "never" will never change or create the local reference\&.
+symbolic\-ref\&. Overrides the value of
+\fBfetch\&.followRemoteHEAD\fR\&. See
+\fBfetch\&.followRemoteHEAD\fR
+for a description of accepted values\&.
+.sp
+In addition to the values supported by
+\fBfetch\&.followRemoteHEAD\fR, this setting may also take on the value "warn\-if\-not\-\fB$branch\fR", which behaves like "warn", but ignores the warning if the remote\(cqs
+\fBHEAD\fR
+is
+\fBremotes/\fR\fI<name>\fR\fB/$branch\fR\&.
 .RE
 .PP
 remotes\&.<group>
