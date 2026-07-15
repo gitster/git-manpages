@@ -2,12 +2,12 @@
 .\"     Title: git-history
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-07-08
+.\"      Date: 2026-07-15
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.123.gf60db8d575
+.\"    Source: Git 2.55.0.178.gd35c5399e3
 .\"  Language: English
 .\"
-.TH "GIT\-HISTORY" "1" "2026-07-08" "Git 2\&.55\&.0\&.123\&.gf60db8" "Git Manual"
+.TH "GIT\-HISTORY" "1" "2026-07-15" "Git 2\&.55\&.0\&.178\&.gd35c53" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,6 +32,7 @@ git-history \- EXPERIMENTAL: Rewrite history
 .SH "SYNOPSIS"
 .sp
 .nf
+\fBgit\fR \fBhistory\fR \fBdrop\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)]
 \fBgit\fR \fBhistory\fR \fBfixup\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-reedit\-message\fR] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)]
 \fBgit\fR \fBhistory\fR \fBreword\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)]
 \fBgit\fR \fBhistory\fR \fBsplit\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
@@ -94,10 +95,24 @@ This command does not (yet) work with histories that contain merges\&. You shoul
 .sp
 Furthermore, the command does not support operations that can result in merge conflicts\&. This limitation is by design as history rewrites are not intended to be stateful operations\&. The limitation can be lifted once (if) Git learns about first\-class conflicts\&.
 .sp
-When using \fBfixup\fR with \fB\-\-empty=drop\fR, dropping the root commit is not yet supported\&.
+When using \fBfixup\fR with \fB\-\-empty=drop\fR, dropping the root commit is not yet supported\&. Likewise, \fBdrop\fR cannot remove the root commit or a merge commit\&.
 .SH "COMMANDS"
 .sp
 The following commands are available to rewrite history in different ways:
+.PP
+\fBdrop\fR \fI<commit>\fR
+.RS 4
+Remove the specified commit from the history\&. All descendants of the commit are replayed directly onto its parent\&.
+.sp
+The root commit cannot be dropped as that may lead to edge cases where refs end up with no commits anymore\&. Merge commits cannot be dropped either; see LIMITATIONS\&.
+.sp
+If
+\fBHEAD\fR
+points at a commit that is to be rewritten, the index and working tree are updated to match the new
+\fBHEAD\fR\&. The command aborts before any references are updated in case local modifications would be overwritten\&.
+.sp
+If replaying any descendant would result in a conflict, the command aborts with an error\&.
+.RE
 .PP
 \fBfixup\fR \fI<commit>\fR
 .RS 4
@@ -229,6 +244,28 @@ pqr1234 first
 .\}
 .sp
 The staged addition of \fBunrelated\&.txt\fR has been incorporated into the \fBfirst\fR commit\&. All descendant commits have been replayed on top of the rewritten history\&.
+.SS "Drop a commit"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git log \-\-oneline
+abc1234 (HEAD \-> main) third
+def5678 second
+ghi9012 first
+
+$ git history drop \*(Aqmain^{/second}\*(Aq
+
+$ git log \-\-oneline
+jkl3456 (HEAD \-> main) third
+ghi9012 first
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The \fBsecond\fR commit has been removed from the history, and \fBthird\fR has been replayed directly on top of \fBfirst\fR\&. All branches that pointed at the dropped commit have been moved to its parent\&.
 .SS "Split a commit"
 .sp
 .if n \{\

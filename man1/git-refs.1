@@ -2,12 +2,12 @@
 .\"     Title: git-refs
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-07-08
+.\"      Date: 2026-07-15
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.123.gf60db8d575
+.\"    Source: Git 2.55.0.178.gd35c5399e3
 .\"  Language: English
 .\"
-.TH "GIT\-REFS" "1" "2026-07-08" "Git 2\&.55\&.0\&.123\&.gf60db8" "Git Manual"
+.TH "GIT\-REFS" "1" "2026-07-15" "Git 2\&.55\&.0\&.178\&.gd35c53" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -43,6 +43,10 @@ git-refs \- Low\-level access to refs
 		   [ \fB\-\-stdin\fR | (\fI<pattern>\fR\fB\&.\&.\&.\fR)]
 \fBgit\fR \fBrefs\fR \fBexists\fR \fI<ref>\fR
 \fBgit\fR \fBrefs\fR \fBoptimize\fR [\fB\-\-all\fR] [\fB\-\-no\-prune\fR] [\fB\-\-auto\fR] [\fB\-\-include\fR \fI<pattern>\fR] [\fB\-\-exclude\fR \fI<pattern>\fR]
+\fBgit\fR \fBrefs\fR \fBcreate\fR [\fB\-\-message=\fR\fI<reason>\fR] [\fB\-\-no\-deref\fR] [\fB\-\-create\-reflog\fR] \fI<ref>\fR \fI<new\-value>\fR
+\fBgit\fR \fBrefs\fR \fBdelete\fR [\fB\-\-message=\fR\fI<reason>\fR] [\fB\-\-no\-deref\fR] \fI<ref>\fR [\fI<old\-value>\fR]
+\fBgit\fR \fBrefs\fR \fBupdate\fR [\fB\-\-message=\fR\fI<reason>\fR] [\fB\-\-no\-deref\fR] [\fB\-\-create\-reflog\fR] \fI<ref>\fR \fI<new\-value>\fR [\fI<old\-value>\fR]
+\fBgit\fR \fBrefs\fR \fBrename\fR [\fB\-\-message=\fR\fI<reason>\fR] \fI<old\-ref>\fR \fI<new\-ref>\fR
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -76,6 +80,47 @@ optimize
 Optimizes references to improve repository performance and reduce disk usage\&. This subcommand is an alias for
 \fBgit-pack-refs\fR(1)
 and offers identical functionality\&.
+.RE
+.PP
+create
+.RS 4
+Create the given reference, which must not already exist, pointing at
+\fI<new\-value>\fR\&.
+.RE
+.PP
+delete
+.RS 4
+Delete the given reference\&. This subcommand mirrors
+\fBgit\fR
+\fBupdate\-ref\fR
+\fB\-d\fR
+(see
+\fBgit-update-ref\fR(1))\&. When
+\fI<old\-value>\fR
+is given, the reference is only deleted after verifying that it currently contains
+\fI<old\-value>\fR\&.
+.RE
+.PP
+update
+.RS 4
+Update the given reference to point at
+\fI<new\-value>\fR\&. If
+\fI<old\-value>\fR
+is given, the reference is only updated after verifying that it currently contains
+\fI<old\-value>\fR\&. As a special case, an all\-zeroes
+\fI<new\-value>\fR
+deletes the branch, whereas an all\-zeroes
+\fI<old\-value>\fR
+ensures that the branch does not yet exist\&.
+.RE
+.PP
+rename
+.RS 4
+Rename the reference
+\fI<oldref>\fR
+to
+\fI<newref>\fR\&. The old reference must exist and the new reference must not yet exist, and both must have a well\-formed name (see
+\fBgit-check-ref-format\fR(1))\&.
 .RE
 .SH "OPTIONS"
 .sp
@@ -358,6 +403,23 @@ When used with
 \fB\-\-include\fR, minus refs that are provided to
 \fB\-\-exclude\fR
 will be packed\&.
+.RE
+.sp
+The following options are specific to commands which write references:
+.PP
+\fB\-\-create\-reflog\fR
+.RS 4
+Create a reflog for the reference even if one would not ordinarily be created\&.
+.RE
+.PP
+\fB\-\-message=\fR\fI<reason>\fR
+.RS 4
+Use the given <reason> string for the reflog entry associated with the update\&. An empty message is rejected\&.
+.RE
+.PP
+\fB\-\-no\-deref\fR
+.RS 4
+Operate on <ref> itself rather than the reference it points to via a symbolic ref\&.
 .RE
 .SH "KNOWN LIMITATIONS"
 .sp
