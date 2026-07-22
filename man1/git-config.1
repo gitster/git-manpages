@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-07-21
+.\"      Date: 2026-07-22
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.334.g5d2e770923
+.\"    Source: Git 2.55.0.378.g9a0c4701dc
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-07-21" "Git 2\&.55\&.0\&.334\&.g5d2e77" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-07-22" "Git 2\&.55\&.0\&.378\&.g9a0c47" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1149,6 +1149,72 @@ This is the same as
 except that matching is done case\-insensitively (e\&.g\&. on case\-insensitive file systems)
 .RE
 .PP
+\fBworktree\fR
+.RS 4
+The data that follows the keyword
+\fBworktree\fR
+and a colon is used as a glob pattern\&. If the working directory of the current worktree matches the pattern, the include condition is met\&.
+.sp
+The worktree location is the path where files are checked out (as returned by
+\fBgit\fR
+\fBrev\-parse\fR
+\fB\-\-show\-toplevel\fR)\&. This is different from
+\fBgitdir\fR, which matches the \&.\fBgit\fR
+directory path\&. In a linked worktree, the worktree path is the directory where that worktree\(cqs files are located, not the main repository\(cqs \&.\fBgit\fR
+directory\&.
+.sp
+The pattern uses the same glob syntax as
+\fBgitdir\fR
+(including
+\fB~/\fR, \&.\fB/\fR,
+\fB**/\fR, and trailing\-\fB/\fR
+prefix matching)\&. This condition will never match in a bare repository (which has no worktree)\&.
+.sp
+Unlike
+\fBgitdir\fR, the
+\fBworktree\fR
+condition currently matches only the realpath\-resolved worktree location\&. If the working tree was entered via a symbolic link, a pattern that uses the symbolic\-link spelling may not match; use the real path instead\&.
+.sp
+This is useful when you want to apply configuration based on where the working tree is located on the filesystem\&. For example, a contributor who works on the same project both personally and as an employee can use different
+\fBuser\&.name\fR
+and
+\fBuser\&.email\fR
+values depending on which directory the worktree is checked out under:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+[includeIf "worktree:/home/user/work/"]
+    path = ~/\&.config/git/work\&.inc
+[includeIf "worktree:/home/user/personal/"]
+    path = ~/\&.config/git/personal\&.inc
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+While
+\fBextensions\&.worktreeConfig\fR
+(see
+\fBgit-worktree\fR(1)) also supports per\-worktree configuration, it stores the config inside each repository\(cqs \&.\fBgit/config\&.worktree\fR
+file and requires running
+\fBgit\fR
+\fBconfig\fR
+\fB\-\-worktree\fR
+inside each worktree individually\&. In contrast,
+\fBincludeIf\fR
+"worktree:\fB\&.\&.\&.\fR" can be set once in a global or system\-level configuration file (e\&.g\&.
+\fB~/\&.config/git/config\fR) and applies to all repositories at once based on their worktree location\&.
+.RE
+.PP
+\fBworktree/i\fR
+.RS 4
+This is the same as
+\fBworktree\fR
+except that matching is done case\-insensitively (e\&.g\&. on case\-insensitive file systems)
+.RE
+.PP
 \fBonbranch\fR
 .RS 4
 The data that follows the keyword
@@ -1266,6 +1332,14 @@ Note that "\&.\&./" is not special and will match literally, which is unlikely w
 ; include for all repositories inside $HOME/to/group
 [includeIf "gitdir:~/to/group/"]
         path = /path/to/foo\&.inc
+
+; include if the worktree is at /path/to/project\-build
+[includeIf "worktree:/path/to/project\-build"]
+        path = build\-config\&.inc
+
+; include for all worktrees inside /path/to/group
+[includeIf "worktree:/path/to/group/"]
+        path = group\-config\&.inc
 
 ; relative paths are always relative to the including
 ; file (if the condition is true); their location is not
