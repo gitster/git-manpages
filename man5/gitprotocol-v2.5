@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-07-27
+.\"      Date: 2026-07-30
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.424.g13c7afec21
+.\"    Source: Git 2.55.0.481.ga97fcc37c2
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "2026-07-27" "Git 2\&.55\&.0\&.424\&.g13c7af" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "2026-07-30" "Git 2\&.55\&.0\&.481\&.ga97fcc" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1033,13 +1033,13 @@ Requests size information to be returned for each listed object id\&.
 .nf
 oid <oid>
 Indicates to the server an object which the client wants to obtain
-information for\&.
+information for\&. They must be full OIDs\&.
 .fi
 .if n \{\
 .RE
 .\}
 .sp
-The response of \fBobject\-info\fR is a list of the requested object ids and associated requested information, each separated by a single space\&.
+The response of \fBobject\-info\fR consists of one pkt\-line per requested attribute, echoing the attributes the server will report, followed by one pkt\-line per requested object id with its information, each field separated by a single space\&.
 .sp
 .if n \{\
 .RS 4
@@ -1055,18 +1055,8 @@ output = info flush\-pkt
 .RS 4
 .\}
 .nf
-info = PKT\-LINE(attrs) LF)
-	*PKT\-LINE(obj\-info LF)
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-attrs = attr | attrs SP attrs
+info = *PKT\-LINE(attr LF)
+       *PKT\-LINE(obj\-info LF)
 .fi
 .if n \{\
 .RE
@@ -1086,11 +1076,23 @@ attr = "size"
 .RS 4
 .\}
 .nf
-obj\-info = obj\-id SP obj\-size
+obj\-size = 1*DIGIT
 .fi
 .if n \{\
 .RE
 .\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+obj\-info = obj\-id [SP [obj\-size]]
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+If the server does not recognize the OID, the response will be \fI<oid>\fR \fBSP\fR regardless of the number of attributes requested\&.
 .SS "bundle\-uri"
 .sp
 If the \fIbundle\-uri\fR capability is advertised, the server supports the \(lqbundle\-uri\(rq command\&.
