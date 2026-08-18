@@ -2,12 +2,12 @@
 .\"     Title: git-bisect
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-08-15
+.\"      Date: 2026-08-18
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.577.g18e66859d8
+.\"    Source: Git 2.55.0.590.gdea0ea3582
 .\"  Language: English
 .\"
-.TH "GIT\-BISECT" "1" "2026-08-15" "Git 2\&.55\&.0\&.577\&.g18e668" "Git Manual"
+.TH "GIT\-BISECT" "1" "2026-08-18" "Git 2\&.55\&.0\&.590\&.gdea0ea" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-bisect \- Use binary search to find the commit that introduced a bug
 .sp
 .nf
 \fBgit\fR \fBbisect\fR \fBstart\fR [\fB\-\-term\-\fR(\fBbad\fR|\fBnew\fR)\fB=\fR\fI<term\-new>\fR \fB\-\-term\-\fR(\fBgood\fR|\fBold\fR)\fB=\fR\fI<term\-old>\fR]
-		 [\fB\-\-no\-checkout\fR] [\fB\-\-first\-parent\fR] [\fI<bad>\fR [\fI<good>\fR\&...\:]] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
+		 [\fB\-\-no\-checkout\fR] [\fB\-\-first\-parent\fR] [\fB\-\-reset\-when\-found\fR[\fB=\fR\fI<where>\fR]] [\fI<bad>\fR [\fI<good>\fR\&...\:]] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
 \fBgit\fR \fBbisect\fR (\fBbad\fR|\fBnew\fR|\fI<term\-new>\fR) [\fI<rev>\fR]
 \fBgit\fR \fBbisect\fR (\fBgood\fR|\fBold\fR|\fI<term\-old>\fR) [\fI<rev>\fR\&...\:]
 \fBgit\fR \fBbisect\fR \fBterms\fR [\fB\-\-term\-\fR(\fBgood\fR|\fBold\fR) | \fB\-\-term\-\fR(\fBbad\fR|\fBnew\fR)]
@@ -43,7 +43,7 @@ git-bisect \- Use binary search to find the commit that introduced a bug
 \fBgit\fR \fBbisect\fR (\fBvisualize\fR|\fBview\fR)
 \fBgit\fR \fBbisect\fR \fBreplay\fR \fI<logfile>\fR
 \fBgit\fR \fBbisect\fR \fBlog\fR
-\fBgit\fR \fBbisect\fR \fBrun\fR \fI<cmd>\fR [\fI<arg>\fR\&...\:]
+\fBgit\fR \fBbisect\fR \fBrun\fR [\fB\-\-reset\-when\-found\fR[\fB=\fR\fI<where>\fR]] \fI<cmd>\fR [\fI<arg>\fR\&...\:]
 \fBgit\fR \fBbisect\fR \fBhelp\fR
 .fi
 .SH "DESCRIPTION"
@@ -456,6 +456,33 @@ Follow only the first parent commit upon seeing a merge commit\&.
 In detecting regressions introduced through the merging of a branch, the merge commit will be identified as introduction of the bug and its ancestors will be ignored\&.
 .sp
 This option is particularly useful in avoiding false positives when a merged branch contained broken or non\-buildable commits, but the merge itself was OK\&.
+.RE
+.PP
+\fB\-\-reset\-when\-found\fR[\fB=\fR\fI<where>\fR]
+.RS 4
+Once the first bad commit is found, report it and clean up the bisection state\&.
+\fI<where>\fR
+may be
+\fBoriginal\fR
+to return to the commit checked out before
+\fBgit\fR
+\fBbisect\fR
+\fBstart\fR, or
+\fBfound\fR
+to leave the first bad commit checked out\&. If
+\fI<where>\fR
+is omitted, it defaults to
+\fBoriginal\fR\&.
+.sp
+This option may be given to
+\fBgit\fR
+\fBbisect\fR
+\fBstart\fR
+or to
+\fBgit\fR
+\fBbisect\fR
+\fBrun\fR\&. It cannot be used for a bisection started with
+\fB\-\-no\-checkout\fR\&.
 .RE
 .SH "EXAMPLES"
 .sp
