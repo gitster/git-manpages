@@ -2,12 +2,12 @@
 .\"     Title: git-branch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-08-18
+.\"      Date: 2026-08-20
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.590.gdea0ea3582
+.\"    Source: Git 2.55.0.618.g1a3e64c6c4
 .\"  Language: English
 .\"
-.TH "GIT\-BRANCH" "1" "2026-08-18" "Git 2\&.55\&.0\&.590\&.gdea0ea" "Git Manual"
+.TH "GIT\-BRANCH" "1" "2026-08-20" "Git 2\&.55\&.0\&.618\&.g1a3e64" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -37,6 +37,7 @@ git-branch \- List, create, or delete branches
 	   [\fB\-\-column\fR[\fB=\fR\fI<options>\fR] | \fB\-\-no\-column\fR] [\fB\-\-sort=\fR\fI<key>\fR]
 	   [\fB\-\-merged\fR [\fI<commit>\fR]] [\fB\-\-no\-merged\fR [\fI<commit>\fR]]
 	   [\fB\-\-contains\fR [\fI<commit>\fR]] [\fB\-\-no\-contains\fR [\fI<commit>\fR]]
+	   [(\fB\-\-forked\fR \fI<branch>\fR)\&...\:]
 	   [\fB\-\-points\-at\fR \fI<object>\fR] [\fB\-\-format=\fR\fI<format>\fR]
 	   [(\fB\-r\fR|\fB\-\-remotes\fR) | (\fB\-a\fR|\fB\-\-all\fR)]
 	   [\fB\-\-list\fR] [\fI<pattern>\fR\&...\:]
@@ -48,6 +49,7 @@ git-branch \- List, create, or delete branches
 \fBgit\fR \fBbranch\fR (\fB\-c\fR|\fB\-C\fR) [\fI<old\-branch>\fR] \fI<new\-branch>\fR
 \fBgit\fR \fBbranch\fR (\fB\-d\fR|\fB\-D\fR) [\fB\-r\fR] \fI<branch\-name>\fR\&...\:
 \fBgit\fR \fBbranch\fR \fB\-\-edit\-description\fR [\fI<branch\-name>\fR]
+\fBgit\fR \fBbranch\fR [\fB\-\-dry\-run\fR] (\fB\-\-delete\-merged\fR \fI<pattern>\fR)\&...\: [\fI<branch\-pattern>\fR\&...\:]
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -57,7 +59,7 @@ If a \fI<pattern>\fR is given, it is used as a shell wildcard to restrict the ou
 .sp
 Note that when providing a \fI<pattern>\fR, you must use \fB\-\-list\fR; otherwise the command may be interpreted as branch creation\&.
 .sp
-With \fB\-\-contains\fR, shows only the branches that contain the named commit (in other words, the branches whose tip commits are descendants of the named commit), \fB\-\-no\-contains\fR inverts it\&. With \fB\-\-merged\fR, only branches merged into the named commit (i\&.e\&. the branches whose tip commits are reachable from the named commit) will be listed\&. With \fB\-\-no\-merged\fR only branches not merged into the named commit will be listed\&. If the \fI<commit>\fR argument is missing it defaults to \fBHEAD\fR (i\&.e\&. the tip of the current branch)\&.
+With \fB\-\-contains\fR, shows only the branches that contain the named commit (in other words, the branches whose tip commits are descendants of the named commit), \fB\-\-no\-contains\fR inverts it\&. With \fB\-\-merged\fR, only branches merged into the named commit (i\&.e\&. the branches whose tip commits are reachable from the named commit) will be listed\&. With \fB\-\-no\-merged\fR only branches not merged into the named commit will be listed\&. If the \fI<commit>\fR argument is missing it defaults to \fBHEAD\fR (i\&.e\&. the tip of the current branch)\&. With \fB\-\-forked\fR, only branches whose configured upstream matches the given branch or pattern will be listed\&.
 .sp
 The command\(cqs second form creates a new branch head named \fI<branch\-name>\fR which points to the current \fBHEAD\fR, or \fI<start\-point>\fR if given\&. As a special case, for \fI<start\-point>\fR, you may use \fI<rev\-A>\fR\fB\&.\&.\&.\fR\fI<rev\-B>\fR as a shortcut for the merge base of \fI<rev\-A>\fR and \fI<rev\-B>\fR if there is exactly one merge base\&. You can leave out at most one of \fI<rev\-A>\fR and \fI<rev\-B>\fR, in which case it defaults to \fBHEAD\fR\&.
 .sp
@@ -249,6 +251,97 @@ List branches\&. With optional
 Print the name of the current branch\&. In detached
 \fBHEAD\fR
 state, nothing is printed\&.
+.RE
+.PP
+\fB\-\-delete\-merged\fR \fI<pattern>\fR
+.RS 4
+Delete local branches whose configured upstream matches
+\fI<pattern>\fR, but only when their tip is reachable from that upstream\&. In other words, the work on the branch has already landed on the upstream it tracks, so the local copy is no longer needed\&.
+\fI<pattern>\fR
+may name a ref, a remote (using the branch its
+\fBHEAD\fR
+points at), or a shell\-style glob\&. The option can be repeated to widen the upstream match\&. Optional
+\fI<branch\-pattern>\fR
+arguments limit which local branches are considered, e\&.g\&.
+\fBgit\fR
+\fBbranch\fR
+\fB\-\-delete\-merged\fR
+\*(Aqorigin/*\*(Aq \*(Aqtopic\-*\*(Aq\&.
+.sp
+A branch is not deleted when:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+its configured upstream ref no longer exists,
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+it is checked out in any worktree,
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+pushing it to the remote configured by
+\fBbranch\&.\fR\fI<name>\fR\fB\&.remote\fR
+would update its upstream, so it cannot be distinguished from a branch that just looks fully merged right after a pull; this is determined by the remote\(cqs configured push and fetch refspecs,
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+it is the local upstream of a branch that is not being deleted, or
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBbranch\&.\fR\fI<name>\fR\fB\&.deleteMerged\fR
+is set to
+\fBfalse\fR\&.
+.RE
+.sp
+When such a local upstream branch has its own upstream deleted by the same operation, its upstream configuration is cleared\&.
+.sp
+A branch whose work has not yet been merged into its upstream is silently skipped\&. Delete it with
+\fBgit\fR
+\fBbranch\fR
+\fB\-D\fR
+if you want to remove it anyway\&.
+.RE
+.PP
+\fB\-\-dry\-run\fR
+.RS 4
+With
+\fB\-\-delete\-merged\fR, print which branches would be deleted and exit without touching any ref\&. Useful for sanity\-checking a wide pattern like \*(Aqorigin/*\*(Aq before committing to the deletion\&.
 .RE
 .PP
 \fB\-v\fR, \fB\-vv\fR, \fB\-\-verbose\fR
@@ -454,6 +547,19 @@ Only list branches whose tips are not reachable from
 \fI<commit>\fR
 (\fBHEAD\fR
 if not specified)\&. Implies
+\fB\-\-list\fR\&.
+.RE
+.PP
+\fB\-\-forked\fR \fI<branch>\fR
+.RS 4
+Only list branches whose configured upstream matches
+\fI<branch>\fR\&. The argument can be a ref (e\&.g\&.
+\fBorigin/main\fR,
+\fBmaster\fR), a remote name like
+\fBorigin\fR
+for the branch its
+\fBorigin/HEAD\fR
+points at, or a shell\-style glob (e\&.g\&. \*(Aqorigin/*\*(Aq)\&. The option can be repeated to widen the filter\&. Implies
 \fB\-\-list\fR\&.
 .RE
 .PP
@@ -718,6 +824,21 @@ Branch description, can be edited with
 cover letter or
 \fBrequest\-pull\fR
 summary\&.
+.RE
+.PP
+\fBbranch\&.\fR\fI<name>\fR\fB\&.deleteMerged\fR
+.RS 4
+If set to
+\fBfalse\fR, branch
+\fI<name>\fR
+is exempt from
+\fBgit\fR
+\fBbranch\fR
+\fB\-\-delete\-merged\fR\&. Useful for a topic branch you intend to develop further after an initial round has been merged upstream\&. Defaults to true\&. Explicit deletion via
+\fBgit\fR
+\fBbranch\fR
+\fB\-d\fR
+is unaffected\&.
 .RE
 .SH "EXAMPLES"
 .PP
