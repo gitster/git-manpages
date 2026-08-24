@@ -2,12 +2,12 @@
 .\"     Title: gitprotocol-v2
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-08-20
+.\"      Date: 2026-08-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.618.g1a3e64c6c4
+.\"    Source: Git 2.55.0.669.g593c42fe07
 .\"  Language: English
 .\"
-.TH "GITPROTOCOL\-V2" "5" "2026-08-20" "Git 2\&.55\&.0\&.618\&.g1a3e64" "Git Manual"
+.TH "GITPROTOCOL\-V2" "5" "2026-08-23" "Git 2\&.55\&.0\&.669\&.g593c42" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1012,7 +1012,7 @@ The server may advertise a session ID that can be used to identify this process 
 Session IDs should be unique to a given process\&. They must fit within a packet\-line, and must not contain non\-printable or whitespace characters\&. The current implementation uses trace2 session IDs (see \m[blue]\fBapi\-trace2\fR\m[]\&\s-2\u[1]\d\s+2 for details), but this may change and users of the session ID should not rely on this fact\&.
 .SS "object\-info"
 .sp
-\fBobject\-info\fR is the command to retrieve information about one or more objects\&. Its main purpose is to allow a client to make decisions based on this information without having to fully fetch objects\&. Object size is the only information that is currently supported\&.
+\fBobject\-info\fR is the command to retrieve information about one or more objects\&. Its main purpose is to allow a client to make decisions based on this information without having to fully fetch objects\&. Currently only object size and type are supported\&.
 .sp
 An \fBobject\-info\fR request takes the following arguments:
 .sp
@@ -1022,6 +1022,17 @@ An \fBobject\-info\fR request takes the following arguments:
 .nf
 size
 Requests size information to be returned for each listed object id\&.
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+type
+Requests type information to be returned for each listed object id\&.
 .fi
 .if n \{\
 .RE
@@ -1066,7 +1077,7 @@ info = *PKT\-LINE(attr LF)
 .RS 4
 .\}
 .nf
-attr = "size"
+attr = "size" | "type"
 .fi
 .if n \{\
 .RE
@@ -1086,11 +1097,33 @@ obj\-size = 1*DIGIT
 .RS 4
 .\}
 .nf
-obj\-info = obj\-id [SP [obj\-size]]
+obj\-type = "blob" | "tree" | "commit" | "tag"
 .fi
 .if n \{\
 .RE
 .\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+obj\-val = obj\-size | obj\-type
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+obj\-info = obj\-id [SP [obj\-val *(SP obj\-val)]]
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The values in \fBobj\-info\fR appear in the same order as the corresponding \fBattr\fR lines, with exactly one value per requested attribute\&.
 .sp
 If the server does not recognize the OID, the response will be \fI<oid>\fR \fBSP\fR regardless of the number of attributes requested\&.
 .SS "bundle\-uri"
