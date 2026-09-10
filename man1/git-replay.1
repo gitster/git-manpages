@@ -2,12 +2,12 @@
 .\"     Title: git-replay
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-09-02
+.\"      Date: 2026-09-10
 .\"    Manual: Git Manual
-.\"    Source: Git 2.55.0.787.g3cb9185f65
+.\"    Source: Git 2.56.0.rc0
 .\"  Language: English
 .\"
-.TH "GIT\-REPLAY" "1" "2026-09-02" "Git 2\&.55\&.0\&.787\&.g3cb918" "Git Manual"
+.TH "GIT\-REPLAY" "1" "2026-09-10" "Git 2\&.56\&.0\&.rc0" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -33,7 +33,7 @@ git-replay \- EXPERIMENTAL: Replay commits on a new base, works with bare repos 
 .sp
 .nf
 (EXPERIMENTAL!) \fIgit replay\fR ([\-\-contained] \-\-onto=<newbase> | \-\-advance=<branch> | \-\-revert=<branch>)
-                             [\-\-ref=<ref>] [\-\-ref\-action=<mode>] <revision\-range>
+                             [\-\-ref=<ref>] [\-\-ref\-action=<mode>] [\-\-linearize] <revision\-range>
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -130,6 +130,22 @@ Output update\-ref commands for pipeline use\&. This is the traditional behavior
 The default mode can be configured via the
 \fBreplay\&.refAction\fR
 configuration variable\&.
+.RE
+.PP
+\-\-linearize
+.RS 4
+In this mode, each replayed commit is stacked on top of the previously replayed one, so all replayed commits are flattened into a single linear history\&.
+.sp
+When a merge commit is encountered, all commits in the range reachable from the merge commit are replayed into the linear history, and the merge commit itself is dropped\&. A ref that pointed to a merge commit is updated to the merge\(cqs last replayed ancestor\&. (This matches the behavior of git\-rebase(1)\*(Aqs
+\fB\-\-no\-rebase\-merges\fR
+option\&.)
+.sp
+\fB\-\-linearize\fR
+cannot be combined with multiple branches or with
+\fB\-\-contained\fR\&. To linearize several branches, replay them in separate
+\fBgit\fR
+\fBreplay\fR
+invocations\&.
 .RE
 .PP
 <revision\-range>
