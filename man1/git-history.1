@@ -2,12 +2,12 @@
 .\"     Title: git-history
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-09-27
+.\"      Date: 2026-09-30
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.0
+.\"    Source: Git 2.56.0.50.gc46c1e3772
 .\"  Language: English
 .\"
-.TH "GIT\-HISTORY" "1" "2026-09-27" "Git 2\&.56\&.0" "Git Manual"
+.TH "GIT\-HISTORY" "1" "2026-09-30" "Git 2\&.56\&.0\&.50\&.gc46c1e3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -36,6 +36,7 @@ git-history \- EXPERIMENTAL: Rewrite history
 \fBgit\fR \fBhistory\fR \fBfixup\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-reedit\-message\fR] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)]
 \fBgit\fR \fBhistory\fR \fBreword\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)]
 \fBgit\fR \fBhistory\fR \fBsplit\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
+\fBgit\fR \fBhistory\fR \fBsquash\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR[\fBno\-\fR]\fBedit\fR] \fI<revision\-range>\fR
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -91,7 +92,7 @@ Overall, \fBgit-history\fR(1) aims to provide a more opinionated way to modify y
 Use \fBgit-rebase\fR(1) if you want to reapply a range of commits onto a different base, or interactive rebases if you want to edit a range of commits at once\&.
 .SH "LIMITATIONS"
 .sp
-This command does not (yet) work with histories that contain merges\&. You should use \fBgit-rebase\fR(1) with the \fB\-\-rebase\-merges\fR flag instead\&.
+This command does not (yet) replay merge commits onto the rewritten history: if a commit that would be replayed is a merge, the operation is rejected, and you should use \fBgit-rebase\fR(1) with the \fB\-\-rebase\-merges\fR flag instead\&. The \fBsquash\fR subcommand can still fold merges that lie inside the selected range, subject to the restrictions below\&.
 .sp
 Furthermore, the command does not support operations that can result in merge conflicts\&. This limitation is by design as history rewrites are not intended to be stateful operations\&. The limitation can be lifted once (if) Git learns about first\-class conflicts\&.
 .sp
@@ -152,12 +153,82 @@ entry in
 .sp
 It is invalid to select either all or no hunks, as that would lead to one of the commits becoming empty\&.
 .RE
+.PP
+\fBsquash\fR \fI<revision\-range>\fR
+.RS 4
+Fold all commits in
+\fI<revision\-range>\fR
+into the oldest commit of that range\&. The resulting commit keeps the oldest commit\(cqs authorship and takes the tree of the range\(cqs newest commit, so the whole range collapses into a single commit\&. Commits above the range are replayed on top of the result\&.
+.sp
+The range is given in the usual
+\fI<base>\fR\fB\&.\&.\fR\fI<tip>\fR
+form, where
+\fI<base>\fR
+is the commit just below the oldest commit to squash\&. For example,
+\fBgit\fR
+\fBhistory\fR
+\fBsquash\fR
+\fBHEAD~3\fR\fB\&.\&.\fR\fBHEAD\fR
+folds the three most recent commits into one, and
+\fBgit\fR
+\fBhistory\fR
+\fBsquash\fR
+\fBHEAD~5\fR\fB\&.\&.\fR\fBHEAD~2\fR
+squashes an interior range while leaving the two newest commits in place\&. Several revisions may be given, for example
+\fBHEAD~3\fR\fB\&.\&.\fR\fBHEAD\fR
+\fB^topic\fR
+to additionally exclude what is already on
+\fBtopic\fR\&. Rev\-list options may also be given, but any that would change how the range is walked are overridden with a warning\&.
+.sp
+An editor opens pre\-filled with the messages of all the folded commits so you can combine them\&. With
+\fB\-\-no\-edit\fR, the oldest commit\(cqs message is preserved instead, except that an
+\fBamend\fR! commit targeting it replaces its message\&.
+.sp
+The selected commits must form a connected graph with a single tip and must not include a root commit\&. Every parent of a commit after the oldest one must either be selected or also be a parent of the oldest commit\&. When the oldest commit is a merge, all of its parents are preserved in the squashed commit\&.
+.sp
+A
+\fBfixup\fR!,
+\fBsquash\fR!, or
+\fBamend\fR! commit is refused unless the commit it targets is also in the range, so the fold does not silently absorb a marker meant for a commit outside it\&. As an exception, a range made up entirely of markers for one target is combined into a single commit\&. With
+\fB\-\-no\-edit\fR, the last
+\fBamend\fR! message is used if there is one; a
+\fBsquash\fR! or
+\fBamend\fR! is otherwise refused if folding it would discard its message\&.
+.sp
+The editor template mirrors
+\fBgit\fR
+\fBrebase\fR
+\fB\-i\fR
+\fB\-\-autosquash\fR: each
+\fBfixup\fR!,
+\fBsquash\fR!, or
+\fBamend\fR! is grouped under the commit it targets rather than shown in commit order\&. A
+\fBfixup\fR! message is dropped (commented out in full), a
+\fBsquash\fR! keeps its body with only the marker subject commented, and an
+\fBamend\fR! replaces its target\(cqs message, unless a
+\fBsquash\fR! folded into that target first, in which case it keeps its body like a
+\fBsquash\fR!\&.
+.sp
+A local branch descended from a selected commit but not from the range tip cannot be rewritten as a descendant of the result, so with the default
+\fB\-\-update\-refs=branches\fR
+the command refuses\&. Rerun with
+\fB\-\-update\-refs=head\fR
+to rewrite only the current branch and leave such branches unchanged\&. Tags and remote\-tracking refs are always left unchanged\&.
+.RE
 .SH "OPTIONS"
 .PP
 \fB\-\-dry\-run\fR
 .RS 4
 Do not update any references, but instead print any ref updates in a format that can be consumed by
 \fBgit-update-ref\fR(1)\&. Necessary new objects will be written into the repository, so applying these printed ref updates is generally safe\&.
+.RE
+.PP
+\fB\-\-edit\fR, \fB\-\-no\-edit\fR
+.RS 4
+For
+\fBsquash\fR, open an editor to combine the messages of the folded commits\&. This is the default; use
+\fB\-\-no\-edit\fR
+to keep the selected message without opening an editor\&.
 .RE
 .PP
 \fB\-\-reedit\-message\fR

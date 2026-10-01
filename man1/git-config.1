@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-09-27
+.\"      Date: 2026-09-30
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.0
+.\"    Source: Git 2.56.0.50.gc46c1e3772
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-09-27" "Git 2\&.56\&.0" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-09-30" "Git 2\&.56\&.0\&.50\&.gc46c1e3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1609,6 +1609,16 @@ takes a long time to calculate forced updates after ref updates, or to warn that
 forceDeleteBranch
 .RS 4
 Shown when the user tries to delete a not fully merged branch without the force option set\&.
+.RE
+.PP
+historyUpdateRefs
+.RS 4
+Shown when
+\fBgit\fR
+\fBhistory\fR
+\fBsquash\fR
+refuses because a local branch cannot be rewritten as a descendant of the squashed commit, to tell the user about
+\fB\-\-update\-refs=head\fR\&.
 .RE
 .PP
 ignoredHook
@@ -3492,6 +3502,12 @@ core\&.trustctime
 .RS 4
 If false, the ctime differences between the index and the working tree are ignored; useful when the inode change time is regularly modified by something outside Git (file system crawlers and some backup systems)\&. See
 \fBgit-update-index\fR(1)\&. True by default\&.
+.RE
+.PP
+core\&.useNanosec
+.RS 4
+If true, use nanosecond precision for ctime and mtime comparisons between the index and the working tree (if Git was compiled to respect this option)\&. This is unsafe on some platforms; see
+\m[blue]\fBRacy Git\fR\m[]\&\s-2\u[2]\d\s+2\&. False by default\&.
 .RE
 .PP
 core\&.splitIndex
@@ -5672,7 +5688,7 @@ may speed up packfile creation and make the packfiles be significantly smaller i
 .sp -1
 .IP \(bu 2.3
 .\}
-\fBinit\&.defaultRefFormat=reftable\fR
+\fBinit\&.defaultRefStorageFormat=reftable\fR
 causes newly initialized repositories to use the reftable format for storing references\&. This new format solves issues with case\-insensitive filesystems, compresses better and performs significantly better with many use cases\&. Refer to Documentation/technical/reftable\&.adoc for more information on this new storage format\&.
 .RE
 .RE
@@ -8204,14 +8220,20 @@ in
 environment variable take precedence over this config\&.
 .RE
 .PP
-\fBinit\&.defaultRefFormat\fR
+\fBinit\&.defaultRefStorageFormat\fR
 .RS 4
 Allows overriding the default ref storage format for new repositories\&. See
-\fB\-\-ref\-format=\fR
+\fB\-\-ref\-storage\-format=\fR
 in
 \fBgit-init\fR(1)\&. Both the command line option and the
-\fBGIT_DEFAULT_REF_FORMAT\fR
+\fBGIT_DEFAULT_REF_STORAGE_FORMAT\fR
 environment variable take precedence over this config\&.
+.RE
+.PP
+\fBinit\&.defaultRefFormat\fR
+.RS 4
+Deprecated alias of
+\fBinit\&.defaultRefStorageFormat\fR\&.
 .RE
 .PP
 init\&.defaultSubmodulePathConfig
@@ -13068,4 +13090,9 @@ Part of the \fBgit\fR(1) suite
 the bundle URI design document
 .RS 4
 \%git-htmldocs/technical/bundle-uri.html
+.RE
+.IP " 2." 4
+Racy Git
+.RS 4
+\%git-htmldocs/technical/racy-git.html
 .RE

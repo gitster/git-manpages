@@ -2,12 +2,12 @@
 .\"     Title: git-receive-pack
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-09-27
+.\"      Date: 2026-09-30
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.0
+.\"    Source: Git 2.56.0.50.gc46c1e3772
 .\"  Language: English
 .\"
-.TH "GIT\-RECEIVE\-PACK" "1" "2026-09-27" "Git 2\&.56\&.0" "Git Manual"
+.TH "GIT\-RECEIVE\-PACK" "1" "2026-09-30" "Git 2\&.56\&.0\&.50\&.gc46c1e3" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -251,6 +251,12 @@ exec git update\-server\-info
 .if n \{\
 .RE
 .\}
+.SH "PROC\-RECEIVE HOOK"
+.sp
+This hook is invoked by \fBgit-receive-pack\fR(1)\&. If the server has set the multi\-valued config variable \fBreceive\&.procReceiveRefs\fR, and the commands sent to \fIreceive\-pack\fR have matching reference names, these commands will be executed by this hook, instead of by the internal \fBexecute_commands\fR() function\&. This hook is responsible for updating the relevant references and reporting the results back to \fIreceive\-pack\fR\&.
+.SH "RECEIVE\-REPORT HOOK"
+.sp
+This hook is invoked by \fIgit\-receive\-pack\fR after all the ref updates have been applied but before the report is sent to the client\&. The hook receives the complete report in pkt\-line format on stdin and its stdout replaces the report sent to the client, which allows the hook to rewrite the outcomes or abort the push completely\&. See \fBgithooks\fR(5) for the full protocol description\&.
 .SH "QUARANTINE ENVIRONMENT"
 .sp
 When \fBreceive\-pack\fR takes in objects, they are placed into a temporary "quarantine" directory within the \fB$GIT_DIR/objects\fR directory and migrated into the main object store only after the \fBpre\-receive\fR hook has completed\&. If the push fails before then, the temporary directory is removed entirely\&.
