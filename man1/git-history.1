@@ -2,12 +2,12 @@
 .\"     Title: git-history
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-10-19
+.\"      Date: 2026-10-22
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.0.215.g47fdf2208c
+.\"    Source: Git 2.56.0.236.g7e34d8174d
 .\"  Language: English
 .\"
-.TH "GIT\-HISTORY" "1" "2026-10-19" "Git 2\&.56\&.0\&.215\&.g47fdf2" "Git Manual"
+.TH "GIT\-HISTORY" "1" "2026-10-22" "Git 2\&.56\&.0\&.236\&.g7e34d8" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -32,11 +32,11 @@ git-history \- EXPERIMENTAL: Rewrite history
 .SH "SYNOPSIS"
 .sp
 .nf
-\fBgit\fR \fBhistory\fR \fBdrop\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)]
-\fBgit\fR \fBhistory\fR \fBfixup\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-reedit\-message\fR] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)]
-\fBgit\fR \fBhistory\fR \fBreword\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)]
-\fBgit\fR \fBhistory\fR \fBsplit\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
-\fBgit\fR \fBhistory\fR \fBsquash\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR[\fBno\-\fR]\fBedit\fR] \fI<revision\-range>\fR
+\fBgit\fR \fBhistory\fR \fBdrop\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)] [\fB\-\-\fR[\fBno\-\fR]\fBgpg\-sign\fR[\fB=\fR\fI<key\-id>\fR]]
+\fBgit\fR \fBhistory\fR \fBfixup\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-reedit\-message\fR] [\fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)] [\fB\-\-\fR[\fBno\-\fR]\fBgpg\-sign\fR[\fB=\fR\fI<key\-id>\fR]]
+\fBgit\fR \fBhistory\fR \fBreword\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR[\fBno\-\fR]\fBgpg\-sign\fR[\fB=\fR\fI<key\-id>\fR]]
+\fBgit\fR \fBhistory\fR \fBsplit\fR \fI<commit>\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR[\fBno\-\fR]\fBgpg\-sign\fR[\fB=\fR\fI<key\-id>\fR]] [\fB\-\-\fR] [\fI<pathspec>\fR\&...\:]
+\fBgit\fR \fBhistory\fR \fBsquash\fR [\fB\-\-dry\-run\fR] [\fB\-\-update\-refs=\fR(\fBbranches\fR|\fBhead\fR)] [\fB\-\-\fR[\fBno\-\fR]\fBedit\fR] [\fB\-\-\fR[\fBno\-\fR]\fBgpg\-sign\fR[\fB=\fR\fI<key\-id>\fR]] \fI<revision\-range>\fR
 .fi
 .SH "DESCRIPTION"
 .sp
@@ -234,6 +234,18 @@ to keep the selected message without opening an editor\&.
 \fB\-\-reedit\-message\fR
 .RS 4
 Open an editor to modify the target commit\(cqs message\&.
+.RE
+.PP
+\fB\-S\fR[\fI<key\-id>\fR], \fB\-\-gpg\-sign\fR[\fB=\fR\fI<key\-id>\fR], \fB\-\-no\-gpg\-sign\fR
+.RS 4
+GPG\-sign rewritten commits\&. The
+\fI<key\-id>\fR
+argument is optional and defaults to the committer identity; if specified, it must be stuck to the option without a space\&.
+\fB\-\-no\-gpg\-sign\fR
+is useful to countermand both
+\fBcommit\&.gpgSign\fR
+configuration and earlier
+\fB\-\-gpg\-sign\fR\&.
 .RE
 .PP
 \fB\-\-empty=\fR(\fBdrop\fR|\fBkeep\fR|\fBabort\fR)
