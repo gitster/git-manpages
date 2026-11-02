@@ -2,12 +2,12 @@
 .\"     Title: git-config
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-10-30
+.\"      Date: 2026-11-01
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.0.307.g50fe5cc63f
+.\"    Source: Git 2.56.0.341.gebdc087dc9
 .\"  Language: English
 .\"
-.TH "GIT\-CONFIG" "1" "2026-10-30" "Git 2\&.56\&.0\&.307\&.g50fe5c" "Git Manual"
+.TH "GIT\-CONFIG" "1" "2026-11-01" "Git 2\&.56\&.0\&.341\&.gebdc08" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -7264,7 +7264,7 @@ hook\&.<event>\&.enabled
 .RS 4
 Switch to enable or disable all hooks for the
 \fI<event>\fR
-hook event\&. When set to
+hook event, configured hooks and the traditional hook in the hooks directory alike\&. When set to
 \fBfalse\fR, no hooks fire for that event, regardless of any per\-hook
 \fBhook\&.\fR\fI<friendly\-name>\fR\fB\&.enabled\fR
 settings\&. Defaults to
@@ -12609,6 +12609,46 @@ passed in the
 \fB\-\-trailer\fR
 \fI<key\-alias>\fR\fB=\fR\fI<value>\fR
 argument\&.
+.RE
+.PP
+transfer\&.connectivityCheck
+.RS 4
+Choose which algorithm to use for the connectivity check performed during object transfer operations such as
+\fBgit-fetch\fR(1)
+and
+\fBgit-receive-pack\fR(1)\&. The connectivity check verifies that all objects reachable from the incoming tips are available locally or, in a partial clone, promised by a promisor remote\&. The variants are as follows:
+.PP
+\fBfull\fR (default)
+.RS 4
+Walk the full object closure of the boundary commits\&.
+.RE
+.PP
+\fBincremental\fR
+.RS 4
+Verify incoming commits by diffing their trees against parent trees, recursively descending only into entries that differ\&. The largest benefits occur when incoming commits change a small fraction of a large tree closure, and it can be slower than
+\fBfull\fR
+when there are many incoming commits\&. Falls back to
+\fBfull\fR
+for clones, pushes into an empty repository and deepening fetches\&.
+.RE
+.PP
+\fBauto\fR, \fBauto=\fR\fI<cutoff>\fR
+.RS 4
+Choose between
+\fBfull\fR
+and
+\fBincremental\fR
+with a heuristic\&. Currently
+\fBincremental\fR
+is used when there are at most
+\fI<cutoff>\fR
+incoming commits (1000 by default), and
+\fBfull\fR
+otherwise\&. The heuristic may change in future versions\&.
+.RE
+.sp
+Unknown values are treated as
+\fBfull\fR, with a warning\&.
 .RE
 .PP
 transfer\&.credentialsInUrl
