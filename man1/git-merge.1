@@ -2,12 +2,12 @@
 .\"     Title: git-merge
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-11-03
+.\"      Date: 2026-11-04
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.0.349.g750f5de7df
+.\"    Source: Git 2.56.0.385.g0ffa3e35c7
 .\"  Language: English
 .\"
-.TH "GIT\-MERGE" "1" "2026-11-03" "Git 2\&.56\&.0\&.349\&.g750f5d" "Git Manual"
+.TH "GIT\-MERGE" "1" "2026-11-04" "Git 2\&.56\&.0\&.385\&.g0ffa3e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -71,7 +71,7 @@ Then \fBgit\fR \fBmerge\fR \fBtopic\fR will replay the changes made on the \fBto
 .RE
 .\}
 .sp
-A merge stops if there\(cqs a conflict that cannot be resolved automatically or if \fB\-\-no\-commit\fR was provided when initiating the merge\&. At that point you can run \fBgit\fR \fBmerge\fR \fB\-\-abort\fR or \fBgit\fR \fBmerge\fR \fB\-\-continue\fR\&.
+A merge stops if there\(cqs a conflict that cannot be resolved automatically or if \fB\-\-no\-commit\fR was provided when initiating the merge\&. At that point you can run \fBgit\fR \fBmerge\fR \fB\-\-abort\fR or \fBgit\fR \fBmerge\fR \fB\-\-continue\fR\&. See \fBgitmergeconflicts\fR(7) (or \fBgit\fR \fBhelp\fR \fBmergeconflicts\fR) for a guide to handling merge conflicts\&.
 .sp
 \fBgit\fR \fBmerge\fR \fB\-\-abort\fR will abort the merge process and try to reconstruct the pre\-merge state\&. However, if there were uncommitted changes when the merge started (and especially if those changes were further modified after the merge was started), \fBgit\fR \fBmerge\fR \fB\-\-abort\fR will in some cases be unable to reconstruct the original (pre\-merge) changes\&. Therefore:
 .if n \{\
@@ -550,214 +550,6 @@ git merge \-\-ff\-only v1\&.2\&.3
 .if n \{\
 .RE
 .\}
-.SH "HOW CONFLICTS ARE PRESENTED"
-.sp
-During a merge, the working tree files are updated to reflect the result of the merge\&. Among the changes made to the common ancestor\(cqs version, non\-overlapping ones (that is, you changed an area of the file while the other side left that area intact, or vice versa) are incorporated in the final result verbatim\&. When both sides made changes to the same area, however, Git cannot randomly pick one side over the other, and asks you to resolve it by leaving what both sides did to that area\&.
-.sp
-By default, Git uses the same style as the one used by the "merge" program from the RCS suite to present such a conflicted hunk, like this:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-Here are lines that are either unchanged from the common
-ancestor, or cleanly resolved because only one side changed,
-or cleanly resolved because both sides changed the same way\&.
-<<<<<<< yours:sample\&.txt
-Conflict resolution is hard;
-let\*(Aqs go shopping\&.
-=======
-Git makes conflict resolution easy\&.
->>>>>>> theirs:sample\&.txt
-And here is another line that is cleanly resolved or unmodified\&.
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-The area where a pair of conflicting changes happened is marked with markers <<<<<<<, \fB=======\fR, and >>>>>>>\&. The part before the \fB=======\fR is typically your side, and the part afterwards is typically their side\&.
-.sp
-The default format does not show what the original said in the conflicting area\&. You cannot tell how many lines are deleted and replaced with Barbie\(cqs remark on your side\&. The only thing you can tell is that your side wants to say it is hard and you\(cqd prefer to go shopping, while the other side wants to claim it is easy\&.
-.sp
-An alternative style can be used by setting the \fBmerge\&.conflictStyle\fR configuration variable to either \fBdiff3\fR or \fBzdiff3\fR\&. In \fBdiff3\fR style, the above conflict may look like this:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-Here are lines that are either unchanged from the common
-ancestor, or cleanly resolved because only one side changed,
-<<<<<<< yours:sample\&.txt
-or cleanly resolved because both sides changed the same way\&.
-Conflict resolution is hard;
-let\*(Aqs go shopping\&.
-||||||| base:sample\&.txt
-or cleanly resolved because both sides changed identically\&.
-Conflict resolution is hard\&.
-=======
-or cleanly resolved because both sides changed the same way\&.
-Git makes conflict resolution easy\&.
->>>>>>> theirs:sample\&.txt
-And here is another line that is cleanly resolved or unmodified\&.
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-while in \fBzdiff3\fR style, it may look like this:
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-Here are lines that are either unchanged from the common
-ancestor, or cleanly resolved because only one side changed,
-or cleanly resolved because both sides changed the same way\&.
-<<<<<<< yours:sample\&.txt
-Conflict resolution is hard;
-let\*(Aqs go shopping\&.
-||||||| base:sample\&.txt
-or cleanly resolved because both sides changed identically\&.
-Conflict resolution is hard\&.
-=======
-Git makes conflict resolution easy\&.
->>>>>>> theirs:sample\&.txt
-And here is another line that is cleanly resolved or unmodified\&.
-.fi
-.if n \{\
-.RE
-.\}
-.sp
-In addition to the <<<<<<<, \fB=======\fR, and >>>>>>> markers, it uses another ||||||| marker that is followed by the original text\&. You can tell that the original just stated a fact, and your side simply gave in to that statement and gave up, while the other side tried to have a more positive attitude\&. You can sometimes come up with a better resolution by viewing the original\&.
-.SH "HOW TO RESOLVE CONFLICTS"
-.sp
-After seeing a conflict, you can do two things:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Decide not to merge\&. The only clean\-ups you need are to reset the index file to the
-\fBHEAD\fR
-commit to reverse 2\&. and to clean up working tree changes made by 2\&. and 3\&.;
-\fBgit\fR
-\fBmerge\fR
-\fB\-\-abort\fR
-can be used for this\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Resolve the conflicts\&. Git will mark the conflicts in the working tree\&. Edit the files into shape and
-\fBgit\fR
-\fBadd\fR
-them to the index\&. Use
-\fBgit\fR
-\fBcommit\fR
-or
-\fBgit\fR
-\fBmerge\fR
-\fB\-\-continue\fR
-to seal the deal\&. The latter command checks whether there is a (interrupted) merge in progress before calling
-\fBgit\fR
-\fBcommit\fR\&.
-.RE
-.sp
-You can work through the conflict with a number of tools:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Use a mergetool\&.
-\fBgit\fR
-\fBmergetool\fR
-to launch a graphical mergetool which will work through the merge with you\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Look at the diffs\&.
-\fBgit\fR
-\fBdiff\fR
-will show a three\-way diff, highlighting changes from both the
-\fBHEAD\fR
-and
-\fBMERGE_HEAD\fR
-versions\&.
-\fBgit\fR
-\fBdiff\fR
-\fBAUTO_MERGE\fR
-will show what changes you\(cqve made so far to resolve textual conflicts\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Look at the diffs from each branch\&.
-\fBgit\fR
-\fBlog\fR
-\fB\-\-merge\fR
-\fB\-p\fR
-\fI<path>\fR
-will show diffs first for the
-\fBHEAD\fR
-version and then the
-\fBMERGE_HEAD\fR
-version\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Look at the originals\&.
-\fBgit\fR
-\fBshow\fR
-\fB:1:filename\fR
-shows the common ancestor,
-\fBgit\fR
-\fBshow\fR
-\fB:2:filename\fR
-shows the
-\fBHEAD\fR
-version, and
-\fBgit\fR
-\fBshow\fR
-\fB:3:filename\fR
-shows the
-\fBMERGE_HEAD\fR
-version\&.
-.RE
 .SH "EXAMPLES"
 .sp
 .RS 4
@@ -1459,7 +1251,7 @@ for details\&.
 .RE
 .SH "SEE ALSO"
 .sp
-\fBgit-fmt-merge-msg\fR(1), \fBgit-pull\fR(1), \fBgitattributes\fR(5), \fBgit-reset\fR(1), \fBgit-diff\fR(1), \fBgit-ls-files\fR(1), \fBgit-add\fR(1), \fBgit-rm\fR(1), \fBgit-mergetool\fR(1)
+\fBgit-fmt-merge-msg\fR(1), \fBgit-pull\fR(1), \fBgitattributes\fR(5), \fBgit-reset\fR(1), \fBgit-diff\fR(1), \fBgit-ls-files\fR(1), \fBgit-add\fR(1), \fBgit-rm\fR(1), \fBgit-mergetool\fR(1) \fBgitmergeconflicts\fR(7)
 .SH "GIT"
 .sp
 Part of the \fBgit\fR(1) suite

@@ -1,0 +1,637 @@
+'\" t
+.\"     Title: gitmergeconflicts
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
+.\"      Date: 2026-11-04
+.\"    Manual: Git Manual
+.\"    Source: Git 2.56.0.385.g0ffa3e35c7
+.\"  Language: English
+.\"
+.TH "GITMERGECONFLICTS" "7" "2026-11-04" "Git 2\&.56\&.0\&.385\&.g0ffa3e" "Git Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+gitmergeconflicts \- Guide to handling merge conflicts
+.SH "DESCRIPTION"
+.sp
+Merge conflicts can happen during a \fBgit\fR \fBmerge\fR, \fBgit\fR \fBrebase\fR, \fBgit\fR \fBcherry\-pick\fR, \fBgit\fR \fBpull\fR, \fBgit\fR \fBrevert\fR, or any other command that does a merge\&. All of those commands use the same merge algorithm, and the process for resolving a merge conflict is always very similar\&.
+.sp
+There are 3 ways to handle a merge conflict:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Resolve the conflict\&. (see
+HOW TO RESOLVE A MERGE CONFLICT
+below for details)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Stop the operation and return your branch to its original state with the appropriate
+\fB\-\-abort\fR
+command, for example
+\fBgit\fR
+\fBmerge\fR
+\fB\-\-abort\fR
+or
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-abort\fR\&. See
+EXAMPLE: GIT STATUS OUTPUT
+below for how to find the command to run\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Or (if you\(cqre in a multi\-step operation like a rebase) skip the problematic commit with the appropriate
+\fB\-\-skip\fR
+command\&.
+.RE
+.SH "WHAT IS A MERGE CONFLICT?"
+.sp
+When Git merges two commits together, it looks at the changes that each side has made and combines those changes\&. For example, if one side edited lines 1\-5 of \fBhello\&.py\fR and the other side edited lines 20\-25 of the same file, then it can easily combine them since there\(cqs no overlap\&.
+.sp
+But if both sides edited overlapping lines of the same file (for example one side edited lines 1\-5 and the other edited lines 3\-6), Git will not try to guess how to combine those changes\&. This is called a "merge conflict"\&.
+.sp
+When this happens, Git shows you both sides\*(Aq edits and asks you to pick how to resolve them\&. It:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Stages all of the files which were successfully merged
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+For the files with conflicts, it marks them as conflicted, puts both sides\*(Aq edits in the file, and leaves
+merge conflict markers
+that you need to resolve\&.
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+Even if Git successfully merges both sides with no conflicts, it\(cqs possible to end up with code that doesn\(cqt work\&. For example, this can happen if one side renames a function, and the other side adds a call to the old function\&. This is called a "semantic merge conflict"\&.
+.sp .5v
+.RE
+.SH "MERGE CONFLICT MARKERS"
+.sp
+When there\(cqs a merge conflict, Git will update the conflicted file to include merge conflict markers <<<<<<<, \fB=======\fR, and >>>>>>>\&. For example, here\(cqs a merge conflict where both sides edited a list of fruits in different ways \(em one side has "cherry" and the other side has "banana":
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+FRUITS = [
+    "apple",
+<<<<<<< HEAD
+    "cherry",
+=======
+    "banana",
+>>>>>>> add\-fruit
+    "mango",
+    "orange",
+]
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+The lines from one side of the merge conflict is between <<<<<<< and \fB=======\fR, and the lines from the other side is between \fB=======\fR and >>>>>>>\&. See "OURS" AND "THEIRS" below for a full explanation of which side is which\&.
+.SH "HOW TO RESOLVE A MERGE CONFLICT"
+.sp
+The process for resolving a merge conflict is:
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Run
+\fBgit\fR
+\fBstatus\fR
+to get a list of files with merge conflicts\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+For each one, find the conflict markers (the <<<<<<<,
+\fB=======\fR, >>>>>>>) and edit the file to fix the conflict\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+Run
+\fBgit\fR
+\fBadd\fR
+\fBFILENAME\fR
+for each file to mark the conflict as resolved\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 4.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  4." 4.2
+.\}
+Run the appropriate
+\fB\-\-continue\fR
+command to continue the operation that was interrupted by the conflict, for example
+\fBgit\fR
+\fBmerge\fR
+\fB\-\-continue\fR
+or
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-continue\fR\&. See
+EXAMPLE: GIT STATUS OUTPUT
+below for how to find the command to run\&.
+.sp
+Note: During a
+\fBgit\fR
+\fBmerge\fR,
+\fBgit\fR
+\fBcommit\fR
+and
+\fBgit\fR
+\fBmerge\fR
+\fB\-\-continue\fR
+do the same thing\&.
+.RE
+.SH "EXAMPLE OF RESOLVING A MERGE CONFLICT"
+.sp
+If you see this in your code during a merge conflict:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+FRUITS = [
+    "apple",
+<<<<<<< HEAD
+    "cherry",
+=======
+    "banana",
+>>>>>>> add\-fruit
+    "mango",
+    "orange",
+]
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+Then you might edit that part of the code like this, which includes the fruits from both sides of the conflict:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+FRUITS = [
+    "apple",
+    "banana",
+    "cherry",
+    "mango",
+    "orange",
+]
+.fi
+.if n \{\
+.RE
+.\}
+.SH "TOOLS FOR HANDLING MERGE CONFLICTS"
+.sp
+Here are some ways to get extra context while handling a merge conflict:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+There are many graphical "merge tools" for Git, which will normally show you the different versions of the code side by side\&. If you have a mergetool configured,
+\fBgit\fR
+\fBmergetool\fR
+will launch it\&. See also
+\fBmerge\&.tool\fR
+in
+\fBgit-config\fR(1)
+for a list of the mergetools Git supports\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+You can set the configuration variable
+\fBmerge\&.conflictstyle=diff3\fR\&. See
+DIFF3
+below for more\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBgit\fR
+\fBlog\fR
+\fB\-\-merge\fR
+\fB\-\-patch\fR
+\fI<filename>\fR
+will list all commits which caused the merge conflict for
+\fI<filename>\fR, and the diff of how they changed the file\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Look at the original files\&.
+\fBgit\fR
+\fBshow\fR
+\fB:1:filename\fR
+shows the common ancestor,
+\fBgit\fR
+\fBshow\fR
+\fB:2:filename\fR
+shows the "ours" version, and
+\fBgit\fR
+\fBshow\fR
+\fB:3:filename\fR
+shows the "theirs" version\&. See
+"OURS" AND "THEIRS"
+below for more on "ours" and "theirs"\&.
+.RE
+.sp
+Here are some ways to track your progress while handling a conflict:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Use
+\fBgit\fR
+\fBstatus\fR
+to get a list of files with conflicts
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Use
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-check\fR
+to make sure you haven\(cqt left any merge conflict markers in a file by accident\&. It will print "leftover conflict marker" if it finds any\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Use
+\fBgit\fR
+\fBdiff\fR
+\fBAUTO_MERGE\fR
+to show what changes you\(cqve made so far to resolve the conflicts\&. See
+EXAMPLE OF USING \fBAUTO_MERGE\fR
+below for more\&.
+.RE
+.SH "EXAMPLE: GIT STATUS OUTPUT"
+.sp
+When you\(cqre in a merge conflict, you can find out what commands to run to handle the conflict by running \fBgit\fR \fBstatus\fR\&.
+.sp
+For example, this \fBgit\fR \fBstatus\fR output tells you that:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-abort\fR
+will safely bring your branch back to its original state
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+you should run
+\fBgit\fR
+\fBrebase\fR
+\fB\-\-continue\fR
+when you\(cqre done resolving all the conflicts
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+the conflicts in
+\fBfruits\&.py\fR
+haven\(cqt been marked as resolved
+.RE
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git status
+You are currently rebasing branch \*(Aqmain\*(Aq on \*(Aq58a9fcc\*(Aq\&.
+  (fix conflicts and then run "git rebase \-\-continue")
+  (use "git rebase \-\-skip" to skip this patch)
+  (use "git rebase \-\-abort" to check out the original branch)
+
+Unmerged paths:
+  (use "git restore \-\-staged <file>\&.\&.\&." to unstage)
+  (use "git add <file>\&.\&.\&." to mark resolution)
+        both modified:   fruits\&.py
+.fi
+.if n \{\
+.RE
+.\}
+.SH "DIFF3"
+.sp
+By default, Git doesn\(cqt include the original code when formatting a merge conflict\&. To include the original code, you can set the configuration option \fBmerge\&.conflictstyle\fR to \fBdiff3\fR\&. This extra context can make it much easier to understand what\(cqs happening in a merge conflict\&.
+.sp
+Here\(cqs an example of what a merge conflict would look like when using \fBdiff3\fR\&. There\(cqs an extra section (between ||||||| and \fB=======\fR) with the original code\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+FRUITS = [
+    "apple",
+<<<<<<< HEAD
+    "cherry",
+    "mango",
+||||||| 1c22e48
+    "banana",
+    "cherry",
+    "mangoooo",
+=======
+    "banana",
+    "mango",
+>>>>>>> add\-fruit
+    "orange",
+]
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+With this view, you can see that both sides fixed a spelling mistake in "mango", and each removed one fruit from the list\&. This makes it more clear how to resolve the merge conflict: since one side removed \fBbanana\fR and one side removed \fBcherry\fR, it would probably make sense to remove both from the list, like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+FRUITS = [
+    "apple",
+    "mango",
+    "orange",
+]
+.fi
+.if n \{\
+.RE
+.\}
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+\fBzdiff3\fR is an alternative to \fBdiff3\fR that makes the merge conflict shorter by making it more ambiguous\&. See \fBgit-config\fR(1) for more\&.
+.sp .5v
+.RE
+.SH ""OURS" AND "THEIRS""
+.sp
+Sometimes during a merge conflict, Git will use the terms "ours" and "theirs" (or "us" and "them")\&. For example, \fBgit\fR \fBstatus\fR might say that a file was \fBdeleted\fR \fBby\fR \fBus\fR\&.
+.sp
+"Ours" and "theirs" are both commits: "ours" is the current \fBHEAD\fR commit, and "theirs" is the other side being merged\&.
+.sp
+The first part of a merge conflict (between <<<<<<< and \fB=======\fR) is from the "ours" side, and the second part (between \fB=======\fR and >>>>>>>) is from the "theirs" side\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+FRUITS = [
+    "apple",
+<<<<<<< HEAD
+    "cherry",                      <\- ours
+=======
+    "banana",                      <\- theirs
+>>>>>>> add\-fruit
+    "mango",
+    "orange",
+]
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+During a rebase, it can seem "upside down" because the "ours" commit is from the branch you\(cqre rebasing on (for instance \fBmain\fR in \fBgit\fR \fBrebase\fR \fBmain\fR)\&.
+.sp
+These terms in Git all mean the same thing when dealing with a merge conflict:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"common ancestor" and "base"\&. The files from this commit are "in stage 1"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"ours", "us", and
+\fBHEAD\fR\&. The files from this commit are "in stage 2"\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+"theirs", "them"\&. The files from this commit are "in stage 3"\&.
+.RE
+.sp
+If you\(cqre confused about what something like "deleted by us" means, it\(cqs often easiest to use some of the tools from TOOLS FOR HANDLING MERGE CONFLICTS above to get more context\&. Finding the commit that deleted the file and seeing why is usually more helpful than trying to abstractly reason through what "us" means\&.
+.SH "EXAMPLE OF USING \FBAUTO_MERGE\FR"
+.sp
+\fBgit\fR \fBdiff\fR \fBAUTO_MERGE\fR will show what changes you\(cqve made so far to resolve conflicts\&. \fBAUTO_MERGE\fR is a reference that Git creates during a merge\&. It contains the result of running the merge algorithm\&.
+.sp
+For example, if we resolved the conflict by adding both "banana" and "cherry" in order, the diff would look like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+ FRUITS = [
+     "apple",
+\-<<<<<<< HEAD
+\-    "cherry",
+\-=======
+     "banana",
+\->>>>>>> add\-fruit
++    "cherry",
+     "mango",
+     "orange",
+ ]
+.fi
+.if n \{\
+.RE
+.\}
+.if n \{\
+.sp
+.\}
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.sp
+\fBAUTO_MERGE\fR is only set if you\(cqre using the default Git merge algorithm\&.
+.sp .5v
+.RE
+.SH "SEE ALSO"
+.sp
+\fBgit-revert\fR(1) \fBgit-merge\fR(1) \fBgit-rebase\fR(1) \fBgit-cherry-pick\fR(1) \fBgit-pull\fR(1) \fBgit-diff\fR(1)
+.SH "GIT"
+.sp
+Part of the \fBgit\fR(1) suite
