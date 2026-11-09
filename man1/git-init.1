@@ -2,12 +2,12 @@
 .\"     Title: git-init
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-11-06
+.\"      Date: 2026-11-08
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.0.398.gfb255012ac
+.\"    Source: Git 2.56.0.432.g3c60ef1e38
 .\"  Language: English
 .\"
-.TH "GIT\-INIT" "1" "2026-11-06" "Git 2\&.56\&.0\&.398\&.gfb2550" "Git Manual"
+.TH "GIT\-INIT" "1" "2026-11-08" "Git 2\&.56\&.0\&.432\&.g3c60ef" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,7 +34,7 @@ git-init \- Create an empty Git repository or reinitialize an existing one
 .nf
 \fBgit\fR \fBinit\fR [\fB\-q\fR | \fB\-\-quiet\fR] [\fB\-\-bare\fR] [\fB\-\-template=\fR\fI<template\-directory>\fR]
 	 [\fB\-\-separate\-git\-dir\fR \fI<git\-dir>\fR] [\fB\-\-object\-format=\fR\fI<format>\fR]
-	 [\fB\-\-ref\-storage\-format=\fR\fI<format>\fR]
+	 [\fB\-\-ref\-storage\-format=\fR\fI<format>\fR] [\fB\-\-object\-storage\-format=\fR\fI<format>\fR]
 	 [\fB\-b\fR \fI<branch\-name>\fR | \fB\-\-initial\-branch=\fR\fI<branch\-name>\fR]
 	 [\fB\-\-shared\fR[\fB=\fR\fI<permissions>\fR]] [\fI<directory>\fR]
 .fi
@@ -99,6 +99,26 @@ for the reftable format\&.
 .RS 4
 Deprecated alias of
 \fB\-\-ref\-storage\-format=\fR\fI<format>\fR\&.
+.RE
+.PP
+\fB\-\-object\-storage\-format=\fR\fI<format>\fR
+.RS 4
+Specify the given object storage
+\fI<format>\fR
+for the repository\&. Backends that require additional configuration accept a payload in the form
+\fI<format>\fR\fB://\fR\fI<payload>\fR, for example a path or a connection string identifying the database that shall store the objects\&. The valid values are:
+.PP
+\fBfiles\fR[\fB://\fR\fI<path>\fR]
+.RS 4
+for loose objects and packfiles\&. This is the default\&.
+.sp
+The optional payload can be passed to specify an alternative filesystem path where the objects will be stored\&. Relative paths are resolved relative to the
+\fB$GIT_COMMON_DIR\fR\&. Defaults to
+\fB$GIT_COMMON_DIR/objects\fR
+when no payload is provided\&. The payload is ignored when
+\fBGIT_OBJECT_DIRECTORY\fR
+is set\&.
+.RE
 .RE
 .PP
 \fB\-\-template=\fR\fI<template\-directory>\fR
@@ -327,6 +347,16 @@ environment variable take precedence over this config\&.
 .RS 4
 Deprecated alias of
 \fBinit\&.defaultRefStorageFormat\fR\&.
+.RE
+.PP
+\fBinit\&.defaultObjectStorageFormat\fR
+.RS 4
+Allows overriding the default object storage format for new repositories\&. See
+\fB\-\-object\-storage\-format=\fR
+in
+\fBgit-init\fR(1)\&. Both the command line option and the
+\fBGIT_DEFAULT_OBJECT_STORAGE_FORMAT\fR
+environment variable take precedence over this config\&.
 .RE
 .PP
 init\&.defaultSubmodulePathConfig
