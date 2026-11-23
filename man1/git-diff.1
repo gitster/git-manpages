@@ -2,12 +2,12 @@
 .\"     Title: git-diff
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-11-19
+.\"      Date: 2026-11-23
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.1.625.gf7de814569
+.\"    Source: Git 2.56.1.663.g77904e546d
 .\"  Language: English
 .\"
-.TH "GIT\-DIFF" "1" "2026-11-19" "Git 2\&.56\&.1\&.625\&.gf7de81" "Git Manual"
+.TH "GIT\-DIFF" "1" "2026-11-23" "Git 2\&.56\&.1\&.663\&.g77904e" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -42,6 +42,8 @@ git-diff \- Show changes between commits, commit and working tree, etc
 .SH "DESCRIPTION"
 .sp
 Show changes between the working tree and the index or a tree, changes between the index and a tree, changes between two trees, changes resulting from a merge, changes between two blob objects, or changes between two files on disk\&.
+.sp
+The EXAMPLES section has examples of the most common ways to diff\&.
 .PP
 \fBgit\fR \fBdiff\fR [\fI<options>\fR] [\fB\-\-\fR] [\fI<path>\fR\&.\&.\&.]
 .RS 4
@@ -2358,158 +2360,128 @@ a NUL\&.
 .sp
 The extra \fBNUL\fR before the preimage path in renamed case is to allow scripts that read the output to tell if the current record being read is a single\-path record or a rename/copy record without reading ahead\&. After reading added and deleted lines, reading up to \fBNUL\fR would yield the pathname, but if that is \fBNUL\fR, the record will show two paths\&.
 .SH "EXAMPLES"
+.SS "Diff uncommitted changes"
 .PP
-Various ways to check your working tree
+Show unstaged changes
 .RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git diff            \fB(1)\fR
-$ git diff \-\-cached   \fB(2)\fR
-$ git diff HEAD       \fB(3)\fR
-$ git diff AUTO_MERGE \fB(4)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.TS
-tab(:);
-r lw(\n(.lu*75u/100u).
-\fB1.\fR\h'-2n':T{
-Changes in the working tree not yet staged for the next commit\&.
-T}
-\fB2.\fR\h'-2n':T{
-Changes between the index and your last commit; what you would be committing if you run
 \fBgit\fR
-\fBcommit\fR
-without
-\fB\-a\fR
-option\&.
-T}
-\fB3.\fR\h'-2n':T{
-Changes in the working tree since your last commit; what you would be committing if you run
+\fBdiff\fR
+.RE
+.PP
+Show staged changes
+.RS 4
 \fBgit\fR
-\fBcommit\fR
-\fB\-a\fR
-T}
-\fB4.\fR\h'-2n':T{
-Changes in the working tree you\(cqve made to resolve textual conflicts so far\&.
-T}
-.TE
+\fBdiff\fR
+\fB\-\-staged\fR
+or
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-cached\fR
 .RE
 .PP
-Comparing with arbitrary commits
+Show all changes since the latest commit
 .RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git diff test            \fB(1)\fR
-$ git diff HEAD \-\- \&./test  \fB(2)\fR
-$ git diff HEAD^ HEAD      \fB(3)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.TS
-tab(:);
-r lw(\n(.lu*75u/100u).
-\fB1.\fR\h'-2n':T{
-Instead of using the tip of the current branch, compare with the tip of "test" branch\&.
-T}
-\fB2.\fR\h'-2n':T{
-Instead of comparing with the tip of "test" branch, compare with the tip of the current branch, but limit the comparison to the file "test"\&.
-T}
-\fB3.\fR\h'-2n':T{
-Compare the version before the last commit and the last commit\&.
-T}
-.TE
+\fBgit\fR
+\fBdiff\fR
+\fBHEAD\fR
 .RE
 .PP
-Comparing branches
+Show changes made to resolve a merge conflict
 .RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git diff topic master    \fB(1)\fR
-$ git diff topic\&.\&.master   \fB(2)\fR
-$ git diff topic\&.\&.\&.master  \fB(3)\fR
-.fi
-.if n \{\
+\fBgit\fR
+\fBdiff\fR
+\fBAUTO_MERGE\fR
 .RE
-.\}
-.TS
-tab(:);
-r lw(\n(.lu*75u/100u).
-\fB1.\fR\h'-2n':T{
-Changes between the tips of the topic and the master branches\&.
-T}
-\fB2.\fR\h'-2n':T{
-Same as above\&.
-T}
-\fB3.\fR\h'-2n':T{
-Changes that occurred on the master branch since when the topic branch was started off it\&.
-T}
-.TE
+.SS "Diff a specific file/directory"
+.sp
+You can usually put a filename or directory at the end to restrict the diff to that file/directory\&. You don\(cqt always need to put a \fB\-\-\fR, but it makes it unambiguous\&.
+.PP
+Show how \fBfile\&.txt\fR has changed since \fBmain\fR
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fBmain\fR
+\fB\-\-\fR
+\fBfile\&.txt\fR
 .RE
 .PP
-Limiting the diff output
+Show unstaged changes for \fBfile\&.txt\fR
 .RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git diff \-\-diff\-filter=MRC            \fB(1)\fR
-$ git diff \-\-name\-status                \fB(2)\fR
-$ git diff arch/i386 include/asm\-i386   \fB(3)\fR
-.fi
-.if n \{\
-.RE
-.\}
-.TS
-tab(:);
-r lw(\n(.lu*75u/100u).
-\fB1.\fR\h'-2n':T{
-Show only modification, rename, and copy, but not addition or deletion\&.
-T}
-\fB2.\fR\h'-2n':T{
-Show only names and the nature of change, but not actual diff output\&.
-T}
-\fB3.\fR\h'-2n':T{
-Limit diff output to named subtrees\&.
-T}
-.TE
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-\fR
+\fBfile\&.txt\fR
 .RE
 .PP
-Munging the diff output
+Show unstaged changes in \fBdir/\fR
 .RS 4
-.sp
-.if n \{\
-.RS 4
-.\}
-.nf
-$ git diff \-\-find\-copies\-harder \-B \-C  \fB(1)\fR
-$ git diff \-R                          \fB(2)\fR
-.fi
-.if n \{\
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-\fR
+\fB\&./dir\fR
 .RE
-.\}
-.TS
-tab(:);
-r lw(\n(.lu*75u/100u).
-\fB1.\fR\h'-2n':T{
-Spend extra cycles to find renames, copies and complete rewrites (very expensive)\&.
-T}
-\fB2.\fR\h'-2n':T{
-Output diff in reverse\&.
-T}
-.TE
+.SS "Diff branches or commits"
+.PP
+Show changes on the \fBtopic\fR branch since it branched off \fBmain\fR
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-merge\-base\fR
+\fBmain\fR
+\fBtopic\fR
+.RE
+.PP
+Show changes between the \fBtopic\fR branch and the \fBmain\fR branch
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fBmain\fR
+\fBtopic\fR
+.RE
+.PP
+Show changes between commit \fBff11cc\fR and \fBHEAD\fR
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fBff11cc\fR
+\fBHEAD\fR
+.RE
+.SS "Options to summarize the output"
+.PP
+Show how many lines in each file were changed
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-stat\fR
+.RE
+.PP
+Only show names of changed files
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-name\-only\fR
+.RE
+.PP
+Only show filenames and whether they were modified/deleted/added
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-name\-status\fR
+.RE
+.SS "Options to display the diff in another way"
+.PP
+Ignore all whitespace changes
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-ignore\-all\-space\fR
+.RE
+.PP
+Show which individual words changed instead of the whole line
+.RS 4
+\fBgit\fR
+\fBdiff\fR
+\fB\-\-word\-diff\fR
 .RE
 .SH "CONFIGURATION"
 .sp
