@@ -2,12 +2,12 @@
 .\"     Title: gitglossary
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-11-23
+.\"      Date: 2026-11-25
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.1.663.g77904e546d
+.\"    Source: Git 2.56.1.712.gacba8bf975
 .\"  Language: English
 .\"
-.TH "GITGLOSSARY" "7" "2026-11-23" "Git 2\&.56\&.1\&.663\&.g77904e" "Git Manual"
+.TH "GITGLOSSARY" "7" "2026-11-25" "Git 2\&.56\&.1\&.712\&.gacba8b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -773,16 +773,74 @@ plumbing\&.
 .PP
 per\-worktree ref
 .RS 4
-Refs that are per\-worktree, rather than global\&. This is presently only
+A
+ref
+that is specific to a
+worktree, rather than shared between all worktrees\&. All
+root refs, for example
 HEAD
-and any refs that start with
-\fBrefs/bisect/\fR, but might later include other unusual refs\&.
+and
+\fBORIG_HEAD\fR, are per\-worktree, as are refs with the following prefixes:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBrefs/bisect/\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBrefs/rewritten/\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBrefs/worktree/\fR
+.RE
+.sp
+This list will not be extended in future\&. Any new per\-worktree refs shall be created under
+\fBrefs/worktree/\fR\&.
+.sp
+Even though they are not refs,
+pseudorefs
+are also specific to each worktree\&.
+.sp
+See "REFS" in
+\fBgit-worktree\fR(1)
+for how to access the per\-worktree refs of other worktrees\&.
 .RE
 .PP
 pseudoref
 .RS 4
-A ref that has different semantics than normal refs\&. These refs can be read via normal Git commands, but cannot be written to by commands like
-\fBgit-update-ref\fR(1)\&.
+A name that can be used like a
+ref
+to refer to an
+object, but that has additional semantics: it can record more than one object ID and may carry extra metadata\&. Therefore, pseudorefs are not stored or handled by the ref backend\&.
+.sp
+Pseudorefs can be passed to commands such as
+\fBgit-log\fR(1)
+or
+\fBgit-diff\fR(1), but cannot be written by
+\fBgit-update-ref\fR(1)
+or listed by
+\fBgit-for-each-ref\fR(1)\&. When a pseudoref contains more than one object ID, using it to refer to an object yields the first one\&.
 .sp
 The following pseudorefs are known to Git:
 .sp
@@ -798,7 +856,8 @@ The following pseudorefs are known to Git:
 is written by
 \fBgit-fetch\fR(1)
 or
-\fBgit-pull\fR(1)\&. It may refer to multiple object IDs\&. Each object ID is annotated with metadata indicating where it was fetched from and its fetch status\&.
+\fBgit-pull\fR(1)
+to record the objects that have been fetched\&. Each object is annotated with the ref and repository it was fetched from and whether it is to be merged when pulling\&.
 .RE
 .sp
 .RS 4
@@ -812,7 +871,9 @@ or
 \fBMERGE_HEAD\fR
 is written by
 \fBgit-merge\fR(1)
-when resolving merge conflicts\&. It contains all commit IDs which are being merged\&.
+or
+\fBgit-pull\fR(1)
+to record the commits being merged while a merge is in progress\&.
 .RE
 .RE
 .PP
@@ -890,92 +951,13 @@ repository\&.
 .sp
 The ref namespace is hierarchical\&. Ref names must either start with
 \fBrefs/\fR
-or be located in the root of the hierarchy\&. For the latter, their name must follow these rules:
+or be located in the root of the hierarchy, in which case they must follow the naming rules for
+root refs\&.
 .sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-The name consists of only upper\-case characters or underscores\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-The name ends with "\fB_HEAD\fR" or is equal to "\fBHEAD\fR"\&.
-.RE
-.sp
-There are some irregular refs in the root of the hierarchy that do not match these rules\&. The following list is exhaustive and shall not be extended in the future:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBAUTO_MERGE\fR
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBBISECT_EXPECTED_REV\fR
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBNOTES_MERGE_PARTIAL\fR
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBNOTES_MERGE_REF\fR
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-\fBMERGE_AUTOSTASH\fR
-.RE
-.sp
-Different subhierarchies are used for different purposes\&. For example, the
-\fBrefs/heads/\fR
-hierarchy is used to represent local branches whereas the
-\fBrefs/tags/\fR
-hierarchy is used to represent local tags\&.\&.
+Different subhierarchies are used for different purposes\&. For example, local branches are stored under
+\fBrefs/heads/\fR, remote\-tracking branches under
+\fBrefs/remotes/\fR, and tags under
+\fBrefs/tags/\fR\&.
 .sp
 See also "REFERENCES" in
 \fBgitdatamodel\fR(7)\&.
@@ -1068,6 +1050,97 @@ To throw away part of the development, i\&.e\&. to assign the
 head
 to an earlier
 revision\&.
+.RE
+.PP
+root ref
+.RS 4
+A
+ref
+located in the root of the ref hierarchy, outside
+\fBrefs/\fR\&. Root ref names must follow these rules:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The name consists of only upper\-case characters or underscores\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+The name ends with "\fB_HEAD\fR" or is equal to "\fBHEAD\fR"\&.
+.RE
+.sp
+The following irregular root refs are exceptions to these rules\&. This list is exhaustive and shall not be extended in future:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBAUTO_MERGE\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBBISECT_EXPECTED_REV\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBNOTES_MERGE_PARTIAL\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBNOTES_MERGE_REF\fR
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+\fBMERGE_AUTOSTASH\fR
+.RE
+.sp
+See
+\fBgitrevisions\fR(7)
+for descriptions of commonly used root refs\&.
 .RE
 .PP
 SCM
@@ -1281,7 +1354,8 @@ commit\(cqs tree, plus any local changes that you have made but not yet committe
 .PP
 worktree
 .RS 4
-A repository can have zero (i\&.e\&. bare repository) or one or more worktrees attached to it\&. One "worktree" consists of a "working tree" and repository metadata, most of which are shared among other worktrees of a single repository, and some of which are maintained separately per worktree (e\&.g\&. the index, HEAD and pseudorefs like MERGE_HEAD, per\-worktree refs and per\-worktree configuration file)\&.
+A repository can have zero (i\&.e\&. bare repository) or one or more worktrees attached to it\&. One "worktree" consists of a "working tree" and repository metadata, most of which are shared among other worktrees of a single repository, and some of which are maintained separately per worktree (e\&.g\&. the index,
+per\-worktree refs, and the per\-worktree configuration file)\&.
 .RE
 .SH "SEE ALSO"
 .sp

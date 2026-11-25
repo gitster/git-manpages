@@ -2,12 +2,12 @@
 .\"     Title: git-ls-remote
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-11-23
+.\"      Date: 2026-11-25
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.1.663.g77904e546d
+.\"    Source: Git 2.56.1.712.gacba8bf975
 .\"  Language: English
 .\"
-.TH "GIT\-LS\-REMOTE" "1" "2026-11-23" "Git 2\&.56\&.1\&.663\&.g77904e" "Git Manual"
+.TH "GIT\-LS\-REMOTE" "1" "2026-11-25" "Git 2\&.56\&.1\&.712\&.gacba8b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -34,11 +34,12 @@ git-ls-remote \- List references in a remote repository
 .nf
 \fIgit ls\-remote\fR [\-\-branches] [\-\-tags] [\-\-refs] [\-\-upload\-pack=<exec>]
               [\-q | \-\-quiet] [\-\-exit\-code] [\-\-get\-url] [\-\-sort=<key>]
-              [\-\-symref] [<repository> [<patterns>\&...\:]]
+              [\-\-symref] [\-\-show\-object\-format]
+              [<repository> [<patterns>\&...\:]]
 .fi
 .SH "DESCRIPTION"
 .sp
-Displays references available in a remote repository along with the associated commit IDs\&.
+Displays references available in a remote repository along with the associated object IDs\&. By default, \fBHEAD\fR and all refs under \fBrefs/\fR are shown\&. Annotated tags are also shown peeled, i\&.e\&. recursively resolved to the objects they point at\&.
 .SH "OPTIONS"
 .PP
 \-b, \-\-branches, \-t, \-\-tags
@@ -62,9 +63,9 @@ used without anything else on the command line gives help, consistent with other
 .PP
 \-\-refs
 .RS 4
-Do not show peeled tags or pseudorefs like
+Do not show
 \fBHEAD\fR
-in the output\&.
+or peeled tags in the output\&.
 .RE
 .PP
 \-q, \-\-quiet
@@ -93,6 +94,15 @@ Expand the URL of the given remote repository taking into account any "url\&.<ba
 \-\-symref
 .RS 4
 In addition to the object pointed by it, show the underlying ref pointed by it when showing a symbolic ref\&. Currently, upload\-pack only shows the symref HEAD, so it will be the only one shown by ls\-remote\&.
+.RE
+.PP
+\-\-show\-object\-format
+.RS 4
+Before the references, print the object format (hash algorithm) of the remote on a line of its own, in the form
+\fBobject\-format:\fR
+\fI<format>\fR, e\&.g\&.
+\fBobject\-format:\fR
+\fBsha256\fR\&. This also works for remotes without any refs, so it can be used to find out which object format a local repository needs before fetching from or pushing to the remote\&.
 .RE
 .PP
 \-\-sort=<key>
@@ -165,7 +175,10 @@ When showing an annotated tag, unless \fB\-\-refs\fR is given, two such lines ar
 .sp -1
 .IP \(bu 2.3
 .\}
-List all references (including symbolics and pseudorefs), peeling tags:
+List
+\fBHEAD\fR
+and all refs under
+\fBrefs/\fR, peeling tags:
 .sp
 .if n \{\
 .RS 4

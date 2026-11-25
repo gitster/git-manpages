@@ -2,12 +2,12 @@
 .\"     Title: git-log
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.2 <http://docbook.sf.net/>
-.\"      Date: 2026-11-23
+.\"      Date: 2026-11-25
 .\"    Manual: Git Manual
-.\"    Source: Git 2.56.1.663.g77904e546d
+.\"    Source: Git 2.56.1.712.gacba8bf975
 .\"  Language: English
 .\"
-.TH "GIT\-LOG" "1" "2026-11-23" "Git 2\&.56\&.1\&.663\&.g77904e" "Git Manual"
+.TH "GIT\-LOG" "1" "2026-11-25" "Git 2\&.56\&.1\&.712\&.gacba8b" "Git Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -85,9 +85,11 @@ $ git log A\&.\&.\&.B
 The command takes options applicable to the \fBgit-rev-list\fR(1) command to control what is shown and how, and options applicable to the \fBgit-diff\fR(1) command to control how the changes each commit introduces are shown\&.
 .SH "OPTIONS"
 .PP
-\fB\-\-follow\fR
+\fB\-\-follow\fR[\fB=merges\fR]
 .RS 4
-Continue listing the history of a file beyond renames (works only for a single file)\&.
+Continue listing the history of a file beyond renames (works only for a single file)\&. This does not work well on non\-linear history, unless
+\fBmerges\fR
+is given: then the path is followed separately for each parent of a merge, which is more expensive\&.
 .RE
 .PP
 \fB\-\-no\-decorate\fR, \fB\-\-decorate\fR[\fB=\fR(\fBshort\fR|\fBfull\fR|\fBauto\fR|\fBno\fR)]
@@ -872,12 +874,13 @@ Under
 Show commits touching conflicted paths in the range
 \fBHEAD\fR\fB\&.\&.\&.\fR\fI<other>\fR, where
 \fI<other>\fR
-is the first existing pseudoref in
+is the first one of
 \fBMERGE_HEAD\fR,
 \fBCHERRY_PICK_HEAD\fR,
 \fBREVERT_HEAD\fR
 or
-\fBREBASE_HEAD\fR\&. Only works when the index has unmerged entries\&. This option can be used to show relevant commits when resolving conflicts from a 3\-way merge\&.
+\fBREBASE_HEAD\fR
+that exists\&. Only works when the index has unmerged entries\&. This option can be used to show relevant commits when resolving conflicts from a 3\-way merge\&.
 .RE
 .PP
 \fB\-\-boundary\fR
@@ -4891,7 +4894,13 @@ If
 will act as if the
 \fB\-\-follow\fR
 option was used when a single <path> is given\&. This has the same limitations as
-\fB\-\-follow\fR, i\&.e\&. it cannot be used to follow multiple files\&.
+\fB\-\-follow\fR, i\&.e\&. it cannot be used to follow multiple files and does not work well on non\-linear history\&. If
+\fBmerges\fR,
+\fBgit\fR
+\fBlog\fR
+will act as if the
+\fB\-\-follow=merges\fR
+option was used, which follows the path separately for each parent of a merge, but is more expensive\&.
 .RE
 .PP
 \fBlog\&.graphColors\fR
